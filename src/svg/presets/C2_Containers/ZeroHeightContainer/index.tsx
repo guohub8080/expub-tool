@@ -1,11 +1,11 @@
 import type {CSSProperties, ReactNode} from 'react';
-import SectionEx from '@pub-html/basicEx/SectionEx.tsx';
+import SectionEx from '@html/basicEx/SectionEx';
 import {defaultTo} from 'lodash';
-import {mpBlank, mpGet, mpProps} from '@styles/funcs/mp.ts';
+import {mpBlank, mpGet, mpProps} from '@styles/funcs/mp';
 import ZeroHeightContainerThrough from './components/Through';
 import ZeroHeightContainerThroughPriority from './components/ThroughPriority';
 import ZeroHeightContainerPriority from './components/Priority';
-import ZeroHeightContainer3D from './components/Container3D.tsx';
+import ZeroHeightContainer3D from './components/Container3D';
 
 /**
  * ZeroHeightContainer 组件的 Props。

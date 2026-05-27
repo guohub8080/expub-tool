@@ -2,7 +2,7 @@
  * genAnimateRotate 预设效果
  */
 
-import { genAnimateRotate } from './core.tsx';
+import { genAnimateRotate } from './core';
 
 /**
  * 预设的旋转动画效果

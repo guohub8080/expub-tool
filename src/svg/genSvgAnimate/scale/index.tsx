@@ -8,13 +8,13 @@ export type {
   ScaleTimelineSegment,
   AnimateCalcMode,
   ScaleAnimationConfig,
-} from './types.ts';
+} from './types';
 
 // 导出核心函数
-export { genAnimateScale, centerScaleStyle } from './core.tsx';
+export { genAnimateScale, centerScaleStyle } from './core';
 
 // 导出预设效果
-export { scalePresets } from './presets.tsx';
+export { scalePresets } from './presets';
 
 // 导出辅助函数和常量
 export {
@@ -24,5 +24,5 @@ export {
   genAnimateScalePulse,
   genAnimateScalePath,
   genAnimateScaleBounce,
-} from './helpers.tsx';
+} from './helpers';
 

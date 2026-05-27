@@ -1,5 +1,5 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import SectionEx from "@pub-html/basicEx/SectionEx";
+import SectionEx from "@html/basicEx/SectionEx";
 import SeamlessImg from "./SeamlessImg";
 
 const Link = () => {

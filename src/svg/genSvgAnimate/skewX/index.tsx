@@ -8,13 +8,13 @@ export type {
   SkewXTimelineSegment,
   AnimateCalcMode,
   SkewXAnimationConfig,
-} from './types.ts';
+} from './types';
 
 // 导出核心函数
-export { genAnimateSkewX } from './core.tsx';
+export { genAnimateSkewX } from './core';
 
 // 导出预设效果
-export { skewXPresets } from './presets.tsx';
+export { skewXPresets } from './presets';
 
 // 导出辅助函数和常量
 export {
@@ -23,5 +23,5 @@ export {
   genAnimateSkewXLoop,
   genAnimateSkewXSwing,
   genAnimateSkewXPath,
-} from './helpers.tsx';
+} from './helpers';
 

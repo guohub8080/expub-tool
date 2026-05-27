@@ -4,7 +4,7 @@
 
 import { defaultTo, isUndefined } from 'lodash';
 import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
-import { Point2D, TranslateTimelineSegment } from '../types.ts';
+import { Point2D, TranslateTimelineSegment } from '../types';
 
 /**
  * 构建完整的坐标序列

@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
-import SectionEx from "@pub-html/basicEx/SectionEx";
-import SvgEx from "@pub-html/basicEx/SvgEx";
+import SectionEx from "@html/basicEx/SectionEx";
+import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
 import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";

@@ -1,6 +1,6 @@
 import { CSSProperties } from "react"
 import svgURL from "@pub-utils/common/svgURL.ts"
-import SvgEx from "@pub-html/basicEx/SvgEx.tsx"
+import SvgEx from "@html/basicEx/SvgEx"
 
 const SeamlessImg3 = (props: { w: number, h: number, url: string, mpResult: CSSProperties }) => {
     return <section

@@ -9,13 +9,13 @@ export type {
   AnimateCalcMode,
   RotateOrigin,
   RotateAnimationConfig,
-} from './types.ts';
+} from './types';
 
 // 导出核心函数
-export { genAnimateRotate, getCenterRotateStyle } from './core.tsx';
+export { genAnimateRotate, getCenterRotateStyle } from './core';
 
 // 导出预设效果
-export { rotatePresets } from './presets.tsx';
+export { rotatePresets } from './presets';
 
 // 导出辅助函数和常量
 export {
@@ -24,5 +24,5 @@ export {
   genAnimateRotateLoop,
   genAnimateRotateSwing,
   genAnimateRotatePath,
-} from './helpers.tsx';
+} from './helpers';
 

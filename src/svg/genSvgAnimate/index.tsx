@@ -12,15 +12,15 @@ import {
   getOriginNumByText,
   type ElementBoundsType,
   type OriginPosition
-} from '../common/getElementBounds.ts';
+} from '../common/getElementBounds';
 
 // ==================== 导入 ====================
 import {
   genAnimateFloat,
   type FloatOptions
-} from './float/index.tsx';
+} from './float/index';
 
-import { floatingPresets } from './animatePresetFloat.tsx';
+import { floatingPresets } from './animatePresetFloat';
 
 import {
   genAnimateTranslate,
@@ -36,7 +36,7 @@ import {
   type TranslateAnimationConfig,
   type TranslateTimelineSegment,
   type Point2D,
-} from './translate/index.tsx';
+} from './translate/index';
 
 import {
   genAnimateSoftBlink,
@@ -45,7 +45,7 @@ import {
   hardBlinkPresets,
   type SoftBlinkOptions,
   type HardBlinkOptions,
-} from './blink/index.tsx';
+} from './blink/index';
 
 import {
   genAnimateScale,
@@ -59,14 +59,14 @@ import {
   genAnimateScaleBounce,
   type ScaleAnimationConfig,
   type ScaleTimelineSegment,
-} from './scale/index.tsx';
+} from './scale/index';
 
 import {
   genAnimateBreathe,
   breathePresets,
   centerBreatheStyle,
   type BreatheOptions
-} from './breathe/index.tsx';
+} from './breathe/index';
 
 import {
   genAnimateRotate,
@@ -80,7 +80,7 @@ import {
   type RotateAnimationConfig,
   type RotateTimelineSegment,
   type RotateOrigin,
-} from './rotate/index.tsx';
+} from './rotate/index';
 
 import {
   genAnimateOpacity,
@@ -91,7 +91,7 @@ import {
   genAnimateOpacityPath,
   type OpacityAnimationConfig,
   type OpacityTimelineSegment,
-} from './opacity/index.tsx';
+} from './opacity/index';
 
 import {
   genAnimateSkewX,
@@ -103,7 +103,7 @@ import {
   genAnimateSkewXPath,
   type SkewXAnimationConfig,
   type SkewXTimelineSegment,
-} from './skewX/index.tsx';
+} from './skewX/index';
 
 import {
   genAnimateSkewY,
@@ -115,7 +115,7 @@ import {
   genAnimateSkewYPath,
   type SkewYAnimationConfig,
   type SkewYTimelineSegment,
-} from './skewY/index.tsx';
+} from './skewY/index';
 
 import {
   genAnimatePathMotion,
@@ -123,18 +123,18 @@ import {
   genAnimatePathMotionSlide,
   type PathMotionAnimationConfig,
   type PathMotionRotateMode,
-} from './pathMotion/index.tsx';
+} from './pathMotion/index';
 
 import {
   genAnimatePathStroke,
   type PathStrokeAnimationConfig,
   type PathStrokeTimelineSegment,
-} from './pathStroke/index.tsx';
+} from './pathStroke/index';
 
 import {
   genAnimateExtrude,
   type extrudeOptions,
-} from './extrude/index.tsx';
+} from './extrude/index';
 
 import {
   genSet,
@@ -146,7 +146,7 @@ import {
   type GenSetVisibilityOptions,
   type GenSetOpacityOptions,
   type GenSetDisplayOptions,
-} from './set/index.tsx';
+} from './set/index';
 
 // ==================== 导出工具类型 ====================
 export {

@@ -2,7 +2,7 @@
  * 基础移动预设
  */
 
-import { genAnimateTranslate } from '../core.tsx';
+import { genAnimateTranslate } from '../core';
 
 export const movePresets = {
   /** 向右移动 */

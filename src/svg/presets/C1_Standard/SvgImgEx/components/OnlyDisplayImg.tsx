@@ -1,5 +1,5 @@
-import SectionEx from "@pub-html/basicEx/SectionEx";
-import SvgEx from "@pub-html/basicEx/SvgEx";
+import SectionEx from "@html/basicEx/SectionEx";
+import SvgEx from "@html/basicEx/SvgEx";
 import svgURL from "@pub-utils/common/svgURL";
 
 const OnlyDisplayImg = (props: { url: string, w: number, h: number }) => {

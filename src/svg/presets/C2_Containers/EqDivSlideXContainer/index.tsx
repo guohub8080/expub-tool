@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import SectionEx from "@pub-html/basicEx/SectionEx";
+import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
 import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
 

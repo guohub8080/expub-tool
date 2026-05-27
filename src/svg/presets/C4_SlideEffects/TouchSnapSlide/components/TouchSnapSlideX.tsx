@@ -1,7 +1,7 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { CSSProperties, useMemo } from "react";
-import SectionEx from "@pub-html/basicEx/SectionEx";
-import SvgEx from "@pub-html/basicEx/SvgEx";
+import SectionEx from "@html/basicEx/SectionEx";
+import SvgEx from "@html/basicEx/SvgEx";
 import svgURL from "@pub-utils/common/svgURL";
 import { rootBaseStyle, itemBaseStyle } from "../styles";
 import type { TouchSnapSlideXProps } from "../types";

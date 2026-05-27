@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { defaultTo, round } from "lodash";
-import SectionEx from "@pub-html/basicEx/SectionEx";
-import SvgEx from "@pub-html/basicEx/SvgEx";
+import SectionEx from "@html/basicEx/SectionEx";
+import SvgEx from "@html/basicEx/SvgEx";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import svgURL from "@pub-utils/common/svgURL";
 

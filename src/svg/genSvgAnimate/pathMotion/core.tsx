@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { defaultTo } from 'lodash';
-import { PathMotionAnimationConfig } from './types.ts';
+import { PathMotionAnimationConfig } from './types';
 import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
 
 /**

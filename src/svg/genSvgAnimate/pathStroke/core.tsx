@@ -5,7 +5,7 @@
 import React from 'react';
 import { isUndefined, isNil, defaultTo, isEmpty } from 'lodash';
 import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
-import { PathStrokeAnimationConfig } from './types.ts';
+import { PathStrokeAnimationConfig } from './types';
 import { getLinearBezier } from '@bezier/index';
 import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
 

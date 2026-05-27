@@ -1,4 +1,4 @@
-import SvgEx from "@pub-html/basicEx/SvgEx.tsx";
+import SvgEx from "@html/basicEx/SvgEx";
 import svgURL from "@pub-utils/common/svgURL";
 import SeamlessImg from "@pub-svg/C1_Standard/SeamlessImg";
 import { NormalizedPicConfig, Direction } from "../types";

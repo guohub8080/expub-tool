@@ -2,8 +2,8 @@
  * genAnimateScale 辅助函数和常量
  */
 
-import { genAnimateScale } from './core.tsx';
-import { ScaleAnimationConfig, ScaleTimelineSegment } from './types.ts';
+import { genAnimateScale } from './core';
+import { ScaleAnimationConfig, ScaleTimelineSegment } from './types';
 
 /**
  * 缩放常量

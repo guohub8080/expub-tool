@@ -139,4 +139,4 @@ export {
   getSupportedAttrs,
   type SvgAnimationElement,
   type SvgAnimationAttr
-} from './svgAttrWhiteList.ts';
+} from './svgAttrWhiteList';

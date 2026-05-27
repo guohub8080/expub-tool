@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import SectionEx from '@pub-html/basicEx/SectionEx';
+import SectionEx from '@html/basicEx/SectionEx';
 
 /**
  * 零高度容器（仅强制优先级版）

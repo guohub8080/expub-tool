@@ -1,4 +1,4 @@
-import SectionEx from "@pub-html/basicEx/SectionEx.tsx";
+import SectionEx from "@html/basicEx/SectionEx";
 import getTextImgPic1 from "../../../../api/placeHolderPic/getTextImgPic1";
 import { useMemo } from "react";
 import { range } from "lodash";

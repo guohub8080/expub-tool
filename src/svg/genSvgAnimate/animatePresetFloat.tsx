@@ -2,7 +2,7 @@
  * 浮动动画的预设效果
  */
 
-import { genAnimateFloat } from './float/index.tsx';
+import { genAnimateFloat } from './float/index';
 
 /**
  * 预设的浮动效果

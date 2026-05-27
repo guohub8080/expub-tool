@@ -1,5 +1,5 @@
 import type {CSSProperties, ReactNode} from "react"
-import SectionEx from "@pub-html/basicEx/SectionEx"
+import SectionEx from "@html/basicEx/SectionEx"
 import {mpGet, mpProps} from "@styles/funcs/mp"
 
 /**

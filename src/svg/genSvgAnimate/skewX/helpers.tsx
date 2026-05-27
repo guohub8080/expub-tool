@@ -2,8 +2,8 @@
  * genAnimateSkewX 辅助函数和常量
  */
 
-import { genAnimateSkewX } from './core.tsx';
-import { SkewXAnimationConfig, SkewXTimelineSegment } from './types.ts';
+import { genAnimateSkewX } from './core';
+import { SkewXAnimationConfig, SkewXTimelineSegment } from './types';
 
 /**
  * 水平斜切角度常量

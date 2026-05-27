@@ -2,7 +2,7 @@
  * genAnimateScale 类型定义
  */
 
-import { ElementBoundsType, OriginPosition } from '../../common/getElementBounds.ts';
+import { ElementBoundsType, OriginPosition } from '../../common/getElementBounds';
 import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
 
 /** 缩放时间线段 */

@@ -5,7 +5,7 @@
 import React from 'react';
 import { isUndefined, defaultTo } from 'lodash';
 import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
-import { SkewXAnimationConfig } from './types.ts';
+import { SkewXAnimationConfig } from './types';
 import { getEaseBezier } from '@bezier/index';
 import { assertNonEmptyArray } from '@pub-utils/common/arrayValidation';
 import { getSvgBegin } from '@pub-utils/common/getSvgBegin';

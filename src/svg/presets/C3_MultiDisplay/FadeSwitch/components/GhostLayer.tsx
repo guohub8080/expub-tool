@@ -1,4 +1,4 @@
-import SvgEx from "@pub-html/basicEx/SvgEx";
+import SvgEx from "@html/basicEx/SvgEx";
 import svgURL from "@pub-utils/common/svgURL";
 import { NormalizedPicConfig } from "../types";
 import { buildGhostLayerKeyframes } from "../timeline/keyframeBuilder";

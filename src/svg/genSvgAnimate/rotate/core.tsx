@@ -5,7 +5,7 @@
 import React from 'react';
 import { isUndefined, isArray, defaultTo } from 'lodash';
 import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
-import { RotateAnimationConfig, RotateOrigin } from './types.ts';
+import { RotateAnimationConfig, RotateOrigin } from './types';
 import { ElementBoundsType, getOriginNumByText } from '@pub-utils/common/getElementBounds';
 import { getLinearBezier } from '@bezier/index';
 import { assertNonEmptyArray } from '@pub-utils/common/arrayValidation';

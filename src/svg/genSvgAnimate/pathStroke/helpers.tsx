@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { genAnimatePathStroke } from './core.tsx';
+import { genAnimatePathStroke } from './core';
 import { getLinearBezier } from '@bezier/index';
 
 /**

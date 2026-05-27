@@ -2,7 +2,7 @@
  * genAnimateScale 预设效果
  */
 
-import { genAnimateScale } from './core.tsx';
+import { genAnimateScale } from './core';
 
 /**
  * 预设的缩放动画效果

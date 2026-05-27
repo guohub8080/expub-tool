@@ -24,7 +24,7 @@ import {genSvgKeySplines, SvgTimelineSegment} from '@pub-utils/genSvgKeySplines'
 import {getEaseBezier} from "@bezier/index";
 import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
 import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
-import SvgEx from "@pub-html/basicEx/SvgEx.tsx";
+import SvgEx from "@html/basicEx/SvgEx";
 
 // 重新导出工具函数，供需要单独使用 animate 元素的场景
 export { genWidthAnimate, genRectAnimate, genAnimateExtrude as genAnimateExtrudeAttrs, type extrudeOptions as extrudeOptionsAttrs } from './utils';

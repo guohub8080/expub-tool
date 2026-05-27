@@ -4,5 +4,5 @@
  * 用于生成 SVG 路径的描边绘制动画效果
  */
 
-export { genAnimatePathStroke } from './core.tsx';
-export type { PathStrokeAnimationConfig, PathStrokeTimelineSegment } from './types.ts';
+export { genAnimatePathStroke } from './core';
+export type { PathStrokeAnimationConfig, PathStrokeTimelineSegment } from './types';

@@ -4,7 +4,7 @@
  * 严格按照 infinityBackClick.html 源码一比一复刻
  */
 
-import SvgEx from "@pub-html/basicEx/SvgEx"
+import SvgEx from "@html/basicEx/SvgEx"
 import BackgroundLayer from "./components/BackgroundLayer"
 import BackSide from "./components/BackSide"
 import FrontSide from "./components/FrontSide"

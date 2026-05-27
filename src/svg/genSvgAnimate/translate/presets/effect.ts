@@ -2,7 +2,7 @@
  * 特效预设
  */
 
-import { genAnimateTranslate } from '../core.tsx';
+import { genAnimateTranslate } from '../core';
 
 export const effectPresets = {
   /** 延迟移动（移动-停留-返回） */

@@ -2,7 +2,7 @@
  * genAnimateSkewY 预设效果
  */
 
-import { genAnimateSkewY } from './core.tsx';
+import { genAnimateSkewY } from './core';
 
 /**
  * 预设的垂直斜切动画效果

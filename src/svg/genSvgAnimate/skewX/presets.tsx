@@ -2,7 +2,7 @@
  * genAnimateSkewX 预设效果
  */
 
-import { genAnimateSkewX } from './core.tsx';
+import { genAnimateSkewX } from './core';
 
 /**
  * 预设的水平斜切动画效果

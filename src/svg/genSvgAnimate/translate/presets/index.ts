@@ -2,10 +2,10 @@
  * 平移动画预设 - 统一导出
  */
 
-import { movePresets } from './move.ts';
-import { loopPresets } from './loop.ts';
-import { pathPresets } from './path.ts';
-import { effectPresets } from './effect.ts';
+import { movePresets } from './move';
+import { loopPresets } from './loop';
+import { pathPresets } from './path';
+import { effectPresets } from './effect';
 
 /**
  * 预设的平移动画效果

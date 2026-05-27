@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import SectionEx from "@pub-html/basicEx/SectionEx";
+import SectionEx from "@html/basicEx/SectionEx";
 import { mpBlank, mpBlankCss } from "@styles/funcs/mp";
 
 const NormalSvgImg = (props: { url: string }) => {

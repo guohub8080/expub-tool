@@ -2,7 +2,7 @@
  * genAnimateOpacity 预设效果
  */
 
-import { genAnimateOpacity } from './core.tsx';
+import { genAnimateOpacity } from './core';
 
 /**
  * 预设的不透明度动画效果

@@ -7,4 +7,4 @@ export {
   buildXYTimelines,
   combineXYValues,
   calculateTotalDuration,
-} from './coordinates.ts';
+} from './coordinates';

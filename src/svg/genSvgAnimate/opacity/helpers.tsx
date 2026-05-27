@@ -2,8 +2,8 @@
  * genAnimateOpacity 辅助函数和常量
  */
 
-import { genAnimateOpacity } from './core.tsx';
-import { OpacityAnimationConfig, OpacityTimelineSegment } from './types.ts';
+import { genAnimateOpacity } from './core';
+import { OpacityAnimationConfig, OpacityTimelineSegment } from './types';
 
 /**
  * 不透明度常量

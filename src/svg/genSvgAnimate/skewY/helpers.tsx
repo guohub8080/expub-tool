@@ -2,8 +2,8 @@
  * genAnimateSkewY 辅助函数和常量
  */
 
-import { genAnimateSkewY } from './core.tsx';
-import { SkewYAnimationConfig, SkewYTimelineSegment } from './types.ts';
+import { genAnimateSkewY } from './core';
+import { SkewYAnimationConfig, SkewYTimelineSegment } from './types';
 
 /**
  * 垂直斜切角度常量

@@ -5,9 +5,9 @@
 import React from 'react';
 import { defaultTo } from 'lodash';
 import { genSvgKeySplines } from '@pub-utils/genSvgKeySplines';
-import { TranslateAnimationConfig } from './types.ts';
+import { TranslateAnimationConfig } from './types';
 import { assertNonEmptyArray } from '@pub-utils/common/arrayValidation';
-import { buildCoordinates, buildXYTimelines, combineXYValues, calculateTotalDuration } from './utils/index.ts';
+import { buildCoordinates, buildXYTimelines, combineXYValues, calculateTotalDuration } from './utils/index';
 import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
 
 /**

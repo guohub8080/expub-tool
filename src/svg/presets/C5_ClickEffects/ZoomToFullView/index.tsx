@@ -9,7 +9,7 @@ import {
 	genAnimateOpacityFade,
 	genAnimateSoftBlink,
 	genAnimateTranslate,
-} from "@svg-anim/index.tsx";
+} from "@svg-anim/index";
 import type { ZoomToFullViewProps } from "./types";
 import { calcInitView, calcForeignObject, calcOffScreenOffset, calcZoomTarget } from "./helpers";
 

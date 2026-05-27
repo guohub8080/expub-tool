@@ -2,7 +2,7 @@
  * 循环运动预设
  */
 
-import { genAnimateTranslate } from '../core.tsx';
+import { genAnimateTranslate } from '../core';
 
 export const loopPresets = {
   /** 水平往返（左右摇摆） */

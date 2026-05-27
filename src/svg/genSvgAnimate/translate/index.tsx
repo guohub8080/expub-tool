@@ -10,13 +10,13 @@ export type {
   TranslateTimelineSegment,
   AnimateCalcMode,
   TranslateAnimationConfig,
-} from './types.ts';
+} from './types';
 
 // 导出核心函数
-export { genAnimateTranslate } from './core.tsx';
+export { genAnimateTranslate } from './core';
 
 // 导出预设效果
-export { translatePresets, movePresets, loopPresets, pathPresets, effectPresets } from './presets/index.ts';
+export { translatePresets, movePresets, loopPresets, pathPresets, effectPresets } from './presets/index';
 
 // 导出辅助函数和常量
 export {
@@ -24,7 +24,7 @@ export {
   genAnimateTranslateByDirection,
   genAnimateTranslateLoop,
   genAnimateTranslatePath,
-} from './helpers/index.ts';
+} from './helpers/index';
 
 // 导出工具函数
 export {
@@ -32,6 +32,6 @@ export {
   buildXYTimelines,
   combineXYValues,
   calculateTotalDuration,
-} from './utils/index.ts';
+} from './utils/index';
 
 

@@ -2,8 +2,8 @@
  * genAnimateRotate 辅助函数和常量
  */
 
-import { genAnimateRotate } from './core.tsx';
-import { RotateAnimationConfig, RotateTimelineSegment } from './types.ts';
+import { genAnimateRotate } from './core';
+import { RotateAnimationConfig, RotateTimelineSegment } from './types';
 
 /**
  * 旋转方向常量

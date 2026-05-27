@@ -6,9 +6,9 @@ export {
   genAnimatePathMotion,
   genAnimatePathMotionLoop,
   genAnimatePathMotionSlide,
-} from './core.tsx';
+} from './core';
 
 export type {
   PathMotionAnimationConfig,
   PathMotionRotateMode,
-} from './types.ts';
+} from './types';

@@ -5,7 +5,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
-import { userLogStore } from '../store/useUserLog/index.ts';
+import { userLogStore } from '../store/useUserLog/index';
 
 /**
  * 规范化 URL，确保正确拼接

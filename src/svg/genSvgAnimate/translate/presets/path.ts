@@ -2,7 +2,7 @@
  * 路径运动预设
  */
 
-import { genAnimateTranslate } from '../core.tsx';
+import { genAnimateTranslate } from '../core';
 
 export const pathPresets = {
   /** S 形路径 */

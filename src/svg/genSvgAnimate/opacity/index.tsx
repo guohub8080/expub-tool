@@ -8,13 +8,13 @@ export type {
   OpacityTimelineSegment,
   AnimateCalcMode,
   OpacityAnimationConfig,
-} from './types.ts';
+} from './types';
 
 // 导出核心函数
-export { genAnimateOpacity } from './core.tsx';
+export { genAnimateOpacity } from './core';
 
 // 导出预设效果
-export { opacityPresets } from './presets.tsx';
+export { opacityPresets } from './presets';
 
 // 导出辅助函数和常量
 export {
@@ -22,5 +22,5 @@ export {
   genAnimateOpacityFade,
   genAnimateOpacityLoop,
   genAnimateOpacityPath,
-} from './helpers.tsx';
+} from './helpers';
 
