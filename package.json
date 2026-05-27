@@ -31,7 +31,9 @@
   "license": "MIT",
   "packageManager": "pnpm@10.23.0",
   "devDependencies": {
+    "@types/chroma-js": "^3.1.2",
     "@types/jsdom": "^28.0.3",
+    "@types/lodash": "^4.17.24",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
@@ -54,5 +56,9 @@
     "react-dom": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "chroma-js": "^3.2.0",
+    "lodash": "^4.18.1"
   }
 }
