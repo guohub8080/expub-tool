@@ -27,7 +27,9 @@ const AnyPush = (props: {
   pics?: PicConfig[]
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
-  const { size: canvasSize } = useImgSize(props.pics?.[0]?.url, props.viewBoxW, props.viewBoxH)
+  const firstUrl = props.pics?.[0]?.url
+  if (!firstUrl) return null
+  const { size: canvasSize } = useImgSize(firstUrl, props.viewBoxW, props.viewBoxH)
   const pics = normalizePics(props.pics)
 
   // 预计算总时长（所有图片共享）

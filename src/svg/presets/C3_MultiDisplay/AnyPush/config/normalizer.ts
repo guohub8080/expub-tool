@@ -1,7 +1,7 @@
 import type { PicConfig, NormalizedPicConfig } from "../types";
 import { defaultTo } from "lodash";
 import { getEaseBezier } from "@bezier/index";
-import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
+// import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
 
 /**
  * 配置标准化器
@@ -33,22 +33,23 @@ export const normalizePic = (pic: PicConfig): NormalizedPicConfig => ({
  *
  * @returns 默认的图片配置数组
  */
-export const getDefaultPics = (): NormalizedPicConfig[] => [
-    {
-        url: getWechat300x500(1),
-        direction: DEFAULT_DIRECTION,
-        switchDuration: DEFAULT_SWITCH_DURATION,
-        stayDuration: DEFAULT_STAY_DURATION,
-        keySplines: DEFAULT_KEY_SPLINES
-    },
-    {
-        url: getWechat300x500(2),
-        direction: "L",
-        switchDuration: DEFAULT_SWITCH_DURATION,
-        stayDuration: DEFAULT_STAY_DURATION,
-        keySplines: DEFAULT_KEY_SPLINES
-    }
-];
+export const getDefaultPics = (): NormalizedPicConfig[] => [] // TODO: playground should provide pics
+    // return [
+    //     {
+    //         url: getWechat300x500(1),
+    //         direction: DEFAULT_DIRECTION,
+    //         switchDuration: DEFAULT_SWITCH_DURATION,
+    //         stayDuration: DEFAULT_STAY_DURATION,
+    //         keySplines: DEFAULT_KEY_SPLINES
+    //     },
+    //     {
+    //         url: getWechat300x500(2),
+    //         direction: "L",
+    //         switchDuration: DEFAULT_SWITCH_DURATION,
+    //         stayDuration: DEFAULT_STAY_DURATION,
+    //         keySplines: DEFAULT_KEY_SPLINES
+    //     }
+    // ];
 
 /**
  * 标准化图片配置数组

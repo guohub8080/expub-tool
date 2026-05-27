@@ -1,6 +1,6 @@
 import type { PicConfig, NormalizedPicConfig } from "../types";
 import { defaultTo } from "lodash";
-import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
+// import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 
 /**
  * 配置标准化器
@@ -29,23 +29,25 @@ export const normalizePic = (pic: PicConfig): NormalizedPicConfig => ({
  *
  * @returns 默认的图片配置数组
  */
-export const getDefaultPics = (): NormalizedPicConfig[] => [
-    {
-        url: getTextImgPic1(450, 450, "Fade 1"),
-        fadeDuration: DEFAULT_FADE_DURATION,
-        stayDuration: DEFAULT_STAY_DURATION
-    },
-    {
-        url: getTextImgPic1(450, 450, "Fade 2"),
-        fadeDuration: DEFAULT_FADE_DURATION,
-        stayDuration: DEFAULT_STAY_DURATION
-    },
-    {
-        url: getTextImgPic1(450, 450, "Fade 3"),
-        fadeDuration: DEFAULT_FADE_DURATION,
-        stayDuration: DEFAULT_STAY_DURATION
-    }
-];
+export const getDefaultPics = (): NormalizedPicConfig[] => [] // TODO: playground should provide pics
+    // const placeholder = getTextImgPic1;
+    // return [
+    //     {
+    //         url: placeholder(450, 450, "Fade 1"),
+    //         fadeDuration: DEFAULT_FADE_DURATION,
+    //         stayDuration: DEFAULT_STAY_DURATION
+    //     },
+    //     {
+    //         url: placeholder(450, 450, "Fade 2"),
+    //         fadeDuration: DEFAULT_FADE_DURATION,
+    //         stayDuration: DEFAULT_STAY_DURATION
+    //     },
+    //     {
+    //         url: placeholder(450, 450, "Fade 3"),
+    //         fadeDuration: DEFAULT_FADE_DURATION,
+    //         stayDuration: DEFAULT_STAY_DURATION
+    //     }
+    // ];
 
 /**
  * 标准化图片配置数组

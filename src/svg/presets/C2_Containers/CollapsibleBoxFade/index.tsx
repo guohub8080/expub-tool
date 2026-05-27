@@ -4,7 +4,7 @@ import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";
-import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
+// import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
 import svgURL from "@svg/utils/svgURL";
 
 /**
@@ -61,7 +61,8 @@ const CollapsibleBoxFade = (props: {
     const hotAreaHeight = defaultTo(props.hotAreaH, 100);
     const duration = defaultTo(props.duration, 0.5);
     const spacingResult = spacing(defaultTo(props.spacing, spacingZero));
-    const imgBgUrl = defaultTo(props.afterSwitchImgUrl, getWechat300x500(1));
+    const imgBgUrl = props.afterSwitchImgUrl // defaultTo(props.afterSwitchImgUrl, getWechat300x500(1));
+    if (!imgBgUrl) return null
 
     // 计算平移距离（使用负的 viewBoxWidth * 5，确保内容完全移出屏幕）
     const translateOffset = -viewBoxWidth * 5;

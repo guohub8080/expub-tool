@@ -1,7 +1,7 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { useMemo } from "react";
-import { range, defaultTo } from "lodash";
-import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
+import { defaultTo } from "lodash";
+// import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import { spacing } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import TouchSnapSlideX from "./components/TouchSnapSlideX";
@@ -72,15 +72,8 @@ const TouchSnapSlide = (props: TouchSnapSlideProps) => {
 			ml: defaultTo(x?.ml, 0),
 			mr: defaultTo(x?.mr, 0),
 		}));
-		// 默认生成 3 张占位图片（450x750）
-		return range(3).map(i => ({
-			url: getTextImgPic1(450, 750, `${i + 1}`),
-			isTouchable: false,
-			mt: 0,
-			mb: 0,
-			ml: 0,
-			mr: 0,
-		}));
+		// 未传入 pics 时返回空数组，调用方应自行提供图片
+		return [] // range(3).map(i => ({ url: getTextImgPic1(450, 750, `${i + 1}`), ... }))
 	}, [props.pics]);
 
 	// 根据 viewBoxBase 与图片尺寸推导最终 viewBox 尺寸

@@ -1,7 +1,7 @@
 import type { PicConfig, NormalizedPicConfig } from "../types";
 import { defaultTo } from "lodash";
 import { getEaseBezier } from "@bezier/index";
-import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
+// import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 
 /**
  * 配置标准化器
@@ -37,16 +37,15 @@ export const normalizePic = (
  *
  * @returns 默认的图片配置数组
  */
-export const getDefaultPics = (): NormalizedPicConfig[] => {
-    const placeholder = getTextImgPic1(450, 450, "CoverIn");
-    return [{
-        url: placeholder,
-        coverInDuration: DEFAULT_COVER_IN_DURATION,
-        stayDuration: DEFAULT_STAY_DURATION,
-        direction: DEFAULT_DIRECTION,
-        keySplines: DEFAULT_KEY_SPLINES
-    }];
-};
+export const getDefaultPics = (): NormalizedPicConfig[] => [] // TODO: playground should provide pics
+    // const placeholder = getTextImgPic1(450, 450, "CoverIn");
+    // return [{
+    //     url: placeholder,
+    //     coverInDuration: DEFAULT_COVER_IN_DURATION,
+    //     stayDuration: DEFAULT_STAY_DURATION,
+    //     direction: DEFAULT_DIRECTION,
+    //     keySplines: DEFAULT_KEY_SPLINES
+    // }];
 
 /**
  * 标准化图片配置数组

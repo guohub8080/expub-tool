@@ -1,6 +1,6 @@
 import React from "react";
 import { defaultTo, isEmpty } from "lodash";
-import GetPlaceHolderPic1 from "@api/placeHolderPic/getPlaceHolderPic1";
+// import GetPlaceHolderPic1 from "@api/placeHolderPic/getPlaceHolderPic1";
 import { useImportant } from "./useImportant";
 
 interface ImgExProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
@@ -15,7 +15,7 @@ interface ImgExProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'sr
 const ImgEx: React.FC<ImgExProps> = ({ style, important, url, waterMark, ...rest }) => {
   const { ref, hasImportant } = useImportant<HTMLImageElement>(important);
 
-  const imgUrl = defaultTo(url, GetPlaceHolderPic1());
+  const imgUrl = url // defaultTo(url, GetPlaceHolderPic1());
 
   const commonProps = {
     style,

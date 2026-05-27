@@ -1,6 +1,6 @@
 import type { PicConfig, NormalizedPicConfig } from "../types";
 import { defaultTo } from "lodash";
-import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
+// import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 
 /**
  * 配置标准化器
@@ -26,20 +26,21 @@ export const normalizePic = (pic: PicConfig): NormalizedPicConfig => ({
  *
  * @returns 默认的图片配置数组
  */
-export const getDefaultPics = (): NormalizedPicConfig[] => [
-    {
-        url: getTextImgPic1(450, 450, "HardCut 1"),
-        stayDuration: DEFAULT_STAY_DURATION
-    },
-    {
-        url: getTextImgPic1(450, 450, "HardCut 2"),
-        stayDuration: DEFAULT_STAY_DURATION
-    },
-    {
-        url: getTextImgPic1(450, 450, "HardCut 3"),
-        stayDuration: DEFAULT_STAY_DURATION
-    }
-];
+export const getDefaultPics = (): NormalizedPicConfig[] => [] // TODO: playground should provide pics
+    // return [
+    //     {
+    //         url: getTextImgPic1(450, 450, "HardCut 1"),
+    //         stayDuration: DEFAULT_STAY_DURATION
+    //     },
+    //     {
+    //         url: getTextImgPic1(450, 450, "HardCut 2"),
+    //         stayDuration: DEFAULT_STAY_DURATION
+    //     },
+    //     {
+    //         url: getTextImgPic1(450, 450, "HardCut 3"),
+    //         stayDuration: DEFAULT_STAY_DURATION
+    //     }
+    // ];
 
 /**
  * 标准化图片配置数组

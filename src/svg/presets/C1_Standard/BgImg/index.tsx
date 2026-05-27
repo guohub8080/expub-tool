@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
+// import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
@@ -46,7 +46,8 @@ const BgImg = (props: {
     spacing?: T_SpacingProps
     isGlobal?: boolean
 }) => {
-    const url = defaultTo(props.url, getWechat300x300(1))
+    const url = props.url // defaultTo(props.url, getWechat300x300(1))
+    if (!url) return null
     const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
     const { size: imgSize } = useImgSize(url, props.w, props.h)
     const isGlobal = defaultTo(props.isGlobal, false)

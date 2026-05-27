@@ -1,5 +1,5 @@
 import { defaultTo } from "lodash";
-import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
+// import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
@@ -63,7 +63,8 @@ const SeamlessImg = (props: SeamlessImgProps) => {
 
 
     //定义图片和尺寸
-    const imgURL = defaultTo(props.url, getWechat300x300(1))
+    const imgURL = props.url // defaultTo(props.url, getWechat300x300(1))
+    if (!imgURL) return null
     const { size: imgSize } = useImgSize(imgURL, props.w, props.h)
 
 

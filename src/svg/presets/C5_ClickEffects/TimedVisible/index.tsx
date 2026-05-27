@@ -8,7 +8,7 @@ import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import { getFullScreenHotArea } from "@svg/presets/C6_Advanced/HotArea";
 import type { HotAreaConfig } from "@svg/presets/C6_Advanced/HotArea";
-import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
+// import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
 import svgURL from "@svg/utils/svgURL";
 
 /**
@@ -37,8 +37,9 @@ const TimedVisible = (props: {
   spacing?: T_SpacingProps
 }) => {
   // 默认配置
-  const backgroundUrl = defaultTo(props.backgroundUrl, getWechat300x300(2))
-  const overlayUrl = defaultTo(props.overlayUrl, getWechat300x300(1))
+  const backgroundUrl = props.backgroundUrl // defaultTo(props.backgroundUrl, getWechat300x300(2))
+  const overlayUrl = props.overlayUrl // defaultTo(props.overlayUrl, getWechat300x300(1))
+  if (!backgroundUrl || !overlayUrl) return null
   const duration = defaultTo(props.duration, 4)
   const fadeInRatio = defaultTo(props.fadeInRatio, 0.2)
   const fadeOutRatio = defaultTo(props.fadeOutRatio, 0.2)
@@ -50,7 +51,7 @@ const TimedVisible = (props: {
   // 热区配置
   const hotArea = defaultTo(
     props.hotArea,
-    getFullScreenHotArea({ viewBoxW: imgSizeAsViewBox.w, viewBoxH: imgSizeAsViewBox.h })
+    getFullScreenHotArea(imgSizeAsViewBox.w, imgSizeAsViewBox.h)
   )
 
   // 计算 keyTimes：[开始, 淡入结束, 淡出开始, 结束]

@@ -1,6 +1,6 @@
 import type { PicConfig, NormalizedPicConfig } from "../types";
 import { defaultTo } from "lodash";
-import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
+// import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 
 /**
  * 配置标准化器
@@ -26,16 +26,17 @@ export const normalizePic = (pic: PicConfig): NormalizedPicConfig => ({
  *
  * @returns 默认的图片配置数组
  */
-export const getDefaultPics = (): NormalizedPicConfig[] => [
-    {
-        url: getTextImgPic1(600, 800, "Carousel"),
-        isTouchable: DEFAULT_IS_TOUCHABLE
-    },
-    {
-        url: getTextImgPic1(600, 800, "Carousel"),
-        isTouchable: DEFAULT_IS_TOUCHABLE
-    }
-];
+export const getDefaultPics = (): NormalizedPicConfig[] => [] // TODO: playground should provide pics
+    // return [
+    //     {
+    //         url: getTextImgPic1(600, 800, "Carousel"),
+    //         isTouchable: DEFAULT_IS_TOUCHABLE
+    //     },
+    //     {
+    //         url: getTextImgPic1(600, 800, "Carousel"),
+    //         isTouchable: DEFAULT_IS_TOUCHABLE
+    //     }
+    // ];
 
 /**
  * 标准化图片配置数组

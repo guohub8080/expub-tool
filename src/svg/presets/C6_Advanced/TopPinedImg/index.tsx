@@ -1,12 +1,12 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import type { CSSProperties } from "react";
-import { random, defaultTo } from "lodash";
+import { defaultTo } from "lodash";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";
 import svgURL from "@svg/utils/svgURL";
-import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
+// import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
 import useImgSize from "@common/hooks/useImgSize";
 
 /**
@@ -19,7 +19,8 @@ const TopPinedImg = (props: {
     viewBoxH?: number
     spacing?: T_SpacingProps
 }) => {
-    const url = defaultTo(props.url, getWechat300x500(random(1, 9)))
+    const url = props.url // defaultTo(props.url, getWechat300x500(random(1, 9)))
+    if (!url) return null
     const { size: imgSize } = useImgSize(url, props.viewBoxW, props.viewBoxH)
     const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
 

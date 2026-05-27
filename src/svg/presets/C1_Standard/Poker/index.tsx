@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { defaultTo, round } from "lodash";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
-import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
+// import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import svgURL from "@svg/utils/svgURL";
 
 // 精确移植 参考实现Svg/多图展示/扑克滑动3图.html（仅 3 张），并提取“单卡移出时长(moveSec)”与“静止展示时长(holdSec)”
@@ -37,13 +37,13 @@ const PokerSlideThree = (props: { moveSec?: number; holdSec?: number }) => {
     const translateValues = "0 0;0 0;-50 0;-50 0;-100 0;-100 0;-1180 0"
 
     // 原始三图（保持与 HTML 一致的顺序与映射）
-    const urlA = getTextImgPic1(1080, 1776, "1")
-    const urlB = getTextImgPic1(1080, 1776, "2")
-    const urlC = getTextImgPic1(1080, 1776, "3")
-    const urls = [urlA, urlB, urlC]
+    // const urlA = getTextImgPic1(1080, 1776, "1")
+    // const urlB = getTextImgPic1(1080, 1776, "2")
+    // const urlC = getTextImgPic1(1080, 1776, "3")
+    const urls: string[] = [] // TODO: playground should provide urls
 
     // 背景淡入层对应图片顺序（C1→urlC, C2→urlB, C3→urlA）
-    const bgUrls = [urlC, urlB, urlA]
+    const bgUrls: string[] = [] // TODO: playground should provide bgUrls
 
     // 三组前景的开始时间（G3, G2, G1）与每组子层相对偏移（按 step 锁定）
     const groupBegins = [2 * step, 1 * step, 0]

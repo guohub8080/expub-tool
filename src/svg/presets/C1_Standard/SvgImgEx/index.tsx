@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
+// import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
@@ -48,7 +48,8 @@ interface SvgImgExProps {
  */
 const SvgImgEx = (props: SvgImgExProps) => {
     const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
-    const url = defaultTo(props.url, getTextImgPic1(300, 400, "pic"))
+    const url = props.url // defaultTo(props.url, getTextImgPic1(300, 400, "pic"))
+    if (!url) return null
     const isPopAllowed = defaultTo(props.isPopAllowed, true)
     const isLongPressedRecongitionAllowed = defaultTo(props.isLongPressedRecongitionAllowed, true)
 

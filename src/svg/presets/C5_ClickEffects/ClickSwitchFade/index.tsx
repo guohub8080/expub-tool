@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { CSSProperties,  } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
+// import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import { spacing } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import { getLinearBezier } from "@bezier/index";
@@ -68,7 +68,8 @@ const ClickSwitchFade = (props: ClickSwitchFadeProps) => {
 	const spacingResult = spacing(props.spacing)
 
 	// 获取第一张图片的 URL，用于计算 viewBox 尺寸
-	const firstPicUrl = defaultTo(props.pics, [{ url: getTextImgPic1(600, 800, "测试图1") }])[0]?.url
+	const firstPicUrl = props.pics?.[0]?.url // defaultTo(props.pics, [{ url: getTextImgPic1(600, 800, "测试图1") }])[0]?.url
+	if (!firstPicUrl) return null
 
 	// 计算最终的 viewBox 尺寸：优先使用用户指定的尺寸，否则使用基准图片的真实尺寸
 	const { size: imgSizeAsViewBox } = useImgSize(firstPicUrl, props.viewBoxW, props.viewBoxH)
@@ -83,10 +84,10 @@ const ClickSwitchFade = (props: ClickSwitchFadeProps) => {
 			// 如果未指定 hotArea，则使用全屏热区
 			const hotArea = defaultTo(
 				x?.hotArea,
-				getFullScreenHotArea({ viewBoxW: imgSizeAsViewBox.w, viewBoxH: imgSizeAsViewBox.h })
+				getFullScreenHotArea(imgSizeAsViewBox.w, imgSizeAsViewBox.h)
 			)
 			return {
-				url: x?.url,
+				url: x?.url ?? "",
 				duration: defaultTo(x?.duration, defaultDuration),
 				keySplines: defaultTo(x?.keySplines, getLinearBezier()),
 				hotArea
@@ -113,9 +114,9 @@ const ClickSwitchFade = (props: ClickSwitchFadeProps) => {
 					viewBoxW={imgSizeAsViewBox.w}
 					viewBoxH={imgSizeAsViewBox.h}
 					url={pic.url}
-					duration={pic.duration}
+					duration={pic.duration!}
 					keySplines={pic.keySplines}
-					hotArea={pic.hotArea}
+					hotArea={pic.hotArea!}
 					hasAnimation={true}
 				/>
 			))}
@@ -135,9 +136,9 @@ const ClickSwitchFade = (props: ClickSwitchFadeProps) => {
 					viewBoxW={imgSizeAsViewBox.w}
 					viewBoxH={imgSizeAsViewBox.h}
 					url={pic.url}
-					duration={pic.duration}
+					duration={pic.duration!}
 					keySplines={pic.keySplines}
-					hotArea={pic.hotArea}
+					hotArea={pic.hotArea!}
 					hasAnimation={!isLastPic}
 				/>
 			)

@@ -35,8 +35,8 @@ const ClickSwitchLayer = (props: ClickSwitchLayerProps) => {
 	// 解构热区参数，设置默认值
 	const hotX = defaultTo(props.hotArea.x, 0)
 	const hotY = defaultTo(props.hotArea.y, 0)
-	const hotW = defaultTo(props.hotArea.w, props.viewBoxW)
-	const hotH = defaultTo(props.hotArea.h, props.viewBoxH)
+	const hotW = defaultTo(props.hotArea.width, props.viewBoxW)
+	const hotH = defaultTo(props.hotArea.height, props.viewBoxH)
 
 	// SVG 主样式：背景图 + 初始透明度
 	const mainStyle: CSSProperties = {
