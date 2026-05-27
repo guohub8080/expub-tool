@@ -52,7 +52,6 @@
       "@common/*": ["./src/common/*"],
       "@css/*": ["./src/css/*"],
       "@svg/*": ["./src/svg/*"],
-      "@api/*": ["./src/api/*"],
       "@bezier/*": ["./src/bezier/*"],
       "@colors/*": ["./src/common/colors/*"],
       "@css-fn/*": ["./src/css/cssFunctions/*"],

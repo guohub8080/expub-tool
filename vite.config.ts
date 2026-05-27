@@ -11,7 +11,6 @@ export default defineConfig({
       '@common': resolve(__dirname, 'src/common'),
       '@css': resolve(__dirname, 'src/css'),
       '@svg': resolve(__dirname, 'src/svg'),
-      '@api': resolve(__dirname, 'src/api'),
       '@bezier': resolve(__dirname, 'src/bezier'),
       '@colors': resolve(__dirname, 'src/common/colors'),
       '@css-fn': resolve(__dirname, 'src/css/cssFunctions'),
