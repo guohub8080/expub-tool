@@ -4,6 +4,18 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@html': resolve(__dirname, 'src/html'),
+      '@utils': resolve(__dirname, 'src/utils'),
+      '@common': resolve(__dirname, 'src/common'),
+      '@css': resolve(__dirname, 'src/css'),
+      '@svg': resolve(__dirname, 'src/svg'),
+      '@api': resolve(__dirname, 'src/api'),
+      '@bezier': resolve(__dirname, 'src/bezier'),
+      '@colors': resolve(__dirname, 'src/common/colors'),
+    },
+  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
