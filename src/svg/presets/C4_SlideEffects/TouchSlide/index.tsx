@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import { range, defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
-import { mpGet } from "@css-fn/spacing";
+import { spacing } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import TouchSlideX from "./components/TouchSlideX";
 import TouchSlideB from "./components/TouchSlideB";
@@ -39,7 +39,7 @@ const TouchSlide = (props: TouchSlideProps) => {
 	if (!isX && !isY) { isX = true }
 
 	// 解析 margin/padding 样式
-	const comps_mp = mpGet(props.mp);
+	const comps_mp = spacing(props.spacing);
 
 	/**
 	 * 统一规范图片数据
@@ -80,7 +80,7 @@ const TouchSlide = (props: TouchSlideProps) => {
 			<TouchSlideX pics={normalizedPics}
 				viewBoxW={resolvedViewBox.w}
 				viewBoxH={resolvedViewBox.h}
-				mpResult={comps_mp}
+				spacingResult={comps_mp}
 				isReverse={isReverse}
 			/>
 		);
@@ -91,7 +91,7 @@ const TouchSlide = (props: TouchSlideProps) => {
 		return (<TouchSlideB pics={normalizedPics}
 			viewBoxW={resolvedViewBox.w}
 			viewBoxH={resolvedViewBox.h}
-			mpResult={comps_mp}
+			spacingResult={comps_mp}
 		/>
 	)}
 
@@ -100,7 +100,7 @@ const TouchSlide = (props: TouchSlideProps) => {
 		<TouchSlideT pics={normalizedPics}
 			viewBoxW={resolvedViewBox.w}
 			viewBoxH={resolvedViewBox.h}
-			mpResult={comps_mp}
+			spacingResult={comps_mp}
 		/>
 	);
 }

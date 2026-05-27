@@ -1,4 +1,4 @@
-import type { mpProps } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 /** 初始视野位置（图片坐标系） */
 export interface InitViewPosition {
@@ -42,5 +42,5 @@ export interface ZoomToFullViewProps {
 	promptBlinkDuration?: number;
 
 	/** 公众号样式 */
-	mp?: mpProps;
+	spacing?: T_SpacingProps;
 }

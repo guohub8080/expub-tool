@@ -18,7 +18,7 @@ const TouchSnapSlideT = (props: TouchSnapSlideTProps) => {
 	// 根容器样式：合并基础样式和 mp 样式
 	const rootStyle: CSSProperties = {
 		...rootBaseStyle,
-		...props.mpResult
+		...props.spacingResult
 	};
 
 	// 垂直容器样式：使用 aspectRatio 保持比例

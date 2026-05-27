@@ -2,8 +2,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 /**
  * 置顶框架组件
@@ -36,14 +36,14 @@ import type { mpProps } from "@css-fn/spacing";
  * </TopPinedFrame>
  * 
  * // 带边距
- * <TopPinedFrame mp={{ mt: 10, mb: 10 }}>
+ * <TopPinedFrame spacing={{ mt: 10, mb: 10 }}>
  *   {children}
  * </TopPinedFrame>
  * ```
  * 
  * @param props - 组件属性
  * @param props.children - 框架内的内容
- * @param props.mp - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
+ * @param props.spacing - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
  *                   注意：不要传递 marginLeft/marginRight，会被内层的 auto 覆盖
  * @param props.isEventPassThrough - 是否开启事件穿透模式（默认 false）
  *                                    开启后内容不响应点击等交互事件
@@ -54,17 +54,17 @@ import type { mpProps } from "@css-fn/spacing";
  */
 const TopPinedFrame = (props: {
     children?: ReactNode
-    mp?: mpProps
+    spacing?: T_SpacingProps
     isEventPassThrough?: boolean
     isEnhanced?: boolean
 }) => {
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank));
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero));
     const isEventPassThrough = defaultTo(props.isEventPassThrough, false);
     const isEnhanced = defaultTo(props.isEnhanced, false);
     // 提醒：marginLeft或者Right 会被覆盖为auto，所以不要传 margin 相关的 mp
     // 动态样式
     const rootStyle: CSSProperties = {
-        ...mpResult,
+        ...spacingResult,
         ...rootBaseStyle
     };
 

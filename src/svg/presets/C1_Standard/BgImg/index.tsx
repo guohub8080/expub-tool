@@ -3,8 +3,8 @@ import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import svgURL from "@svg/utils/svgURL";
 
@@ -27,14 +27,14 @@ import svgURL from "@svg/utils/svgURL";
  * <BgImg url="..." isGlobal={true} />
  * 
  * // 带边距
- * <BgImg url="..." mp={{ mt: 10, mb: 10 }} />
+ * <BgImg url="..." spacing={{ mt: 10, mb: 10 }} />
  * ```
  * 
  * @param props - 组件属性
  * @param props.url - 图片地址
  * @param props.w - 图片宽度，默认从图片获取
  * @param props.h - 图片高度，默认从图片获取
- * @param props.mp - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
+ * @param props.spacing - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
  * @param props.isGlobal - 是否为全局背景（纵向重复平铺），默认 false
  * 
  * @returns React 组件
@@ -43,18 +43,18 @@ const BgImg = (props: {
     url?: string
     w?: number
     h?: number
-    mp?: mpProps
+    spacing?: T_SpacingProps
     isGlobal?: boolean
 }) => {
     const url = defaultTo(props.url, getWechat300x300(1))
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
     const { size: imgSize } = useImgSize(url, props.w, props.h)
     const isGlobal = defaultTo(props.isGlobal, false)
 
     return (
         <SectionEx
             data-label={isGlobal ? "global-background-image" : "background-image"}
-            style={{ ...rootSectionStyle, ...mpResult }}
+            style={{ ...rootSectionStyle, ...spacingResult }}
         >
             <section style={innerSectionStyle}>
                 <SvgEx

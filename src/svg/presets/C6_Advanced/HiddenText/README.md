@@ -345,7 +345,7 @@ type Props = {
 <HiddenText />
 
 // 添加上下间距（少见）
-<HiddenText mp={{ mt: 10, mb: 10 }} />
+<HiddenText spacing={{ mt: 10, mb: 10 }} />
 ```
 
 ---
@@ -563,7 +563,7 @@ function ImageArticle() {
       {/* 文章头图 */}
       <TopPinedImg 
         url="https://example.com/cover.jpg"
-        mp={{ mt: -1 }}  // 消除缝隙
+        spacing={{ mt: -1 }}  // 消除缝隙
       />
       
       {/* 正文图片 */}

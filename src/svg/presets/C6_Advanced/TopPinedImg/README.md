@@ -94,12 +94,12 @@ margin: 0            /* 默认无边距，通过 mp 参数自定义 */
 └─────────────┘
 ```
 
-**解决方案：使用 `mp={{ mt: -1 }}` 参数**
+**解决方案：使用 `spacing={{ mt: -1 }}` 参数**
 
 ```tsx
 <TopPinedImg 
   url="cover.jpg"
-  mp={{ mt: -1 }}  // ← 向上偏移 1px，覆盖缝隙
+  spacing={{ mt: -1 }}  // ← 向上偏移 1px，覆盖缝隙
 />
 ```
 
@@ -181,7 +181,7 @@ overflow: "hidden"              /* 隐藏溢出内容 */
 ```tsx
 <TopPinedImg 
   url="https://example.com/banner.jpg" 
-  mp={{ mt: -1 }}  // ← 向上偏移 1px，消除白色缝隙
+  spacing={{ mt: -1 }}  // ← 向上偏移 1px，消除白色缝隙
 />
 ```
 
@@ -199,7 +199,7 @@ overflow: "hidden"              /* 隐藏溢出内容 */
   url="https://example.com/banner.jpg" 
   viewBoxW={750}
   viewBoxH={300}
-  mp={{ mt: 10, mb: 20 }} 
+  spacing={{ mt: 10, mb: 20 }} 
 />
 ```
 
@@ -307,13 +307,13 @@ mp?: {
 
 ```tsx
 // 消除上方缝隙
-<TopPinedImg mp={{ mt: -1 }} />
+<TopPinedImg spacing={{ mt: -1 }} />
 
 // 添加上下间距
-<TopPinedImg mp={{ mt: 10, mb: 10 }} />
+<TopPinedImg spacing={{ mt: 10, mb: 10 }} />
 
 // 组合使用
-<TopPinedImg mp={{ mt: -1, mb: 15 }} />
+<TopPinedImg spacing={{ mt: -1, mb: 15 }} />
 ```
 
 ---

@@ -16,7 +16,7 @@ import SeamlessImg from "@pubSVG/C1_Standard/SeamlessImg";
 </TopPinedFrame>
 
 // 带边距配置
-<TopPinedFrame mp={{ mt: 10, mb: 10 }}>
+<TopPinedFrame spacing={{ mt: 10, mb: 10 }}>
   {/* 任意内容 */}
 </TopPinedFrame>
 
@@ -313,7 +313,7 @@ const TopPinedFrame = (props: {
   isEventPassThrough?: boolean  // 事件穿透开关
   isEnhanced?: boolean          // 加强模式开关
 }) => {
-  const mpResult = mpGet(defaultTo(props.mp, mpBlank));
+  const mpResult = mpGet(defaultTo(props.spacing, mpBlank));
   const isEventPassThrough = defaultTo(props.isEventPassThrough, false);
   const isEnhanced = defaultTo(props.isEnhanced, false);
 

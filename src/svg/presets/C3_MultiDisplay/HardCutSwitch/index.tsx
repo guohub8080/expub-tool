@@ -2,8 +2,8 @@ import type { CSSProperties } from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { defaultTo } from "lodash"
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing"
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing"
 import useImgSize from "@common/hooks/useImgSize"
 import HardCutSwitchImage from "./components/HardCutSwitchImage"
 import type { PicConfig } from "./types"
@@ -19,18 +19,18 @@ import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
  * 1. 完全显示（stayDuration）
  * 2. 瞬间隐藏，等待其他图片展示完毕
  *
- * @param props.mp - margin/padding 配置
+ * @param props.spacing - margin/padding 配置
  * @param props.viewBoxW - ViewBox 宽度
  * @param props.viewBoxH - ViewBox 高度
  * @param props.pics - 图片配置数组
  */
 const HardCutSwitch = (props: {
-    mp?: mpProps
+    spacing?: T_SpacingProps
     viewBoxW?: number
     viewBoxH?: number
     pics?: PicConfig[]
 }) => {
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
     const pics = normalizePics(props.pics)
     const { size: canvasSize } = useImgSize(pics[0].url, props.viewBoxW, props.viewBoxH)
 
@@ -38,7 +38,7 @@ const HardCutSwitch = (props: {
     const totalDuration = calculateTotalCycleDuration(pics)
 
     return (
-        <SectionEx style={{ ...rootBaseStyle, ...mpResult }} data-label="hard-cut-switch">
+        <SectionEx style={{ ...rootBaseStyle, ...spacingResult }} data-label="hard-cut-switch">
             <section style={innerStyle}>
                 <SvgEx
                     viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`}

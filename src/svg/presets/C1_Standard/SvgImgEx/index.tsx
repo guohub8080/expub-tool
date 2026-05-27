@@ -2,8 +2,8 @@ import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import NormalSvgImg from "./components/NormalSvgImg";
 import UnpopButCanLongPress from "./components/UnpopButCanLongPress";
@@ -17,7 +17,7 @@ interface SvgImgExProps {
     /** 是否允许长按识别保存，默认true */
     isLongPressedRecongitionAllowed?: boolean
     /** 公众号样式属性（margin, padding等） */
-    mp?: mpProps
+    spacing?: T_SpacingProps
     /** 自定义样式 */
     style?: CSSProperties
     /** 图片宽度，默认为0（自动获取） */
@@ -47,7 +47,7 @@ interface SvgImgExProps {
  * <SvgImgEx url="https://example.com/image.jpg" isPopAllowed={false} isLongPressedRecongitionAllowed={false} />
  */
 const SvgImgEx = (props: SvgImgExProps) => {
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
     const url = defaultTo(props.url, getTextImgPic1(300, 400, "pic"))
     const isPopAllowed = defaultTo(props.isPopAllowed, true)
     const isLongPressedRecongitionAllowed = defaultTo(props.isLongPressedRecongitionAllowed, true)
@@ -59,7 +59,7 @@ const SvgImgEx = (props: SvgImgExProps) => {
         return <SectionEx
             data-label="svg-img-ex-popable"
             important={[["max-width", "100%"], ["width", "100%"], ["height", "auto"],["line-height","0"],["font-size","0"]]}
-            style={{ ...mpResult, ...props.style,fontSize:0,lineHeight:0 }} >
+            style={{ ...spacingResult, ...props.style,fontSize:0,lineHeight:0 }} >
             <NormalSvgImg url={url} />
         </ SectionEx>
     }
@@ -69,7 +69,7 @@ const SvgImgEx = (props: SvgImgExProps) => {
         return <SectionEx
             data-label="svg-img-ex-long-press-only"
             important={[["max-width", "100%"], ["width", "100%"], ["height", "auto"]]}
-            style={{ ...mpResult, ...props.style }} >
+            style={{ ...spacingResult, ...props.style }} >
             <UnpopButCanLongPress url={url} w={imgSize.w} h={imgSize.h} />
         </ SectionEx>
     }
@@ -78,7 +78,7 @@ const SvgImgEx = (props: SvgImgExProps) => {
     return <SectionEx
         data-label="svg-img-ex-display-only"
         important={[["max-width", "100%"], ["width", "100%"], ["height", "auto"]]}
-        style={{ ...mpResult, ...props.style }} >
+        style={{ ...spacingResult, ...props.style }} >
         <OnlyDisplayImg url={url} w={imgSize.w} h={imgSize.h} />
     </ SectionEx>
 }

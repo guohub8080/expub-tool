@@ -2,8 +2,8 @@ import type { CSSProperties } from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { defaultTo } from "lodash"
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing"
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing"
 import useImgSize from "@common/hooks/useImgSize"
 import CarouselImage from "./components/CarouselImage"
 import type { PicConfig } from "./types"
@@ -15,7 +15,7 @@ import { getEaseBezier } from "@bezier/index"
  *
  * 效果：图片从不同方向滑入到中心，停留后再滑出，形成连续轮播效果
  *
- * @param props.mp - margin/padding 配置
+ * @param props.spacing - margin/padding 配置
  * @param props.viewBoxW - ViewBox 宽度
  * @param props.viewBoxH - ViewBox 高度
  * @param props.pics - 图片配置数组
@@ -24,7 +24,7 @@ import { getEaseBezier } from "@bezier/index"
  * @param props.keySplines - 贝塞尔曲线
  */
 const Carousel = (props: {
-    mp?: mpProps
+    spacing?: T_SpacingProps
     viewBoxW?: number
     viewBoxH?: number
     pics?: PicConfig[]
@@ -32,7 +32,7 @@ const Carousel = (props: {
     direction?: "L" | "R" | "T" | "B"
     keySplines?: string
 }) => {
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
     const { size: canvasSize } = useImgSize(props.pics?.[0]?.url, props.viewBoxW, props.viewBoxH)
     const pics = normalizePics(props.pics)
 
@@ -46,7 +46,7 @@ const Carousel = (props: {
     const keySplines = defaultTo(props.keySplines, getEaseBezier({ isIn: true, isOut: true }))
 
     return (
-        <SectionEx style={{ ...rootBaseStyle, ...mpResult }} data-label="carousel">
+        <SectionEx style={{ ...rootBaseStyle, ...spacingResult }} data-label="carousel">
             <section style={innerStyle}>
                 <SvgEx viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`}
                     style={svgStyle}

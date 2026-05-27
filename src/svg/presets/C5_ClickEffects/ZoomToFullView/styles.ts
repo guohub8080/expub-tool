@@ -1,13 +1,13 @@
 import type { CSSProperties } from "react";
 import svgURL from "@svg/utils/svgURL";
 
-export const rootStyle = (mpResult: CSSProperties): CSSProperties => ({
+export const rootStyle = (spacingResult: CSSProperties): CSSProperties => ({
 	WebkitTouchCallout: "none",
 	userSelect: "text",
 	overflow: "hidden",
 	textAlign: "center",
 	lineHeight: 0,
-	...mpResult,
+	...spacingResult,
 });
 
 export const imgStyle = (url: string): CSSProperties => ({

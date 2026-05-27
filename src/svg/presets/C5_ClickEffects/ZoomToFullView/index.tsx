@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { CSSProperties,  } from "react";
 import { defaultTo } from "lodash";
 import useImgSize from "@common/hooks/useImgSize";
-import { mpBlank, mpGet } from "@css-fn/spacing";
+import { spacingZero, spacing } from "@css-fn/spacing";
 import svgURL from "@svg/utils/svgURL";
 import {
 	genAnimateCustom,
@@ -25,7 +25,7 @@ const ZoomToFullView = (props: ZoomToFullViewProps) => {
 	const overlayKeySplines = props.overlayKeySplines;
 	const promptBlinkMinOpacity = defaultTo(props.promptBlinkMinOpacity, 0.235);
 	const promptBlinkDuration = defaultTo(props.promptBlinkDuration, 2.15);
-	const mpResult = mpGet(defaultTo(props.mp, mpBlank));
+	const spacingResult = spacing(defaultTo(props.spacing, spacingZero));
 
 	const { size: { w, h } } = useImgSize(bgPic, props.viewBoxW, props.viewBoxH);
 	const W = defaultTo(props.viewBoxW, w);
@@ -61,7 +61,7 @@ const ZoomToFullView = (props: ZoomToFullViewProps) => {
 	return (
 		<section style={{
 			overflow: "hidden", textAlign: "center", lineHeight: 0,
-			WebkitTouchCallout: "none", userSelect: "text", ...mpResult,
+			WebkitTouchCallout: "none", userSelect: "text", ...spacingResult,
 		}}>
 			<svg viewBox={`0 0 ${W} ${H}`} style={{ display: "block", width: "100%" }} xmlns="http://www.w3.org/2000/svg">
 				{/* 整体平移 */}

@@ -4,7 +4,7 @@ import type { CSSProperties,  } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
-import { mpGet } from "@css-fn/spacing";
+import { spacing } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import { getLinearBezier } from "@bezier/index";
 import { getFullScreenHotArea } from "@svg/presets/C6_Advanced/HotArea";
@@ -65,7 +65,7 @@ const ClickSwitchFade = (props: ClickSwitchFadeProps) => {
 	const isLastImgMaintained = defaultTo(props.isLastImgMaintained, true)
 
 	// 解析 margin/padding 样式
-	const mpResult = mpGet(props.mp)
+	const spacingResult = spacing(props.spacing)
 
 	// 获取第一张图片的 URL，用于计算 viewBox 尺寸
 	const firstPicUrl = defaultTo(props.pics, [{ url: getTextImgPic1(600, 800, "测试图1") }])[0]?.url
@@ -97,7 +97,7 @@ const ClickSwitchFade = (props: ClickSwitchFadeProps) => {
 	// 根容器样式：合并框架样式和 mp 样式
 	const rootStyle: CSSProperties = {
 		...frameStyle,
-		...mpResult
+		...spacingResult
 	};
 
 	// 根据 isLastImgMaintained 决定渲染逻辑

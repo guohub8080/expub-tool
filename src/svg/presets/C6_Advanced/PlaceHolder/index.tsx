@@ -2,8 +2,8 @@ import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 /**
  * 占位组件
@@ -23,30 +23,30 @@ import type { mpProps } from "@css-fn/spacing";
  * <PlaceHolder viewBoxW={100} viewBoxH={100} color="#f0f0f0" />
  * 
  * // 带边距
- * <PlaceHolder color="#ffffff" mp={{ mt: 10, mb: 10 }} />
+ * <PlaceHolder color="#ffffff" spacing={{ mt: 10, mb: 10 }} />
  * ```
  * 
  * @param props - 组件属性
  * @param props.viewBoxW - viewBox 宽度，默认 0
  * @param props.viewBoxH - viewBox 高度，默认 0
  * @param props.color - 填充颜色（如 "#ffffff"），不传则透明
- * @param props.mp - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
+ * @param props.spacing - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
  * 
  * @returns React 组件
  */
 const PlaceHolder = (props: {
     viewBoxW?: number
     viewBoxH?: number
-    mp?: mpProps
+    spacing?: T_SpacingProps
     color?: string
 }) => {
     const viewBoxW = defaultTo(props.viewBoxW, 0);
     const viewBoxH = defaultTo(props.viewBoxH, 0);
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank));
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero));
     const dataLabel = props.color ? "placeholder-fill-color" : "placeholder-transparent";
 
     return (
-        <SectionEx data-label={dataLabel} style={{ ...rootSectionStyle, ...mpResult }}>
+        <SectionEx data-label={dataLabel} style={{ ...rootSectionStyle, ...spacingResult }}>
             <SvgEx
                 style={svgStyle}
                 viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}

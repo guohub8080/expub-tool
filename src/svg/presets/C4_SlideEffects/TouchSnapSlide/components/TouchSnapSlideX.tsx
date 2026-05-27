@@ -23,7 +23,7 @@ const TouchSnapSlideX = (props: TouchSnapSlideXProps) => {
 	// 根容器样式：合并基础样式和 mp 样式
 	const rootStyle: CSSProperties = {
 		...rootBaseStyle,
-		...props.mpResult
+		...props.spacingResult
 	};
 
 	// 视口样式：通过 direction 控制滑动方向

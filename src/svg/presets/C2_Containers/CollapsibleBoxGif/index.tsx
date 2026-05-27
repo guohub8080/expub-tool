@@ -2,8 +2,8 @@ import type { CSSProperties, ReactNode } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
 import svgURL from "@svg/utils/svgURL";
 
@@ -50,7 +50,7 @@ const CollapsibleBoxGif = (props: {
     children?: ReactNode
     afterSwitchImgUrl?: string
     gifDuration?: number
-    mp?: mpProps
+    spacing?: T_SpacingProps
 }) => {
     const { children } = props;
     const viewBoxWidth = defaultTo(props.viewBoxW, 100);
@@ -60,14 +60,14 @@ const CollapsibleBoxGif = (props: {
     const hotAreaWidth = defaultTo(props.hotAreaW, 100);
     const hotAreaHeight = defaultTo(props.hotAreaH, 100);
     const gifDuration = defaultTo(props.gifDuration, 2);
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank));
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero));
     const imgBgUrl = defaultTo(props.afterSwitchImgUrl, getWechat300x500(1));
 
     // 计算平移距离（使用负的 viewBoxWidth * 5，确保内容完全移出屏幕）
     const translateOffset = -viewBoxWidth * 5;
 
     return (
-        <SectionEx data-label="collapsible-box-gif" style={{ ...rootSectionStyle, ...mpResult }}>
+        <SectionEx data-label="collapsible-box-gif" style={{ ...rootSectionStyle, ...spacingResult }}>
             <section style={outerContainerStyle}>
                 {/* 
                     顶部展示容器：显示children内容

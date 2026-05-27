@@ -3,7 +3,7 @@
  * Types 定义
  */
 
-import type { mpProps } from "@css-fn/spacing"
+import type { T_SpacingProps } from "@css-fn/spacing"
 
 export interface InfinityFlipCardProps {
   /** 背景图 URL（底层静态背景） */
@@ -19,5 +19,5 @@ export interface InfinityFlipCardProps {
   /** 动画时长倍数（可选），默认 1 表示原始时长 */
   durationSeconds?: number
   /** margin/padding 快捷配置 */
-  mp?: mpProps
+  spacing?: T_SpacingProps
 }

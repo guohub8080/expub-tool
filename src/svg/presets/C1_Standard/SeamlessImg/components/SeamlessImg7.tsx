@@ -2,7 +2,7 @@ import type { CSSProperties } from "react"
 import svgURL from "@svg/utils/svgURL"
 import SvgEx from "@html/basicEx/SvgEx"
 
-const SeamlessImg7 = (props: { w: number, h: number, url: string, mpResult: CSSProperties }) => {
+const SeamlessImg7 = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
     return <section
         data-label="seamless-img-long-press-only"
         style={{
@@ -11,7 +11,7 @@ const SeamlessImg7 = (props: { w: number, h: number, url: string, mpResult: CSSP
             overflow: 'hidden',
             textAlign: 'center',
             lineHeight: 0,
-            ...props.mpResult
+            ...props.spacingResult
         }}
     >
         {/* 透明的 img，用于长按识别 */}

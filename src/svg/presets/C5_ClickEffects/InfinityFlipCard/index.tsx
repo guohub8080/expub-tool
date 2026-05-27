@@ -8,7 +8,7 @@ import SvgEx from "@html/basicEx/SvgEx"
 import BackgroundLayer from "./components/BackgroundLayer"
 import BackSide from "./components/BackSide"
 import FrontSide from "./components/FrontSide"
-import {mpGet} from "@css-fn/spacing"
+import {spacing} from "@css-fn/spacing"
 import type {InfinityFlipCardProps} from "./types"
 
 // ============================================ Main Component ============================================
@@ -21,7 +21,7 @@ const InfinityFlipCard = (props: InfinityFlipCardProps) => {
     viewBoxW = 750,
     viewBoxH = 850,
     durationSeconds = 1,
-    mp,
+    spacing: spacingProp,
   } = props
 
   const centerX = viewBoxW / 2
@@ -34,11 +34,11 @@ const InfinityFlipCard = (props: InfinityFlipCardProps) => {
   const topInterceptDur = `${0.2 * durationSeconds}s`
   const hotZoneADur = `${durationSeconds}s`
 
-  // mp 样式处理
-  const mpResult = mpGet(mp)
+  // spacing 样式处理
+  const spacingResult = spacing(spacingProp)
 
   return (
-    <section data-label="infinity-flip-card" style={{overflow: "hidden", ...mpResult}}>
+    <section data-label="infinity-flip-card" style={{overflow: "hidden", ...spacingResult}}>
       {/* 零高容器1：背景图 */}
       <section style={{height: 0}}>
         <BackgroundLayer bgUrl={bgUrl} viewBoxW={viewBoxW} viewBoxH={viewBoxH}/>

@@ -340,17 +340,17 @@ type Props = {
 
 ```tsx
 // 添加上边距
-<Container180 mp={{ mt: 20 }}>
+<Container180 spacing={{ mt: 20 }}>
   <img src="decoration.png" />
 </Container180>
 
 // 添加下边距
-<Container180 mp={{ mb: 10 }}>
+<Container180 spacing={{ mb: 10 }}>
   <hr />
 </Container180>
 
 // 组合使用
-<Container180 mp={{ mt: 15, mb: 15 }}>
+<Container180 spacing={{ mt: 15, mb: 15 }}>
   <div>内容</div>
 </Container180>
 ```
@@ -555,7 +555,7 @@ function StyledDivider() {
 // ✅ 推荐：添加边距
 <div>
   <img src="top.png" />
-  <Container180 mp={{ mt: 20 }}>
+  <Container180 spacing={{ mt: 20 }}>
     <img src="top.png" />
   </Container180>
 </div>

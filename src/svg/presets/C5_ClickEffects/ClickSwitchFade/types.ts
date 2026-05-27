@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import type { HotAreaConfig } from "@svg/presets/C6_Advanced/HotArea";
 
 /**
@@ -26,16 +27,7 @@ export type ClickSwitchFadeProps = {
 	/** 最后一张图片是否保持显示，默认 true */
 	isLastImgMaintained?: boolean;
 	/** margin/padding 配置 */
-	mp?: {
-		mt?: number | string;
-		mb?: number | string;
-		ml?: number | string;
-		mr?: number | string;
-		pt?: number | string;
-		pb?: number | string;
-		pl?: number | string;
-		pr?: number | string;
-	};
+	spacing?: T_SpacingProps;
 }
 
 /**

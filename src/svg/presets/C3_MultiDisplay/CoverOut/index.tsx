@@ -2,8 +2,8 @@ import type { CSSProperties } from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { defaultTo } from "lodash"
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing"
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing"
 import useImgSize from "@common/hooks/useImgSize"
 import CoverOutImage from "./components/CoverOutImage"
 import GhostLayer from "./components/GhostLayer"
@@ -21,18 +21,18 @@ import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
  * - 所有图在循环结束时同时重置，实现无缝循环
  * - 每张图可独立设置滑出方向、时长和停留时长
  *
- * @param props.mp - margin/padding 配置
+ * @param props.spacing - margin/padding 配置
  * @param props.viewBoxW - ViewBox 宽度
  * @param props.viewBoxH - ViewBox 高度
  * @param props.pics - 图片配置数组
  */
 const CoverOut = (props: {
-    mp?: mpProps
+    spacing?: T_SpacingProps
     viewBoxW?: number
     viewBoxH?: number
     pics?: PicConfig[]
 }) => {
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
     const pics = normalizePics(props.pics)
     const { size: canvasSize } = useImgSize(pics[0].url, props.viewBoxW, props.viewBoxH)
 
@@ -43,7 +43,7 @@ const CoverOut = (props: {
     const renderOrder = [...Array(pics.length).keys()].reverse()
 
     return (
-        <SectionEx style={{ ...rootBaseStyle, ...mpResult }} data-label="cover-out">
+        <SectionEx style={{ ...rootBaseStyle, ...spacingResult }} data-label="cover-out">
             <section style={innerStyle}>
                 <SvgEx
                     viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`}

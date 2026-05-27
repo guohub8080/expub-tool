@@ -3,8 +3,8 @@ import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import svgURL from "@svg/utils/svgURL";
 
@@ -33,7 +33,7 @@ import svgURL from "@svg/utils/svgURL";
  * // 带边距
  * <LongImgTouchSlideX 
  *   url="..." 
- *   mp={{ mt: 10, mb: 10 }} 
+ *   spacing={{ mt: 10, mb: 10 }} 
  * />
  * ```
  * 
@@ -43,13 +43,13 @@ import svgURL from "@svg/utils/svgURL";
  * @param props.isReverse - 是否反向滑动（true: 从右向左，false: 从左向右），默认 false
  * @param props.w - 图片宽度（像素），可选，会自动从图片获取
  * @param props.h - 图片高度（像素），可选，会自动从图片获取
- * @param props.mp - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
+ * @param props.spacing - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
  * 
  * @returns React 组件
  */
 const LongImgTouchSlideX = (props: {
     url?: string
-    mp?: mpProps
+    spacing?: T_SpacingProps
     w?: number
     h?: number
     exposedPercent?: number
@@ -61,7 +61,7 @@ const LongImgTouchSlideX = (props: {
     const imgURL = defaultTo(props.url, LONG_PIC_WECHAT_EXAMPLE_URL)
 
     const { size: imgSize } = useImgSize(imgURL, props.w, props.h)
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
 
     // 将"露出百分比"转换为"实际slideW"
     // 公式：slideW = 100% / 露出比例
@@ -75,7 +75,7 @@ const LongImgTouchSlideX = (props: {
 
     const rootStyle: CSSProperties = {
         ...rootBaseStyle,
-        ...mpResult
+        ...spacingResult
     }
 
     const scrollStyle: CSSProperties = {

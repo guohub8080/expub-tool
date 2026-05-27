@@ -2,8 +2,8 @@ import type { CSSProperties, ReactNode } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 /**
  * 坍塌盒子组件
@@ -60,7 +60,7 @@ const CollapsibleBox = (props: {
     hotAreaW?: number
     hotAreaH?: number
     children?: ReactNode
-    mp?: mpProps
+    spacing?: T_SpacingProps
 }) => {
     const { children } = props;
     const viewBoxWidth = defaultTo(props.viewBoxW, 100);
@@ -69,10 +69,10 @@ const CollapsibleBox = (props: {
     const hotAreaY = defaultTo(props.hotAreaY, 0);
     const hotAreaWidth = defaultTo(props.hotAreaW, 50);
     const hotAreaHeight = defaultTo(props.hotAreaH, 50);
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
 
     return (
-        <SectionEx data-label="collapsible-box" style={{...rootSectionStyle, ...mpResult}}>
+        <SectionEx data-label="collapsible-box" style={{...rootSectionStyle, ...spacingResult}}>
             <section style={outerContainerStyle}>
                 {/* 
                     顶部展示容器：用于展示内容（children，可以是任何React节点）

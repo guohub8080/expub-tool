@@ -2,18 +2,18 @@ import type { CSSProperties } from 'react';
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import svgURL from "@svg/utils/svgURL";
 
 
 const ZeroHeightImg = (props: {
     url: string,
-    mp?: mpProps
+    spacing?: T_SpacingProps
     isForcePriority?: boolean
 }) => {
     const isForcePriority = defaultTo(props.isForcePriority, false)
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
 
     const svgStyle: CSSProperties = {
         backgroundImage: svgURL(props.url),
@@ -29,7 +29,7 @@ const ZeroHeightImg = (props: {
             transform: 'scale(1)'
         }
         return (
-            <SectionEx data-label="zero-height-img" style={{ ...mpResult, ...outerStyle }}>
+            <SectionEx data-label="zero-height-img" style={{ ...spacingResult, ...outerStyle }}>
                 <section
                     style={innerForcedStyle}
                 >
@@ -41,7 +41,7 @@ const ZeroHeightImg = (props: {
 
     //未开启强制优先
     return (
-        <SectionEx data-label="zero-height-img" style={{ ...mpResult, ...outerStyle }}>
+        <SectionEx data-label="zero-height-img" style={{ ...spacingResult, ...outerStyle }}>
             <section
                 style={innerStyle}
             >

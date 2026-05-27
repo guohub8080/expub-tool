@@ -4,8 +4,8 @@ import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import InitialStaticPic from "./components/InitialStaticPic";
 import SlidePic from "./components/SlidePic";
@@ -22,9 +22,9 @@ const CoverIn = (props: {
     pics?: PicConfig[]
     viewBoxW?: number
     viewBoxH?: number
-    mp?: mpProps
+    spacing?: T_SpacingProps
 }) => {
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank));
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero));
 
     // 使用工具函数标准化图片配置
     const pics = useMemo(() => normalizePics(props.pics), [props.pics]);
@@ -40,7 +40,7 @@ const CoverIn = (props: {
 
     const rootStyle: CSSProperties = {
         ...rootBaseStyle,
-        ...mpResult
+        ...spacingResult
     };
 
     return (

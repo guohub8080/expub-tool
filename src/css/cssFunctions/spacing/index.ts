@@ -1,145 +1,50 @@
-import type {CSSProperties} from "react";
-
-// ============================================ 内边距 (Padding) ============================================
-
-/**
- * 内边距 - 所有方向
- */
-export const p = (value: number): CSSProperties => ({
-    padding: value
-})
-
-/**
- * 内边距 - 水平方向 (左右)
- */
-export const px = (value: number): CSSProperties => ({
-    paddingLeft: value / 2,
-    paddingRight: value / 2
-})
-
-/**
- * 内边距 - 垂直方向 (上下)
- */
-export const py = (value: number): CSSProperties => ({
-    paddingTop: value / 2,
-    paddingBottom: value / 2
-})
-
-/**
- * 内边距 - 上
- */
-export const pt = (value: number): CSSProperties => ({
-    paddingTop: value
-})
-
-/**
- * 内边距 - 右
- */
-export const pr = (value: number): CSSProperties => ({
-    paddingRight: value
-})
-
-/**
- * 内边距 - 下
- */
-export const pb = (value: number): CSSProperties => ({
-    paddingBottom: value
-})
-
-/**
- * 内边距 - 左
- */
-export const pl = (value: number): CSSProperties => ({
-    paddingLeft: value
-})
-
-// ============================================ 外边距 (Margin) ============================================
-
-/**
- * 外边距 - 所有方向
- */
-export const m = (value: number): CSSProperties => ({
-    margin: value
-})
-
-/**
- * 外边距 - 水平方向 (左右)
- */
-export const mx = (value: number): CSSProperties => ({
-    marginLeft: value / 2,
-    marginRight: value / 2
-})
-
-/**
- * 外边距 - 垂直方向 (上下)
- */
-export const my = (value: number): CSSProperties => ({
-    marginTop: value / 2,
-    marginBottom: value / 2
-})
-
-/**
- * 外边距 - 上
- */
-export const mt = (value: number): CSSProperties => ({
-    marginTop: value
-})
-
-/**
- * 外边距 - 右
- */
-export const mr = (value: number): CSSProperties => ({
-    marginRight: value
-})
-
-/**
- * 外边距 - 下
- */
-export const mb = (value: number): CSSProperties => ({
-    marginBottom: value
-})
-
-/**
- * 外边距 - 左
- */
-export const ml = (value: number): CSSProperties => ({
-    marginLeft: value
-})
-
-// ============================================ mp 组合工具 ============================================
-
+import type { CSSProperties } from "react";
 import { defaultTo } from "lodash";
 
-export type mpProps = {
-    mt?: number | string;
-    mb?: number | string;
-    ml?: number | string;
-    mr?: number | string;
-    pt?: number | string;
-    pb?: number | string;
-    pl?: number | string;
-    pr?: number | string;
+// ============================================ 间距工具 (Spacing) ============================================
+
+export type T_SpacingProps = {
+    mt?: number | string; // margin-top
+    mb?: number | string; // margin-bottom
+    ml?: number | string; // margin-left
+    mr?: number | string; // margin-right
+    pt?: number | string; // padding-top
+    pb?: number | string; // padding-bottom
+    pl?: number | string; // padding-left
+    pr?: number | string; // padding-right
 };
 
-export const mpGet = (props?: mpProps): CSSProperties => {
+/**
+ * 间距工具函数
+ * 将简写的 margin/padding 配置转换为 CSSProperties
+ *
+ * @param props - 间距配置对象
+ * @returns CSSProperties 对象，可直接展开到 style 属性
+ *
+ * @example
+ * ```tsx
+ * <div style={spacing({ mt: 10, mb: 20, px: 15 })} />
+ * // 等价于
+ * <div style={{ marginTop: 10, marginBottom: 20, paddingLeft: 15, paddingRight: 15 }} />
+ * ```
+ */
+export const spacing = (props?: T_SpacingProps): CSSProperties => {
     return {
-        marginTop: defaultTo(props?.mt, 0),
-        marginBottom: defaultTo(props?.mb, 0),
-        marginLeft: defaultTo(props?.ml, 0),
-        marginRight: defaultTo(props?.mr, 0),
-        paddingTop: defaultTo(props?.pt, 0),
-        paddingBottom: defaultTo(props?.pb, 0),
-        paddingLeft: defaultTo(props?.pl, 0),
-        paddingRight: defaultTo(props?.pr, 0),
+        marginTop: defaultTo(props?.mt, undefined),
+        marginBottom: defaultTo(props?.mb, undefined),
+        marginLeft: defaultTo(props?.ml, undefined),
+        marginRight: defaultTo(props?.mr, undefined),
+        paddingTop: defaultTo(props?.pt, undefined),
+        paddingBottom: defaultTo(props?.pb, undefined),
+        paddingLeft: defaultTo(props?.pl, undefined),
+        paddingRight: defaultTo(props?.pr, undefined),
     };
 };
 
-export const mpBlankCss = {
-    margin: 0,
-    padding: 0,
-};
-
-export const mpBlank = {
+/**
+ * 零间距 Props（用于 defaultTo 默认值）
+ */
+export const spacingZero: T_SpacingProps = {
     mt: 0,
     mb: 0,
     ml: 0,
@@ -148,4 +53,12 @@ export const mpBlank = {
     pb: 0,
     pl: 0,
     pr: 0,
+};
+
+/**
+ * 零间距 CSS（用于 style 直接展开）
+ */
+export const spacingZeroCss: CSSProperties = {
+    margin: 0,
+    padding: 0,
 };

@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 /**
  * 单张图片的配置
@@ -29,16 +30,7 @@ export type TouchSlideProps = {
 	/** 是否反向滑动 */
 	isReverse?: boolean;
 	/** margin/padding 快捷配置 */
-	mp?: {
-		mt?: number | string;
-		mb?: number | string;
-		ml?: number | string;
-		mr?: number | string;
-		pt?: number | string;
-		pb?: number | string;
-		pl?: number | string;
-		pr?: number | string;
-	};
+	spacing?: T_SpacingProps;
 }
 
 /**
@@ -49,7 +41,7 @@ export type TouchSlideXProps = {
 	viewBoxW: number
 	viewBoxH: number
 	isReverse: boolean
-	mpResult: CSSProperties
+	spacingResult: CSSProperties
 }
 
 /**
@@ -59,7 +51,7 @@ export type TouchSlideBProps = {
 	pics: TouchSlidePic[]
 	viewBoxW: number
 	viewBoxH: number
-	mpResult: CSSProperties
+	spacingResult: CSSProperties
 }
 
 /**
@@ -69,5 +61,5 @@ export type TouchSlideTProps = {
 	pics: TouchSlidePic[]
 	viewBoxW: number
 	viewBoxH: number
-	mpResult: CSSProperties
+	spacingResult: CSSProperties
 }

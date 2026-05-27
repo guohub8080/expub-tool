@@ -2,8 +2,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 /**
  * 底部对齐容器
@@ -16,13 +16,13 @@ import type { mpProps } from "@css-fn/spacing";
  */
 const BottomAlignedContainer = (props: {
 	children?: ReactNode
-	mp?: mpProps
+	spacing?: T_SpacingProps
 }) => {
-	const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+	const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
 
 	const rootStyle: CSSProperties = {
 		...rootBaseStyle,
-		...mpResult
+		...spacingResult
 	};
 
 	return (

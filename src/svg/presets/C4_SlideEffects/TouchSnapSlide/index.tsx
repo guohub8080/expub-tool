@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { range, defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
-import { mpGet } from "@css-fn/spacing";
+import { spacing } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import TouchSnapSlideX from "./components/TouchSnapSlideX";
 import TouchSnapSlideT from "./components/TouchSnapSlideT";
@@ -40,7 +40,7 @@ import type { TouchSnapSlideProps, TouchSnapSlidePic } from "./types";
  * <TouchSnapSlide snap="start" pics={[...]} />
  *
  * // 带边距
- * <TouchSnapSlide pics={[...]} mp={{ mt: 10, mb: 10 }} />
+ * <TouchSnapSlide pics={[...]} spacing={{ mt: 10, mb: 10 }} />
  */
 const TouchSnapSlide = (props: TouchSnapSlideProps) => {
 	// 解构吸附位置参数，默认 middle
@@ -55,7 +55,7 @@ const TouchSnapSlide = (props: TouchSnapSlideProps) => {
 	if (!isX && !isY) { isX = true }
 
 	// 解析 margin/padding 样式
-	const comp_mpResult = mpGet(props.mp);
+	const comp_spacingResult = spacing(props.spacing);
 
 	/**
 	 * 统一规范图片数据
@@ -94,7 +94,7 @@ const TouchSnapSlide = (props: TouchSnapSlideProps) => {
 			viewBoxH={resolvedViewBox.h}
 			snap={snap}
 			isReverse={isReverse}
-			mpResult={comp_mpResult}
+			spacingResult={comp_spacingResult}
 		/>
 		);
 	}
@@ -105,7 +105,7 @@ const TouchSnapSlide = (props: TouchSnapSlideProps) => {
 			pics={normalizedPics}
 			viewBoxW={resolvedViewBox.w}
 			viewBoxH={resolvedViewBox.h}
-			mpResult={comp_mpResult}
+			spacingResult={comp_spacingResult}
 			snap={snap}
 		/>
 		);
@@ -116,7 +116,7 @@ const TouchSnapSlide = (props: TouchSnapSlideProps) => {
 		pics={normalizedPics}
 		viewBoxW={resolvedViewBox.w}
 		viewBoxH={resolvedViewBox.h}
-		mpResult={comp_mpResult}
+		spacingResult={comp_spacingResult}
 		snap={snap}
 	/>
 	);

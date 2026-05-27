@@ -3,8 +3,8 @@ import { useMemo } from "react";
 import type { CSSProperties,  } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import { getFullScreenHotArea } from "@svg/presets/C6_Advanced/HotArea";
 import type { HotAreaConfig } from "@svg/presets/C6_Advanced/HotArea";
@@ -23,7 +23,7 @@ import svgURL from "@svg/utils/svgURL";
  * @param {number} viewBoxW - SVG视图框宽度
  * @param {number} viewBoxH - SVG视图框高度
  * @param {HotAreaConfig} hotArea - 热区配置
- * @param {mpProps} mp - margin/padding 配置
+ * @param {T_SpacingProps} mp - margin/padding 配置
  */
 const TimedVisible = (props: {
   backgroundUrl?: string
@@ -34,7 +34,7 @@ const TimedVisible = (props: {
   viewBoxW?: number
   viewBoxH?: number
   hotArea?: HotAreaConfig
-  mp?: mpProps
+  spacing?: T_SpacingProps
 }) => {
   // 默认配置
   const backgroundUrl = defaultTo(props.backgroundUrl, getWechat300x300(2))
@@ -42,7 +42,7 @@ const TimedVisible = (props: {
   const duration = defaultTo(props.duration, 4)
   const fadeInRatio = defaultTo(props.fadeInRatio, 0.2)
   const fadeOutRatio = defaultTo(props.fadeOutRatio, 0.2)
-  const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+  const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
 
   // 计算最终的 viewBox 尺寸
   const { size: imgSizeAsViewBox } = useImgSize(backgroundUrl, props.viewBoxW, props.viewBoxH)
@@ -61,7 +61,7 @@ const TimedVisible = (props: {
 
   const rootStyle: CSSProperties = {
     ...frameStyle,
-    ...mpResult
+    ...spacingResult
   };
 
   return (

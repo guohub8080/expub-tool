@@ -1,7 +1,7 @@
 import { defaultTo } from "lodash";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";
 import SeamlessImg1 from "./components/SeamlessImg1";
 import SeamlessImg2 from "./components/SeamlessImg2";
@@ -15,7 +15,7 @@ interface SeamlessImgProps {
     /** 图片URL，默认使用300x300占位图 */
     url?: string
     /** 公众号样式属性（margin, padding等） */
-    mp?: mpProps
+    spacing?: T_SpacingProps
     /** 图片宽度，默认为0（自动获取） */
     w?: number
     /** 图片高度，默认为0（自动获取） */
@@ -53,7 +53,7 @@ interface SeamlessImgProps {
  * <SeamlessImg url="https://example.com/image.jpg" isReplaceableAfterPublish={true} />
  */
 const SeamlessImg = (props: SeamlessImgProps) => {
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
     const isNaturalPriority = defaultTo(props.isNaturalPriority, false)
     const isEventThrough = defaultTo(props.isEventThrough, false)
     const isPopable = defaultTo(props.isPopable, false)
@@ -69,30 +69,30 @@ const SeamlessImg = (props: SeamlessImgProps) => {
 
     //仅长按识别 - SeamlessImg7
     if (isLongPressOnly) {
-        return <SeamlessImg7 w={imgSize.w} h={imgSize.h} url={imgURL} mpResult={mpResult} />
+        return <SeamlessImg7 w={imgSize.w} h={imgSize.h} url={imgURL} spacingResult={spacingResult} />
     }
     //发布后可替换 - SeamlessImg6
     if (isReplaceableAfterPublish) {
-        return <SeamlessImg6 w={imgSize.w} h={imgSize.h} url={imgURL} mpResult={mpResult} />
+        return <SeamlessImg6 w={imgSize.w} h={imgSize.h} url={imgURL} spacingResult={spacingResult} />
     }
     //强制可触摸 - SeamlessImg5
     if (isTouchForced) {
-        return <SeamlessImg5 w={imgSize.w} h={imgSize.h} url={imgURL} mpResult={mpResult} />
+        return <SeamlessImg5 w={imgSize.w} h={imgSize.h} url={imgURL} spacingResult={spacingResult} />
     }
     //可弹出 - SeamlessImg4
     if (isPopable) {
-        return <SeamlessImg4 w={imgSize.w} h={imgSize.h} url={imgURL} mpResult={mpResult} />
+        return <SeamlessImg4 w={imgSize.w} h={imgSize.h} url={imgURL} spacingResult={spacingResult} />
     }
     //事件穿透 - SeamlessImg3
     if (isEventThrough) {
-        return <SeamlessImg3 w={imgSize.w} h={imgSize.h} url={imgURL} mpResult={mpResult} />
+        return <SeamlessImg3 w={imgSize.w} h={imgSize.h} url={imgURL} spacingResult={spacingResult} />
     }
     //自然优先级 - SeamlessImg2
     if (isNaturalPriority) {
-        return <SeamlessImg2 w={imgSize.w} h={imgSize.h} url={imgURL} mpResult={mpResult} />
+        return <SeamlessImg2 w={imgSize.w} h={imgSize.h} url={imgURL} spacingResult={spacingResult} />
     }
     //深色模式高亮（深色对抗，默认）- SeamlessImg1
-    return <SeamlessImg1 w={imgSize.w} h={imgSize.h} url={imgURL} mpResult={mpResult} />
+    return <SeamlessImg1 w={imgSize.w} h={imgSize.h} url={imgURL} spacingResult={spacingResult} />
 }
 
 export default SeamlessImg

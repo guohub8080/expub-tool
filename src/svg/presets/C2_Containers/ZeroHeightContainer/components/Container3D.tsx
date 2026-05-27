@@ -10,7 +10,7 @@ import SectionEx from '@html/basicEx/SectionEx';
  *
  * @example
  * ```tsx
- * <ZeroHeightContainer3D mpCss={marginPaddingStyles}>
+ * <ZeroHeightContainer3D spacingCss={marginPaddingStyles}>
  *   <div style={{ transform: 'rotateY(45deg)' }}>
  *     <img src="3d-card.png" />
  *   </div>
@@ -25,11 +25,11 @@ import SectionEx from '@html/basicEx/SectionEx';
  */
 const ZeroHeightContainer3D = (props: {
   children: ReactNode
-  mpCss: CSSProperties
+  spacingCss: CSSProperties
 }) => {
   return (
     <SectionEx data-label="zero-height-container-3d"
-               style={{...props.mpCss, ...outerStyle}}
+               style={{...props.spacingCss, ...outerStyle}}
     >
       <section style={innerStyle3D}>
         {props.children}

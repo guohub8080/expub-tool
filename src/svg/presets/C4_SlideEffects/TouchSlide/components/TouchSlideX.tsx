@@ -24,7 +24,7 @@ const TouchSlideX = (props: TouchSlideXProps) => {
 	// 根容器样式：合并基础样式和 mp 样式
 	const rootStyle: CSSProperties = {
 		...rootBaseStyle,
-		...props.mpResult
+		...props.spacingResult
 	};
 
 	// 视口样式：通过 direction 控制滑动方向
@@ -67,7 +67,7 @@ const TouchSlideX = (props: TouchSlideXProps) => {
 							<SectionEx key={i} style={itemStyle}>
 								{x.isTouchable ? (
 									// 可触摸版本：使用 SeamlessImg 组件
-									<SeamlessImg url={x.url} mp={{
+									<SeamlessImg url={x.url} spacing={{
 										mt: x.mt,
 										mb: x.mb,
 										ml: x.ml,

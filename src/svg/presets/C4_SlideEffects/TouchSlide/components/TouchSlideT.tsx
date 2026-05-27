@@ -21,7 +21,7 @@ const TouchSlideT = (props: TouchSlideTProps) => {
 	// 根容器样式：合并基础样式和 mp 样式
 	const rootStyle: CSSProperties = {
 		...rootBaseStyle,
-		...props.mpResult
+		...props.spacingResult
 	};
 
 	// 垂直容器样式：使用 aspectRatio 保持比例
@@ -64,7 +64,7 @@ const TouchSlideT = (props: TouchSlideTProps) => {
 								<SectionEx key={i} style={itemStyle}>
 									{x.isTouchable ? (
 										// 可触摸版本：使用 SeamlessImg 组件
-										<SeamlessImg url={x.url} mp={{
+										<SeamlessImg url={x.url} spacing={{
 											mt: x.mt,
 											mb: x.mb,
 											ml: x.ml,

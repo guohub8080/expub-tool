@@ -5,8 +5,8 @@ import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
 import svgURL from "@svg/utils/svgURL";
 import useImgSize from "@common/hooks/useImgSize";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 type Direction = "T" | "B" | "L" | "R";
 
@@ -27,10 +27,10 @@ const CoverInClick = (props: {
     }[];
     viewBoxW?: number;
     viewBoxH?: number;
-    mp?: mpProps;
+    spacing?: T_SpacingProps;
 }) => {
     const pics = defaultTo(props.pics, []);
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank));
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero));
 
     // 以第一张图估算 viewBox，若未提供尺寸
     const firstUrl = pics[0]?.url;
@@ -43,7 +43,7 @@ const CoverInClick = (props: {
         overflow: "hidden",
         textAlign: "center",
         lineHeight: 0,
-        ...mpResult,
+        ...spacingResult,
     };
 
     // 预计算每张图的动画参数（initialX/Y、values、keySplines、dur）

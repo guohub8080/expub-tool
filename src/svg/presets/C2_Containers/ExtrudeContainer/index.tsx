@@ -1,13 +1,13 @@
 import type {CSSProperties, ReactNode} from "react"
 import SectionEx from "@html/basicEx/SectionEx"
-import { mpGet } from "@css-fn/spacing"
-import type { mpProps } from "@css-fn/spacing"
+import { spacing } from "@css-fn/spacing"
+import type { T_SpacingProps } from "@css-fn/spacing"
 
 /**
  * ExtrudeContainer 组件的 Props。
  *
  * @property {ReactNode} children 必填。要在容器中渲染的内容。
- * @property {mpProps} [mp] 可选。用于快速设置 margin/padding 的样式输入（会被解析并合并到外层容器）。
+ * @property {T_SpacingProps} [mp] 可选。用于快速设置 margin/padding 的样式输入（会被解析并合并到外层容器）。
  */
 
 /*
@@ -16,13 +16,13 @@ import type { mpProps } from "@css-fn/spacing"
  */
 const ExtrudeContainer = (props: {
   children: ReactNode,
-  mp?: mpProps
+  spacing?: T_SpacingProps
 }) => {
   /** 由 mp 参数解析得到的 margin/padding 样式对象 */
-  const mpResult = mpGet(props.mp)
+  const spacingResult = spacing(props.spacing)
 
   return (
-    <SectionEx data-label="extrude-container" style={{...mpResult, ...outerStyle}}>
+    <SectionEx data-label="extrude-container" style={{...spacingResult, ...outerStyle}}>
       {/* 外层容器 */}
       <section style={innerStyle}>
         {props.children}

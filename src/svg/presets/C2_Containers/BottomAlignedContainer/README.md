@@ -290,17 +290,17 @@ type Props = {
 
 ```tsx
 // 添加上边距（常用）
-<BottomAlignedContainer mp={{ mt: 20 }}>
+<BottomAlignedContainer spacing={{ mt: 20 }}>
   <img src="divider.png" />
 </BottomAlignedContainer>
 
 // 添加下边距
-<BottomAlignedContainer mp={{ mb: 10 }}>
+<BottomAlignedContainer spacing={{ mb: 10 }}>
   <img src="decoration.png" />
 </BottomAlignedContainer>
 
 // 组合使用
-<BottomAlignedContainer mp={{ mt: 15, mb: 15 }}>
+<BottomAlignedContainer spacing={{ mt: 15, mb: 15 }}>
   <img src="pattern.png" />
 </BottomAlignedContainer>
 ```
@@ -446,7 +446,7 @@ type Props = {
 // ✅ 推荐：添加上边距分隔
 <section>内容区块1</section>
 
-<BottomAlignedContainer mp={{ mt: 20 }}>
+<BottomAlignedContainer spacing={{ mt: 20 }}>
   <img src="divider.png" />
 </BottomAlignedContainer>
 
@@ -505,7 +505,7 @@ type Props = {
 {/* ↑ 图片会向上溢出 200px，可能覆盖上方内容 */}
 
 // ✅ 解决：使用 mp 参数添加边距
-<BottomAlignedContainer mp={{ mt: 200 }}>
+<BottomAlignedContainer spacing={{ mt: 200 }}>
   <img src="tall-image.png" style={{ height: '200px' }} />
 </BottomAlignedContainer>
 ```

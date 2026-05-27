@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 /**
  * 单张图片的配置
@@ -34,16 +35,7 @@ export type TouchSnapSlideProps = {
 	/** 是否反向滑动 */
 	isReverse?: boolean;
 	/** margin/padding 快捷配置 */
-	mp?: {
-		mt?: number | string;
-		mb?: number | string;
-		ml?: number | string;
-		mr?: number | string;
-		pt?: number | string;
-		pb?: number | string;
-		pl?: number | string;
-		pr?: number | string;
-	};
+	spacing?: T_SpacingProps;
 	/** 吸附位置：start/middle/end，默认 middle */
 	snap?: SnapAlign;
 }
@@ -57,7 +49,7 @@ export type TouchSnapSlideXProps = {
 	viewBoxH: number
 	snap: SnapAlign
 	isReverse: boolean
-	mpResult: CSSProperties
+	spacingResult: CSSProperties
 }
 
 /**
@@ -68,7 +60,7 @@ export type TouchSnapSlideBProps = {
 	viewBoxW: number
 	viewBoxH: number
 	snap: SnapAlign
-	mpResult: CSSProperties
+	spacingResult: CSSProperties
 }
 
 /**
@@ -79,5 +71,5 @@ export type TouchSnapSlideTProps = {
 	viewBoxW: number
 	viewBoxH: number
 	snap: SnapAlign
-	mpResult: CSSProperties
+	spacingResult: CSSProperties
 }

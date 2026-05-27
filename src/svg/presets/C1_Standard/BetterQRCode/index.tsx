@@ -3,8 +3,8 @@ import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import ImgEx from "@html/basicEx/ImgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import svgURL from "@svg/utils/svgURL";
 
 /**
@@ -22,28 +22,28 @@ import svgURL from "@svg/utils/svgURL";
  * <BetterQRCode url="..." bgColor="#f0f0f0" />
  * 
  * // 带边距
- * <BetterQRCode url="..." mp={{ mt: 10, mb: 10 }} />
+ * <BetterQRCode url="..." spacing={{ mt: 10, mb: 10 }} />
  * ```
  * 
  * @param props - 组件属性
  * @param props.url - 二维码图片URL
  * @param props.bgColor - 背景颜色，默认 "white"
- * @param props.mp - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
+ * @param props.spacing - 边距配置（marginTop, marginBottom, marginLeft, marginRight）
  * 
  * @returns React 组件
  */
 const BetterQRCode = (props: {
   url?: string
   bgColor?: string
-  mp?: mpProps
+  spacing?: T_SpacingProps
 }) => {
   const url = defaultTo(props.url, "https://cdn.britannica.com/17/155017-050-9AC96FC8/Example-QR-code.jpg")
   const QRCodeSize = 300; // 使用 300x300 保持方形比例（二维码必须是正方形）
   const bgColor = defaultTo(props.bgColor, "white")
-  const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+  const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
 
   return (
-    <SectionEx data-label="better-qrcode" style={{ ...rootSectionStyle, ...mpResult }}>
+    <SectionEx data-label="better-qrcode" style={{ ...rootSectionStyle, ...spacingResult }}>
       <SectionEx style={innerSectionStyle} important={[["height", "0px"]]}>
         <ImgEx url={url} style={imgStyle}
           important={[["visibility", "visible"], ["width", "100%"], ["height", "auto"]]}

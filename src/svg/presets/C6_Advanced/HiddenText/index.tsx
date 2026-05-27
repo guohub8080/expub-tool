@@ -2,8 +2,8 @@
 import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 
 /**
  * 隐藏文本组件
@@ -13,15 +13,15 @@ import type { mpProps } from "@css-fn/spacing";
 const HiddenText = (props: {
     text?: string
     width?: number
-    mp?: mpProps
+    spacing?: T_SpacingProps
 }) => {
     const text = defaultTo(props.text, "如图文未加载，请刷新重试")
     const width = defaultTo(props.width, 0)
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
 
     const rootStyle: CSSProperties = {
         ...rootBaseStyle,
-        ...mpResult
+        ...spacingResult
     };
 
     const innerStyle: CSSProperties = {

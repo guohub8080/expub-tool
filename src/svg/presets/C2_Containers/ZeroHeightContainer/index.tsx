@@ -1,8 +1,8 @@
 import type {CSSProperties, ReactNode} from 'react';
 import SectionEx from '@html/basicEx/SectionEx';
 import {defaultTo} from 'lodash';
-import {mpBlank, mpGet} from '@css-fn/spacing';
-import type {mpProps} from '@css-fn/spacing';
+import {spacingZero, spacing} from '@css-fn/spacing';
+import type {T_SpacingProps} from '@css-fn/spacing';
 import ZeroHeightContainerThrough from './components/Through';
 import ZeroHeightContainerThroughPriority from './components/ThroughPriority';
 import ZeroHeightContainerPriority from './components/Priority';
@@ -12,7 +12,7 @@ import ZeroHeightContainer3D from './components/Container3D';
  * ZeroHeightContainer 组件的 Props。
  *
  * @property {ReactNode} children 必填。要在容器中渲染的内容。
- * @property {mpProps} [mp] 可选。用于快速设置 margin/padding 的样式输入（会被解析并合并到外层容器）。
+ * @property {T_SpacingProps} [mp] 可选。用于快速设置 margin/padding 的样式输入（会被解析并合并到外层容器）。
  */
 
 
@@ -22,48 +22,48 @@ import ZeroHeightContainer3D from './components/Container3D';
  */
 const ZeroHeightContainer = (props: {
   children: ReactNode,
-  mp?: mpProps
+  spacing?: T_SpacingProps
   isEventPassThrough?: boolean
   isForcePriority?: boolean
   is3d?: boolean
 }) => {
   /** 由 mp 参数解析得到的 margin/padding 样式对象 */
-  const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+  const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
   const isEventPassThrough = defaultTo(props.isEventPassThrough, false)
   const isForcePriority = defaultTo(props.isForcePriority, false)
   const is3d = defaultTo(props.is3d, false)
 
   // 事件穿透模式，但没有开启强制优先
   if (isEventPassThrough && !isForcePriority) {
-    return <ZeroHeightContainerThrough mpCss={mpResult}>
+    return <ZeroHeightContainerThrough spacingCss={spacingResult}>
       {props.children}
     </ZeroHeightContainerThrough>
   }
 
   // 事件穿透 + 强制优先
   if (isEventPassThrough && isForcePriority) {
-    return <ZeroHeightContainerThroughPriority mpCss={mpResult}>
+    return <ZeroHeightContainerThroughPriority spacingCss={spacingResult}>
       {props.children}
     </ZeroHeightContainerThroughPriority>
   }
 
   // 仅强制优先
   if (!isEventPassThrough && isForcePriority) {
-    return <ZeroHeightContainerPriority mpCss={mpResult}>
+    return <ZeroHeightContainerPriority spacingCss={spacingResult}>
       {props.children}
     </ZeroHeightContainerPriority>
   }
 
   // 3D 变换
   if (is3d) {
-    return <ZeroHeightContainer3D mpCss={mpResult}>
+    return <ZeroHeightContainer3D spacingCss={spacingResult}>
       {props.children}
     </ZeroHeightContainer3D>
   }
 
   // 其他组合（如强制优先等）暂时返回普通模式
   return (
-    <SectionEx data-label="zero-height-container" style={{...mpResult, ...outerStyle}}>
+    <SectionEx data-label="zero-height-container" style={{...spacingResult, ...outerStyle}}>
       <section style={innerStyle}>
         {props.children}
       </section>

@@ -3,8 +3,8 @@ import type { CSSProperties } from "react";
 import { random, isNil, defaultTo } from "lodash";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
-import { mpBlank, mpGet,  } from "@css-fn/spacing";
-import type { mpProps } from "@css-fn/spacing";
+import { spacing, spacingZero } from "@css-fn/spacing";
+import type { T_SpacingProps } from "@css-fn/spacing";
 import svgURL from "@svg/utils/svgURL";
 import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
 import useImgSize from "@common/hooks/useImgSize";
@@ -43,11 +43,11 @@ const FilterImg = (props: {
     hueRotate0_360?: number   // 色相旋转 0-360（deg）
     invert0_1?: number        // 反色 0-1
     opacity0_1?: number       // 透明度 0-1
-    mp?: mpProps
+    spacing?: T_SpacingProps
 }) => {
     const url = defaultTo(props.url, getWechat300x500(random(1, 9)))
     const { size: imgSize } = useImgSize(url, props.viewBoxW, props.viewBoxH)
-    const mpResult = mpGet(defaultTo(props.mp, mpBlank))
+    const spacingResult = spacing(defaultTo(props.spacing, spacingZero))
     const blendMode = defaultTo(props.blendMode, 'multiply')
 
     // 构建 filter 字符串
@@ -65,7 +65,7 @@ const FilterImg = (props: {
 
     const rootStyle: CSSProperties = {
         ...rootBaseStyle,
-        ...mpResult
+        ...spacingResult
     };
 
     const svgStyle: CSSProperties = {

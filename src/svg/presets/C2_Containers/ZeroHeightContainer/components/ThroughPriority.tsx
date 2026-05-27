@@ -10,7 +10,7 @@ import SectionEx from '@html/basicEx/SectionEx';
  *
  * @example
  * ```tsx
- * <ZeroHeightContainerThroughPriority mpCss={marginPaddingStyles}>
+ * <ZeroHeightContainerThroughPriority spacingCss={marginPaddingStyles}>
  *   <img src="overlay.png" />
  * </ZeroHeightContainerThroughPriority>
  * ```
@@ -22,12 +22,12 @@ import SectionEx from '@html/basicEx/SectionEx';
  */
 const ZeroHeightContainerThroughPriority = (props: {
     children: ReactNode
-    mpCss: CSSProperties
+    spacingCss: CSSProperties
 }) => {
     return (
         <SectionEx
             data-label="zero-height-container-through-priority"
-            style={{ ...props.mpCss, ...outerStyle }}
+            style={{ ...props.spacingCss, ...outerStyle }}
         >
             <section style={innerStyleThroughPriority}>
                 {props.children}
