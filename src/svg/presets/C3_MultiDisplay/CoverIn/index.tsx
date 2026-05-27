@@ -3,7 +3,7 @@ import { CSSProperties, useMemo } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
+import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
 import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
 import InitialStaticPic from "./components/InitialStaticPic";
 import SlidePic from "./components/SlidePic";

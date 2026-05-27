@@ -1,6 +1,6 @@
 import { defaultTo } from "lodash";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
-import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
+import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
 import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
 import SeamlessImg1 from "./components/SeamlessImg1";
 import SeamlessImg2 from "./components/SeamlessImg2";

@@ -1,4 +1,4 @@
-import type { mpProps } from "@styles/funcs/mp";
+import type { mpProps } from "@css-fn/spacing";
 
 /** 初始视野位置（图片坐标系） */
 export interface InitViewPosition {

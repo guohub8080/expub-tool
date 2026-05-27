@@ -14,6 +14,8 @@ export default defineConfig({
       '@api': resolve(__dirname, 'src/api'),
       '@bezier': resolve(__dirname, 'src/bezier'),
       '@colors': resolve(__dirname, 'src/common/colors'),
+      '@css-fn': resolve(__dirname, 'src/css/cssFunctions'),
+      '@css-presets': resolve(__dirname, 'src/css/cssPresets'),
     },
   },
   build: {

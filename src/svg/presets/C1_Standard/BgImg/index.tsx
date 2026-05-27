@@ -3,7 +3,7 @@ import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
-import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
+import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
 import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
 import svgURL from "@pub-utils/common/svgURL";
 

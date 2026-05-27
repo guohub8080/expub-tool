@@ -105,3 +105,47 @@ export const mb = (value: number): CSSProperties => ({
 export const ml = (value: number): CSSProperties => ({
     marginLeft: value
 })
+
+// ============================================ mp 组合工具 ============================================
+
+import { defaultTo } from "lodash";
+
+export type mpProps = {
+    mt?: number | string;
+    mb?: number | string;
+    ml?: number | string;
+    mr?: number | string;
+    pt?: number | string;
+    pb?: number | string;
+    pl?: number | string;
+    pr?: number | string;
+};
+
+export const mpGet = (props?: mpProps): CSSProperties => {
+    return {
+        marginTop: defaultTo(props?.mt, 0),
+        marginBottom: defaultTo(props?.mb, 0),
+        marginLeft: defaultTo(props?.ml, 0),
+        marginRight: defaultTo(props?.mr, 0),
+        paddingTop: defaultTo(props?.pt, 0),
+        paddingBottom: defaultTo(props?.pb, 0),
+        paddingLeft: defaultTo(props?.pl, 0),
+        paddingRight: defaultTo(props?.pr, 0),
+    };
+};
+
+export const mpBlankCss = {
+    margin: 0,
+    padding: 0,
+};
+
+export const mpBlank = {
+    mt: 0,
+    mb: 0,
+    ml: 0,
+    mr: 0,
+    pt: 0,
+    pb: 0,
+    pl: 0,
+    pr: 0,
+};

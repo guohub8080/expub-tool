@@ -2,7 +2,7 @@
 import { CSSProperties, useMemo } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
+import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
 import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
 import { HotAreaConfig, getFullScreenHotArea } from "@pub-utils/svgHotArea";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";

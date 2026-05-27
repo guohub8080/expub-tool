@@ -3,7 +3,7 @@ import { CSSProperties, useMemo } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
-import { mpGet } from "@styles/funcs/mp";
+import { mpGet } from "@css-fn/spacing";
 import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
 import { getLinearBezier } from "@bezier/index";
 import { HotAreaConfig, getFullScreenHotArea } from "@pub-utils/svgHotArea";

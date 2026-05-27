@@ -2,7 +2,7 @@
 import { CSSProperties, ReactNode } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
+import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
 
 /**
  * 置顶框架组件

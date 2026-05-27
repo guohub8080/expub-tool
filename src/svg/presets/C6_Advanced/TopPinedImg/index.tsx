@@ -3,7 +3,7 @@ import { CSSProperties } from "react";
 import { random, defaultTo } from "lodash";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
-import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
+import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
 import svgURL from "@pub-utils/common/svgURL";
 import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
 import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";

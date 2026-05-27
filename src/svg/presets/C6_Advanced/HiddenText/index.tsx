@@ -2,7 +2,7 @@
 import { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
+import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
 
 /**
  * 隐藏文本组件

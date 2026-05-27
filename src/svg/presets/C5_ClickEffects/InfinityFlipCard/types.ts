@@ -3,7 +3,7 @@
  * Types 定义
  */
 
-import type { mpProps } from "@styles/funcs/mp"
+import type { mpProps } from "@css-fn/spacing"
 
 export interface InfinityFlipCardProps {
   /** 背景图 URL（底层静态背景） */

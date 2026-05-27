@@ -1,6 +1,6 @@
 import type {CSSProperties, ReactNode} from "react"
 import SectionEx from "@html/basicEx/SectionEx"
-import {mpGet, mpProps} from "@styles/funcs/mp"
+import {mpGet, mpProps} from "@css-fn/spacing"
 
 /**
  * ExtrudeContainer 组件的 Props。

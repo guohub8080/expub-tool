@@ -1,7 +1,7 @@
 import { CSSProperties, useMemo } from "react";
 import { defaultTo } from "lodash";
 import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
-import { mpBlank, mpGet } from "@styles/funcs/mp";
+import { mpBlank, mpGet } from "@css-fn/spacing";
 import svgURL from "@pub-utils/common/svgURL";
 import {
 	genAnimateCustom,

@@ -2,7 +2,7 @@ import { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
-import { mpBlank, mpGet, mpProps } from "@styles/funcs/mp";
+import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
 import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
 import NormalSvgImg from "./components/NormalSvgImg";
 import UnpopButCanLongPress from "./components/UnpopButCanLongPress";

@@ -54,7 +54,9 @@
       "@svg/*": ["./src/svg/*"],
       "@api/*": ["./src/api/*"],
       "@bezier/*": ["./src/bezier/*"],
-      "@colors/*": ["./src/common/colors/*"]
+      "@colors/*": ["./src/common/colors/*"],
+      "@css-fn/*": ["./src/css/cssFunctions/*"],
+      "@css-presets/*": ["./src/css/cssPresets/*"]
     }
   }
 }

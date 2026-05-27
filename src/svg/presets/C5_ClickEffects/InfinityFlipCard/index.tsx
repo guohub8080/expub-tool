@@ -8,7 +8,7 @@ import SvgEx from "@html/basicEx/SvgEx"
 import BackgroundLayer from "./components/BackgroundLayer"
 import BackSide from "./components/BackSide"
 import FrontSide from "./components/FrontSide"
-import {mpGet} from "@styles/funcs/mp"
+import {mpGet} from "@css-fn/spacing"
 import type {InfinityFlipCardProps} from "./types.ts"
 
 // ============================================ Main Component ============================================
