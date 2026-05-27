@@ -1,5 +1,5 @@
 import React from "react";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 import { useImportant } from "./useImportant";
 
 interface SvgExProps extends React.SVGProps<SVGSVGElement> {

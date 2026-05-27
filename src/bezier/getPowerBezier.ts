@@ -1,4 +1,4 @@
-import { isInteger } from "lodash";
+import { isInteger } from "lodash-es";
 
 /**
  * 幂次方缓动函数的贝塞尔曲线值映射表

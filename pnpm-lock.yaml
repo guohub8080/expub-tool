@@ -14,6 +14,9 @@ importers:
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
+      lodash-es:
+        specifier: ^4.18.1
+        version: 4.18.1
     devDependencies:
       '@types/chroma-js':
         specifier: ^3.1.2
@@ -24,6 +27,9 @@ importers:
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@types/react':
         specifier: ^19.2.15
         version: 19.2.15
@@ -258,6 +264,9 @@ packages:
   '@types/jsdom@28.0.3':
     resolution: {integrity: sha512-/HQ2uFoetFTXuye8vzIcHw2z6Fwi7Hi/qcgC+RoS9NCyewiqxhVGqlG+ViGB6lkax481R6dmhf1I7lIGlzJStQ==}
 
+  '@types/lodash-es@4.17.12':
+    resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
+
   '@types/lodash@4.17.24':
     resolution: {integrity: sha512-gIW7lQLZbue7lRSWEFql49QJJWThrTFFeIMJdp3eH4tKoxm1OvEPg02rm4wCCSHS0cL3/Fizimb35b7k8atwsQ==}
 
@@ -476,6 +485,9 @@ packages:
   lightningcss@1.32.0:
     resolution: {integrity: sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ==}
     engines: {node: '>= 12.0.0'}
+
+  lodash-es@4.18.1:
+    resolution: {integrity: sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A==}
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
@@ -889,6 +901,10 @@ snapshots:
       parse5: 8.0.1
       undici-types: 7.26.0
 
+  '@types/lodash-es@4.17.12':
+    dependencies:
+      '@types/lodash': 4.17.24
+
   '@types/lodash@4.17.24': {}
 
   '@types/node@25.9.1':
@@ -1095,6 +1111,8 @@ snapshots:
       lightningcss-linux-x64-musl: 1.32.0
       lightningcss-win32-arm64-msvc: 1.32.0
       lightningcss-win32-x64-msvc: 1.32.0
+
+  lodash-es@4.18.1: {}
 
   lodash@4.18.1: {}
 

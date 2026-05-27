@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 
 // ============================================ 间距工具 (Spacing) ============================================
 

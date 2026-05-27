@@ -3,7 +3,7 @@
  * 包含正面主图片、提示文字（闪烁）和双层热区系统
  */
 
-import {defaultTo, max} from "lodash"
+import {defaultTo, max} from "lodash-es"
 
 interface FrontSideProps {
   /** 正面图片 URL */

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { CSSProperties,  } from "react";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 import useImgSize from "@common/hooks/useImgSize";
 import { spacingZero, spacing } from "@css-fn/spacing";
 import svgURL from "@svg/utils/svgURL";

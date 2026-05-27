@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 
 /**
  * 穿透框架组件

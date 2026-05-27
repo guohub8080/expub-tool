@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 // import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";

@@ -1,4 +1,4 @@
-import { isArray, isString } from "lodash"
+import { isArray, isString } from "lodash-es"
 import { isValidElement } from "react"
 import type { ReactNode } from "react"
 

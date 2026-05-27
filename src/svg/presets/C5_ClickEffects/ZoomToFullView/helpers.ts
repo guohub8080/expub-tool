@@ -1,4 +1,4 @@
-import { max } from "lodash";
+import { max } from "lodash-es";
 
 export interface InitViewRect {
 	zoom: number;

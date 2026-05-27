@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { defaultTo } from "lodash"
+import { defaultTo } from "lodash-es"
 import getImgSizeAsync from "../utils/getImgSizeAsync"
 
 /**

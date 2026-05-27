@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import type { CSSProperties,  } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 import svgURL from "@svg/utils/svgURL";
 import useImgSize from "@common/hooks/useImgSize";
 import { spacing, spacingZero } from "@css-fn/spacing";

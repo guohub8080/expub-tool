@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { useMemo } from "react";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 // import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import { spacing } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";

@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import type { CSSProperties } from "react";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { spacing, spacingZero } from "@css-fn/spacing";

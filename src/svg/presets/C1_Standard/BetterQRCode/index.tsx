@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import ImgEx from "@html/basicEx/ImgEx";
-import { defaultTo } from "lodash";
+import { defaultTo } from "lodash-es";
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";
 import svgURL from "@svg/utils/svgURL";
