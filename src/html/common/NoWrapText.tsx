@@ -1,5 +1,6 @@
 import { isArray, isString } from "lodash"
-import { ReactNode, isValidElement } from "react"
+import { isValidElement } from "react"
+import type { ReactNode } from "react"
 
 // ============================================ NoWrapText ============================================
 

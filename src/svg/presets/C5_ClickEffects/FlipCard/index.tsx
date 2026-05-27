@@ -1,4 +1,4 @@
-import {CSSProperties, ReactNode} from "react";
+import type {CSSProperties, ReactNode} from "react";
 import SvgEx from "@html/basicEx/SvgEx";
 import SectionEx from "@html/basicEx/SectionEx";
 import {defaultTo} from "lodash";

@@ -1,11 +1,12 @@
-import { CSSProperties } from "react"
+import type { CSSProperties } from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { defaultTo } from "lodash"
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing"
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault"
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing"
+import useImgSize from "@common/hooks/useImgSize"
 import HardCutSwitchImage from "./components/HardCutSwitchImage"
-import { PicConfig } from "./types"
+import type { PicConfig } from "./types"
 import { normalizePics } from "./config/normalizer"
 import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
 
@@ -31,7 +32,7 @@ const HardCutSwitch = (props: {
 }) => {
     const mpResult = mpGet(defaultTo(props.mp, mpBlank))
     const pics = normalizePics(props.pics)
-    const canvasSize = getImgSizeByDefault(pics[0].url, props.viewBoxW, props.viewBoxH)
+    const { size: canvasSize } = useImgSize(pics[0].url, props.viewBoxW, props.viewBoxH)
 
     // 计算总动画时长
     const totalDuration = calculateTotalCycleDuration(pics)

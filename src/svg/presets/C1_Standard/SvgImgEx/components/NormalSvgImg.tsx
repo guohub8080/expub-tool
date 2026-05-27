@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { mpBlank, mpBlankCss } from "@css-fn/spacing";
 

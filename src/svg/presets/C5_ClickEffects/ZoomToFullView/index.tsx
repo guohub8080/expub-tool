@@ -1,8 +1,9 @@
-import { CSSProperties, useMemo } from "react";
+import { useMemo } from "react";
+import type { CSSProperties,  } from "react";
 import { defaultTo } from "lodash";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
+import useImgSize from "@common/hooks/useImgSize";
 import { mpBlank, mpGet } from "@css-fn/spacing";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 import {
 	genAnimateCustom,
 	genAnimateOpacity,
@@ -26,7 +27,7 @@ const ZoomToFullView = (props: ZoomToFullViewProps) => {
 	const promptBlinkDuration = defaultTo(props.promptBlinkDuration, 2.15);
 	const mpResult = mpGet(defaultTo(props.mp, mpBlank));
 
-	const { w, h } = getImgSizeByDefault(bgPic, props.viewBoxW, props.viewBoxH);
+	const { size: { w, h } } = useImgSize(bgPic, props.viewBoxW, props.viewBoxH);
 	const W = defaultTo(props.viewBoxW, w);
 	const H = defaultTo(props.viewBoxH, h);
 

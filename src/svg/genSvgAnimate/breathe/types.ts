@@ -2,7 +2,7 @@
  * breathe 动画的类型定义
  */
 
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 /**
  * 基础动画选项

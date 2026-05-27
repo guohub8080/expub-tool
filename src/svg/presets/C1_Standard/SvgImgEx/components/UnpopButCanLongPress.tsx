@@ -1,7 +1,7 @@
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 
 const UnpopButCanLongPress = (props: { url: string ,w:number,h:number}) => {
   return <>

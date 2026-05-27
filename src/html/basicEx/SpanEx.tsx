@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode, HTMLAttributes } from "react";
+import type { CSSProperties, ReactNode, HTMLAttributes } from "react";
 import { useImportant } from "./useImportant";
 
 const SpanEx = (props: {

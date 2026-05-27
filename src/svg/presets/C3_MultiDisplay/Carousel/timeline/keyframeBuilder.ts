@@ -1,4 +1,4 @@
-import { Direction } from "../types";
+import type { Direction } from "../types";
 import { getInitialOffset, getExitOffset } from "./offsetCalculator";
 
 /**

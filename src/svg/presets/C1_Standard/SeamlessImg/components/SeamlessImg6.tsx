@@ -1,4 +1,4 @@
-import { CSSProperties } from "react"
+import type { CSSProperties } from "react"
 import SvgEx from "@html/basicEx/SvgEx"
 
 const SeamlessImg6 = (props: { w: number, h: number, url: string, mpResult: CSSProperties }) => {

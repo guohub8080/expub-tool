@@ -1,12 +1,13 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import { random, isNil, defaultTo } from "lodash";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
-import svgURL from "@pub-utils/common/svgURL";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
+import svgURL from "@svg/utils/svgURL";
 import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
+import useImgSize from "@common/hooks/useImgSize";
 
 /**
  * 滤镜图片组件 - 支持混合模式和多种滤镜效果
@@ -45,7 +46,7 @@ const FilterImg = (props: {
     mp?: mpProps
 }) => {
     const url = defaultTo(props.url, getWechat300x500(random(1, 9)))
-    const imgSize = getImgSizeByDefault(url, props.viewBoxW, props.viewBoxH)
+    const { size: imgSize } = useImgSize(url, props.viewBoxW, props.viewBoxH)
     const mpResult = mpGet(defaultTo(props.mp, mpBlank))
     const blendMode = defaultTo(props.blendMode, 'multiply')
 

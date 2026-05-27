@@ -3,8 +3,8 @@
  */
 
 import React from 'react';
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 export interface FloatOptions {
   /** Y轴浮动范围（像素），默认 20 */
@@ -12,7 +12,7 @@ export interface FloatOptions {
   /** X轴浮动范围（像素），默认 0 */
   floatRangeX?: number;
   /** 动画时长（秒），默认 4 */
-  durationSeconds?: number;
+  duration?: number;
   /** 缓动曲线，默认 '0.24 0 0.24 1' (ease-in-out) */
   keySplines?: string;
   /** 重复次数，0 表示无限循环，默认 0 */
@@ -30,7 +30,7 @@ export interface FloatOptions {
  * ```tsx
  * <svg>
  *   <g>
- *     {genAnimateFloat({ floatRangeY: 20, durationSeconds: 4 })}
+ *     {genAnimateFloat({ floatRangeY: 20, duration: 4 })}
  *     <rect width="100" height="100" fill="red" />
  *   </g>
  * </svg>
@@ -40,7 +40,7 @@ export function genAnimateFloat(options: FloatOptions = {}) {
   const {
     floatRangeY = 20,
     floatRangeX = 0,
-    durationSeconds = 4,
+    duration = 4,
     keySplines = '0.24 0 0.24 1',
     repeatCount = 0,
     delay = 0,
@@ -70,7 +70,7 @@ export function genAnimateFloat(options: FloatOptions = {}) {
       repeatCount={repeatCountValue}
       calcMode="spline"
       keySplines={keySplinesFull}
-      dur={`${durationSeconds}s`}
+      dur={`${duration}s`}
       begin={beginValue}
     />
   );

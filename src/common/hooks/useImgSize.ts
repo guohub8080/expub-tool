@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { defaultTo } from "lodash"
-import getImgSizeAsync from "./getImgSizeAsync"
+import getImgSizeAsync from "../utils/getImgSizeAsync"
 
 /**
  * React Hook：获取图片尺寸，优先使用传入的默认值，其次异步加载获取

@@ -2,8 +2,8 @@
  * breathe 动画的工具函数
  */
 
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 /**
  * 处理 begin 属性

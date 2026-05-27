@@ -4,8 +4,8 @@
 
 import React from 'react';
 import { defaultTo } from 'lodash';
-import { PathMotionAnimationConfig } from './types';
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
+import type { PathMotionAnimationConfig } from './types';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
 
 /**
  * 生成路径动画的 animateMotion React 元素

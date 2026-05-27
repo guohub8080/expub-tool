@@ -4,12 +4,14 @@
 
 import React from 'react';
 import { isUndefined, isArray, defaultTo } from 'lodash';
-import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
-import { RotateAnimationConfig, RotateOrigin } from './types';
-import { ElementBoundsType, getOriginNumByText } from '@pub-utils/common/getElementBounds';
+import { genSvgKeySplines } from '@svg/genSvgKeySplines';
+import type { SvgTimelineSegment } from '@svg/genSvgKeySplines';
+import type { RotateAnimationConfig, RotateOrigin } from './types';
+import { getOriginNumByText } from '@common/utils/getElementBounds';
+import type { ElementBoundsType } from '@common/utils/getElementBounds';
 import { getLinearBezier } from '@bezier/index';
-import { assertNonEmptyArray } from '@pub-utils/common/arrayValidation';
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
+import { assertNonEmptyArray } from '@common/utils/arrayValidation';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
 
 /**
  * 将快捷位置转换为具体坐标

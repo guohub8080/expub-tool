@@ -1,7 +1,7 @@
 import SvgEx from "@html/basicEx/SvgEx";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 import { genAnimateTranslate } from "@svg-anim/translate";
-import { NormalizedPicConfig } from "../types";
+import type { NormalizedPicConfig } from "../types";
 import { calculateDelayTime } from "../timeline/sequenceCalculator";
 import { getEntryOffset } from "../timeline/offsetCalculator";
 import { assembleTimeline } from "../timeline/segmentAssembler";

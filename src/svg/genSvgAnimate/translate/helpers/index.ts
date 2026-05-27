@@ -3,7 +3,7 @@
  */
 
 import { genAnimateTranslate } from '../core';
-import { Point2D, TranslateAnimationConfig, TranslateTimelineSegment } from '../types';
+import type { Point2D, TranslateAnimationConfig, TranslateTimelineSegment } from '../types';
 
 /**
  * 方向常量，用于快速创建方向性移动

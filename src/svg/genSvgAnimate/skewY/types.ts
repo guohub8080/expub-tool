@@ -2,7 +2,7 @@
  * genAnimateSkewY 类型定义
  */
 
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 /** 垂直斜切时间线段 */
 export interface SkewYTimelineSegment {

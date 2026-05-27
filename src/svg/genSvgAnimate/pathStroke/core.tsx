@@ -4,10 +4,11 @@
 
 import React from 'react';
 import { isUndefined, isNil, defaultTo, isEmpty } from 'lodash';
-import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
-import { PathStrokeAnimationConfig } from './types';
+import { genSvgKeySplines } from '@svg/genSvgKeySplines';
+import type { SvgTimelineSegment } from '@svg/genSvgKeySplines';
+import type { PathStrokeAnimationConfig } from './types';
 import { getLinearBezier } from '@bezier/index';
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
 
 /**
  * 生成路径描边动画的 <g> 容器及 <animate> 元素

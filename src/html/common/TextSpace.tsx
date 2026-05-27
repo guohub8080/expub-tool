@@ -1,5 +1,5 @@
 import { isUndefined, isNumber } from "lodash"
-import { CSSProperties } from "react"
+import type { CSSProperties } from "react"
 
 // ============================================ TextSpace ============================================
 

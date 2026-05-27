@@ -4,11 +4,11 @@
 
 import React from 'react';
 import { defaultTo } from 'lodash';
-import { genSvgKeySplines } from '@pub-utils/genSvgKeySplines';
-import { TranslateAnimationConfig } from './types';
-import { assertNonEmptyArray } from '@pub-utils/common/arrayValidation';
+import { genSvgKeySplines } from '@svg/genSvgKeySplines';
+import type { TranslateAnimationConfig } from './types';
+import { assertNonEmptyArray } from '@common/utils/arrayValidation';
 import { buildCoordinates, buildXYTimelines, combineXYValues, calculateTotalDuration } from './utils/index';
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
 
 /**
  * 生成平移动画的 animateTransform React 元素

@@ -1,5 +1,5 @@
-import { CSSProperties } from "react"
-import svgURL from "@pub-utils/common/svgURL.ts"
+import type { CSSProperties } from "react"
+import svgURL from "@svg/utils/svgURL"
 import SvgEx from "@html/basicEx/SvgEx"
 
 const SeamlessImg7 = (props: { w: number, h: number, url: string, mpResult: CSSProperties }) => {

@@ -1,4 +1,4 @@
-import { KeyframeBuilderInput, KeyframeParams, AnimationMode, Direction } from "../types";
+import type { KeyframeBuilderInput, KeyframeParams, AnimationMode, Direction } from "../types";
 import { getInitialPosition, getTranslateOffset } from "./offsetCalculator";
 
 /**

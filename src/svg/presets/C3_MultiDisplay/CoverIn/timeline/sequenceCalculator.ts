@@ -1,4 +1,4 @@
-import { NormalizedPicConfig, DurationCalculations, AnimationGroups } from "../types";
+import type { DurationCalculations, AnimationGroups, NormalizedPicConfig } from "../types";
 
 /**
  * 序列时间计算器

@@ -1,4 +1,4 @@
-import { PicConfig, NormalizedPicConfig } from "../types";
+import type { PicConfig, NormalizedPicConfig } from "../types";
 import { defaultTo } from "lodash";
 import { getEaseBezier } from "@bezier/index";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";

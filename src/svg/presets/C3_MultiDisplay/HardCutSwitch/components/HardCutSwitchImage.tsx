@@ -1,7 +1,7 @@
 import SvgEx from "@html/basicEx/SvgEx";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 import { genAnimateOpacity } from "@svg-anim/opacity";
-import { NormalizedPicConfig } from "../types";
+import type { NormalizedPicConfig } from "../types";
 import { buildHardCutTimeline } from "../timeline/timelineBuilder";
 
 /**

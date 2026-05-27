@@ -3,7 +3,7 @@ import { defaultTo, round } from "lodash";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 
 // 精确移植 参考实现Svg/多图展示/扑克滑动3图.html（仅 3 张），并提取“单卡移出时长(moveSec)”与“静止展示时长(holdSec)”
 const PokerSlideThree = (props: { moveSec?: number; holdSec?: number }) => {

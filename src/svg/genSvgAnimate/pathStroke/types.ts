@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 /** 路径描边时间线段 */
 export interface PathStrokeTimelineSegment {

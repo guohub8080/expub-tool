@@ -1,9 +1,9 @@
 import SvgEx from "@html/basicEx/SvgEx";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 import { defaultTo } from "lodash";
 import { buildKeyframeParams } from "../timeline/keyframeBuilder";
 import { calculateSlideStartTime, calculateSlideEndTime } from "../timeline/sequenceCalculator";
-import { NormalizedPicConfig, AnimationMode } from "../types";
+import type { AnimationMode, NormalizedPicConfig } from "../types";
 
 /**
  * 滑入图片组件

@@ -1,4 +1,4 @@
-import {CSSProperties} from "react";
+import type {CSSProperties} from "react";
 
 // ============================================ 边框样式预设 ============================================
 

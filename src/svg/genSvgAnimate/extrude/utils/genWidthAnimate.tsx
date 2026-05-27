@@ -6,11 +6,12 @@
  */
 
 import { isNil, defaultTo, isEmpty, isUndefined } from 'lodash';
-import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
+import { genSvgKeySplines } from '@svg/genSvgKeySplines';
+import type { SvgTimelineSegment } from '@svg/genSvgKeySplines';
 import { getEaseBezier } from "@bezier/index";
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
-import { CSSProperties } from "react";
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
+import type { CSSProperties } from "react";
 
 /**
  * 挤出动画选项

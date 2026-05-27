@@ -1,4 +1,4 @@
-import {CSSProperties} from "react";
+import type {CSSProperties} from "react";
 
 /**
  * 字体大小

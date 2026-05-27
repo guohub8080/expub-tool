@@ -4,11 +4,12 @@
 
 import React from 'react';
 import { isUndefined, defaultTo } from 'lodash';
-import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
-import { SkewXAnimationConfig } from './types';
+import { genSvgKeySplines } from '@svg/genSvgKeySplines';
+import type { SvgTimelineSegment } from '@svg/genSvgKeySplines';
+import type { SkewXAnimationConfig } from './types';
 import { getEaseBezier } from '@bezier/index';
-import { assertNonEmptyArray } from '@pub-utils/common/arrayValidation';
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
+import { assertNonEmptyArray } from '@common/utils/arrayValidation';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
 
 /**
  * 生成水平斜切动画的 animateTransform React 元素

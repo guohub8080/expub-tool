@@ -2,8 +2,8 @@
  * genAnimateScale 类型定义
  */
 
-import { ElementBoundsType, OriginPosition } from '../../common/getElementBounds';
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
+import type { ElementBoundsType, OriginPosition } from '@common/utils/getElementBounds';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 /** 缩放时间线段 */
 export interface ScaleTimelineSegment {

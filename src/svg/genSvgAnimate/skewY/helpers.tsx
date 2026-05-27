@@ -3,7 +3,7 @@
  */
 
 import { genAnimateSkewY } from './core';
-import { SkewYAnimationConfig, SkewYTimelineSegment } from './types';
+import type { SkewYAnimationConfig, SkewYTimelineSegment } from './types';
 
 /**
  * 垂直斜切角度常量

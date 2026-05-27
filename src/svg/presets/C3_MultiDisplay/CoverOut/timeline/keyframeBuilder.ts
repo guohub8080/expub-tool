@@ -1,4 +1,4 @@
-import { NormalizedPicConfig } from "../types";
+import type { NormalizedPicConfig } from "../types";
 import { calculateSlideOutStartTime, calculateSlideOutEndTime } from "./sequenceCalculator";
 import { getExitOffset } from "./offsetCalculator";
 

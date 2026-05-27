@@ -1,4 +1,4 @@
-import type { SvgBeginEventType } from '../../common/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 export interface SetOptions {
   /** 触发事件类型，默认 auto（自动开始） */

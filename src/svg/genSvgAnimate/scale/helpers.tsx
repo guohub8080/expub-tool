@@ -3,7 +3,7 @@
  */
 
 import { genAnimateScale } from './core';
-import { ScaleAnimationConfig, ScaleTimelineSegment } from './types';
+import type { ScaleAnimationConfig, ScaleTimelineSegment } from './types';
 
 /**
  * 缩放常量
@@ -42,7 +42,7 @@ export function genAnimateScaleSimple(
 ) {
   return genAnimateScale({
     ...options,
-    timeline: [{ durationSeconds: duration, toScale }],
+    timeline: [{ durationSeconds: duration, toValue: toValue }],
   });
 }
 

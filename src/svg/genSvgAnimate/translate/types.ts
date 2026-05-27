@@ -2,7 +2,7 @@
  * genAnimateTranslate 类型定义
  */
 
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 /** 二维坐标 */
 export interface Point2D {

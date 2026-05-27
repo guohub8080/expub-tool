@@ -3,9 +3,10 @@ import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
-import svgURL from "@pub-utils/common/svgURL";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
+import useImgSize from "@common/hooks/useImgSize";
+import svgURL from "@svg/utils/svgURL";
 
 /**
  * 横向长图滑动组件
@@ -59,7 +60,7 @@ const LongImgTouchSlideX = (props: {
     const isReverse = defaultTo(props.isReverse, false)
     const imgURL = defaultTo(props.url, LONG_PIC_WECHAT_EXAMPLE_URL)
 
-    const imgSize = getImgSizeByDefault(imgURL, props.w, props.h)
+    const { size: imgSize } = useImgSize(imgURL, props.w, props.h)
     const mpResult = mpGet(defaultTo(props.mp, mpBlank))
 
     // 将"露出百分比"转换为"实际slideW"

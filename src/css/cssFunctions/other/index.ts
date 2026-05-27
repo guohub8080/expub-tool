@@ -1,4 +1,4 @@
-import {CSSProperties} from "react";
+import type {CSSProperties} from "react";
 
 /**
  * 透明度 (0-1)

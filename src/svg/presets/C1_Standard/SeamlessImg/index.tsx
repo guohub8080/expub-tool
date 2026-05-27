@@ -1,7 +1,8 @@
 import { defaultTo } from "lodash";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
+import useImgSize from "@common/hooks/useImgSize";
 import SeamlessImg1 from "./components/SeamlessImg1";
 import SeamlessImg2 from "./components/SeamlessImg2";
 import SeamlessImg3 from "./components/SeamlessImg3";
@@ -63,7 +64,7 @@ const SeamlessImg = (props: SeamlessImgProps) => {
 
     //定义图片和尺寸
     const imgURL = defaultTo(props.url, getWechat300x300(1))
-    const imgSize = getImgSizeByDefault(imgURL, props.w, props.h)
+    const { size: imgSize } = useImgSize(imgURL, props.w, props.h)
 
 
     //仅长按识别 - SeamlessImg7

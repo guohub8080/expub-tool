@@ -1,5 +1,5 @@
 import {defaultTo} from "lodash";
-import {ReactNode} from "react";
+import type {ReactNode} from "react";
 import ZeroHeightContainer from "@pub-svg/C2_Containers/ZeroHeightContainer";
 
 /**

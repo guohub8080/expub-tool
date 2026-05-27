@@ -1,12 +1,14 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { CSSProperties, useMemo } from "react";
+import { useMemo } from "react";
+import type { CSSProperties,  } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import { mpGet } from "@css-fn/spacing";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
+import useImgSize from "@common/hooks/useImgSize";
 import { getLinearBezier } from "@bezier/index";
-import { HotAreaConfig, getFullScreenHotArea } from "@pub-utils/svgHotArea";
+import { getFullScreenHotArea } from "@svg/presets/C6_Advanced/HotArea";
+import type { HotAreaConfig } from "@svg/presets/C6_Advanced/HotArea";
 import ClickSwitchLayer from "./components/ClickSwitchLayer";
 import { frameStyle } from "./styles";
 import type { ClickSwitchFadeProps, ClickSwitchFadePic } from "./types";
@@ -69,7 +71,7 @@ const ClickSwitchFade = (props: ClickSwitchFadeProps) => {
 	const firstPicUrl = defaultTo(props.pics, [{ url: getTextImgPic1(600, 800, "测试图1") }])[0]?.url
 
 	// 计算最终的 viewBox 尺寸：优先使用用户指定的尺寸，否则使用基准图片的真实尺寸
-	const imgSizeAsViewBox = getImgSizeByDefault(firstPicUrl, props.viewBoxW, props.viewBoxH)
+	const { size: imgSizeAsViewBox } = useImgSize(firstPicUrl, props.viewBoxW, props.viewBoxH)
 
 	/**
 	 * 处理图片配置：为每张图片设置 url、duration、keySplines 和 hotArea

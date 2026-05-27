@@ -1,5 +1,5 @@
 import { max, defaultTo } from "lodash";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 /**
  * HotArea - 热区组件
@@ -77,5 +77,19 @@ const HotArea = (props: {
         </>
     )
 }
+
+export type HotAreaConfig = {
+    x?: number,
+    y?: number,
+    width?: number,
+    height?: number,
+}
+
+export const getFullScreenHotArea = (viewBoxW: number, viewBoxH: number): HotAreaConfig => ({
+    x: 0,
+    y: 0,
+    width: viewBoxW,
+    height: viewBoxH,
+})
 
 export default HotArea

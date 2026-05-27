@@ -1,13 +1,15 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { CSSProperties, useMemo } from "react";
+import { useMemo } from "react";
+import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
+import useImgSize from "@common/hooks/useImgSize";
 import InitialStaticPic from "./components/InitialStaticPic";
 import SlidePic from "./components/SlidePic";
-import { PicConfig } from "./types";
+import type { PicConfig } from "./types";
 import { normalizePics } from "./config/normalizer";
 import { createAnimationGroups } from "./grouping/animationGrouper";
 import { calculateDurations } from "./timeline/sequenceCalculator";
@@ -34,7 +36,7 @@ const CoverIn = (props: {
     const durations = useMemo(() => calculateDurations(renderPics), [renderPics]);
 
     // 获取统一的 viewBox 尺寸（基于第一张图）
-    const imgSize = getImgSizeByDefault(pics[0].url, props.viewBoxW, props.viewBoxH);
+    const { size: imgSize } = useImgSize(pics[0].url, props.viewBoxW, props.viewBoxH);
 
     const rootStyle: CSSProperties = {
         ...rootBaseStyle,

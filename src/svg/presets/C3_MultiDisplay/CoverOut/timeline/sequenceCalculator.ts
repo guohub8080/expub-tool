@@ -1,4 +1,4 @@
-import { NormalizedPicConfig } from "../types";
+import type { NormalizedPicConfig } from "../types";
 
 /**
  * 序列时间计算器

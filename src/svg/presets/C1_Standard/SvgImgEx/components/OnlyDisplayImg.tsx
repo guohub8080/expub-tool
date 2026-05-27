@@ -1,6 +1,6 @@
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 
 const OnlyDisplayImg = (props: { url: string, w: number, h: number }) => {
     return <>

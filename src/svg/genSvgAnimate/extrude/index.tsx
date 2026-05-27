@@ -20,10 +20,11 @@
 
 import React from 'react';
 import {isNil, defaultTo, isEmpty, isUndefined} from 'lodash';
-import {genSvgKeySplines, SvgTimelineSegment} from '@pub-utils/genSvgKeySplines';
+import {genSvgKeySplines} from '@svg/genSvgKeySplines';
+import type {SvgTimelineSegment} from '@svg/genSvgKeySplines';
 import {getEaseBezier} from "@bezier/index";
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
-import type { SvgBeginEventType } from '@pub-utils/common/getSvgBegin';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 import SvgEx from "@html/basicEx/SvgEx";
 
 // 重新导出工具函数，供需要单独使用 animate 元素的场景

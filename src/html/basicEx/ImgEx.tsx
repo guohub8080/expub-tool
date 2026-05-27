@@ -1,6 +1,6 @@
 import React from "react";
 import { defaultTo, isEmpty } from "lodash";
-import GetPlaceHolderPic1 from "../../../api/placeHolderPic/getPlaceHolderPic1";
+import GetPlaceHolderPic1 from "@api/placeHolderPic/getPlaceHolderPic1";
 import { useImportant } from "./useImportant";
 
 interface ImgExProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {

@@ -1,5 +1,5 @@
 import SvgEx from "@html/basicEx/SvgEx";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 import { defaultTo } from "lodash";
 
 /**

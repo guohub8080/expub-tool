@@ -1,10 +1,12 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { CSSProperties, useMemo } from "react";
+import { useMemo } from "react";
+import type { CSSProperties,  } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import svgURL from "@pub-utils/common/svgURL";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
+import svgURL from "@svg/utils/svgURL";
+import useImgSize from "@common/hooks/useImgSize";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
 
 type Direction = "T" | "B" | "L" | "R";
 
@@ -32,7 +34,7 @@ const CoverInClick = (props: {
 
     // 以第一张图估算 viewBox，若未提供尺寸
     const firstUrl = pics[0]?.url;
-    const imgSizeAsViewBox = getImgSizeByDefault(firstUrl, props.viewBoxW, props.viewBoxH);
+    const { size: imgSizeAsViewBox } = useImgSize(firstUrl, props.viewBoxW, props.viewBoxH);
 
     // 统一的容器样式
     const rootStyle: CSSProperties = {

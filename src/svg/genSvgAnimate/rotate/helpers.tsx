@@ -3,7 +3,7 @@
  */
 
 import { genAnimateRotate } from './core';
-import { RotateAnimationConfig, RotateTimelineSegment } from './types';
+import type { RotateAnimationConfig, RotateTimelineSegment } from './types';
 
 /**
  * 旋转方向常量

@@ -1,6 +1,6 @@
 import React from 'react';
 import { defaultTo } from 'lodash';
-import { getSvgBegin } from '../../common/getSvgBegin';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
 import type { GenSetOptions, GenSetVisibilityOptions, GenSetOpacityOptions, GenSetDisplayOptions } from './types';
 
 /**
@@ -31,19 +31,19 @@ export function genSet(options: GenSetOptions): React.ReactElement | null {
  * 瞬间切换 visibility
  */
 export function genSetVisibility(options: GenSetVisibilityOptions): React.ReactElement | null {
-  return genSet({ attributeName: 'visibility', to: options.to, ...options });
+  return genSet({ attributeName: 'visibility', ...options });
 }
 
 /**
  * 瞬间切换 opacity
  */
 export function genSetOpacity(options: GenSetOpacityOptions): React.ReactElement | null {
-  return genSet({ attributeName: 'opacity', to: String(options.to), ...options });
+  return genSet({ attributeName: 'opacity', ...options });
 }
 
 /**
  * 瞬间切换 display
  */
 export function genSetDisplay(options: GenSetDisplayOptions): React.ReactElement | null {
-  return genSet({ attributeName: 'display', to: options.to, ...options });
+  return genSet({ attributeName: 'display', ...options });
 }

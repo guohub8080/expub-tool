@@ -1,4 +1,4 @@
-import { NormalizedPicConfig, Direction, TimelineSegment } from "../types";
+import type { Direction, TimelineSegment, NormalizedPicConfig } from "../types";
 import { getEntryOffset, getExitOffset } from "./offsetCalculator";
 import { calculateDelayTime, calculateHoldTime } from "./sequenceCalculator";
 

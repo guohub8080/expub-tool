@@ -3,7 +3,7 @@
  */
 
 import { genAnimateOpacity } from './core';
-import { OpacityAnimationConfig, OpacityTimelineSegment } from './types';
+import type { OpacityAnimationConfig, OpacityTimelineSegment } from './types';
 
 /**
  * 不透明度常量

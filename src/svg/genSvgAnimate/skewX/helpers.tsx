@@ -3,7 +3,7 @@
  */
 
 import { genAnimateSkewX } from './core';
-import { SkewXAnimationConfig, SkewXTimelineSegment } from './types';
+import type { SkewXAnimationConfig, SkewXTimelineSegment } from './types';
 
 /**
  * 水平斜切角度常量
@@ -33,7 +33,7 @@ export function genAnimateSkewXSimple(
 ) {
   return genAnimateSkewX({
     ...options,
-    timeline: [{ durationSeconds: duration, toAngle }],
+    timeline: [{ durationSeconds: duration, toValue: toValue }],
   });
 }
 

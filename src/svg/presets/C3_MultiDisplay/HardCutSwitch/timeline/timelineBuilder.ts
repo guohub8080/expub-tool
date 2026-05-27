@@ -1,4 +1,4 @@
-import { NormalizedPicConfig } from "../types";
+import type { NormalizedPicConfig } from "../types";
 import { calculateDelayTime } from "./sequenceCalculator";
 
 /**

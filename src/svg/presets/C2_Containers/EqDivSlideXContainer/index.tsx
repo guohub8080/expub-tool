@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
 
 const EquallyDividedSlideContainer = (props: {
     comps?: ReactNode[]

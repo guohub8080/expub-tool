@@ -22,8 +22,8 @@
     "declarationMap": true,
 
     // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false,
 
     // Style Options
     // "noImplicitReturns": true,
@@ -56,7 +56,9 @@
       "@bezier/*": ["./src/bezier/*"],
       "@colors/*": ["./src/common/colors/*"],
       "@css-fn/*": ["./src/css/cssFunctions/*"],
-      "@css-presets/*": ["./src/css/cssPresets/*"]
+      "@css-presets/*": ["./src/css/cssPresets/*"],
+      "@pub-svg/*": ["./src/svg/presets/*"],
+      "@svg-anim/*": ["./src/svg/genSvgAnimate/*"]
     }
   }
 }

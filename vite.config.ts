@@ -16,6 +16,8 @@ export default defineConfig({
       '@colors': resolve(__dirname, 'src/common/colors'),
       '@css-fn': resolve(__dirname, 'src/css/cssFunctions'),
       '@css-presets': resolve(__dirname, 'src/css/cssPresets'),
+      '@pub-svg': resolve(__dirname, 'src/svg/presets'),
+      '@svg-anim': resolve(__dirname, 'src/svg/genSvgAnimate'),
     },
   },
   build: {

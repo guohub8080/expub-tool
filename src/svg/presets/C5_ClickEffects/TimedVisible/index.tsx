@@ -1,12 +1,15 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { CSSProperties, useMemo } from "react";
+import { useMemo } from "react";
+import type { CSSProperties,  } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
-import { HotAreaConfig, getFullScreenHotArea } from "@pub-utils/svgHotArea";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
+import useImgSize from "@common/hooks/useImgSize";
+import { getFullScreenHotArea } from "@svg/presets/C6_Advanced/HotArea";
+import type { HotAreaConfig } from "@svg/presets/C6_Advanced/HotArea";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 
 /**
  * 限时可见组件
@@ -42,7 +45,7 @@ const TimedVisible = (props: {
   const mpResult = mpGet(defaultTo(props.mp, mpBlank))
 
   // 计算最终的 viewBox 尺寸
-  const imgSizeAsViewBox = getImgSizeByDefault(backgroundUrl, props.viewBoxW, props.viewBoxH)
+  const { size: imgSizeAsViewBox } = useImgSize(backgroundUrl, props.viewBoxW, props.viewBoxH)
 
   // 热区配置
   const hotArea = defaultTo(

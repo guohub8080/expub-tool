@@ -3,8 +3,9 @@ import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import ImgEx from "@html/basicEx/ImgEx";
 import { defaultTo } from "lodash";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
-import svgURL from "@pub-utils/common/svgURL";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
+import svgURL from "@svg/utils/svgURL";
 
 /**
  * 高阶二维码组件

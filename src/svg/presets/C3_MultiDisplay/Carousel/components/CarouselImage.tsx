@@ -1,7 +1,7 @@
 import SvgEx from "@html/basicEx/SvgEx";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 import SeamlessImg from "@pub-svg/C1_Standard/SeamlessImg";
-import { NormalizedPicConfig, Direction } from "../types";
+import type { Direction, NormalizedPicConfig } from "../types";
 import { calculateDelayTime } from "../timeline/sequenceCalculator";
 import { getInitialOffset } from "../timeline/offsetCalculator";
 import { buildValues, buildKeyTimes, buildKeySplines } from "../timeline/keyframeBuilder";

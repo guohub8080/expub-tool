@@ -1,11 +1,12 @@
-import { CSSProperties } from "react"
+import type { CSSProperties } from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { defaultTo } from "lodash"
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing"
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault"
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing"
+import useImgSize from "@common/hooks/useImgSize"
 import CarouselImage from "./components/CarouselImage"
-import { PicConfig } from "./types"
+import type { PicConfig } from "./types"
 import { normalizePics } from "./config/normalizer"
 import { getEaseBezier } from "@bezier/index"
 
@@ -32,7 +33,7 @@ const Carousel = (props: {
     keySplines?: string
 }) => {
     const mpResult = mpGet(defaultTo(props.mp, mpBlank))
-    const canvasSize = getImgSizeByDefault(props.pics?.[0]?.url, props.viewBoxW, props.viewBoxH)
+    const { size: canvasSize } = useImgSize(props.pics?.[0]?.url, props.viewBoxW, props.viewBoxH)
     const pics = normalizePics(props.pics)
 
     // 获取时长，默认 3 秒

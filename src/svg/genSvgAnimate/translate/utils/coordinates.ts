@@ -3,8 +3,8 @@
  */
 
 import { defaultTo, isUndefined } from 'lodash';
-import { genSvgKeySplines, SvgTimelineSegment } from '@pub-utils/genSvgKeySplines';
-import { Point2D, TranslateTimelineSegment } from '../types';
+import type { genSvgKeySplines, SvgTimelineSegment } from '@svg/genSvgKeySplines';
+import type { Point2D, TranslateTimelineSegment } from '../types';
 
 /**
  * 构建完整的坐标序列

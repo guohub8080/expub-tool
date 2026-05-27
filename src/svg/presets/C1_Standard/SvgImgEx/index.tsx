@@ -1,9 +1,10 @@
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import { defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
+import useImgSize from "@common/hooks/useImgSize";
 import NormalSvgImg from "./components/NormalSvgImg";
 import UnpopButCanLongPress from "./components/UnpopButCanLongPress";
 import OnlyDisplayImg from "./components/OnlyDisplayImg";
@@ -52,7 +53,7 @@ const SvgImgEx = (props: SvgImgExProps) => {
     const isLongPressedRecongitionAllowed = defaultTo(props.isLongPressedRecongitionAllowed, true)
 
     //获取size，如果svg定位需要size
-    const imgSize = getImgSizeByDefault(url, props.w, props.h)
+    const { size: imgSize } = useImgSize(url, props.w, props.h)
     //普通的图片，允许点击弹出，也允许长按保存。
     if (isPopAllowed) {
         return <SectionEx

@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { getSvgBegin } from '@pub-utils/common/getSvgBegin';
+import { getSvgBegin } from '@svg/utils/getSvgBegin';
+import type { SvgBeginEventType } from '@svg/utils/getSvgBegin';
 
 // ==================== 导入工具类型 ====================
 import { 
@@ -12,7 +13,7 @@ import {
   getOriginNumByText,
   type ElementBoundsType,
   type OriginPosition
-} from '../common/getElementBounds';
+} from '@common/utils/getElementBounds';
 
 // ==================== 导入 ====================
 import {

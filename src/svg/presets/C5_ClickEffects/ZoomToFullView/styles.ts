@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import svgURL from "@pub-utils/common/svgURL";
+import svgURL from "@svg/utils/svgURL";
 
 export const rootStyle = (mpResult: CSSProperties): CSSProperties => ({
 	WebkitTouchCallout: "none",

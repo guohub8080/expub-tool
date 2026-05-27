@@ -55,6 +55,10 @@ Both TypeScript and Vite are configured with the same aliases:
 | `@common/*` | `src/common/*` |
 | `@utils/*` | `src/utils/*` |
 | `@api/*` | `src/api/*` |
+| `@bezier/*` | `src/bezier/*` |
+| `@colors/*` | `src/common/colors/*` |
+| `@css-fn/*` | `src/css/cssFunctions/*` |
+| `@css-presets/*` | `src/css/cssPresets/*` |
 
 **Important**: Relative imports should NOT include `.ts`/`.tsx` extensions. The `moduleResolution: bundler` setting handles extension resolution.
 
@@ -63,7 +67,10 @@ Both TypeScript and Vite are configured with the same aliases:
 - **`src/html/basicEx/`** — Base React components (ImgEx, SectionEx, SpanEx, SvgEx) that support `important` (for `!important` CSS) and `waterMark` props. These are the building blocks for HTML generation.
 - **`src/svg/presets/`** — Pre-built SVG animation components organized by category (C1_Standard, C3_MultiDisplay, C5_ClickEffects, etc.)
 - **`src/svg/genSvgAnimate/`** — Low-level SMIL animation generators (animate, animateTransform, etc.)
-- **`src/common/`** — Shared utilities including `useImgSize` hook and `getImgSizeAsync`
+- **`src/common/`** — Shared utilities organized as:
+  - `hooks/` — React hooks (e.g., `useImgSize`)
+  - `utils/` — Pure functions (e.g., `getImgSizeAsync`)
+  - `colors/` — Color palettes (`googleColors`, `tailwindColors`)
 
 ### `important` Pattern
 
@@ -85,5 +92,5 @@ The `useImportant` hook applies `style.setProperty(key, value, "important")` via
 
 - `package.json` has `"type": "module"` and exports ESM/CJS/UMD/IIFE
 - React is an optional peer dependency
-- `lodash` is a runtime dependency (used by library code)
+- `lodash` and `chroma-js` are runtime dependencies (used by library code)
 - `files` field only includes `dist/` and `README.md` — playground and source are excluded

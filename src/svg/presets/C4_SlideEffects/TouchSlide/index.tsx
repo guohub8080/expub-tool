@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { range, defaultTo } from "lodash";
 import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import { mpGet } from "@css-fn/spacing";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
+import useImgSize from "@common/hooks/useImgSize";
 import TouchSlideX from "./components/TouchSlideX";
 import TouchSlideB from "./components/TouchSlideB";
 import TouchSlideT from "./components/TouchSlideT";
@@ -71,7 +71,7 @@ const TouchSlide = (props: TouchSlideProps) => {
 	 * 根据 viewBoxBase 与图片尺寸推导最终 viewBox 尺寸
 	 * 允许通过 props.viewBoxW 和 props.viewBoxH 覆盖
 	 */
-	const resolvedViewBox = getImgSizeByDefault(normalizedPics[0].url, props.viewBoxW, props.viewBoxH);
+	const { size: resolvedViewBox } = useImgSize(normalizedPics[0].url, props.viewBoxW, props.viewBoxH);
 
 	// 根据滑动方向和反向设置，路由到对应的组件
 	if (isX) {

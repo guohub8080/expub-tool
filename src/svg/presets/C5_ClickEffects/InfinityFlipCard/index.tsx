@@ -9,7 +9,7 @@ import BackgroundLayer from "./components/BackgroundLayer"
 import BackSide from "./components/BackSide"
 import FrontSide from "./components/FrontSide"
 import {mpGet} from "@css-fn/spacing"
-import type {InfinityFlipCardProps} from "./types.ts"
+import type {InfinityFlipCardProps} from "./types"
 
 // ============================================ Main Component ============================================
 
@@ -188,4 +188,4 @@ const InfinityFlipCard = (props: InfinityFlipCardProps) => {
 }
 
 export default InfinityFlipCard
-export type {InfinityFlipCardProps} from "./types.ts"
+export type {InfinityFlipCardProps} from "./types"

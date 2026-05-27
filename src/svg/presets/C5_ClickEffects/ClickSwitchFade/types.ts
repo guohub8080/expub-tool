@@ -1,4 +1,5 @@
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
+import type { HotAreaConfig } from "@svg/presets/C6_Advanced/HotArea";
 
 /**
  * 单张图片的配置

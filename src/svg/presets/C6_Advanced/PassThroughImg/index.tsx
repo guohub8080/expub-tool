@@ -3,9 +3,10 @@ import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import { defaultTo } from "lodash";
 import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
-import { mpBlank, mpGet, mpProps } from "@css-fn/spacing";
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault";
-import svgURL from "@pub-utils/common/svgURL";
+import { mpBlank, mpGet,  } from "@css-fn/spacing";
+import type { mpProps } from "@css-fn/spacing";
+import useImgSize from "@common/hooks/useImgSize";
+import svgURL from "@svg/utils/svgURL";
 /**
  * 穿透图片组件
  * 
@@ -71,7 +72,7 @@ const PassThroughImg = (props: {
     mp?: mpProps
 }) => {
     const url = defaultTo(props.url, getWechat300x300(1))
-    const imgSize = getImgSizeByDefault(url, props.w, props.h)
+    const { size: imgSize } = useImgSize(url, props.w, props.h)
     const isNaturalPriority = defaultTo(props.isNaturalPriority, false)
     const isForceLoad = defaultTo(props.isForceLoad, false)
     const mpResult = mpGet(defaultTo(props.mp, mpBlank))

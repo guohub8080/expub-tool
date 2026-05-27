@@ -1,4 +1,4 @@
-import { Direction, Point } from "../types";
+import type { Direction, Point } from "../types";
 
 /**
  * 方向位移计算器

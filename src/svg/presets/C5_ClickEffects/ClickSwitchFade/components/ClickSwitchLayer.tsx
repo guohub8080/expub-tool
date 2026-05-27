@@ -1,10 +1,10 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import { max, defaultTo } from "lodash";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
-import svgURL from "@pub-utils/common/svgURL";
-import type { HotAreaConfig } from "@pub-utils/svgHotArea";
+import svgURL from "@svg/utils/svgURL";
+import type { HotAreaConfig } from "@svg/presets/C6_Advanced/HotArea";
 import type { ClickSwitchLayerProps } from "../types";
 
 /**

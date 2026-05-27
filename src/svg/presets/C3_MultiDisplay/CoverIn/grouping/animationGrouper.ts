@@ -1,4 +1,4 @@
-import { NormalizedPicConfig, AnimationGroups } from "../types";
+import type { AnimationGroups, NormalizedPicConfig } from "../types";
 
 /**
  * 动画分组器
