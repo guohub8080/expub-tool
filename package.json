@@ -21,6 +21,11 @@
       "import": "./dist/esm/css/index.mjs",
       "require": "./dist/cjs/css/index.cjs",
       "types": "./dist/types/css/index.d.ts"
+    },
+    "./svg": {
+      "import": "./dist/esm/svg/index.mjs",
+      "require": "./dist/cjs/svg/index.cjs",
+      "types": "./dist/types/svg/index.d.ts"
     }
   },
   "files": [

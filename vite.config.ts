@@ -25,6 +25,7 @@ export default defineConfig({
         index: resolve(__dirname, 'src/index.ts'),
         'bezier/index': resolve(__dirname, 'src/bezier/index.ts'),
         'css/index': resolve(__dirname, 'src/css/index.ts'),
+        'svg/index': resolve(__dirname, 'src/svg/index.ts'),
       },
       formats: ['es', 'cjs'],
     },
