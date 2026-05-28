@@ -13,6 +13,14 @@ export { getBackBezier0_1 } from "./bezier/getBackBezier"
 export { genSvgKeySplines } from "./genSvgKeySplines"
 export type { SvgTimelineSegment, SvgTimeline, SvgKeysResult } from "./genSvgKeySplines"
 
+// Timeline compiler
+export { compileTimeline } from "./timeline/compile"
+export type { I_TimelineKeyframe, I_TimelineResult, T_ValueSerializer } from "./timeline/types"
+
+// animateTransform
+export { transformTranslate } from "./animateTransform/translate"
+export type { I_TranslateConfig, I_TranslateValue } from "./animateTransform/translate"
+
 // SVG Utils (from @utils)
 export { svgURL, validateWechatSvg, WHITELIST_DATA } from "@utils/index"
 export type { IssueSeverity, ValidationIssue, ValidationResult } from "@utils/index"
