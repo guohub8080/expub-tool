@@ -47,17 +47,15 @@
     "moduleResolution": "bundler",
     "declarationDir": "dist/types",
     "paths": {
-      "@html/*": ["./src/html/*"],
       "@utils/*": ["./src/utils/*"],
-      "@common/*": ["./src/common/*"],
+      "@smil/*": ["./src/smil/*"],
+      "@html/*": ["./src/html/*"],
       "@css/*": ["./src/css/*"],
-      "@svg/*": ["./src/svg/*"],
-      "@bezier/*": ["./src/bezier/*"],
-      "@colors/*": ["./src/common/colors/*"],
+      "@svg-utils/*": ["./src/svg-utils/*"],
       "@css-fn/*": ["./src/css/cssFunctions/*"],
       "@css-presets/*": ["./src/css/cssPresets/*"],
-      "@pub-svg/*": ["./src/svg/presets/*"],
-      "@svg-anim/*": ["./src/svg/genSvgAnimate/*"]
+      "@svg-comps/*": ["./src/svg-comps/*"],
+      "@svg-anim/*": ["./src/svg-anim/*"]
     }
   }
 }

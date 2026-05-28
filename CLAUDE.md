@@ -6,96 +6,112 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `expub-tool` is a TypeScript library for WeChat Official Account (微信公众号) HTML/SVG content generation. It provides:
 
-- **SVG animation generation** (`src/svg/`) — SMIL-based animated SVG components with presets (click effects, multi-display transitions, etc.)
-- **HTML component generation** (`src/html/`) — React components that output static HTML/SVG strings for WeChat articles
-- **Bezier curve utilities** (`src/bezier/`) — Easing functions for SVG animations
-- **CSS utilities** (`src/css/`) — Helper functions for generating inline styles
+- **SVG components** (`src/svg-comps/`) — Pre-built SMIL animated SVG React components (click effects, multi-display transitions, containers, etc.)
+- **SVG animation generators** (`src/svg-anim/`) — Low-level SMIL animation generators, each organized by SVG animation tag type (animate, animateTransform, set)
+- **SVG utilities** (`src/svg-utils/`) — Bezier curves, keySplines generator, svgURL, WeChat SVG validator
+- **HTML components** (`src/html/`) — React components that output static HTML/SVG strings for WeChat articles
+- **CSS utilities** (`src/css/`) — Spacing, border, flex layout helpers
+- **Common** (`src/common/`) — Shared colors, hooks, utils
 
-The library is built with Vite + TypeScript + React (dev only) and published as a multi-format package (ESM/CJS/UMD/IIFE).
+The library is built with Vite + TypeScript + React (dev only) and published as ESM/CJS with preserveModules for true tree-shaking.
 
 ## Common Commands
 
 ```bash
-# Development — start React playground for previewing components
-pnpm dev
-
-# Build library for npm publish (outputs dist/ with .mjs, .cjs, .umd.js, .iife.js + .d.ts)
-pnpm build
-
-# Type check only
-pnpm typecheck
-
-# Run tests
-pnpm test              # interactive watch mode
-pnpm test:run          # single run (CI)
-pnpm test:ui           # with Vitest UI
-
-# Build playground for static deployment
-pnpm build:playground
+pnpm dev              # Start React playground for previewing components
+pnpm build            # Build library for npm publish (ESM + CJS, preserveModules)
+pnpm typecheck        # Type check without emitting files
+pnpm test             # Run tests with vitest
+pnpm test:run         # Run tests once (no watch)
 ```
 
-## Architecture
+## NPM Sub-path Exports
 
-### Dual Build System
+Users install `expub-tool` and import from sub-paths:
 
-The project has **two separate Vite configs**:
+```ts
+// Main entry — SVG components + CSS utilities
+import { BgImg, SeamlessImg, spacing } from "expub-tool"
 
-- **`vite.config.ts`** — Library build. Uses `build.lib` with multiple output formats. React is external (peer dependency). Entry: `src/index.ts`.
-- **`vite.playground.config.ts`** — Dev server build. Standalone React app in `playground/` for previewing components. Not published.
+// CSS utilities only
+import { px, py, mx, my, borderX, roundedT } from "expub-tool/css"
 
-### Path Aliases
+// SVG animation generators
+import { animateOpacity, transformScale, setVisibility } from "expub-tool/svg-anim"
 
-Both TypeScript and Vite are configured with the same aliases:
+// SVG components only
+import { ... } from "expub-tool/svg"
 
-| Alias | Maps to |
-|-------|---------|
+// SVG utilities (bezier, keySplines, svgURL, validator)
+import { svgURL, getEaseBezier, validateWechatSvg } from "expub-tool/svg-utils"
+```
+
+## SVG Animation Generator Naming Convention (`src/svg-anim/`)
+
+Functions are prefixed by the SVG tag they generate, so users can tell the tag type from the import:
+
+| Prefix | SVG Tag | Examples |
+|---|---|---|
+| `animate*` | `<animate>` | `animateOpacity`, `animateOpacityFade`, `animateOpacityLoop` |
+| `transform*` | `<animateTransform>` | `transformScale`, `transformScaleLoop`, `transformRotate`, `transformTranslate`, `transformSkewX` |
+| `set*` | `<set>` | `setVisibility`, `setOpacity`, `setDisplay` |
+| `pathMotion*` | `<animateMotion>` | `pathMotionLoop`, `pathMotionSlide` |
+| `pathStroke*` | `<animate>` (stroke) | `pathStroke` |
+
+### Directory structure
+
+Each animation type lives in its own subdirectory under `src/svg-anim/`:
+
+```
+src/svg-anim/
+├── opacity/        # animateOpacity* — <animate attributeName="opacity">
+├── scale/          # transformScale* — <animateTransform type="scale">
+├── rotate/         # transformRotate* — <animateTransform type="rotate">
+├── translate/      # transformTranslate* — <animateTransform type="translate">
+├── skewX/          # transformSkewX* — <animateTransform type="skewX">
+├── skewY/          # transformSkewY* — <animateTransform type="skewY">
+├── pathMotion/     # pathMotion* — <animateMotion>
+├── pathStroke/     # pathStroke* — <animate> on stroke-dashoffset
+├── blink/          # animateSoftBlink, animateHardBlink — <animate> opacity blink
+├── breathe/        # animateBreathe — <animate> + <animateTransform> composite
+├── extrude/        # animateExtrude — multi-element animation
+├── float/          # animateFloat — <animateTransform> floating effect
+├── set/            # set* — <set> instant state changes
+└── index.tsx       # barrel export
+```
+
+### Current state
+
+The functions currently use `genAnimate*` / `genSet*` naming (e.g., `genAnimateOpacity`, `genSetVisibility`). These will be renamed to the new convention:
+- `genAnimateOpacity` → `animateOpacity`
+- `genAnimateScale` → `transformScale`
+- `genSetVisibility` → `setVisibility`
+
+## Build Architecture
+
+- **Vite + Rollup** with `preserveModules: true` for true tree-shaking (each source file becomes an individual module in dist)
+- **Dual format**: ESM (`dist/esm/*.mjs`) + CJS (`dist/cjs/*.cjs`)
+- **Types**: generated via `tsc --emitDeclarationOnly` to `dist/types/`
+- **External deps**: `react`, `react-dom`, `react/jsx-runtime`, `lodash`, `lodash/*`
+- **Entry points** match source paths: `css/index`, `svg/index`, `svg-utils/index`, etc.
+
+## Path Aliases (tsconfig.json + vite.config.ts)
+
+| Alias | Resolves to |
+|---|---|
 | `@html/*` | `src/html/*` |
-| `@svg/*` | `src/svg/*` |
-| `@css/*` | `src/css/*` |
 | `@common/*` | `src/common/*` |
-| `@utils/*` | `src/utils/*` |
-| `@bezier/*` | `src/bezier/*` |
-| `@colors/*` | `src/common/colors/*` |
+| `@css/*` | `src/css/*` |
+| `@svg-comps/*` | `src/svg-comps/*` |
+| `@svg-anim/*` | `src/svg-anim/*` |
+| `@svg-utils/*` | `src/svg-utils/*` |
 | `@css-fn/*` | `src/css/cssFunctions/*` |
 | `@css-presets/*` | `src/css/cssPresets/*` |
 
-**Important**: Relative imports should NOT include `.ts`/`.tsx` extensions. The `moduleResolution: bundler` setting handles extension resolution.
+## Conventions
 
-### Key Source Directories
-
-- **`src/html/basicEx/`** — Base React components (ImgEx, SectionEx, SpanEx, SvgEx) that support `important` (for `!important` CSS) and `waterMark` props. These are the building blocks for HTML generation.
-- **`src/svg/presets/`** — Pre-built SVG animation components organized by category (C1_Standard, C3_MultiDisplay, C5_ClickEffects, etc.)
-- **`src/svg/genSvgAnimate/`** — Low-level SMIL animation generators (animate, animateTransform, etc.)
-- **`src/common/`** — Shared utilities organized as:
-  - `hooks/` — React hooks (e.g., `useImgSize`)
-  - `utils/` — Pure functions (e.g., `getImgSizeAsync`)
-  - `colors/` — Color palettes (`googleColors`, `tailwindColors`)
-
-### `important` Pattern
-
-Components in `basicEx/` use a consistent pattern for applying `!important` CSS:
-
-```tsx
-import { useImportant } from "./useImportant";
-
-// In component:
-const { ref, hasImportant } = useImportant<HTMLElement>(important);
-
-// Conditionally attach ref only when important is provided
-{hasImportant ? <tag ref={ref} ... /> : <tag ... />}
-```
-
-The `useImportant` hook applies `style.setProperty(key, value, "important")` via `useEffect`.
-
-### Publishing Notes
-
-- `package.json` has `"type": "module"` and exports ESM/CJS
-- React is an optional peer dependency
-- `files` field only includes `dist/` and `README.md` — playground and source are excluded
-- Sub-path exports supported (e.g. `import {} from "expub-tool/bezier"`)
-
-### Dependency Principles
-
-- **Minimize runtime dependencies.** Prefer native JS APIs over libraries. Only add a dependency when it provides significant value.
-- **Use lodash single-function imports** (`import xxx from "lodash/xxx"`) instead of `lodash` or `lodash-es`. Each `lodash/xxx` is a standalone file (~400 bytes), keeping the bundle lean without needing to externalize.
-- **`src/api/` is playground-only.** Library code must not depend on `@api/`. Placeholder image defaults belong in the playground, not the library.
+- **Type naming**: `T_` prefix for type aliases, `I_` prefix for interfaces
+- **Named exports** over default exports for library code (tree-shaking friendly)
+- **No namespace exports** for sub-paths — flat named exports only (tree-shaking concern)
+- **lodash**: use single-package imports (`import defaultTo from "lodash/defaultTo"`); lodash is externalized in build
+- **Prefer native JS** over lodash where possible (e.g., `Number.isInteger` instead of `lodash/isInteger`)

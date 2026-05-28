@@ -12,20 +12,25 @@
       "require": "./dist/cjs/index.cjs",
       "types": "./dist/types/index.d.ts"
     },
-    "./bezier": {
-      "import": "./dist/esm/bezier/index.mjs",
-      "require": "./dist/cjs/bezier/index.cjs",
-      "types": "./dist/types/bezier/index.d.ts"
+    "./svg-utils": {
+      "import": "./dist/esm/svg-utils/index.mjs",
+      "require": "./dist/cjs/svg-utils/index.cjs",
+      "types": "./dist/types/svg-utils/index.d.ts"
+    },
+    "./smil": {
+      "import": "./dist/esm/smil/index.mjs",
+      "require": "./dist/cjs/smil/index.cjs",
+      "types": "./dist/types/smil/index.d.ts"
     },
     "./css": {
       "import": "./dist/esm/css/index.mjs",
       "require": "./dist/cjs/css/index.cjs",
       "types": "./dist/types/css/index.d.ts"
     },
-    "./svg": {
-      "import": "./dist/esm/svg/index.mjs",
-      "require": "./dist/cjs/svg/index.cjs",
-      "types": "./dist/types/svg/index.d.ts"
+    "./utils": {
+      "import": "./dist/esm/utils/index.mjs",
+      "require": "./dist/cjs/utils/index.cjs",
+      "types": "./dist/types/utils/index.d.ts"
     }
   },
   "files": [
