@@ -32,8 +32,12 @@ export type { I_SkewYConfig } from "./animateTransform/skewY"
 // animate
 export { animateOpacity } from "./animate/opacity"
 export type { I_OpacityConfig } from "./animate/opacity"
-export { animatePathStroke } from "./animate/pathStroke"
-export type { I_PathStrokeConfig } from "./animate/pathStroke"
+export { animatePathStroke, animatePathStrokeWrap } from "./animate/pathStroke"
+export type { I_PathStrokeConfig, I_PathStrokeWrapConfig } from "./animate/pathStroke"
+
+// animateMotion
+export { pathMotion } from "./animateMotion"
+export type { I_PathMotionConfig, T_PathMotionRotate } from "./animateMotion"
 
 // SVG Utils (from @utils)
 export { svgURL, validateWechatSvg, WHITELIST_DATA } from "@utils/index"
