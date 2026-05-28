@@ -3,19 +3,19 @@
   "version": "0.1.0",
   "description": "",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.mjs",
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs",
       "types": "./dist/types/index.d.ts"
     },
     "./bezier": {
-      "import": "./dist/bezier.mjs",
-      "require": "./dist/bezier.cjs",
-      "types": "./dist/types/bezier.d.ts"
+      "import": "./dist/esm/bezier/index.mjs",
+      "require": "./dist/cjs/bezier/index.cjs",
+      "types": "./dist/types/bezier/index.d.ts"
     }
   },
   "files": [
