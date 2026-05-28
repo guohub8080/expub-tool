@@ -54,7 +54,6 @@ Both TypeScript and Vite are configured with the same aliases:
 | `@css/*` | `src/css/*` |
 | `@common/*` | `src/common/*` |
 | `@utils/*` | `src/utils/*` |
-| `@api/*` | `src/api/*` |
 | `@bezier/*` | `src/bezier/*` |
 | `@colors/*` | `src/common/colors/*` |
 | `@css-fn/*` | `src/css/cssFunctions/*` |
@@ -90,7 +89,13 @@ The `useImportant` hook applies `style.setProperty(key, value, "important")` via
 
 ### Publishing Notes
 
-- `package.json` has `"type": "module"` and exports ESM/CJS/UMD/IIFE
+- `package.json` has `"type": "module"` and exports ESM/CJS
 - React is an optional peer dependency
-- `lodash` and `chroma-js` are runtime dependencies (used by library code)
 - `files` field only includes `dist/` and `README.md` — playground and source are excluded
+- Sub-path exports supported (e.g. `import {} from "expub-tool/bezier"`)
+
+### Dependency Principles
+
+- **Minimize runtime dependencies.** Prefer native JS APIs over libraries. Only add a dependency when it provides significant value.
+- **Use lodash single-function imports** (`import xxx from "lodash/xxx"`) instead of `lodash` or `lodash-es`. Each `lodash/xxx` is a standalone file (~400 bytes), keeping the bundle lean without needing to externalize.
+- **`src/api/` is playground-only.** Library code must not depend on `@api/`. Placeholder image defaults belong in the playground, not the library.

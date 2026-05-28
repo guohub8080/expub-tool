@@ -1,6 +1,6 @@
 import SvgEx from "@html/basicEx/SvgEx";
 import svgURL from "@svg/utils/svgURL";
-import { defaultTo } from "lodash-es";
+import defaultTo from "lodash/defaultTo";;
 import { buildKeyframeParams } from "../timeline/keyframeBuilder";
 import { calculateSlideStartTime, calculateSlideEndTime } from "../timeline/sequenceCalculator";
 import type { AnimationMode, NormalizedPicConfig } from "../types";

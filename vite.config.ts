@@ -21,27 +21,24 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['es', 'cjs', 'umd', 'iife'],
-      fileName: (format) => {
-        const map: Record<string, string> = {
-          es: 'index.mjs',
-          cjs: 'index.cjs',
-          umd: 'index.umd.js',
-          iife: 'index.iife.js',
-        }
-        return map[format]
+      entry: {
+        index: resolve(__dirname, 'src/index.ts'),
+        bezier: resolve(__dirname, 'src/bezier/index.ts'),
+      },
+      formats: ['es', 'cjs'],
+      fileName: (format, entryName) => {
+        const ext: Record<string, string> = { es: 'mjs', cjs: 'cjs' }
+        return `${entryName}.${ext[format]}`
       },
       name: 'ExpubTool',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime', 'lodash-es'],
+      external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
           'react/jsx-runtime': 'jsxRuntime',
-          'lodash-es': '_',
         },
       },
     },

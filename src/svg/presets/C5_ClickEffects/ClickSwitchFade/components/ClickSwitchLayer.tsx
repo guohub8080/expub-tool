@@ -1,6 +1,7 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import type { CSSProperties } from "react";
-import { max, defaultTo } from "lodash-es";
+import max from "lodash/max";
+import defaultTo from "lodash/defaultTo";;
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 import svgURL from "@svg/utils/svgURL";

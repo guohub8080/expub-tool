@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { defaultTo, round } from "lodash-es";
+import defaultTo from "lodash/defaultTo";
+import round from "lodash/round";;
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
 // import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";

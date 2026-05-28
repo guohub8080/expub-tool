@@ -1,6 +1,6 @@
 import SvgEx from "@html/basicEx/SvgEx";
 import svgURL from "@svg/utils/svgURL";
-import { defaultTo } from "lodash-es";
+import defaultTo from "lodash/defaultTo";;
 
 /**
  * 初始静止图组件

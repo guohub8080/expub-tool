@@ -1,5 +1,5 @@
 import type { PicConfig, NormalizedPicConfig } from "../types";
-import { defaultTo } from "lodash-es";
+import defaultTo from "lodash/defaultTo";;
 import { getEaseBezier } from "@bezier/index";
 // import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";
 

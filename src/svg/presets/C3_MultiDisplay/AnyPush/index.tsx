@@ -1,7 +1,7 @@
 import type {CSSProperties} from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
-import {defaultTo} from "lodash-es"
+import defaultTo from "lodash/defaultTo";
 import {spacingZero, spacing} from "@css-fn/spacing"
 import type {T_SpacingProps} from "@css-fn/spacing"
 import useImgSize from "@common/hooks/useImgSize"

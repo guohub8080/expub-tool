@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
 import SvgEx from "@html/basicEx/SvgEx";
-import { defaultTo } from "lodash-es";
+import defaultTo from "lodash/defaultTo";;
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";
 // import getWechat300x500 from "@api/placeHolderPic/getWechat300x500";

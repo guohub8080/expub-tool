@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import type { CSSProperties,  } from "react";
 import SectionEx from "@html/basicEx/SectionEx";
-import { defaultTo } from "lodash-es";
+import defaultTo from "lodash/defaultTo";;
 // import getTextImgPic1 from "@api/placeHolderPic/getTextImgPic1";
 import { spacing } from "@css-fn/spacing";
 import useImgSize from "@common/hooks/useImgSize";

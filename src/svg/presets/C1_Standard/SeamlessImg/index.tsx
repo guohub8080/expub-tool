@@ -1,4 +1,4 @@
-import { defaultTo } from "lodash-es";
+import defaultTo from "lodash/defaultTo";;
 // import getWechat300x300 from "@api/placeHolderPic/getWechat300x300";
 import { spacing, spacingZero } from "@css-fn/spacing";
 import type { T_SpacingProps } from "@css-fn/spacing";

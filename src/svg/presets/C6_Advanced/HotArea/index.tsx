@@ -1,4 +1,5 @@
-import { max, defaultTo } from "lodash-es";
+import max from "lodash/max";
+import defaultTo from "lodash/defaultTo";;
 import type { ReactNode } from "react";
 
 /**

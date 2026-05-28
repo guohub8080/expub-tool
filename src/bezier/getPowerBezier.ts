@@ -1,4 +1,3 @@
-import { isInteger } from "lodash-es";
 
 /**
  * 幂次方缓动函数的贝塞尔曲线值映射表
@@ -91,7 +90,7 @@ export function getPowerBezier(options: {
     const { power, isIn = false, isOut = false } = options;
 
     // 验证幂次范围：必须是 1-5
-    if (power < 1 || power > 5 || !isInteger(power)) {
+    if (power < 1 || power > 5 || !Number.isInteger(power)) {
         throw new Error(`[getPowerBezier] 幂次必须是 1-5 的整数，当前值: ${power}`);
     }
 
