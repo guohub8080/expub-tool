@@ -126,17 +126,3 @@ function isValidKeySpline(spline: string): boolean {
     return !isNaN(num) && isFinite(num);
   });
 }
-
-// ============================================ SVG Animation Whitelist ============================================
-
-// SVG 动画属性白名单
-export {
-  SVG_ANIMATION_WHITELIST,
-  WHITELIST_BY_ELEMENT,
-  isAttrInWhitelist,
-  isElementAttrValid,
-  getAttrInfo,
-  getSupportedAttrs,
-  type SvgAnimationElement,
-  type SvgAnimationAttr
-} from './svgAttrWhiteList';
