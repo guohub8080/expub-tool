@@ -74,9 +74,3 @@ export function getSineBezier(options?: {
 /**
  * 正弦缓动常量（便于直接使用）
  */
-export const SINE_BEZIER = {
-    in: SINE_BEZIER_VALUES.in,
-    out: SINE_BEZIER_VALUES.out,
-    inOut: SINE_BEZIER_VALUES.inOut,
-} as const;
-

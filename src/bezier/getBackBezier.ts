@@ -167,30 +167,3 @@ export function getBackBezier0_1(options: {
  * 后退缓动常量（便于直接使用）
  * 使用标准强度 (0.55)
  */
-export const BACK_BEZIER = {
-    in: calculateBackBezier('in', 0.55),
-    out: calculateBackBezier('out', 0.55),
-    inOut: calculateBackBezier('inOut', 0.55),
-} as const;
-
-/**
- * 后退缓动预设（不同强度）
- */
-export const BACK_PRESETS = {
-    subtle: {  // 轻微回退/过冲（优雅克制）
-        in: calculateBackBezier('in', 0.3),
-        out: calculateBackBezier('out', 0.3),
-        inOut: calculateBackBezier('inOut', 0.3),
-    },
-    normal: {  // 标准回退/过冲（平衡自然）
-        in: calculateBackBezier('in', 0.55),
-        out: calculateBackBezier('out', 0.55),
-        inOut: calculateBackBezier('inOut', 0.55),
-    },
-    strong: {  // 强烈回退/过冲（夸张有力）
-        in: calculateBackBezier('in', 0.8),
-        out: calculateBackBezier('out', 0.8),
-        inOut: calculateBackBezier('inOut', 0.8),
-    },
-} as const;
-

@@ -137,30 +137,3 @@ export function getElasticBezier0_1(options: {
  * 弹性缓动常量（便于直接使用）
  * 使用标准过冲幅度 (0.55)
  */
-export const ELASTIC_BEZIER = {
-    in: calculateElasticBezier('in', 0.55),
-    out: calculateElasticBezier('out', 0.55),
-    inOut: calculateElasticBezier('inOut', 0.55),
-} as const;
-
-/**
- * 弹性缓动预设（不同强度）
- */
-export const ELASTIC_PRESETS = {
-    mild: {
-        in: calculateElasticBezier('in', 0.3),
-        out: calculateElasticBezier('out', 0.3),
-        inOut: calculateElasticBezier('inOut', 0.3),
-    },
-    normal: {
-        in: calculateElasticBezier('in', 0.55),
-        out: calculateElasticBezier('out', 0.55),
-        inOut: calculateElasticBezier('inOut', 0.55),
-    },
-    strong: {
-        in: calculateElasticBezier('in', 0.8),
-        out: calculateElasticBezier('out', 0.8),
-        inOut: calculateElasticBezier('inOut', 0.8),
-    },
-} as const;
-

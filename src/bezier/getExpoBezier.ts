@@ -77,9 +77,3 @@ export function getExpoBezier(options?: {
 /**
  * 指数缓动常量（便于直接使用）
  */
-export const EXPO_BEZIER = {
-    in: EXPO_BEZIER_VALUES.in,
-    out: EXPO_BEZIER_VALUES.out,
-    inOut: EXPO_BEZIER_VALUES.inOut,
-} as const;
-

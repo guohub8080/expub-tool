@@ -157,30 +157,3 @@ export function getBounceBezier0_1(options: {
  * 反弹缓动常量（便于直接使用）
  * 使用标准反弹高度 (0.5)
  */
-export const BOUNCE_BEZIER = {
-    in: calculateBounceBezier('in', 0.5),
-    out: calculateBounceBezier('out', 0.5),
-    inOut: calculateBounceBezier('inOut', 0.5),
-} as const;
-
-/**
- * 反弹缓动预设（不同强度）
- */
-export const BOUNCE_PRESETS = {
-    soft: {  // 软反弹（像羽毛球）
-        in: calculateBounceBezier('in', 0.2),
-        out: calculateBounceBezier('out', 0.2),
-        inOut: calculateBounceBezier('inOut', 0.2),
-    },
-    normal: {  // 标准反弹（像篮球）
-        in: calculateBounceBezier('in', 0.5),
-        out: calculateBounceBezier('out', 0.5),
-        inOut: calculateBounceBezier('inOut', 0.5),
-    },
-    strong: {  // 强反弹（像橡胶球）
-        in: calculateBounceBezier('in', 0.8),
-        out: calculateBounceBezier('out', 0.8),
-        inOut: calculateBounceBezier('inOut', 0.8),
-    },
-} as const;
-

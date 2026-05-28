@@ -73,9 +73,3 @@ export function getCircleBezier(options?: {
 /**
  * 圆形缓动常量（便于直接使用）
  */
-export const CIRCLE_BEZIER = {
-    in: CIRCLE_BEZIER_VALUES.in,
-    out: CIRCLE_BEZIER_VALUES.out,
-    inOut: CIRCLE_BEZIER_VALUES.inOut,
-} as const;
-

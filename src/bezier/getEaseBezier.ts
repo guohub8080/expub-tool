@@ -101,10 +101,3 @@ export function getEaseBezier(options: {
 /**
  * Ease 缓动常量（便于直接使用）
  */
-export const EASE_BEZIER = {
-    ease: calculateEaseBezier('ease'),       // CSS 标准 ease
-    in: calculateEaseBezier('in'),           // ease-in
-    out: calculateEaseBezier('out'),         // ease-out
-    inOut: calculateEaseBezier('inOut'),     // ease-in-out
-} as const;
-
