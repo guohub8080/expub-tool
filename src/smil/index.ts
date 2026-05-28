@@ -20,6 +20,8 @@ export type { I_TimelineKeyframe, I_TimelineResult, T_ValueSerializer } from "./
 // animateTransform
 export { transformTranslate } from "./animateTransform/translate"
 export type { I_TranslateConfig, I_TranslateValue } from "./animateTransform/translate"
+export { transformScale } from "./animateTransform/scale"
+export type { I_ScaleConfig } from "./animateTransform/scale"
 
 // SVG Utils (from @utils)
 export { svgURL, validateWechatSvg, WHITELIST_DATA } from "@utils/index"

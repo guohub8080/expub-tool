@@ -115,3 +115,4 @@ The functions currently use `genAnimate*` / `genSet*` naming (e.g., `genAnimateO
 - **No namespace exports** for sub-paths — flat named exports only (tree-shaking concern)
 - **lodash**: use single-package imports (`import defaultTo from "lodash/defaultTo"`); lodash is externalized in build
 - **Prefer native JS** over lodash where possible (e.g., `Number.isInteger` instead of `lodash/isInteger`)
+- **Error messages**: use backtick-wrapped variable names (`` `keyframes` ``), start with uppercase, end with a period. Example: `` `keyframes` must not be empty. ``

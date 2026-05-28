@@ -21,18 +21,18 @@ export function compileTimeline<T>(
   initValue: T,
 ): I_TimelineResult {
   if (keyframes.length === 0) {
-    throw new Error('keyframes 不能为空')
+    throw new Error('`keyframes` must not be empty.')
   }
 
   if (isNil(initValue)) {
-    throw new Error('initValue 不能为 null 或 undefined，SMIL 要求 values/keyTimes 点数一致')
+    throw new Error('`initValue` must not be null or undefined, SMIL requires values/keyTimes count to match.')
   }
 
   // 1. totalDuration
   const totalDuration = keyframes.reduce((sum, k) => sum + k.durationSeconds, 0)
 
   if (totalDuration <= 0) {
-    throw new Error('totalDuration 必须大于 0')
+    throw new Error('`totalDuration` must be greater than 0.')
   }
 
   // 2. values（initValue 为第一个点，keyframes 依次追加，共 n+1 个点）

@@ -40,19 +40,10 @@ function buildCoordinates(
   return coordinates
 }
 
-function resolveBegin(begin?: string, delay?: number): string | undefined {
-  if (!isNil(begin)) {
-    return delay ? `${begin}+${delay}s` : begin
-  }
-  if (delay) return `${delay}s`
-  return undefined
-}
-
 export function transformTranslate(config: I_TranslateConfig) {
   const {
     initValue = {},
     timeline,
-    delay = 0,
     begin,
     calcMode,
     isFreeze = false,
@@ -77,8 +68,6 @@ export function transformTranslate(config: I_TranslateConfig) {
 
   const hasKeySpline = timeline.some(seg => seg.keySpline)
   const finalCalcMode = calcMode ?? (hasKeySpline ? 'spline' : 'linear')
-
-  const beginValue = resolveBegin(begin, delay)
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount
 
   return (
@@ -91,7 +80,7 @@ export function transformTranslate(config: I_TranslateConfig) {
       dur={`${result.totalDuration}s`}
       calcMode={finalCalcMode}
       repeatCount={repeatCountValue}
-      begin={beginValue}
+      begin={begin}
       fill={isFreeze ? 'freeze' : 'remove'}
       additive={isAdditive ? 'sum' : undefined}
       {...(!isNil(restart) && { restart })}
