@@ -29,6 +29,10 @@ export type { I_SkewXConfig } from "./animateTransform/skewX"
 export { transformSkewY } from "./animateTransform/skewY"
 export type { I_SkewYConfig } from "./animateTransform/skewY"
 
+// animate
+export { animateOpacity } from "./animate/opacity"
+export type { I_OpacityConfig } from "./animate/opacity"
+
 // SVG Utils (from @utils)
 export { svgURL, validateWechatSvg, WHITELIST_DATA } from "@utils/index"
 export type { IssueSeverity, ValidationIssue, ValidationResult } from "@utils/index"

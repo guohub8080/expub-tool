@@ -1,11 +1,11 @@
 import React from 'react'
+import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
 import { compileTimeline } from '@smil/timeline/compile'
 import type { T_ValueSerializer } from '@smil/timeline/types'
 import type { I_TranslateConfig, I_TranslateValue } from './types'
 
-const LINEAR_KEY_SPLINE = '0 0 1 1'
 
 const serializeTranslate: T_ValueSerializer<I_TranslateValue> = (v) => `${v.x} ${v.y}`
 

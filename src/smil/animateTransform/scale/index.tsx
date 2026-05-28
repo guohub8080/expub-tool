@@ -1,10 +1,10 @@
 import React from 'react'
+import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
 import { compileTimeline } from '@smil/timeline/compile'
 import type { I_ScaleConfig } from './types'
 
-const LINEAR_KEY_SPLINE = '0 0 1 1'
 
 export function transformScale(config: I_ScaleConfig) {
   const {
