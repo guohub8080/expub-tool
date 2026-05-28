@@ -24,6 +24,7 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
         'bezier/index': resolve(__dirname, 'src/bezier/index.ts'),
+        'css/index': resolve(__dirname, 'src/css/index.ts'),
       },
       formats: ['es', 'cjs'],
     },

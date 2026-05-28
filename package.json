@@ -16,6 +16,11 @@
       "import": "./dist/esm/bezier/index.mjs",
       "require": "./dist/cjs/bezier/index.cjs",
       "types": "./dist/types/bezier/index.d.ts"
+    },
+    "./css": {
+      "import": "./dist/esm/css/index.mjs",
+      "require": "./dist/cjs/css/index.cjs",
+      "types": "./dist/types/css/index.d.ts"
     }
   },
   "files": [

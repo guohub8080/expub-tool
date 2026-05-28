@@ -62,3 +62,27 @@ export const spacingZeroCss: CSSProperties = {
     margin: 0,
     padding: 0,
 };
+
+/** 水平内边距 (padding-left + padding-right) */
+export const px = (value: number | string): CSSProperties => ({
+    paddingLeft: value,
+    paddingRight: value,
+});
+
+/** 垂直内边距 (padding-top + padding-bottom) */
+export const py = (value: number | string): CSSProperties => ({
+    paddingTop: value,
+    paddingBottom: value,
+});
+
+/** 水平外边距 (margin-left + margin-right) */
+export const mx = (value: number | string): CSSProperties => ({
+    marginLeft: value,
+    marginRight: value,
+});
+
+/** 垂直外边距 (margin-top + margin-bottom) */
+export const my = (value: number | string): CSSProperties => ({
+    marginTop: value,
+    marginBottom: value,
+});
