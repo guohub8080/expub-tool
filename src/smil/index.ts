@@ -24,6 +24,10 @@ export { transformScale } from "./animateTransform/scale"
 export type { I_ScaleConfig } from "./animateTransform/scale"
 export { transformRotate } from "./animateTransform/rotate"
 export type { I_RotateConfig } from "./animateTransform/rotate"
+export { transformSkewX } from "./animateTransform/skewX"
+export type { I_SkewXConfig } from "./animateTransform/skewX"
+export { transformSkewY } from "./animateTransform/skewY"
+export type { I_SkewYConfig } from "./animateTransform/skewY"
 
 // SVG Utils (from @utils)
 export { svgURL, validateWechatSvg, WHITELIST_DATA } from "@utils/index"
