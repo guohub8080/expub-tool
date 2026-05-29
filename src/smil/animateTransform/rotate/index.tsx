@@ -5,6 +5,8 @@ import isNil from 'lodash/isNil'
 import { compileTimeline } from '@smil/timeline/compile'
 import type { I_RotateConfig } from './types'
 
+export type { I_RotateConfig } from './types'
+
 
 export function transformRotate(config: I_RotateConfig) {
   const {

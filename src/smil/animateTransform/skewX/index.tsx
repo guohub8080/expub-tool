@@ -5,6 +5,8 @@ import isNil from 'lodash/isNil'
 import { compileTimeline } from '@smil/timeline/compile'
 import type { I_SkewXConfig } from './types'
 
+export type { I_SkewXConfig } from './types'
+
 
 export function transformSkewX(config: I_SkewXConfig) {
   const {

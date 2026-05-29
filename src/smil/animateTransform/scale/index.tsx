@@ -5,6 +5,8 @@ import isNil from 'lodash/isNil'
 import { compileTimeline } from '@smil/timeline/compile'
 import type { I_ScaleConfig } from './types'
 
+export type { I_ScaleConfig } from './types'
+
 
 export function transformScale(config: I_ScaleConfig) {
   const {

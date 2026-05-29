@@ -1,6 +1,6 @@
 import React from 'react'
 import { animatePathStroke } from './index'
-import type { I_PathStrokeConfig } from './types'
+import type { I_PathStrokeConfig } from './index'
 
 export interface I_PathStrokeWrapConfig extends Omit<I_PathStrokeConfig, 'pathLength'> {
   pathLength: number

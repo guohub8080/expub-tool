@@ -1,49 +1,61 @@
 import React from 'react'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
-import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
+import defaultTo from 'lodash/defaultTo'
 import { compileTimeline } from '@smil/timeline/compile'
-import type { I_SkewYConfig } from './types'
+import type { I_TimelineKeyframe } from '@smil/timeline/types'
+import type { T_NativeAnimate } from '@smil/types'
 
-export type { I_SkewYConfig } from './types'
+export interface I_AnimateAttributeConfig<T = number | string> {
+  attributeName: string
+  initValue: T
+  timeline: I_TimelineKeyframe<T>[]
+  begin?: string
+  calcMode?: 'spline' | 'linear' | 'discrete' | 'paced'
+  isFreeze?: boolean
+  loopCount?: number
+  restart?: 'always' | 'whenNotActive' | 'never'
+  native?: T_NativeAnimate
+}
 
-
-export function transformSkewY(config: I_SkewYConfig) {
+export function animateAttribute<T extends number | string>(
+  config: I_AnimateAttributeConfig<T>,
+) {
   const {
-    initValue = 0,
+    attributeName,
+    initValue,
     timeline,
     begin,
     calcMode,
     isFreeze = false,
     loopCount = 1,
-    isAdditive = true,
     restart,
   } = config
 
-  const angles: number[] = [initValue]
-  let lastAngle = initValue
+  const values: T[] = [initValue]
+  let last = initValue
   for (const seg of timeline) {
-    const nextAngle = defaultTo(seg.to, lastAngle)
-    angles.push(nextAngle)
-    lastAngle = nextAngle
+    const next = defaultTo(seg.to, last)
+    values.push(next)
+    last = next
   }
 
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
-    to: angles[i + 1],
+    to: values[i + 1],
     keySpline: seg.keySpline ?? LINEAR_KEY_SPLINE,
   }))
 
-  const result = compileTimeline(fullKeyframes, String, initValue)
+  const serializer = (v: T) => String(v)
+  const result = compileTimeline(fullKeyframes, serializer, initValue)
 
   const hasKeySpline = timeline.some(seg => seg.keySpline)
   const finalCalcMode = calcMode ?? (hasKeySpline ? 'spline' : 'linear')
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount
 
   return (
-    <animateTransform
-      attributeName="transform"
-      type="skewY"
+    <animate
+      attributeName={attributeName}
       values={result.values}
       keyTimes={result.keyTimes}
       keySplines={finalCalcMode === 'spline' ? result.keySplines : undefined}
@@ -52,7 +64,6 @@ export function transformSkewY(config: I_SkewYConfig) {
       repeatCount={repeatCountValue}
       begin={begin}
       fill={isFreeze ? 'freeze' : 'remove'}
-      additive={isAdditive ? 'sum' : undefined}
       {...(!isNil(restart) && { restart })}
       {...config.native}
     />

@@ -30,14 +30,20 @@ export { transformSkewY } from "./animateTransform/skewY"
 export type { I_SkewYConfig } from "./animateTransform/skewY"
 
 // animate
+export { animateAttribute } from "./animate/attribute"
+export type { I_AnimateAttributeConfig } from "./animate/attribute"
 export { animateOpacity } from "./animate/opacity"
 export type { I_OpacityConfig } from "./animate/opacity"
 export { animatePathStroke, animatePathStrokeWrap } from "./animate/pathStroke"
 export type { I_PathStrokeConfig, I_PathStrokeWrapConfig } from "./animate/pathStroke"
 
 // animateMotion
-export { pathMotion } from "./animateMotion"
+export { animateMotion } from "./animateMotion"
 export type { I_PathMotionConfig, T_PathMotionRotate } from "./animateMotion"
+
+// set
+export { setAttribute, setVisibility, setOpacity, setDisplay } from "./set"
+export type { I_SetAttributeConfig, I_SetVisibilityConfig, T_VisibilityValue, I_SetOpacityConfig, I_SetDisplayConfig } from "./set"
 
 // SVG Utils (from @utils)
 export { svgURL, validateWechatSvg, WHITELIST_DATA } from "@utils/index"

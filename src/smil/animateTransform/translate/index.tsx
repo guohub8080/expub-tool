@@ -6,6 +6,8 @@ import { compileTimeline } from '@smil/timeline/compile'
 import type { T_ValueSerializer } from '@smil/timeline/types'
 import type { I_TranslateConfig, I_TranslateValue } from './types'
 
+export type { I_TranslateConfig, I_TranslateValue } from './types'
+
 
 const serializeTranslate: T_ValueSerializer<I_TranslateValue> = (v) => `${v.x} ${v.y}`
 
