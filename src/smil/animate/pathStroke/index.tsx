@@ -17,5 +17,5 @@ export function animatePathStroke(config: I_PathStrokeConfig) {
   })
 }
 
-export { animatePathStrokeWrap } from './convenient'
-export type { I_PathStrokeWrapConfig } from './convenient'
+export { animatePathStrokeWrap } from './wrapped'
+export type { I_PathStrokeWrapConfig } from './wrapped'
