@@ -55,7 +55,7 @@
       "@css-fn/*": ["./src/css/cssFunctions/*"],
       "@css-presets/*": ["./src/css/cssPresets/*"],
       "@svg-comps/*": ["./src/svg-comps/*"],
-      "@svg-anim/*": ["./src/svg-anim/*"]
+      "@behaviors/*": ["./src/behaviors/*"]
     }
   }
 }

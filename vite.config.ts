@@ -14,7 +14,7 @@ export default defineConfig({
       '@css-fn': resolve(__dirname, 'src/css/cssFunctions'),
       '@css-presets': resolve(__dirname, 'src/css/cssPresets'),
       '@svg-comps': resolve(__dirname, 'src/svg-comps'),
-      '@svg-anim': resolve(__dirname, 'src/svg-anim'),
+      '@behaviors': resolve(__dirname, 'src/behaviors'),
     },
   },
   build: {
@@ -25,6 +25,7 @@ export default defineConfig({
         'svg-utils/index': resolve(__dirname, 'src/svg-utils/index.ts'),
         'utils/index': resolve(__dirname, 'src/utils/index.ts'),
         'smil/index': resolve(__dirname, 'src/smil/index.ts'),
+        'behaviors/index': resolve(__dirname, 'src/behaviors/index.ts'),
       },
       formats: ['es', 'cjs'],
     },
