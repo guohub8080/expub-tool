@@ -64,8 +64,8 @@ export { animateD } from "./animate/d"
 export type { I_DConfig } from "./animate/d"
 
 // animateMotion
-export { animateMotion } from "./animateMotion"
-export type { I_PathMotionConfig, T_PathMotionRotate } from "./animateMotion"
+export { animateMotion } from "./animate/motion"
+export type { I_PathMotionConfig, T_PathMotionRotate } from "./animate/motion"
 
 // set
 export { setAttribute, setVisibility, setOpacity, setDisplay, setFill, setStroke, setStrokeWidth, setX, setY, setWidth, setHeight, setRx, setRy, setR, setCx, setCy, setHref } from "./set"
