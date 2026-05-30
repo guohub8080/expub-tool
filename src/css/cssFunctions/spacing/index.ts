@@ -44,7 +44,7 @@ export const spacing = (props?: T_SpacingProps): CSSProperties => {
 /**
  * 零间距 Props（用于 defaultTo 默认值）
  */
-export const spacingZero: T_SpacingProps = {
+export const SPACING_ZERO: T_SpacingProps = {
     mt: 0,
     mb: 0,
     ml: 0,
@@ -58,7 +58,7 @@ export const spacingZero: T_SpacingProps = {
 /**
  * 零间距 CSS（用于 style 直接展开）
  */
-export const spacingZeroCss: CSSProperties = {
+export const SPACING_ZERO_CSS: CSSProperties = {
     margin: 0,
     padding: 0,
 };

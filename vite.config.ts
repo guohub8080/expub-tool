@@ -10,7 +10,6 @@ export default defineConfig({
       '@smil': resolve(__dirname, 'src/smil'),
       '@html': resolve(__dirname, 'src/html'),
       '@css': resolve(__dirname, 'src/css'),
-      '@svg-utils': resolve(__dirname, 'src/svg-utils'),
       '@css-fn': resolve(__dirname, 'src/css/cssFunctions'),
       '@css-presets': resolve(__dirname, 'src/css/cssPresets'),
       '@svg-comps': resolve(__dirname, 'src/svg-comps'),
@@ -20,12 +19,13 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        index: resolve(__dirname, 'src/index.ts'),
-        'css/index': resolve(__dirname, 'src/css/index.ts'),
-        'svg-utils/index': resolve(__dirname, 'src/svg-utils/index.ts'),
-        'utils/index': resolve(__dirname, 'src/utils/index.ts'),
+        'index': resolve(__dirname, 'src/index.ts'),
         'smil/index': resolve(__dirname, 'src/smil/index.ts'),
         'behaviors/index': resolve(__dirname, 'src/behaviors/index.ts'),
+        'css/index': resolve(__dirname, 'src/css/index.ts'),
+        'utils/index': resolve(__dirname, 'src/utils/index.ts'),
+        'html/index': resolve(__dirname, 'src/html/index.ts'),
+        'svg/index': resolve(__dirname, 'src/svg/index.ts'),
       },
       formats: ['es', 'cjs'],
     },

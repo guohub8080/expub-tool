@@ -35,8 +35,8 @@ const NoWrapText = (props: {
         if (isString(item)) {
             return <span key={index} style={baseStyle}>{item}</span>
         } else {
-            // 如果是带样式的对象，合并样式后渲染
-            return <span key={index} style={{ ...baseStyle, ...item.style }}>{item.text}</span>
+            const obj = item as { text: string, style: React.CSSProperties }
+            return <span key={index} style={{ ...baseStyle, ...obj.style }}>{obj.text}</span>
         }
     })
 }

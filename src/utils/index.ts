@@ -1,17 +1,20 @@
-export { default as svgURL } from "./svgURL"
-export { validateWechatSvg, WHITELIST_DATA } from "./validateWechatSvg"
-export type { IssueSeverity, ValidationIssue, ValidationResult } from "./validateWechatSvg"
-
-export { assertNonEmptyArray, isNonEmptyArray } from "./arrayValidation"
-
-export { getElementBounds, getOriginNumByText } from "./getElementBounds"
-export type { ElementBoundsType, OriginPosition } from "./getElementBounds"
-
-export { default as getImgSizeAsync } from "./getImgSizeAsync"
-
-// Colors
-export { default as googleColors } from "./colors/googleColors"
-export { default as tailwindColors } from "./colors/tailwindColors"
+// Provider
+export { ExPubGoProvider, ExPubGoConfig } from "./provider/ExPubGoProvider"
+export type { T_ExPubGoMode, I_ExPubGoConfig } from "./provider/ExPubGoProvider"
 
 // Hooks
 export { default as useImgSize } from "./hooks/useImgSize"
+
+// SVG utilities
+export { default as svgURL } from "./svg/svgURL"
+export { validateWechatSvg, WHITELIST_DATA } from "./svg/validateWechatSvg"
+export type { IssueSeverity, ValidationIssue, ValidationResult } from "./svg/validateWechatSvg"
+
+// DOM utilities
+export { getElementBounds, getOriginNumByText } from "./dom/getElementBounds"
+export type { ElementBoundsType, OriginPosition } from "./dom/getElementBounds"
+export { default as getImgSizeAsync } from "./dom/getImgSizeAsync"
+
+// Pure functions
+export { assertNonEmptyArray } from "./fn/assertNonEmptyArray"
+export { isNonEmptyArray } from "./fn/isNonEmptyArray"

@@ -1,18 +1,20 @@
 import type { CSSProperties, ReactNode, HTMLAttributes } from "react";
 import { useImportant } from "./useImportant";
+import { resolveWatermark } from "./resolveWatermark";
 
 const SpanEx = (props: {
     style?: CSSProperties;
     children?: ReactNode;
     important?: [string, string | null | undefined][];
-    waterMark?: Record<string, any>;
+    watermark?: Record<string, any>;
+    noWatermark?: boolean;
 } & HTMLAttributes<HTMLSpanElement>) => {
-    const { style, children, important, waterMark, ...rest } = props;
+    const { style, children, important, watermark, noWatermark, ...rest } = props;
     const { ref, hasImportant } = useImportant<HTMLSpanElement>(important);
 
     const commonProps = {
         style,
-        ...waterMark,
+        ...resolveWatermark(watermark, noWatermark),
         ...rest,
     };
 

@@ -18,9 +18,8 @@ export function animateHardBlink(config: I_HardBlinkConfig = {}) {
   return animateOpacity({
     initValue: 1,
     timeline: [
-      { to: 1, durationSeconds: onDurationSeconds },
       { to: 0, durationSeconds: offDurationSeconds },
-      { to: 1, durationSeconds: 0.001 },
+      { to: 1, durationSeconds: onDurationSeconds },
     ],
     begin,
     loopCount,

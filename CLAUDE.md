@@ -1,118 +1,124 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+本文件为 Claude Code (claude.ai/code) 在本仓库中工作时提供指导。
 
-## Project Overview
+## 项目概述
 
-`expub-tool` is a TypeScript library for WeChat Official Account (微信公众号) HTML/SVG content generation. It provides:
+`expub-tool` 是一个 TypeScript 库，用于微信公众号 HTML/SVG 内容生成。主要模块：
 
-- **SVG components** (`src/svg-comps/`) — Pre-built SMIL animated SVG React components (click effects, multi-display transitions, containers, etc.)
-- **SVG animation generators** (`src/svg-anim/`) — Low-level SMIL animation generators, each organized by SVG animation tag type (animate, animateTransform, set)
-- **SVG utilities** (`src/svg-utils/`) — Bezier curves, keySplines generator, svgURL, WeChat SVG validator
-- **HTML components** (`src/html/`) — React components that output static HTML/SVG strings for WeChat articles
-- **CSS utilities** (`src/css/`) — Spacing, border, flex layout helpers
-- **Common** (`src/common/`) — Shared colors, hooks, utils
+- **SMIL 动画生成器** (`src/smil/`) — 底层 SMIL 动画原语（animate, animateTransform, animateMotion, set）
+- **组合动画** (`src/behaviors/`) — 由 SMIL 原语组合而成的高级动画（闪烁、呼吸、浮动、挤压）
+- **SVG 组件** (`src/svg/`) — 零高度容器等 SVG 包裹组件
+- **SVG 工具** (`src/svg-utils/`) — 贝塞尔曲线、keySplines 生成器、svgURL、微信 SVG 校验器
+- **HTML 组件** (`src/html/`) — 输出静态 HTML/SVG 字符串的 React 组件（SectionEx, SvgEx, ImgEx 等）
+- **CSS 工具** (`src/css/`) — 间距、边框、弹性布局辅助函数
+- **工具函数** (`src/utils/`) — Provider、hooks、SVG/DOM 工具、纯函数
 
-The library is built with Vite + TypeScript + React (dev only) and published as ESM/CJS with preserveModules for true tree-shaking.
+构建工具：Vite + TypeScript + React（仅开发环境），发布为 ESM/CJS，开启 preserveModules 实现真正的 tree-shaking。
 
-## Common Commands
+## 常用命令
 
 ```bash
-pnpm dev              # Start React playground for previewing components
-pnpm build            # Build library for npm publish (ESM + CJS, preserveModules)
-pnpm typecheck        # Type check without emitting files
-pnpm test             # Run tests with vitest
-pnpm test:run         # Run tests once (no watch)
+pnpm dev              # 启动 React playground 预览组件
+pnpm build            # 构建库（ESM + CJS，preserveModules）
+pnpm typecheck        # 仅类型检查，不输出文件
+pnpm test             # 运行 vitest 测试（watch 模式）
+pnpm test:run         # 运行测试一次
 ```
 
-## NPM Sub-path Exports
-
-Users install `expub-tool` and import from sub-paths:
+## NPM 子路径导出
 
 ```ts
-// Main entry — SVG components + CSS utilities
-import { BgImg, SeamlessImg, spacing } from "expub-tool"
+// 主入口 — CSS 工具 + Provider
+import { spacing, ExPubGoProvider, ExPubGoConfig } from "expub-tool"
 
-// CSS utilities only
+// CSS 工具
 import { px, py, mx, my, borderX, roundedT } from "expub-tool/css"
 
-// SVG animation generators
-import { animateOpacity, transformScale, setVisibility } from "expub-tool/svg-anim"
+// SMIL 动画生成器
+import { animateOpacity, transformScale, setVisibility } from "expub-tool/smil"
 
-// SVG components only
-import { ... } from "expub-tool/svg"
+// 组合动画
+import { animateSoftBlink, transformBreathe, genAnimateExtrude } from "expub-tool/behaviors"
 
-// SVG utilities (bezier, keySplines, svgURL, validator)
+// HTML 组件
+import { SvgEx, SectionEx, ImgEx } from "expub-tool/html"
+
+// SVG 组件
+import { ZeroHeightContainer } from "expub-tool/svg"
+
+// SVG 工具
 import { svgURL, getEaseBezier, validateWechatSvg } from "expub-tool/svg-utils"
 ```
 
-## SVG Animation Generator Naming Convention (`src/svg-anim/`)
+## SMIL 动画生成器命名规范 (`src/smil/`)
 
-Functions are prefixed by the SVG tag they generate, so users can tell the tag type from the import:
+函数名以生成的 SVG 标签为前缀，用户一看导入名就知道标签类型：
 
-| Prefix | SVG Tag | Examples |
+| 前缀 | SVG 标签 | 示例 |
 |---|---|---|
-| `animate*` | `<animate>` | `animateOpacity`, `animateOpacityFade`, `animateOpacityLoop` |
-| `transform*` | `<animateTransform>` | `transformScale`, `transformScaleLoop`, `transformRotate`, `transformTranslate`, `transformSkewX` |
+| `animate*` | `<animate>` | `animateOpacity`, `animateOpacityWrap` |
+| `transform*` | `<animateTransform>` | `transformScale`, `transformRotate`, `transformTranslate` |
 | `set*` | `<set>` | `setVisibility`, `setOpacity`, `setDisplay` |
 | `pathMotion*` | `<animateMotion>` | `pathMotionLoop`, `pathMotionSlide` |
 | `pathStroke*` | `<animate>` (stroke) | `pathStroke` |
 
-### Directory structure
-
-Each animation type lives in its own subdirectory under `src/svg-anim/`:
+### 目录结构
 
 ```
-src/svg-anim/
-├── opacity/        # animateOpacity* — <animate attributeName="opacity">
-├── scale/          # transformScale* — <animateTransform type="scale">
-├── rotate/         # transformRotate* — <animateTransform type="rotate">
-├── translate/      # transformTranslate* — <animateTransform type="translate">
-├── skewX/          # transformSkewX* — <animateTransform type="skewX">
-├── skewY/          # transformSkewY* — <animateTransform type="skewY">
-├── pathMotion/     # pathMotion* — <animateMotion>
-├── pathStroke/     # pathStroke* — <animate> on stroke-dashoffset
-├── blink/          # animateSoftBlink, animateHardBlink — <animate> opacity blink
-├── breathe/        # animateBreathe — <animate> + <animateTransform> composite
-├── extrude/        # animateExtrude — multi-element animation
-├── float/          # animateFloat — <animateTransform> floating effect
-├── set/            # set* — <set> instant state changes
-└── index.tsx       # barrel export
+src/smil/
+├── animate/        # animateAttribute 泛型 + animateOpacity 等
+├── transform/      # transformAttribute 泛型 + transformScale 等
+├── motion/         # pathMotion* — <animateMotion>
+├── stroke/         # pathStroke* — <animate> 操作 stroke-dashoffset
+├── set/            # set* — <set> 瞬时状态切换
+└── index.ts        # barrel 导出
+
+src/behaviors/
+├── blink/          # animateSoftBlink, animateHardBlink
+├── breathe/        # transformBreathe
+├── float/          # transformFloat
+├── extrude/        # genAnimateExtrude
+└── index.ts        # barrel 导出
 ```
 
-### Current state
+## SVG 组件参考代码翻译规则
 
-The functions currently use `genAnimate*` / `genSet*` naming (e.g., `genAnimateOpacity`, `genSetVisibility`). These will be renamed to the new convention:
-- `genAnimateOpacity` → `animateOpacity`
-- `genAnimateScale` → `transformScale`
-- `genSetVisibility` → `setVisibility`
+用户会提供原始 SVG/HTML 参考代码，需要将其转换为 React 组件。遵循以下原则：
 
-## Build Architecture
+1. **用 spacing 替换硬编码的 `margin-top`** — 参考代码中的 `margin-top: -1px` 或 `margin-top: 0` 都不要硬编码，统一用 `spacing` prop + `T_SpacingProps` 系统控制，让用户灵活调整。
+2. **生成结果必须与参考代码完全一致** — 除以下两项外，最终渲染的 HTML/CSS 必须与参考代码一模一样：
+   - `margin-top` → 用 `spacing` prop 替代（见规则 1）
+   - 水印/版权属性（`powered-by`、`label`、`copyright`）→ 用 `resolveWatermark()` 系统替代
+3. **开发模式标注组件身份** — 当 `ExPubGoConfig().mode === 'development'` 时，组件最外层输出 `expubgo-label` 属性标明组件名称，方便 AI 审计。生产模式下不输出。
 
-- **Vite + Rollup** with `preserveModules: true` for true tree-shaking (each source file becomes an individual module in dist)
-- **Dual format**: ESM (`dist/esm/*.mjs`) + CJS (`dist/cjs/*.cjs`)
-- **Types**: generated via `tsc --emitDeclarationOnly` to `dist/types/`
-- **External deps**: `react`, `react-dom`, `react/jsx-runtime`, `lodash`, `lodash/*`
-- **Entry points** match source paths: `css/index`, `svg/index`, `svg-utils/index`, etc.
+## 构建架构
 
-## Path Aliases (tsconfig.json + vite.config.ts)
+- **Vite + Rollup**，`preserveModules: true`，每个源文件在 dist 中保持独立模块
+- **双格式**：ESM (`dist/esm/*.mjs`) + CJS (`dist/cjs/*.cjs`)
+- **类型**：`tsc --emitDeclarationOnly` 输出到 `dist/types/`
+- **外部依赖**：`react`, `react-dom`, `react/jsx-runtime`, `lodash`, `lodash/*`
+- **入口点**与源码路径一一对应：`css/index`, `svg/index`, `svg-utils/index` 等
 
-| Alias | Resolves to |
+## 路径别名 (tsconfig.json + vite.config.ts)
+
+| 别名 | 对应路径 |
 |---|---|
 | `@html/*` | `src/html/*` |
 | `@common/*` | `src/common/*` |
 | `@css/*` | `src/css/*` |
 | `@svg-comps/*` | `src/svg-comps/*` |
-| `@svg-anim/*` | `src/svg-anim/*` |
+| `@smil/*` | `src/smil/*` |
+| `@behaviors/*` | `src/behaviors/*` |
 | `@svg-utils/*` | `src/svg-utils/*` |
 | `@css-fn/*` | `src/css/cssFunctions/*` |
 | `@css-presets/*` | `src/css/cssPresets/*` |
 
-## Conventions
+## 编码规范
 
-- **Type naming**: `T_` prefix for type aliases, `I_` prefix for interfaces
-- **Named exports** over default exports for library code (tree-shaking friendly)
-- **No namespace exports** for sub-paths — flat named exports only (tree-shaking concern)
-- **lodash**: use single-package imports (`import defaultTo from "lodash/defaultTo"`); lodash is externalized in build
-- **Prefer native JS** over lodash where possible (e.g., `Number.isInteger` instead of `lodash/isInteger`)
-- **Error messages**: use backtick-wrapped variable names (`` `keyframes` ``), start with uppercase, end with a period. Example: `` `keyframes` must not be empty. ``
+- **类型命名**：`T_` 前缀表示类型别名，`I_` 前缀表示接口
+- **命名导出**：库代码一律使用 named export（利于 tree-shaking）
+- **禁止 namespace 导出**：子路径只用扁平的命名导出
+- **lodash**：使用单包导入（`import defaultTo from "lodash/defaultTo"`），构建时外部化
+- **优先原生 JS**：能用原生方法就不用 lodash（如 `Number.isInteger` 而非 `lodash/isInteger`）
+- **错误信息**：变量名用反引号包裹，首字母大写，句末加句号。例：`` `keyframes` must not be empty. ``

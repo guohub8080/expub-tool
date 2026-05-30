@@ -36,6 +36,16 @@
       "import": "./dist/esm/behaviors/index.mjs",
       "require": "./dist/cjs/behaviors/index.cjs",
       "types": "./dist/types/behaviors/index.d.ts"
+    },
+    "./html": {
+      "import": "./dist/esm/html/index.mjs",
+      "require": "./dist/cjs/html/index.cjs",
+      "types": "./dist/types/html/index.d.ts"
+    },
+    "./svg": {
+      "import": "./dist/esm/svg/index.mjs",
+      "require": "./dist/cjs/svg/index.cjs",
+      "types": "./dist/types/svg/index.d.ts"
     }
   },
   "files": [
@@ -66,6 +76,7 @@
     "jsdom": "^29.1.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-router-dom": "^7.16.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.14",
     "vitest": "^4.1.7"

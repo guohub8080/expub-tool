@@ -1,23 +1,19 @@
 import React from "react";
-import defaultTo from "lodash/defaultTo";;
 import { useImportant } from "./useImportant";
+import { resolveWatermark } from "./resolveWatermark";
 
 interface SvgExProps extends React.SVGProps<SVGSVGElement> {
-  /** 需要添加 !important 的样式属性 */
   important?: [string, string | null | undefined][];
-  /** 水印属性 */
-  waterMark?: Record<string, any>;
+  watermark?: Record<string, any>;
+  noWatermark?: boolean;
 }
 
-const SvgEx: React.FC<SvgExProps> = ({ children, important, style, waterMark, ...rest }) => {
+const SvgEx: React.FC<SvgExProps> = ({ children, important, style, watermark, noWatermark, ...rest }) => {
   const { ref, hasImportant } = useImportant<SVGSVGElement>(important);
 
   const commonProps = {
-    ...waterMark,
-    version: "1.1",
-    xmlns: "http://www.w3.org/2000/svg",
-    xmlnsXlink: "http://www.w3.org/1999/xlink",
     style,
+    ...resolveWatermark(watermark, noWatermark),
     ...rest,
   };
 
