@@ -20,8 +20,8 @@ export type { I_TimelineKeyframe, I_TimelineResult, T_ValueSerializer } from "./
 // animateTransform
 export { transformTranslate } from "./animateTransform/translate"
 export type { I_TranslateConfig, I_TranslateValue } from "./animateTransform/translate"
-export { transformScale } from "./animateTransform/scale"
-export type { I_ScaleConfig } from "./animateTransform/scale"
+export { transformScale, transformScaleRaw } from "./animateTransform/scale"
+export type { I_ScaleConfig, I_ScaleRawConfig } from "./animateTransform/scale"
 export { transformRotate } from "./animateTransform/rotate"
 export type { I_RotateConfig } from "./animateTransform/rotate"
 export { transformSkewX } from "./animateTransform/skewX"

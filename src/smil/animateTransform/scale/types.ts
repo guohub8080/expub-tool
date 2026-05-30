@@ -13,3 +13,15 @@ export interface I_ScaleConfig {
   restart?: 'always' | 'whenNotActive' | 'never'
   native?: T_NativeAnimateTransform
 }
+
+export interface I_ScaleRawConfig {
+  initValue?: number
+  timeline: I_TimelineKeyframe<number>[]
+  begin?: string
+  calcMode?: 'spline' | 'linear' | 'discrete' | 'paced'
+  isFreeze?: boolean
+  loopCount?: number
+  isAdditive?: boolean
+  restart?: 'always' | 'whenNotActive' | 'never'
+  native?: T_NativeAnimateTransform
+}
