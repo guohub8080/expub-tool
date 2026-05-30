@@ -1,4 +1,4 @@
-import { defaultTo, isUndefined } from 'lodash';
+import { defaultTo, isNil } from 'lodash';
 import { genSvgKeySplines } from '@smil/genSvgKeySplines';
 import type { SvgTimelineSegment } from '@smil/genSvgKeySplines';
 import { getEaseBezier } from "@smil/bezier/getEaseBezier";
@@ -23,7 +23,7 @@ export const genAnimateExtrude = (options: extrudeOptions): {
   const loopCount = defaultTo(options.loopCount, 1);
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount;
 
-  const hasKeySplines = options.timeline.some(seg => !isUndefined(seg.keySplines));
+  const hasKeySplines = options.timeline.some(seg => !isNil(seg.keySplines));
   const finalCalcMode = defaultTo(options.calcMode, hasKeySplines ? 'spline' : 'linear');
   const isFreeze = defaultTo(options.isFreeze, true);
 

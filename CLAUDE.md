@@ -120,5 +120,6 @@ src/behaviors/
 - **命名导出**：库代码一律使用 named export（利于 tree-shaking）
 - **禁止 namespace 导出**：子路径只用扁平的命名导出
 - **lodash**：使用单包导入（`import defaultTo from "lodash/defaultTo"`），构建时外部化
-- **优先原生 JS**：能用原生方法就不用 lodash（如 `Number.isInteger` 而非 `lodash/isInteger`）
+- **默认值**：优先使用 `defaultTo(prop, fallback)` 而非解构默认值，保持风格统一
+- **优先 lodash**：类型判断、空判断优先用 lodash，尤其是 `isNil` 代替分别使用 `isUndefined` / `isNull`
 - **错误信息**：变量名用反引号包裹，首字母大写，句末加句号。例：`` `keyframes` must not be empty. ``

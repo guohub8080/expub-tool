@@ -1,3 +1,5 @@
+import defaultTo from 'lodash/defaultTo'
+
 /**
  * 标准 Ease 缓动函数的贝塞尔曲线值生成器
  * 
@@ -73,11 +75,12 @@ function calculateEaseBezier(
  * // 用于 CSS
  * transition: cubic-bezier(0, 0, 0.58, 1)
  */
-export function getEaseBezier(options: {
+export function getEaseBezier(options?: {
     isIn?: boolean
     isOut?: boolean
-} = {}): string {
-    const { isIn = false, isOut = false } = options;
+}): string {
+    const isIn = defaultTo(options?.isIn, false)
+    const isOut = defaultTo(options?.isOut, false)
 
     // ease-in-out: 两端慢，中间快
     if (isIn && isOut) {

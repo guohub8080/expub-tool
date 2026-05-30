@@ -1,3 +1,4 @@
+import defaultTo from 'lodash/defaultTo'
 import { animateOpacity } from '@smil/animate/opacity'
 
 export interface I_HardBlinkConfig {
@@ -7,13 +8,10 @@ export interface I_HardBlinkConfig {
   loopCount?: number
 }
 
-export function animateHardBlink(config: I_HardBlinkConfig = {}) {
-  const {
-    onDurationSeconds = 0.8,
-    offDurationSeconds = 0.3,
-    begin,
-    loopCount = 0,
-  } = config
+export function animateHardBlink(config?: I_HardBlinkConfig) {
+  const onDurationSeconds = defaultTo(config?.onDurationSeconds, 0.8)
+  const offDurationSeconds = defaultTo(config?.offDurationSeconds, 0.3)
+  const loopCount = defaultTo(config?.loopCount, 0)
 
   return animateOpacity({
     initValue: 1,
@@ -21,7 +19,7 @@ export function animateHardBlink(config: I_HardBlinkConfig = {}) {
       { to: 0, durationSeconds: offDurationSeconds },
       { to: 1, durationSeconds: onDurationSeconds },
     ],
-    begin,
+    begin: config?.begin,
     loopCount,
     calcMode: 'discrete',
   })

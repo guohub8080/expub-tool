@@ -1,3 +1,4 @@
+import defaultTo from 'lodash/defaultTo'
 import { transformTranslate } from '@smil/animateTransform/translate'
 
 export interface I_FloatConfig {
@@ -9,15 +10,12 @@ export interface I_FloatConfig {
   loopCount?: number
 }
 
-export function transformFloat(config: I_FloatConfig = {}) {
-  const {
-    floatRangeY = 20,
-    floatRangeX = 0,
-    duration = 4,
-    keySpline = '0.24 0 0.24 1',
-    begin,
-    loopCount = 0,
-  } = config
+export function transformFloat(config?: I_FloatConfig) {
+  const floatRangeY = defaultTo(config?.floatRangeY, 20)
+  const floatRangeX = defaultTo(config?.floatRangeX, 0)
+  const duration = defaultTo(config?.duration, 4)
+  const keySpline = defaultTo(config?.keySpline, '0.24 0 0.24 1')
+  const loopCount = defaultTo(config?.loopCount, 0)
 
   const half = duration / 2
 
@@ -27,7 +25,7 @@ export function transformFloat(config: I_FloatConfig = {}) {
       { to: { x: -floatRangeX, y: -floatRangeY }, durationSeconds: half, keySpline },
       { to: { x: floatRangeX, y: 0 }, durationSeconds: half, keySpline },
     ],
-    begin,
+    begin: config?.begin,
     loopCount,
     isAdditive: true,
     isRelativeMove: false,

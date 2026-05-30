@@ -19,7 +19,7 @@
  */
 
 import React from 'react';
-import {isNil, defaultTo, isEmpty, isUndefined} from 'lodash';
+import {isNil, defaultTo, isEmpty} from 'lodash';
 import {genSvgKeySplines} from '@smil/genSvgKeySplines';
 import type {SvgTimelineSegment} from '@smil/genSvgKeySplines';
 import {getEaseBezier} from "@smil/bezier/getEaseBezier";
@@ -69,7 +69,7 @@ export const genAnimateExtrude = (props: extrudeOptions): React.ReactElement => 
   const loopCount = defaultTo(props.loopCount, 1);
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount;
 
-  const hasKeySplines = props.timeline.some(seg => !isUndefined(seg.keySplines));
+  const hasKeySplines = props.timeline.some(seg => !isNil(seg.keySplines));
   const finalCalcMode = defaultTo(props.calcMode, hasKeySplines ? 'spline' : 'linear');
   const isFreeze = defaultTo(props.isFreeze, true);
 

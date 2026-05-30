@@ -44,19 +44,20 @@ function buildCoordinates(
 
 export function transformTranslate(config: I_TranslateConfig) {
   const {
-    initValue = {},
+    initValue,
     timeline,
     begin,
     calcMode,
-    isFreeze = false,
-    loopCount = 1,
-    isAdditive = true,
-    isRelativeMove = true,
     restart,
+    native,
   } = config
 
-  const initX = defaultTo(initValue.x, 0)
-  const initY = defaultTo(initValue.y, 0)
+  const initX = defaultTo(initValue?.x, 0)
+  const initY = defaultTo(initValue?.y, 0)
+  const isFreeze = defaultTo(config.isFreeze, false)
+  const loopCount = defaultTo(config.loopCount, 1)
+  const isAdditive = defaultTo(config.isAdditive, true)
+  const isRelativeMove = defaultTo(config.isRelativeMove, true)
 
   const coordinates = buildCoordinates(initX, initY, timeline, isRelativeMove)
 

@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
 import SectionEx from '@html/basicEx/SectionEx';
+import defaultTo from 'lodash/defaultTo';
 import {SPACING_ZERO, spacing} from '@css-fn/spacing';
 import type {T_SpacingProps} from '@css-fn/spacing';
 import {ExPubGoConfig} from '@utils/provider/ExPubGoProvider';
@@ -36,11 +37,8 @@ const ZeroHeightContainer = (props: {
   spacing?: T_SpacingProps
   mode?: T_ZeroHeightMode
 }) => {
-  const {
-    spacing: spacingProps = SPACING_ZERO,
-    mode = 'default',
-  } = props
-  const spacingResult = spacing(spacingProps)
+  const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
+  const mode = defaultTo(props.mode, 'default')
   const isDev = ExPubGoConfig().mode === 'development'
 
   return (
