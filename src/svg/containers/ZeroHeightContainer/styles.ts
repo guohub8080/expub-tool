@@ -46,14 +46,12 @@ const baseInnerStyle: CSSProperties = {
 export const innerStyleMap: Record<T_ZeroHeightMode, CSSProperties> = {
   default: {
     ...baseInnerStyle,
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    margin: '0 auto',
     overflow: 'visible',
   },
   through: {
     ...baseInnerStyle,
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    margin: '0 auto',
     pointerEvents: 'none',
   },
   'through-priority': {
@@ -69,8 +67,7 @@ export const innerStyleMap: Record<T_ZeroHeightMode, CSSProperties> = {
   },
   '3d': {
     ...baseInnerStyle,
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    margin: '0 auto',
     overflow: 'visible',
     transformStyle: 'preserve-3d',
   },

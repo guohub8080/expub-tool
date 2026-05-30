@@ -86,9 +86,9 @@ src/behaviors/
 
 用户会提供原始 SVG/HTML 参考代码，需要将其转换为 React 组件。遵循以下原则：
 
-1. **用 spacing 替换硬编码的 `margin-top`** — 参考代码中的 `margin-top: -1px` 或 `margin-top: 0` 都不要硬编码，统一用 `spacing` prop + `T_SpacingProps` 系统控制，让用户灵活调整。
+1. **仅 `margin-top: -1px` 用 spacing 替换** — 参考代码中的 `margin-top: -1px` 不硬编码，改用 `spacing` prop + `T_SpacingProps` 系统控制。其他 `margin` 值（如 `margin: 0 auto`、`margin-top: 0`）保持与参考一致，不做替换。
 2. **生成结果必须与参考代码完全一致** — 除以下两项外，最终渲染的 HTML/CSS 必须与参考代码一模一样：
-   - `margin-top` → 用 `spacing` prop 替代（见规则 1）
+   - `margin-top: -1px` → 用 `spacing` prop 替代（见规则 1）
    - 水印/版权属性（`powered-by`、`label`、`copyright`）→ 用 `resolveWatermark()` 系统替代
 3. **开发模式标注组件身份** — 当 `ExPubGoConfig().mode === 'development'` 时，组件最外层输出 `expubgo-label` 属性标明组件名称，方便 AI 审计。生产模式下不输出。
 
