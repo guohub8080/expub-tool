@@ -2,7 +2,7 @@ import type { I_NormalizedItemConfig } from "../types";
 import type { I_Layout } from "../types";
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
-import { getRightX, getCenterX, getLeftX } from "./positionCalculator";
+import { getRightX, getCenterX, getLeftX, getOffScreenLeftX } from "./positionCalculator";
 
 /** 总周期时长 = Σ(switch + stay) */
 export const calculateTotalCycleDuration = (items: I_NormalizedItemConfig[]): number => {
@@ -36,28 +36,30 @@ export const calculateHoldTime = (
 /**
  * translate 时间线
  *
- * 右→中→左→右，Y 坐标也跟着变：
- * - 中心时 y=0（撑满高度）
- * - 两侧时 y=sideY（垂直居中）
+ * 单方向：右→中→左→继续向左滑出屏幕外
+ * 循环重启时从屏幕外跳回右边（不可见）
  */
 export const assembleTranslateTimeline = (
     index: number,
     items: I_NormalizedItemConfig[],
     layout: I_Layout,
+    imageW: number,
+    sideScale: number,
     totalCycleDuration: number
 ): I_TimelineKeyframe<Partial<I_TranslateValue>>[] => {
     const current = items[index];
     const next = items[(index + 1) % items.length];
+    const offScreenLeft = getOffScreenLeftX(imageW, sideScale);
 
     return [
         // 1. 进入段：右 → 中心
         { to: { x: getCenterX(layout), y: 0 }, durationSeconds: current.switchDuration, keySplines: current.keySplines },
         // 2. 停留段：中心不动
         { to: { x: getCenterX(layout), y: 0 }, durationSeconds: current.stayDuration, keySplines: current.keySplines },
-        // 3. 退出段：中心 → 左
+        // 3. 退出段：中心 → 左 peek
         { to: { x: getLeftX(layout), y: layout.sideY }, durationSeconds: next.switchDuration, keySplines: next.keySplines },
-        // 4. 保持段：左 → 右（回到起始位置等待下一轮）
-        { to: { x: getRightX(layout), y: layout.sideY }, durationSeconds: calculateHoldTime(index, items, totalCycleDuration), keySplines: current.keySplines },
+        // 4. 滑出段：左 peek → 继续向左滑出屏幕外
+        { to: { x: offScreenLeft, y: layout.sideY }, durationSeconds: calculateHoldTime(index, items, totalCycleDuration), keySplines: current.keySplines },
     ];
 }
 

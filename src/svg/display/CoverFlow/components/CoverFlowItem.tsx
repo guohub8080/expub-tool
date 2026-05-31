@@ -14,7 +14,7 @@ import { getRightX } from "../timeline/positionCalculator";
  *   translate (additive=replace) — 控制绝对位置
  *   scale (additive=sum, 三元素)  — 控制缩放 + origin 补偿
  *
- * 动画方向：右→中→左→（回到右等待下一轮）
+ * 动画方向：右→中→左→继续向左滑出屏幕外
  */
 const CoverFlowItem = (props: {
     item: I_NormalizedItemConfig
@@ -30,7 +30,7 @@ const CoverFlowItem = (props: {
     const beginStr = `${delay}s`
 
     const translateTimeline = assembleTranslateTimeline(
-        props.index, props.items, props.layout, props.totalCycleDuration
+        props.index, props.items, props.layout, props.imageW, props.sideScale, props.totalCycleDuration
     )
     const scaleTimeline = assembleScaleTimeline(
         props.index, props.items, props.sideScale, props.totalCycleDuration
@@ -60,7 +60,7 @@ const CoverFlowItem = (props: {
                 }
             </foreignObject>
 
-            {/* translate：右→中→左→右，absolute positioning */}
+            {/* translate：右→中→左→滑出屏幕外，absolute positioning */}
             {transformTranslate({
                 initValue: { x: props.layout.rightX, y: props.layout.sideY },
                 timeline: translateTimeline,

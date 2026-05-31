@@ -31,19 +31,25 @@ const fillDefaults = (item: I_CoverFlowItemConfig): I_NormalizedItemConfig => {
 /**
  * 标准化配置数组
  *
- * 1. 未提供 / 空数组 → 抛出错误
- * 2. 仅 1 项 → 自动复制一份
- * 3. 多项 → 逐个填充默认值
+ * CoverFlow 至少需要 3 张图才能同时显示左peek+中心+右peek：
+ * - 1 张 → 复制到 3 张
+ * - 2 张 → 复制第一张补成 3 张
+ * - ≥3 张 → 直接使用
  */
 export const normalizeItems = (items?: I_CoverFlowItemConfig[]): I_NormalizedItemConfig[] => {
     if (!items || items.length === 0) {
         throw new Error("`pics` must not be empty. CoverFlow requires at least 1 item.")
     }
 
-    if (items.length === 1) {
-        const normalized = fillDefaults(items[0]);
-        return [normalized, normalized];
+    const normalized = items.map(fillDefaults)
+
+    if (normalized.length === 1) {
+        return [normalized[0], normalized[0], normalized[0]]
     }
 
-    return items.map(fillDefaults);
+    if (normalized.length === 2) {
+        return [normalized[0], normalized[1], normalized[0]]
+    }
+
+    return normalized
 };
