@@ -5,7 +5,7 @@ export { default as Container180 } from "./containers/Container180"
 
 export { default as SlideViewXContainer } from "./containers/SlideViewXContainer"
 export { default as SnapSlideViewXContainer } from "./containers/SnapSlideViewXContainer"
-export type { T_SnapAlign, T_ViewBox, T_HotArea } from "./types"
+export type { T_SnapAlign, T_CanvasSize, T_HotArea } from "./types"
 
 export { default as LongImgSlideX } from "./containers/LongImgSlideX"
 

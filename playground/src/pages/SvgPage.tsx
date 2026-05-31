@@ -124,7 +124,7 @@ export default function SvgPage() {
       </CopyDemo>
 
       <CopyDemo title="SlideViewYContainer — 纵向自由滑动">
-        <SlideViewYContainer viewBox={{ w: 300, h: 500 }} items={[
+        <SlideViewYContainer canvasSize={{ w: 300, h: 500 }} items={[
           <ImgSvg url={getWechat300x500(1)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(2)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(3)} w={300} h={500} />,
@@ -132,7 +132,7 @@ export default function SvgPage() {
       </CopyDemo>
 
       <CopyDemo title="SnapSlideViewYContainer — 纵向吸附滑动（抖音效果）">
-        <SnapSlideViewYContainer viewBox={{ w: 300, h: 500 }} items={[
+        <SnapSlideViewYContainer canvasSize={{ w: 300, h: 500 }} items={[
           <ImgSvg url={getWechat300x500(4)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(5)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(6)} w={300} h={500} />,
@@ -140,7 +140,7 @@ export default function SvgPage() {
       </CopyDemo>
 
       <CopyDemo title="嵌套动画 — 背景图 + 各式指示动画">
-        <SnapSlideViewYContainer viewBox={{ w: 300, h: 500 }} items={[
+        <SnapSlideViewYContainer canvasSize={{ w: 300, h: 500 }} items={[
           <BlinkArrowItem url={getWechat300x500(1)} />,
           <HardBlinkDotItem url={getWechat300x500(2)} />,
           <FloatArrowsItem url={getWechat300x500(3)} />,
@@ -149,7 +149,7 @@ export default function SvgPage() {
       </CopyDemo>
 
       <CopyDemo title="isBottomUp — 底部向上滑动（180° 翻转）">
-        <SlideViewYContainer viewBox={{ w: 300, h: 500 }} isBottomUp items={[
+        <SlideViewYContainer canvasSize={{ w: 300, h: 500 }} isBottomUp items={[
           <ImgSvg url={getWechat300x500(1)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(2)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(3)} w={300} h={500} />,
@@ -157,7 +157,7 @@ export default function SvgPage() {
       </CopyDemo>
 
       <CopyDemo title="isBottomUp + snap — 底部向上吸附滑动">
-        <SnapSlideViewYContainer viewBox={{ w: 300, h: 500 }} isBottomUp items={[
+        <SnapSlideViewYContainer canvasSize={{ w: 300, h: 500 }} isBottomUp items={[
           <ImgSvg url={getWechat300x500(4)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(5)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(6)} w={300} h={500} />,

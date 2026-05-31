@@ -4,7 +4,7 @@ import defaultTo from 'lodash/defaultTo'
 import { spacing, SPACING_ZERO } from '@css-fn/spacing'
 import type { T_SpacingProps } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
-import type { T_ViewBox } from '@svg/types'
+import type { T_CanvasSize } from '@svg/types'
 
 /**
  * 纵向滑动视口容器
@@ -13,14 +13,14 @@ import type { T_ViewBox } from '@svg/types'
  * 通过 aspect-ratio 根据宽高比自动计算容器高度。
  *
  * @param items       - 子组件数组
- * @param viewBox     - 视口尺寸 {w, h}
+ * @param canvasSize - 画布尺寸 {w, h}
  * @param isReverse   - 是否反向排列
  * @param isBottomUp  - 是否底部向上滑动（180° 翻转）
  * @param spacing     - 外边距配置
  */
 const SlideViewYContainer = (props: {
   items?: ReactNode[]
-  viewBox: Required<T_ViewBox>
+  canvasSize: Required<T_CanvasSize>
   isReverse?: boolean
   isBottomUp?: boolean
   spacing?: T_SpacingProps
@@ -31,7 +31,7 @@ const SlideViewYContainer = (props: {
   const items = defaultTo(props.items, [])
   if (items.length === 0) return null
 
-  const aspectRatio = `${props.viewBox.w} / ${props.viewBox.h}`
+  const aspectRatio = `${props.canvasSize.w} / ${props.canvasSize.h}`
   const isDev = ExPubGoConfig().mode === 'development'
 
   return (

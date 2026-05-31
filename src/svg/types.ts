@@ -1,6 +1,6 @@
 export type T_SnapAlign = 'start' | 'center' | 'end'
 
-export type T_ViewBox = {
+export type T_CanvasSize = {
   w?: number
   h?: number
 }

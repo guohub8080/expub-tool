@@ -7,7 +7,7 @@ import type { T_SpacingProps } from '@css-fn/spacing'
 import useImgSize from '@utils/hooks/useImgSize'
 import svgURL from '@utils/svg/svgURL'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
-import type { T_ViewBox } from '@svg/types'
+import type { T_CanvasSize } from '@svg/types'
 
 /**
  * 横向长图滑动组件
@@ -23,14 +23,14 @@ import type { T_ViewBox } from '@svg/types'
  * @param url             - 图片 URL（需预先顺时针旋转 90° 上传）
  * @param exposedPercent  - 默认露出的百分比，默认 25
  * @param isReverse       - 是否反向滑动（rtl），默认 false
- * @param viewBox         - 图片尺寸 {w, h}，不传则自动获取
+ * @param canvasSize       - 图片尺寸 {w, h}，不传则自动获取
  * @param spacing         - 外边距配置
  */
 const LongImgSlideX = (props: {
   url?: string
   exposedPercent?: number
   isReverse?: boolean
-  viewBox?: T_ViewBox
+  canvasSize?: T_CanvasSize
   spacing?: T_SpacingProps
 }) => {
   const exposedPercent = defaultTo(props.exposedPercent, 25)
@@ -39,7 +39,7 @@ const LongImgSlideX = (props: {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const isDev = ExPubGoConfig().mode === 'development'
 
-  const imgSize = useImgSize(imgURL, props.viewBox?.w, props.viewBox?.h)
+  const imgSize = useImgSize(imgURL, props.canvasSize?.w, props.canvasSize?.h)
 
   // 露出百分比 → 滑动内容宽度
   // 例：exposedPercent=25 → slideW = 100/25*100% = 400%

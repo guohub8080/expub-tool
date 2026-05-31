@@ -6,10 +6,10 @@ import isNil from 'lodash/isNil'
 import { spacing, SPACING_ZERO } from '@css-fn/spacing'
 import type { T_SpacingProps } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
-import type { T_HotArea, T_ViewBox } from '@svg/types'
+import type { T_HotArea, T_CanvasSize } from '@svg/types'
 
 const HOT_AREA_DEFAULT: Required<T_HotArea> = { x: 0, y: 0, w: 100, h: 100 }
-const VIEW_BOX_DEFAULT: Required<T_ViewBox> = { w: 100, h: 300 }
+const CANVAS_SIZE_DEFAULT: Required<T_CanvasSize> = { w: 100, h: 300 }
 
 /**
  * 坍塌盒子 — 点击后内容消失，可选延迟坍塌 + 替换内容淡入
@@ -22,22 +22,22 @@ const VIEW_BOX_DEFAULT: Required<T_ViewBox> = { w: 100, h: 300 }
  * - 传 collapseDelay → 延迟 width 坍塌 + 替换内容 opacity 淡入
  *
  * @param children        - 初始展示内容
- * @param viewBox         - 控制层 SVG viewBox {w, h}，默认 {w:100, h:300}
+ * @param canvasSize      - 画布尺寸 {w, h}，默认 {w:100, h:300}
  * @param hotArea         - 点击热区 {x, y, w, h}，默认 {x:0, y:0, w:100, h:100}
  * @param afterContent    - 坍塌后显示的替换内容
  * @param collapseDelay   - 延迟坍塌时长（秒），同时启用 opacity 淡入
  * @param spacing         - 外边距配置
  */
 const CollapsibleBox = (props: {
-  viewBox?: T_ViewBox
+  canvasSize?: T_CanvasSize
   hotArea?: T_HotArea
   children?: ReactNode
   afterContent?: ReactNode
   collapseDelay?: number
   spacing?: T_SpacingProps
 }) => {
-  const viewBoxW = defaultTo(props.viewBox?.w, VIEW_BOX_DEFAULT.w)
-  const viewBoxH = defaultTo(props.viewBox?.h, VIEW_BOX_DEFAULT.h)
+  const canvasW = defaultTo(props.canvasSize?.w, CANVAS_SIZE_DEFAULT.w)
+  const canvasH = defaultTo(props.canvasSize?.h, CANVAS_SIZE_DEFAULT.h)
   const hotArea: Required<T_HotArea> = {
     x: defaultTo(props.hotArea?.x, HOT_AREA_DEFAULT.x),
     y: defaultTo(props.hotArea?.y, HOT_AREA_DEFAULT.y),
@@ -47,7 +47,7 @@ const CollapsibleBox = (props: {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const hasAfter = !isNil(props.afterContent)
   const hasDelay = !isNil(props.collapseDelay)
-  const translateOffset = -viewBoxW * 5
+  const translateOffset = -canvasW * 5
   const isDev = ExPubGoConfig().mode === 'development'
 
   const widthBegin = hasDelay ? `click+${props.collapseDelay}s` : 'click'
@@ -66,7 +66,7 @@ const CollapsibleBox = (props: {
         <section style={mainContainerStyle}>
           <SvgEx
             x="0px" y="0px"
-            viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}
+            viewBox={`0 0 ${canvasW} ${canvasH}`}
             xmlSpace="preserve"
             style={mainSvgStyle}
           >
