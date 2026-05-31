@@ -1,9 +1,9 @@
 import type { CSSProperties } from 'react'
 import SvgEx from '@html/basicEx/SvgEx'
 
-const SeamlessImgReplaceable = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
+const SeamlessImgReplaceable = (props: { w: number, h: number, url: string, spacingResult: CSSProperties, label?: string }) => {
     return <section
-        data-label="seamless-img-replaceable-after-publish"
+        {...props.label ? { "expubgo-label": props.label } : {}}
         style={{
             WebkitTouchCallout: 'none',
             userSelect: 'text',

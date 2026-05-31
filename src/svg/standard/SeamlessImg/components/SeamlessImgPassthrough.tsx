@@ -2,9 +2,9 @@ import type { CSSProperties } from 'react'
 import svgURL from '@utils/svg/svgURL'
 import SvgEx from '@html/basicEx/SvgEx'
 
-const SeamlessImgPassthrough = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
+const SeamlessImgPassthrough = (props: { w: number, h: number, url: string, spacingResult: CSSProperties, label?: string }) => {
     return <section
-        data-label="seamless-img-dark-mode-maintain-event-pass-through"
+        {...props.label ? { "expubgo-label": props.label } : {}}
         style={{
             WebkitTouchCallout: 'none',
             userSelect: 'text',
