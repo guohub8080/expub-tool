@@ -15,5 +15,9 @@ export { default as TopPinedFrame } from "./containers/TopPinedFrame"
 
 export { default as BottomAlignedContainer } from "./containers/BottomAlignedContainer"
 
+export { default as CollapsibleBox } from "./containers/CollapsibleBox"
+export { default as CollapsibleBoxGif } from "./containers/CollapsibleBoxGif"
+export { default as CollapsibleBoxFade } from "./containers/CollapsibleBoxFade"
+
 export { default as SlideViewYContainer } from "./containers/SlideViewYContainer"
 export { default as SnapSlideViewYContainer } from "./containers/SnapSlideViewYContainer"
