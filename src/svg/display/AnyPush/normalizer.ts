@@ -13,8 +13,8 @@ import { getEaseBezier } from "@smil/bezier/index";
 /** 默认缓动曲线：ease-in-out */
 export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 
-/** 将单个 I_PicConfig 填充默认值，产出 I_NormalizedPicConfig */
-export const normalizePic = (pic: I_PicConfig): I_NormalizedPicConfig => ({
+/** 将 I_PicConfig 填充默认值 */
+const normalize = (pic: I_PicConfig): I_NormalizedPicConfig => ({
     url: pic.url,
     direction: defaultTo(pic.direction, DEFAULT_DIRECTION),
     switchDuration: defaultTo(pic.switchDuration, DEFAULT_SWITCH_DURATION),
@@ -23,12 +23,11 @@ export const normalizePic = (pic: I_PicConfig): I_NormalizedPicConfig => ({
 });
 
 /**
- * 标准化整个图片数组
+ * 标准化图片数组
  *
- * 处理三种情况：
- * 1. 未提供 / 空数组 → 抛出错误（推入效果至少需要 1 张图）
+ * 1. 未提供 / 空数组 → 抛出错误
  * 2. 仅 1 张图 → 自动复制一份（推入效果需要 ≥2 张）
- * 3. 多张图 → 逐个标准化
+ * 3. 多张图 → 逐个填充默认值
  */
 export const normalizePics = (pics?: I_PicConfig[]): I_NormalizedPicConfig[] => {
     if (!pics || pics.length === 0) {
@@ -36,9 +35,9 @@ export const normalizePics = (pics?: I_PicConfig[]): I_NormalizedPicConfig[] => 
     }
 
     if (pics.length === 1) {
-        const normalized = normalizePic(pics[0]);
+        const normalized = normalize(pics[0]);
         return [normalized, normalized];
     }
 
-    return pics.map(normalizePic);
+    return pics.map(normalize);
 };
