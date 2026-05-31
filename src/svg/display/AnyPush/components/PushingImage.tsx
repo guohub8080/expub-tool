@@ -1,7 +1,7 @@
-import SvgEx from "@pub-html/basicEx/SvgEx.tsx";
-import svgURL from "@pub-utils/common/svgURL.ts";
-import { genAnimateTranslate } from "@svg-anim/translate";
-import { NormalizedPicConfig } from "../types";
+import SvgEx from "@html/basicEx/SvgEx";
+import svgURL from "@utils/svg/svgURL";
+import { transformTranslate } from "@smil/index";
+import type { NormalizedPicConfig } from "../types";
 import { calculateDelayTime } from "../timeline/sequenceCalculator";
 import { getEntryOffset } from "../timeline/offsetCalculator";
 import { assembleTimeline } from "../timeline/segmentAssembler";
@@ -38,11 +38,11 @@ const PushingImage = (props: {
                     width="100%"
                 />
             </foreignObject>
-            {genAnimateTranslate({
+            {transformTranslate({
                 initValue: { x: 0, y: 0 },
                 timeline,
+                begin: `${delay}s`,
                 loopCount: 0,
-                delay,
                 isFreeze: true,
                 isAdditive: true,
                 isRelativeMove: true

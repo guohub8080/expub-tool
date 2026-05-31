@@ -1,4 +1,4 @@
-import { NormalizedPicConfig, Direction, TimelineSegment } from "../types";
+import type { Direction, TimelineSegment, NormalizedPicConfig } from "../types";
 import { getEntryOffset, getExitOffset } from "./offsetCalculator";
 import { calculateDelayTime, calculateHoldTime } from "./sequenceCalculator";
 
@@ -43,31 +43,31 @@ export const assembleTimeline = (
     // 1. 进入段：从屏幕外滑入到中心
     // 当前位置在 entryOffset，需要移动到中心（相对位移为 exitOffset）
     const entrySegment: TimelineSegment = {
-        toValue: getExitOffset(currentPic.direction, viewBoxW, viewBoxH),
+        to: getExitOffset(currentPic.direction, viewBoxW, viewBoxH),
         durationSeconds: currentPic.switchDuration,
-        keySplines: currentPic.keySplines
+        keySpline: currentPic.keySplines
     };
 
     // 2. 停留段：在中心保持静止
     const staySegment: TimelineSegment = {
-        toValue: { x: 0, y: 0 },
+        to: { x: 0, y: 0 },
         durationSeconds: currentPic.stayDuration,
-        keySplines: currentPic.keySplines
+        keySpline: currentPic.keySplines
     };
 
     // 3. 退出段：从中心滑出到屏幕外（沿着下一张图的退出方向）
     const exitSegment: TimelineSegment = {
-        toValue: getExitOffset(nextPic.direction, viewBoxW, viewBoxH),
+        to: getExitOffset(nextPic.direction, viewBoxW, viewBoxH),
         durationSeconds: nextPic.switchDuration,
-        keySplines: nextPic.keySplines
+        keySpline: nextPic.keySplines
     };
 
     // 4. 保持段：在屏幕外保持（等待循环重置）
     // 相对位移为 0，因为已经在目标位置
     const holdSegment: TimelineSegment = {
-        toValue: { x: 0, y: 0 },
+        to: { x: 0, y: 0 },
         durationSeconds: calculateHoldTime(index, pics, totalCycleDuration),
-        keySplines: currentPic.keySplines
+        keySpline: currentPic.keySplines
     };
 
     return [entrySegment, staySegment, exitSegment, holdSegment];

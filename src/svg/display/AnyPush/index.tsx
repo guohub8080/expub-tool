@@ -1,49 +1,48 @@
-import {CSSProperties} from "react"
-import SectionEx from "@pub-html/basicEx/SectionEx"
-import SvgEx from "@pub-html/basicEx/SvgEx"
-import {defaultTo} from "lodash"
-import {mpBlank, mpGet, mpProps} from "@styles/funcs/mp"
-import getImgSizeByDefault from "@pub-utils/common/getImgSizeByDefault"
+import type { CSSProperties } from "react"
+import SectionEx from "@html/basicEx/SectionEx"
+import SvgEx from "@html/basicEx/SvgEx"
+import defaultTo from "lodash/defaultTo"
+import { SPACING_ZERO, spacing } from "@css-fn/spacing"
+import type { T_SpacingProps } from "@css-fn/spacing"
+import type { T_CanvasSize } from "@svg/types"
+import useImgSize from "@utils/hooks/useImgSize"
+import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import PushingImage from "./components/PushingImage"
-import {PicConfig} from "./types"
-import {normalizePics} from "./config/normalizer"
-import {calculateTotalCycleDuration} from "./timeline/sequenceCalculator"
+import type { PicConfig } from "./types"
+import { normalizePics } from "./config/normalizer"
+import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
 
-/**
- * AnyPush - 多图循环"推入"切换组件
- *
- * 效果：图片从不同方向滑入到中心，停留后再从另一个方向滑出
- *
- * @param props.mp - margin/padding 配置
- * @param props.viewBoxW - ViewBox 宽度
- * @param props.viewBoxH - ViewBox 高度
- * @param props.pics - 图片配置数组
- */
 const AnyPush = (props: {
-  mp?: mpProps
-  viewBoxW?: number
-  viewBoxH?: number
+  canvasSize?: T_CanvasSize
+  spacing?: T_SpacingProps
   pics?: PicConfig[]
 }) => {
-  const mpResult = mpGet(defaultTo(props.mp, mpBlank))
-  const canvasSize = getImgSizeByDefault(props.pics?.[0]?.url, props.viewBoxW, props.viewBoxH)
-  const pics = normalizePics(props.pics)
+  const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
+  const firstUrl = props.pics?.[0]?.url
+  if (!firstUrl) return null
 
-  // 预计算总时长（所有图片共享）
+  const { size: resolvedSize } = useImgSize(firstUrl, props.canvasSize?.w, props.canvasSize?.h)
+  const w = resolvedSize.w
+  const h = resolvedSize.h
+
+  const pics = normalizePics(props.pics)
   const totalCycleDuration = calculateTotalCycleDuration(pics)
+  const isDev = ExPubGoConfig().mode === 'development'
 
   return (
-    <SectionEx style={{...rootBaseStyle, ...mpResult}} data-label="any-push"
+    <SectionEx
+      {...(isDev ? { 'expubgo-label': 'any-push' } : {})}
+      style={{ WebkitTouchCallout: "none", userSelect: "text", overflow: "hidden", textAlign: "center", lineHeight: 0, ...spacingResult }}
     >
       <section style={innerStyle}>
-        <SvgEx viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`}
+        <SvgEx viewBox={`0 0 ${w} ${h}`}
                style={svgStyle}
                width="100%">
           {pics.map((pic, index) => (
             <PushingImage key={index} pic={pic}
                           index={index} pics={pics}
-                          viewBoxW={canvasSize.w}
-                          viewBoxH={canvasSize.h}
+                          viewBoxW={w}
+                          viewBoxH={h}
                           totalCycleDuration={totalCycleDuration}/>
           ))}
         </SvgEx>
@@ -54,15 +53,6 @@ const AnyPush = (props: {
 
 export default AnyPush
 
-
-/** ================================================== Styles ===================================================== */
-const rootBaseStyle: CSSProperties = {
-  WebkitTouchCallout: "none",
-  userSelect: "text",
-  overflow: "hidden",
-  textAlign: "center",
-  lineHeight: 0,
-}
 
 const innerStyle: CSSProperties = {
   overflow: "hidden",

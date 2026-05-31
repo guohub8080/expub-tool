@@ -30,9 +30,9 @@ export interface NormalizedPicConfig extends PicConfig {
 
 // 时间线段配置
 export interface TimelineSegment {
-    toValue: Point;
+    to: Point;
     durationSeconds: number;
-    keySplines: string;
+    keySpline: string;
 }
 
 // 动画时间线（按时间顺序排列的段）

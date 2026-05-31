@@ -22,5 +22,8 @@ export { default as PlaceHolder } from "./standard/PlaceHolder"
 export { default as SeamlessImg } from "./standard/SeamlessImg"
 export type { T_SeamlessImgMode } from "./standard/SeamlessImg"
 
+export { default as AnyPush } from "./display/AnyPush"
+export type { Direction, PicConfig } from "./display/AnyPush/types"
+
 export { default as SlideViewYContainer } from "./containers/SlideViewYContainer"
 export { default as SnapSlideViewYContainer } from "./containers/SnapSlideViewYContainer"
