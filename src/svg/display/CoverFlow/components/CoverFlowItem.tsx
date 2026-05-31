@@ -10,18 +10,11 @@ import { getRightX } from "../timeline/positionCalculator";
 /**
  * CoverFlowItem — 单项轮播组件
  *
- * 每个实例渲染一项内容，同时驱动 translate + scale 两路动画：
+ * 两路 animateTransform 在同一个 <g> 上：
+ *   translate (additive=replace) — 控制绝对位置
+ *   scale (additive=sum, 三元素)  — 控制缩放 + origin 补偿
  *
- *   <g>
- *     <foreignObject x y w h>
- *       <SvgEx backgroundImage=.../>   ← url 模式
- *       {item}                          ← item 模式
- *     </foreignObject>
- *     <animateTransform translate/>     ← 水平位移（右→中→左→右）
- *     <animateTransform translate/>     ← scale origin 补偿
- *     <animateTransform scale/>         ← 缩放（sideScale↔1.0）
- *     <animateTransform translate/>     ← scale origin 还原
- *   </g>
+ * 动画方向：右→中→左→（回到右等待下一轮）
  */
 const CoverFlowItem = (props: {
     item: I_NormalizedItemConfig
@@ -35,13 +28,10 @@ const CoverFlowItem = (props: {
 }) => {
     const delay = calculateDelayTime(props.index, props.items)
     const beginStr = `${delay}s`
-    const rightX = getRightX(props.layout)
 
-    // translate 时间线
     const translateTimeline = assembleTranslateTimeline(
         props.index, props.items, props.layout, props.totalCycleDuration
     )
-    // scale 时间线
     const scaleTimeline = assembleScaleTimeline(
         props.index, props.items, props.sideScale, props.totalCycleDuration
     )
@@ -49,8 +39,8 @@ const CoverFlowItem = (props: {
     return (
         <g>
             <foreignObject
-                x={rightX}
-                y={props.layout.sideY}
+                x={0}
+                y={0}
                 width={props.imageW}
                 height={props.imageH}
             >
@@ -70,9 +60,9 @@ const CoverFlowItem = (props: {
                 }
             </foreignObject>
 
-            {/* translate 动画：右→中→左→右 */}
+            {/* translate：右→中→左→右，absolute positioning */}
             {transformTranslate({
-                initValue: { x: rightX, y: props.layout.sideY },
+                initValue: { x: props.layout.rightX, y: props.layout.sideY },
                 timeline: translateTimeline,
                 begin: beginStr,
                 loopCount: 0,
@@ -81,7 +71,7 @@ const CoverFlowItem = (props: {
                 isRelativeMove: false,
             })}
 
-            {/* scale 动画：sideScale↔1.0，origin = 图片中心 */}
+            {/* scale：sideScale↔1.0，origin = 图片中心 */}
             {transformScale({
                 initValue: props.sideScale,
                 timeline: scaleTimeline,

@@ -34,9 +34,11 @@ export const calculateHoldTime = (
 }
 
 /**
- * 为第 index 项组装 translate 时间线
+ * translate 时间线
  *
- * 4 段：进入(右→中) → 停留(中) → 退出(中→左) → 保持(左→右)
+ * 右→中→左→右，Y 坐标也跟着变：
+ * - 中心时 y=0（撑满高度）
+ * - 两侧时 y=sideY（垂直居中）
  */
 export const assembleTranslateTimeline = (
     index: number,
@@ -46,27 +48,20 @@ export const assembleTranslateTimeline = (
 ): I_TimelineKeyframe<Partial<I_TranslateValue>>[] => {
     const current = items[index];
     const next = items[(index + 1) % items.length];
-    const centerX = getCenterX(layout);
-    const leftX = getLeftX(layout);
-    const rightX = getRightX(layout);
 
     return [
         // 1. 进入段：右 → 中心
-        { to: { x: centerX, y: layout.sideY }, durationSeconds: current.switchDuration, keySplines: current.keySplines },
+        { to: { x: getCenterX(layout), y: 0 }, durationSeconds: current.switchDuration, keySplines: current.keySplines },
         // 2. 停留段：中心不动
-        { to: { x: centerX, y: layout.sideY }, durationSeconds: current.stayDuration, keySplines: current.keySplines },
+        { to: { x: getCenterX(layout), y: 0 }, durationSeconds: current.stayDuration, keySplines: current.keySplines },
         // 3. 退出段：中心 → 左
-        { to: { x: leftX, y: layout.sideY }, durationSeconds: next.switchDuration, keySplines: next.keySplines },
-        // 4. 保持段：左 → 右（等待下一轮）
-        { to: { x: rightX, y: layout.sideY }, durationSeconds: calculateHoldTime(index, items, totalCycleDuration), keySplines: current.keySplines },
+        { to: { x: getLeftX(layout), y: layout.sideY }, durationSeconds: next.switchDuration, keySplines: next.keySplines },
+        // 4. 保持段：左 → 右（回到起始位置等待下一轮）
+        { to: { x: getRightX(layout), y: layout.sideY }, durationSeconds: calculateHoldTime(index, items, totalCycleDuration), keySplines: current.keySplines },
     ];
 }
 
-/**
- * 为第 index 项组装 scale 时间线
- *
- * 4 段：sideScale → 1.0 → 1.0 → sideScale → sideScale
- */
+/** scale 时间线：sideScale → 1.0 → 1.0 → sideScale → sideScale */
 export const assembleScaleTimeline = (
     index: number,
     items: I_NormalizedItemConfig[],
@@ -77,13 +72,9 @@ export const assembleScaleTimeline = (
     const next = items[(index + 1) % items.length];
 
     return [
-        // 1. 进入段：sideScale → 1.0
         { to: 1, durationSeconds: current.switchDuration, keySplines: current.keySplines },
-        // 2. 停留段：保持 1.0
         { to: 1, durationSeconds: current.stayDuration, keySplines: current.keySplines },
-        // 3. 退出段：1.0 → sideScale
         { to: sideScale, durationSeconds: next.switchDuration, keySplines: next.keySplines },
-        // 4. 保持段：保持 sideScale
         { to: sideScale, durationSeconds: calculateHoldTime(index, items, totalCycleDuration), keySplines: current.keySplines },
     ];
 }
