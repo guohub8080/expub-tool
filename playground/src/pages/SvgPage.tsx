@@ -4,6 +4,7 @@ import {
   SnapSlideViewXContainer,
   SlideViewYContainer,
   SnapSlideViewYContainer,
+  CollapsibleBox,
 } from 'expub-tool/svg'
 import { animateSoftBlink, animateHardBlink, transformBreathe, transformFloat } from 'expub-tool/behaviors'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
@@ -162,6 +163,57 @@ export default function SvgPage() {
           <ImgSvg url={getWechat300x500(5)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(6)} w={300} h={500} />,
         ]} />
+      </CopyDemo>
+
+      <h2>CollapsibleBox — 坍塌盒子</h2>
+
+      <CopyDemo title="纯坍塌消失（300×300）">
+        <CollapsibleBox
+          canvasSize={{ w: 300, h: 300 }}
+          hotArea={{ x: 0, y: 0, w: 300, h: 300 }}
+        >
+          <ImgSvg url={getWechat300x300(1)} w={300} h={300} />
+        </CollapsibleBox>
+      </CopyDemo>
+
+      <CopyDemo title="纯坍塌消失（300×500）">
+        <CollapsibleBox
+          canvasSize={{ w: 300, h: 500 }}
+          hotArea={{ x: 0, y: 0, w: 300, h: 500 }}
+        >
+          <ImgSvg url={getWechat300x500(1)} w={300} h={500} />
+        </CollapsibleBox>
+      </CopyDemo>
+
+      <CopyDemo title="坍塌 + 替换内容（300×300）">
+        <CollapsibleBox
+          canvasSize={{ w: 300, h: 300 }}
+          hotArea={{ x: 0, y: 0, w: 300, h: 300 }}
+          afterContent={<ImgSvg url={getWechat300x300(2)} w={300} h={300} />}
+        >
+          <ImgSvg url={getWechat300x300(3)} w={300} h={300} />
+        </CollapsibleBox>
+      </CopyDemo>
+
+      <CopyDemo title="坍塌 + 替换内容（300×500）">
+        <CollapsibleBox
+          canvasSize={{ w: 300, h: 500 }}
+          hotArea={{ x: 0, y: 0, w: 300, h: 500 }}
+          afterContent={<ImgSvg url={getWechat300x500(2)} w={300} h={500} />}
+        >
+          <ImgSvg url={getWechat300x500(3)} w={300} h={500} />
+        </CollapsibleBox>
+      </CopyDemo>
+
+      <CopyDemo title="局部热区 + 延迟坍塌淡入（300×500）">
+        <CollapsibleBox
+          canvasSize={{ w: 300, h: 500 }}
+          hotArea={{ x: 100, y: 200, w: 100, h: 100 }}
+          collapseDelay={1}
+          afterContent={<ImgSvg url={getWechat300x500(4)} w={300} h={500} />}
+        >
+          <ImgSvg url={getWechat300x500(5)} w={300} h={500} />
+        </CollapsibleBox>
       </CopyDemo>
     </div>
   )
