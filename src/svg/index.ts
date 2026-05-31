@@ -17,7 +17,7 @@ export { default as BottomAlignedContainer } from "./containers/BottomAlignedCon
 
 export { default as CollapsibleBox } from "./containers/CollapsibleBox"
 
-export { default as PlaceHolder } from "./PlaceHolder"
+export { default as PlaceHolder } from "./standard/PlaceHolder"
 
 export { default as SlideViewYContainer } from "./containers/SlideViewYContainer"
 export { default as SnapSlideViewYContainer } from "./containers/SnapSlideViewYContainer"
