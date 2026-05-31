@@ -1,7 +1,7 @@
-import type { I_PicConfig, I_NormalizedPicConfig } from "./types";
-import { DEFAULT_DIRECTION, DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "./types";
+import type { I_PicConfig, I_NormalizedPicConfig } from "../types";
+import { DEFAULT_DIRECTION, DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types";
 import defaultTo from "lodash/defaultTo";
-import { getEaseBezier } from "@smil/bezier/index";
+import { getEaseBezier } from "@smil/bezier";
 
 /**
  * 配置标准化器
