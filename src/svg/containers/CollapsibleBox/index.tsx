@@ -12,17 +12,17 @@ const HOT_AREA_DEFAULT: Required<T_HotArea> = { x: 0, y: 0, w: 100, h: 100 }
 const CANVAS_SIZE_DEFAULT: Required<T_CanvasSize> = { w: 100, h: 300 }
 
 /**
- * 坍塌盒子 — 点击后内容消失，可选替换内容 + 延迟坍塌
+ * 坍塌盒子 — 点击后内容消失或替换
  *
  * - 不传 afterContent → 纯坍塌：点击后整个容器消失
- * - 传 afterContent → 替换：点击后替换内容滑入，延迟后整体坍塌消失
- * - 传 collapseDelay → 控制延迟时长 + 启用 opacity 淡入
+ * - 传 afterContent → 替换：点击后 afterContent 淡入覆盖 children，容器保留
+ * - 传 collapseDelay → 控制淡入时长
  *
- * @param children        - 初始展示内容
+ * @param children        - 初始展示内容（在 HTML 层渲染，被 SVG 层覆盖）
  * @param canvasSize      - 画布尺寸 {w, h}，默认 {w:100, h:300}
  * @param hotArea         - 点击热区 {x, y, w, h}，默认 {x:0, y:0, w:100, h:100}
- * @param afterContent    - 点击后滑入的替换内容（延迟后随容器一起坍塌消失）
- * @param collapseDelay   - 延迟坍塌时长（秒），默认 2
+ * @param afterContent    - 点击后淡入的替换内容（保留不消失）
+ * @param collapseDelay   - 淡入时长（秒），默认 0.1
  * @param spacing         - 外边距配置
  */
 const CollapsibleBox = (props: {
@@ -43,12 +43,9 @@ const CollapsibleBox = (props: {
   }
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const hasAfter = !isNil(props.afterContent)
-  const hasDelay = !isNil(props.collapseDelay)
-  const delay = defaultTo(props.collapseDelay, 2)
-  const translateOffset = -canvasW * 5
+  const fadeDur = defaultTo(props.collapseDelay, 0.1)
   const isDev = ExPubGoConfig().mode === 'development'
 
-  const widthBegin = hasAfter ? `click+${delay}s` : 'click'
   const heightCalcMode = hasAfter ? 'discrete' : 'spline'
   const heightKeySplines = hasAfter ? undefined : '0.42 0 0.58 1.0;0.42 0 0.58 1.0'
 
@@ -68,43 +65,30 @@ const CollapsibleBox = (props: {
             xmlSpace="preserve"
             style={mainSvgStyle}
           >
-            <animate
-              attributeName="width"
-              fill="freeze"
-              values="100%;0;0"
-              keyTimes="0;0.00001;1"
-              dur="100s"
-              begin={widthBegin}
-              calcMode="discrete"
-            />
-            <g {...(hasDelay ? { opacity: 0 } : {})}>
-              {hasDelay && (
-                <animate
-                  attributeName="opacity"
-                  values="0;1"
-                  begin="click"
-                  dur={`${delay}s`}
-                  fill="freeze"
-                  restart="never"
-                />
-              )}
+            {!hasAfter && (
+              <animate
+                attributeName="width"
+                fill="freeze"
+                values="100%;0;0"
+                keyTimes="0;0.00001;1"
+                dur="100s"
+                begin="click"
+                calcMode="discrete"
+              />
+            )}
+            <g>
               {hasAfter && (
-                <>
-                  <animateTransform
-                    attributeName="transform"
-                    type="translate"
-                    values={`0 0;${translateOffset} 0;${translateOffset} 0`}
-                    dur="100s"
-                    keyTimes="0;0.0000001;1"
+                <foreignObject x="0" y="0" width="100%" height="100%" opacity="0">
+                  <animate
+                    attributeName="opacity"
+                    values="0;1"
                     begin="click"
+                    dur={`${fadeDur}s`}
                     fill="freeze"
-                    calcMode="discrete"
                     restart="never"
                   />
-                  <foreignObject x={-translateOffset} y="0" width="100%" height="100%">
-                    {props.afterContent}
-                  </foreignObject>
-                </>
+                  {props.afterContent}
+                </foreignObject>
               )}
               <rect
                 x={hotArea.x} y={hotArea.y}
