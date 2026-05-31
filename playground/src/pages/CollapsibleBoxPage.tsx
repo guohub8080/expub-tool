@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { CollapsibleBox } from 'expub-tool/svg'
+import { CollapsibleBox, PlaceHolder } from 'expub-tool/svg'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
 
@@ -75,6 +75,16 @@ export default function CollapsibleBoxPage() {
         >
           <ImgSvg url={getWechat300x300(3)} w={300} h={300} />
         </CollapsibleBox>
+      </CopyDemo>
+
+      <CopyDemo title="坍塌 + 下方占位撑高（300×300）">
+        <CollapsibleBox
+          canvasSize={{ w: 300, h: 300 }}
+          hotArea={{ x: 0, y: 0, w: 300, h: 300 }}
+        >
+          <ImgSvg url={getWechat300x300(1)} w={300} h={300} />
+        </CollapsibleBox>
+        <PlaceHolder canvasSize={{ w: 300, h: 300 }} color="#f0f0f0" />
       </CopyDemo>
 
       <CopyDemo title="坍塌 + 替换内容（300×500）">
