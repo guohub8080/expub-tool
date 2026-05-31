@@ -7,6 +7,7 @@ import type { T_SpacingProps } from '@css-fn/spacing'
 import useImgSize from '@utils/hooks/useImgSize'
 import svgURL from '@utils/svg/svgURL'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
+import type { T_ViewBox } from '@svg/types'
 
 /**
  * 横向长图滑动组件
@@ -19,35 +20,17 @@ import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
  * 3. 利用 foreignObject + background-image 渲染旋转后的图片
  * 4. 外层 overflow: scroll hidden 实现横向滑动
  *
- * 结构：
- * ┌─ 外层 SectionEx ──────────────────────────────┐
- * │  overflow: hidden                               │
- * │  ┌─ 滚动层 section ──────────────────────────┐ │
- * │  │  overflow: scroll hidden                    │ │
- * │  │  ┌─ 内容层（width: slideW）──────────────┐ │ │
- * │  │  │  ┌─ SVG ─────────────────────────────┐ │ │ │
- * │  │  │  │  viewBox: h×w（旋转后尺寸）         │ │ │ │
- * │  │  │  │  g translate(0, w) → rotate(-90)  │ │ │ │
- * │  │  │  │    foreignObject                    │ │ │ │
- * │  │  │  │      内层 SVG（background-image）   │ │ │ │
- * │  │  │  └───────────────────────────────────┘ │ │ │
- * │  │  └────────────────────────────────────────┘ │ │
- * │  └────────────────────────────────────────────┘ │
- * └─────────────────────────────────────────────────┘
- *
  * @param url             - 图片 URL（需预先顺时针旋转 90° 上传）
- * @param exposedPercent  - 默认露出的百分比，默认 25（即图片宽度是容器的 4 倍）
+ * @param exposedPercent  - 默认露出的百分比，默认 25
  * @param isReverse       - 是否反向滑动（rtl），默认 false
- * @param w               - 图片宽度（像素），不传则自动获取
- * @param h               - 图片高度（像素），不传则自动获取
+ * @param viewBox         - 图片尺寸 {w, h}，不传则自动获取
  * @param spacing         - 外边距配置
  */
 const LongImgSlideX = (props: {
   url?: string
   exposedPercent?: number
   isReverse?: boolean
-  w?: number
-  h?: number
+  viewBox?: T_ViewBox
   spacing?: T_SpacingProps
 }) => {
   const exposedPercent = defaultTo(props.exposedPercent, 25)
@@ -56,7 +39,7 @@ const LongImgSlideX = (props: {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const isDev = ExPubGoConfig().mode === 'development'
 
-  const imgSize = useImgSize(imgURL, props.w, props.h)
+  const imgSize = useImgSize(imgURL, props.viewBox?.w, props.viewBox?.h)
 
   // 露出百分比 → 滑动内容宽度
   // 例：exposedPercent=25 → slideW = 100/25*100% = 400%
