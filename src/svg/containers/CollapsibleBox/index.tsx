@@ -12,20 +12,17 @@ const HOT_AREA_DEFAULT: Required<T_HotArea> = { x: 0, y: 0, w: 100, h: 100 }
 const CANVAS_SIZE_DEFAULT: Required<T_CanvasSize> = { w: 100, h: 300 }
 
 /**
- * 坍塌盒子 — 点击后内容消失，可选延迟坍塌 + 替换内容淡入
+ * 坍塌盒子 — 点击后内容消失或替换
  *
- * 展示层（children，height:0 + overflow:visible）叠在交互层（SVG）之上。
- * 点击透明热区触发 SVG width/height 坍塌为 0，展示层随之消失。
- *
- * - 不传 afterContent → 纯坍塌消失
- * - 传 afterContent → 坍塌后显示替换内容（foreignObject + translate 移入）
- * - 传 collapseDelay → 延迟 width 坍塌 + 替换内容 opacity 淡入
+ * - 不传 afterContent → 纯坍塌：点击后整个容器消失
+ * - 传 afterContent → 替换：点击后 children 移出，afterContent 移入，容器保留
+ * - 传 collapseDelay → 延迟 + 淡入：点击后 opacity 渐显，延迟后才完成切换
  *
  * @param children        - 初始展示内容
  * @param canvasSize      - 画布尺寸 {w, h}，默认 {w:100, h:300}
  * @param hotArea         - 点击热区 {x, y, w, h}，默认 {x:0, y:0, w:100, h:100}
- * @param afterContent    - 坍塌后显示的替换内容
- * @param collapseDelay   - 延迟坍塌时长（秒），同时启用 opacity 淡入
+ * @param afterContent    - 点击后显示的替换内容（不传则纯坍塌消失）
+ * @param collapseDelay   - 延迟时长（秒），同时启用 opacity 淡入
  * @param spacing         - 外边距配置
  */
 const CollapsibleBox = (props: {
@@ -60,9 +57,11 @@ const CollapsibleBox = (props: {
       style={{ ...rootStyle, ...spacingResult }}
     >
       <section style={outerStyle}>
-        <section style={topContainerStyle}>
-          {props.children}
-        </section>
+        {!hasAfter && (
+          <section style={topContainerStyle}>
+            {props.children}
+          </section>
+        )}
         <section style={mainContainerStyle}>
           <SvgEx
             x="0px" y="0px"
@@ -70,15 +69,17 @@ const CollapsibleBox = (props: {
             xmlSpace="preserve"
             style={mainSvgStyle}
           >
-            <animate
-              attributeName="width"
-              fill="freeze"
-              values="100%;0;0"
-              keyTimes="0;0.00001;1"
-              dur="100s"
-              begin={widthBegin}
-              calcMode="discrete"
-            />
+            {!hasAfter && (
+              <animate
+                attributeName="width"
+                fill="freeze"
+                values="100%;0;0"
+                keyTimes="0;0.00001;1"
+                dur="100s"
+                begin={widthBegin}
+                calcMode="discrete"
+              />
+            )}
             <g {...(hasDelay ? { opacity: 0 } : {})}>
               {hasDelay && (
                 <animate
@@ -103,6 +104,9 @@ const CollapsibleBox = (props: {
                     calcMode="discrete"
                     restart="never"
                   />
+                  <foreignObject x="0" y="0" width="100%" height="100%">
+                    {props.children}
+                  </foreignObject>
                   <foreignObject x={-translateOffset} y="0" width="100%" height="100%">
                     {props.afterContent}
                   </foreignObject>
