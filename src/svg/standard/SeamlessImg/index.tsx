@@ -2,7 +2,6 @@ import defaultTo from 'lodash/defaultTo'
 import { spacing, SPACING_ZERO } from '@css-fn/spacing'
 import type { T_SpacingProps } from '@css-fn/spacing'
 import type { T_CanvasSize } from '@svg/types'
-import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import SeamlessImgDefault from './components/SeamlessImgDefault'
 import SeamlessImgNatural from './components/SeamlessImgNatural'
 import SeamlessImgPassthrough from './components/SeamlessImgPassthrough'
@@ -44,17 +43,9 @@ const SeamlessImg = (props: SeamlessImgProps) => {
   const h = defaultTo(props.canvasSize?.h, CANVAS_SIZE_DEFAULT.h)
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const mode = defaultTo(props.mode, 'default' as T_SeamlessImgMode)
-  const isDev = ExPubGoConfig().mode === 'development'
 
   const Component = MODE_MAP[mode]
-  const commonProps = { w, h, url: props.url, spacingResult }
-
-  return (
-    <>
-      {isDev && <span expubgo-label={`seamless-img-${mode}`} style={{ display: 'none' }} />}
-      <Component {...commonProps} />
-    </>
-  )
+  return <Component w={w} h={h} url={props.url} spacingResult={spacingResult} />
 }
 
 export default SeamlessImg
