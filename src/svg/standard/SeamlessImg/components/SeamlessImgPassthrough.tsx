@@ -8,7 +8,7 @@ const SeamlessImgPassthrough = (props: { w: number, h: number, url: string, spac
     const isDev = ExPubGoConfig().mode === 'development'
     return (
         <SectionEx
-            {...(isDev ? { 'expubgo-label': 'seamless-img-passthrough' } : {})}
+            {...(isDev ? { 'expubgo-label': 'seamless-img-event-pass-through' } : {})}
             style={{ ...rootStyle, ...props.spacingResult }}
         >
             <SvgEx

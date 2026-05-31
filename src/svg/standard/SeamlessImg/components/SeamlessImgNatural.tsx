@@ -8,7 +8,7 @@ const SeamlessImgNatural = (props: { w: number, h: number, url: string, spacingR
     const isDev = ExPubGoConfig().mode === 'development'
     return (
         <SectionEx
-            {...(isDev ? { 'expubgo-label': 'seamless-img-natural' } : {})}
+            {...(isDev ? { 'expubgo-label': 'seamless-img-natural-priority' } : {})}
             style={{ ...rootStyle, ...props.spacingResult }}
         >
             <SvgEx

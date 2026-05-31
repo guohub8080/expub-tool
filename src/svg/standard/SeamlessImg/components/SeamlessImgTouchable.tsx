@@ -8,7 +8,7 @@ const SeamlessImgTouchable = (props: { w: number, h: number, url: string, spacin
     const isDev = ExPubGoConfig().mode === 'development'
     return (
         <SectionEx
-            {...(isDev ? { 'expubgo-label': 'seamless-img-touchable' } : {})}
+            {...(isDev ? { 'expubgo-label': 'seamless-img-force-touchable' } : {})}
             style={{ ...rootStyle, ...props.spacingResult }}
         >
             <SvgEx

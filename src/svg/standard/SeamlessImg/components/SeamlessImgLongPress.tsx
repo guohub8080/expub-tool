@@ -8,7 +8,7 @@ const SeamlessImgLongPress = (props: { w: number, h: number, url: string, spacin
     const isDev = ExPubGoConfig().mode === 'development'
     return (
         <SectionEx
-            {...(isDev ? { 'expubgo-label': 'seamless-img-longPress' } : {})}
+            {...(isDev ? { 'expubgo-label': 'seamless-img-long-press-only' } : {})}
             style={{ ...rootStyle, ...props.spacingResult }}
         >
             <section style={{ lineHeight: 0, fontSize: 0, height: 0, position: 'relative' }}>

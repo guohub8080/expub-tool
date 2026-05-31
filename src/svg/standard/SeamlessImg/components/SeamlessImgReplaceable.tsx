@@ -7,7 +7,7 @@ const SeamlessImgReplaceable = (props: { w: number, h: number, url: string, spac
     const isDev = ExPubGoConfig().mode === 'development'
     return (
         <SectionEx
-            {...(isDev ? { 'expubgo-label': 'seamless-img-replaceable' } : {})}
+            {...(isDev ? { 'expubgo-label': 'seamless-img-replaceable-after-publish' } : {})}
             style={{ ...rootStyle, ...props.spacingResult }}
         >
             <SvgEx

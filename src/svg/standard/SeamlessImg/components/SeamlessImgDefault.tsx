@@ -8,7 +8,7 @@ const SeamlessImgDefault = (props: { w: number, h: number, url: string, spacingR
     const isDev = ExPubGoConfig().mode === 'development'
     return (
         <SectionEx
-            {...(isDev ? { 'expubgo-label': 'seamless-img-default' } : {})}
+            {...(isDev ? { 'expubgo-label': 'seamless-img-dark-mode-maintain' } : {})}
             style={{ ...rootStyle, ...props.spacingResult }}
         >
             <SvgEx
