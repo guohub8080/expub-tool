@@ -48,19 +48,24 @@ export default function CoverFlowPage() {
     <div>
       <h2>CoverFlow — 居中轮播</h2>
 
-      <CopyDemo title="基础 2 图轮播 — 默认参数">
+      <CopyDemo title="3 图轮播 — 默认参数">
         <CoverFlow
-          canvasSize={{ w: 300, h: 500 }}
+          canvasSize={{ w: 1000, h: 1000 }}
+          itemCanvasSize={{ w: 400, h: 400 }}
           pics={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
+            { url: getWechat300x500(3) },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="3 图轮播">
+      <CopyDemo title="3 图 — itemScale=1.4, itemGap=100">
         <CoverFlow
-          canvasSize={{ w: 300, h: 500 }}
+          canvasSize={{ w: 1000, h: 800 }}
+          itemCanvasSize={{ w: 300, h: 500 }}
+          itemScale={1.4}
+          itemGap={100}
           pics={[
             { url: getWechat300x500(3) },
             { url: getWechat300x500(4) },
@@ -69,33 +74,11 @@ export default function CoverFlowPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="大 peek + 大 gap">
-        <CoverFlow
-          canvasSize={{ w: 300, h: 500 }}
-          peekPx={60}
-          gap={20}
-          pics={[
-            { url: getWechat300x500(6) },
-            { url: getWechat300x500(7) },
-            { url: getWechat300x500(8) },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="小 sideScale (0.6)">
-        <CoverFlow
-          canvasSize={{ w: 300, h: 500 }}
-          sideScale={0.6}
-          pics={[
-            { url: getWechat300x500(1) },
-            { url: getWechat300x500(2) },
-          ]}
-        />
-      </CopyDemo>
-
       <CopyDemo title="快速切换 — switchDuration=0.3, stayDuration=0.5">
         <CoverFlow
-          canvasSize={{ w: 300, h: 500 }}
+          canvasSize={{ w: 800, h: 600 }}
+          itemCanvasSize={{ w: 300, h: 400 }}
+          itemGap={50}
           pics={[
             { url: getWechat300x500(3), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(4), switchDuration: 0.3, stayDuration: 0.5 },
@@ -106,31 +89,14 @@ export default function CoverFlowPage() {
 
       <CopyDemo title="Item 模式 — 自定义 SVG">
         <CoverFlow
-          canvasSize={{ w: 300, h: 500 }}
+          canvasSize={{ w: 1000, h: 800 }}
+          itemCanvasSize={{ w: 300, h: 500 }}
+          itemGap={80}
+          itemScale={1.3}
           pics={[
             { item: <ColorBlockItem color="#dc2626" label="Red" /> },
             { item: <ColorBlockItem color="#2563eb" label="Blue" /> },
             { item: <ColorBlockItem color="#059669" label="Green" /> },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="混合 url + item">
-        <CoverFlow
-          canvasSize={{ w: 300, h: 500 }}
-          pics={[
-            { url: getWechat300x500(9) },
-            { item: <ColorBlockItem color="#7c3aed" label="Purple" /> },
-            { url: getWechat300x500(1) },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="单图自动复制">
-        <CoverFlow
-          canvasSize={{ w: 300, h: 500 }}
-          pics={[
-            { url: getWechat300x500(2) },
           ]}
         />
       </CopyDemo>

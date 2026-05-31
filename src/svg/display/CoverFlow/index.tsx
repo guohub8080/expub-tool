@@ -4,52 +4,44 @@ import defaultTo from "lodash/defaultTo"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import type { T_CanvasSize } from "@svg/types"
-import useImgSize from "@utils/hooks/useImgSize"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate } from "@smil/index"
 import { transformScaleRaw } from "@smil/index"
 import svgURL from "@utils/svg/svgURL"
 import type { I_CoverFlowItemConfig, I_NormalizedItemConfig } from "./types"
-import { DEFAULT_PEEK_PX, DEFAULT_GAP, DEFAULT_SIDE_SCALE } from "./types"
 import { normalizeItems } from "./utils/normalizer"
 import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
+/** 默认 item 间距 */
+const DEFAULT_ITEM_GAP = 20
+/** 默认放大比 */
+const DEFAULT_ITEM_SCALE = 1.2
+
 const CoverFlow = (props: {
-  canvasSize?: T_CanvasSize
+  canvasSize: { w: number; h: number }
   spacing?: T_SpacingProps
   pics?: I_CoverFlowItemConfig[]
-  peekPx?: number
-  gap?: number
-  sideScale?: number
+  itemCanvasSize: { w: number; h: number }
+  itemGap?: number
+  itemScale?: number
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.pics?.[0]
-  const firstUrl = firstPic?.url
+  if (!firstPic?.url && !firstPic?.item) return null
 
-  if (!firstUrl && !firstPic?.item) return null
-  if (!firstUrl && (!props.canvasSize?.w || !props.canvasSize?.h)) {
-    throw new Error("`canvasSize` is required when using `item` mode.")
-  }
+  const viewBoxW = props.canvasSize.w
+  const viewBoxH = props.canvasSize.h
+  const imageW = props.itemCanvasSize.w
+  const imageH = props.itemCanvasSize.h
+  const gap = defaultTo(props.itemGap, DEFAULT_ITEM_GAP)
+  const fullScale = defaultTo(props.itemScale, DEFAULT_ITEM_SCALE)
 
-  const { size: resolvedSize } = useImgSize(firstUrl!, props.canvasSize?.w, props.canvasSize?.h)
-  const imageW = resolvedSize.w
-  const imageH = resolvedSize.h
-
-  const peekPx = defaultTo(props.peekPx, DEFAULT_PEEK_PX)
-  const gap = defaultTo(props.gap, DEFAULT_GAP)
-  const sideScale = defaultTo(props.sideScale, DEFAULT_SIDE_SCALE)
   const items = normalizeItems(props.pics)
   const N = items.length
-  const totalDur = calculateTotalCycleDuration(items)
   const isDev = ExPubGoConfig().mode === 'development'
 
-  // 放大比 = 1/sideScale
-  const fullScale = 1 / sideScale
-  // viewBox 尺寸：宽度需要容纳放大后的中心图 + 两侧 peek，高度容纳放大后的图
-  const viewBoxW = imageW * fullScale + 2 * peekPx
-  const viewBoxH = imageH * fullScale
   // 间距 = imageW + gap（slot 之间的水平距离）
   const step = imageW + gap
   // slot 的 Y 坐标（图片在 viewBox 中垂直居中）
