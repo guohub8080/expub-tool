@@ -1,68 +1,62 @@
-import type { Direction, Point } from "../types";
+import type { T_Direction, I_Point } from "../types";
 
 /**
  * 方向位移计算器
- * 职责：根据方向和视图尺寸计算位移坐标
+ *
+ * 根据滑入/滑出方向和 viewBox 尺寸，计算 foreignObject 需要的位移坐标。
+ * 所有坐标以 viewBox 左上角为原点。
+ *
+ * 坐标系：
+ *   → x 正方向（右）
+ *   ↓ y 正方向（下）
+ *
+ *   "R"（从右侧进入）= foreignObject 初始在左边界外 (x = -viewBoxW)
+ *   "L"（从左侧进入）= foreignObject 初始在右边界外 (x = +viewBoxW)
+ *   "B"（从下方进入）= foreignObject 初始在上边界外 (y = -viewBoxH)
+ *   "T"（从上方进入）= foreignObject 初始在下边界外 (y = +viewBoxH)
  */
 
 /**
- * 根据方向获取"进入"位移值
- * 即图片从屏幕外进入视图中心的位移
- *
- * @param direction - 进入方向
- * @param viewBoxW - 视图宽度
- * @param viewBoxH - 视图高度
- * @returns 位移坐标 {x, y}
+ * 获取"进入"初始偏移 — foreignObject 的 x/y 初始坐标
+ * 图片从这个位置开始，通过 translate 动画滑到中心 (0,0)
  */
 export const getEntryOffset = (
-    direction: Direction,
+    direction: T_Direction,
     viewBoxW: number,
     viewBoxH: number
-): Point => {
+): I_Point => {
     switch (direction) {
-        case "L": return { x: viewBoxW, y: 0 };      // 从左边外进入
-        case "R": return { x: -viewBoxW, y: 0 };     // 从右边外进入
-        case "T": return { x: 0, y: viewBoxH };      // 从上边外进入
-        case "B": return { x: 0, y: -viewBoxH };     // 从下边外进入
+        case "L": return { x: viewBoxW, y: 0 };
+        case "R": return { x: -viewBoxW, y: 0 };
+        case "T": return { x: 0, y: viewBoxH };
+        case "B": return { x: 0, y: -viewBoxH };
     }
 };
 
 /**
- * 根据方向获取"退出"位移值
- * 即图片从视图中心退出到屏幕外的位移
+ * 获取"退出"位移 — 相对坐标，用于 animateTransform 的 to 值
  *
- * @param direction - 退出方向
- * @param viewBoxW - 视图宽度
- * @param viewBoxH - 视图高度
- * @returns 位移坐标 {x, y}
+ * 进入段需要从 entryOffset 移动到中心，等效于相对位移 = entryOffset 取反 = exitOffset。
+ * 所以在 assembleTimeline 中，进入段的 to 值使用 exitOffset。
  */
 export const getExitOffset = (
-    direction: Direction,
+    direction: T_Direction,
     viewBoxW: number,
     viewBoxH: number
-): Point => {
+): I_Point => {
     switch (direction) {
-        case "L": return { x: -viewBoxW, y: 0 };     // 退出到左边外
-        case "R": return { x: viewBoxW, y: 0 };       // 退出到右边外
-        case "T": return { x: 0, y: -viewBoxH };     // 退出到上边外
-        case "B": return { x: 0, y: viewBoxH };      // 退出到下边外
+        case "L": return { x: -viewBoxW, y: 0 };
+        case "R": return { x: viewBoxW, y: 0 };
+        case "T": return { x: 0, y: -viewBoxH };
+        case "B": return { x: 0, y: viewBoxH };
     }
 };
 
-/**
- * 获取初始位置（进入位置）
- * 用于设置 foreignObject 的初始坐标
- *
- * @param direction - 进入方向
- * @param viewBoxW - 视图宽度
- * @param viewBoxH - 视图高度
- * @returns 初始坐标 {x, y}
- */
+/** 初始位置 = 进入偏移（供 foreignObject 的 x/y 属性使用） */
 export const getInitialPosition = (
-    direction: Direction,
+    direction: T_Direction,
     viewBoxW: number,
     viewBoxH: number
-): Point => {
-    // 初始位置就是进入位移值
+): I_Point => {
     return getEntryOffset(direction, viewBoxW, viewBoxH);
 };

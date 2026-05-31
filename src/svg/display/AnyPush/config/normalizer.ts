@@ -1,25 +1,25 @@
-import type { PicConfig, NormalizedPicConfig } from "../types";
+import type { I_PicConfig, I_NormalizedPicConfig } from "../types";
 import defaultTo from "lodash/defaultTo";;
 import { getEaseBezier } from "@smil/bezier/index";
 
 /**
  * 配置标准化器
- * 职责：将用户输入的配置转换为标准化的内部配置
+ *
+ * 将用户传入的 I_PicConfig[] 转换为内部使用的 I_NormalizedPicConfig[]。
+ * 所有可选字段在此填充默认值，后续计算逻辑无需再处理空值。
  */
 
-/** 默认值常量 */
+/** 默认切换时长：0.5 秒 */
 export const DEFAULT_SWITCH_DURATION = 0.5;
+/** 默认停留时长：0.5 秒 */
 export const DEFAULT_STAY_DURATION = 0.5;
-export const DEFAULT_DIRECTION: NormalizedPicConfig["direction"] = "R";
+/** 默认方向：从右侧滑入 */
+export const DEFAULT_DIRECTION: I_NormalizedPicConfig["direction"] = "R";
+/** 默认缓动曲线：ease-in-out */
 export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 
-/**
- * 标准化单个图片配置
- *
- * @param pic - 用户输入的图片配置
- * @returns 标准化后的图片配置
- */
-export const normalizePic = (pic: PicConfig): NormalizedPicConfig => ({
+/** 将单个 I_PicConfig 填充默认值，产出 I_NormalizedPicConfig */
+export const normalizePic = (pic: I_PicConfig): I_NormalizedPicConfig => ({
     url: pic.url,
     direction: defaultTo(pic.direction, DEFAULT_DIRECTION),
     switchDuration: defaultTo(pic.switchDuration, DEFAULT_SWITCH_DURATION),
@@ -28,32 +28,28 @@ export const normalizePic = (pic: PicConfig): NormalizedPicConfig => ({
 });
 
 /**
- * 获取默认的图片配置（用于占位）
- *
- * @returns 默认的图片配置数组
+ * 默认图片配置（空数组 — playground 应自行提供 pics）
+ * 推入效果至少需要 2 张图才能形成循环
  */
-export const getDefaultPics = (): NormalizedPicConfig[] => []
+export const getDefaultPics = (): I_NormalizedPicConfig[] => []
 
 /**
- * 标准化图片配置数组
- * - 如果只有1张图片，自动复制一份（至少需要2张才能形成推入效果）
- * - 如果未提供图片，使用默认占位图
+ * 标准化整个图片数组
  *
- * @param pics - 用户输入的图片配置数组（可能为 undefined）
- * @returns 标准化后的图片配置数组（保证至少有2张）
+ * 处理三种情况：
+ * 1. 未提供 / 空数组 → 返回默认占位（目前为空数组）
+ * 2. 仅 1 张图 → 自动复制一份（推入效果需要 ≥2 张）
+ * 3. 多张图 → 逐个标准化
  */
-export const normalizePics = (pics?: PicConfig[]): NormalizedPicConfig[] => {
-    // 未提供图片：使用默认占位图
+export const normalizePics = (pics?: I_PicConfig[]): I_NormalizedPicConfig[] => {
     if (!pics || pics.length === 0) {
         return getDefaultPics();
     }
 
-    // 只有1张图片：复制一份
     if (pics.length === 1) {
         const normalized = normalizePic(pics[0]);
         return [normalized, normalized];
     }
 
-    // 多张图片：全部标准化
     return pics.map(normalizePic);
 };
