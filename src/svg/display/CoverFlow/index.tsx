@@ -124,6 +124,7 @@ const CoverFlow = (props: {
                         begin: '0s',
                         loopCount: 0,
                         isAdditive: false,
+                        isFreeze: true,
                       })}
                     </g>
                     {!isEdge && transformTranslate({
@@ -133,6 +134,7 @@ const CoverFlow = (props: {
                       loopCount: 0,
                       isAdditive: false,
                       isRelativeMove: false,
+                      isFreeze: true,
                     })}
                   </g>
                 </g>
