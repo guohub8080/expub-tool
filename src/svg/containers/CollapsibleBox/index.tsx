@@ -78,7 +78,7 @@ const CollapsibleBox = (props: {
             )}
             <g>
               {hasAfter && (
-                <foreignObject x="0" y="0" width="100%" height="100%" opacity="0">
+                <g opacity="0">
                   <animate
                     attributeName="opacity"
                     values="0;1"
@@ -87,8 +87,10 @@ const CollapsibleBox = (props: {
                     fill="freeze"
                     restart="never"
                   />
-                  {props.afterContent}
-                </foreignObject>
+                  <foreignObject x="0" y="0" width="100%" height="100%">
+                    {props.afterContent}
+                  </foreignObject>
+                </g>
               )}
               <rect
                 x={hotArea.x} y={hotArea.y}
