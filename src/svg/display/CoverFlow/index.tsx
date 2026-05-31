@@ -63,12 +63,11 @@ const CoverFlow = (props: {
   // 右 peek 位置 x = centerX + step
   const rightPeekX = centerX + step
 
-  // slots: N+2 个（首尾各多一个副本实现无缝循环）
-  // slot[0] 在最右边（rightPeekX），slot[1] 在中心，slot[2] 在左边...
-  // 外层 translate 每段向右平移 step，把下一个 slot 推到中心
+  // slots: N+3 个（1 首副本 + N+1 有动画 + 1 尾副本）
+  // 有动画的 slot 比图片数多 1，确保外层平移 N*step 后尾部 slot 与首部重合
   const slots: { item: I_NormalizedItemConfig; x: number }[] = []
-  for (let i = 0; i < N + 2; i++) {
-    const itemIdx = (i) % N
+  for (let i = 0; i < N + 3; i++) {
+    const itemIdx = i % N
     const x = rightPeekX - i * step
     slots.push({ item: items[itemIdx], x })
   }
