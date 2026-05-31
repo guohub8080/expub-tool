@@ -9,7 +9,7 @@ const SeamlessImgPassthrough = (props: { w: number, h: number, url: string, spac
     return (
         <SectionEx
             {...(isDev ? { 'expubgo-label': 'seamless-img-event-pass-through' } : {})}
-            style={{ ...rootStyle, ...props.spacingResult }}
+            style={{ WebkitTouchCallout: 'none', userSelect: 'text', overflow: 'hidden', textAlign: 'center', lineHeight: 0, ...props.spacingResult }}
         >
             <SvgEx
                 style={{
@@ -30,10 +30,3 @@ const SeamlessImgPassthrough = (props: { w: number, h: number, url: string, spac
 
 export default SeamlessImgPassthrough
 
-const rootStyle: CSSProperties = {
-    WebkitTouchCallout: 'none',
-    userSelect: 'text',
-    overflow: 'hidden',
-    textAlign: 'center',
-    lineHeight: 0,
-}

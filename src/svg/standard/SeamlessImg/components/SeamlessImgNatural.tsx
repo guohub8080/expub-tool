@@ -9,7 +9,7 @@ const SeamlessImgNatural = (props: { w: number, h: number, url: string, spacingR
     return (
         <SectionEx
             {...(isDev ? { 'expubgo-label': 'seamless-img-natural-priority' } : {})}
-            style={{ ...rootStyle, ...props.spacingResult }}
+            style={{ WebkitTouchCallout: 'none', userSelect: 'text', overflow: 'hidden', textAlign: 'center', lineHeight: 0, ...props.spacingResult }}
         >
             <SvgEx
                 style={{
@@ -28,10 +28,3 @@ const SeamlessImgNatural = (props: { w: number, h: number, url: string, spacingR
 
 export default SeamlessImgNatural
 
-const rootStyle: CSSProperties = {
-    WebkitTouchCallout: 'none',
-    userSelect: 'text',
-    overflow: 'hidden',
-    textAlign: 'center',
-    lineHeight: 0,
-}

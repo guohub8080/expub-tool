@@ -8,7 +8,7 @@ const SeamlessImgReplaceable = (props: { w: number, h: number, url: string, spac
     return (
         <SectionEx
             {...(isDev ? { 'expubgo-label': 'seamless-img-replaceable-after-publish' } : {})}
-            style={{ ...rootStyle, ...props.spacingResult }}
+            style={{ WebkitTouchCallout: 'none', userSelect: 'text', overflow: 'hidden', textAlign: 'center', lineHeight: 0, ...props.spacingResult }}
         >
             <SvgEx
                 style={{
@@ -36,10 +36,3 @@ const SeamlessImgReplaceable = (props: { w: number, h: number, url: string, spac
 
 export default SeamlessImgReplaceable
 
-const rootStyle: CSSProperties = {
-    WebkitTouchCallout: 'none',
-    userSelect: 'text',
-    overflow: 'hidden',
-    textAlign: 'center',
-    lineHeight: 0,
-}

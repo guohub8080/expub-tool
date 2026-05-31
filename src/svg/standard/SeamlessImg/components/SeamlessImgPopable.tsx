@@ -9,7 +9,7 @@ const SeamlessImgPopable = (props: { w: number, h: number, url: string, spacingR
     return (
         <SectionEx
             {...(isDev ? { 'expubgo-label': 'seamless-img-popable' } : {})}
-            style={{ ...rootStyle, ...props.spacingResult }}
+            style={{ WebkitTouchCallout: 'none', userSelect: 'text', overflow: 'hidden', textAlign: 'center', lineHeight: 0, ...props.spacingResult }}
         >
             <SvgEx
                 style={{
@@ -49,10 +49,3 @@ const SeamlessImgPopable = (props: { w: number, h: number, url: string, spacingR
 
 export default SeamlessImgPopable
 
-const rootStyle: CSSProperties = {
-    WebkitTouchCallout: 'none',
-    userSelect: 'text',
-    overflow: 'hidden',
-    textAlign: 'center',
-    lineHeight: 0,
-}

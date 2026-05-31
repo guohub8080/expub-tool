@@ -9,7 +9,7 @@ const SeamlessImgDefault = (props: { w: number, h: number, url: string, spacingR
     return (
         <SectionEx
             {...(isDev ? { 'expubgo-label': 'seamless-img-dark-mode-maintain' } : {})}
-            style={{ ...rootStyle, ...props.spacingResult }}
+            style={{ WebkitTouchCallout: 'none', userSelect: 'text', overflow: 'hidden', textAlign: 'center', lineHeight: 0, ...props.spacingResult }}
         >
             <SvgEx
                 style={{
@@ -29,10 +29,3 @@ const SeamlessImgDefault = (props: { w: number, h: number, url: string, spacingR
 
 export default SeamlessImgDefault
 
-const rootStyle: CSSProperties = {
-    WebkitTouchCallout: 'none',
-    userSelect: 'text',
-    overflow: 'hidden',
-    textAlign: 'center',
-    lineHeight: 0,
-}

@@ -9,7 +9,7 @@ const SeamlessImgTouchable = (props: { w: number, h: number, url: string, spacin
     return (
         <SectionEx
             {...(isDev ? { 'expubgo-label': 'seamless-img-force-touchable' } : {})}
-            style={{ ...rootStyle, ...props.spacingResult }}
+            style={{ WebkitTouchCallout: 'none', userSelect: 'text', overflow: 'hidden', textAlign: 'center', lineHeight: 0, ...props.spacingResult }}
         >
             <SvgEx
                 style={{
@@ -29,10 +29,3 @@ const SeamlessImgTouchable = (props: { w: number, h: number, url: string, spacin
 
 export default SeamlessImgTouchable
 
-const rootStyle: CSSProperties = {
-    WebkitTouchCallout: 'none',
-    userSelect: 'text',
-    overflow: 'hidden',
-    textAlign: 'center',
-    lineHeight: 0,
-}

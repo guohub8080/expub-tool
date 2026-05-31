@@ -9,7 +9,7 @@ const SeamlessImgLongPress = (props: { w: number, h: number, url: string, spacin
     return (
         <SectionEx
             {...(isDev ? { 'expubgo-label': 'seamless-img-long-press-only' } : {})}
-            style={{ ...rootStyle, ...props.spacingResult }}
+            style={{ WebkitTouchCallout: 'none', userSelect: 'text', overflow: 'hidden', textAlign: 'center', lineHeight: 0, ...props.spacingResult }}
         >
             <section style={{ lineHeight: 0, fontSize: 0, height: 0, position: 'relative' }}>
                 <img
@@ -41,10 +41,3 @@ const SeamlessImgLongPress = (props: { w: number, h: number, url: string, spacin
 
 export default SeamlessImgLongPress
 
-const rootStyle: CSSProperties = {
-    WebkitTouchCallout: 'none',
-    userSelect: 'text',
-    overflow: 'hidden',
-    textAlign: 'center',
-    lineHeight: 0,
-}
