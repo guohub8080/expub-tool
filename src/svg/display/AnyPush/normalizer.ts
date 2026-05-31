@@ -1,5 +1,6 @@
 import type { I_PicConfig, I_NormalizedPicConfig } from "./types";
-import defaultTo from "lodash/defaultTo";;
+import { DEFAULT_DIRECTION, DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "./types";
+import defaultTo from "lodash/defaultTo";
 import { getEaseBezier } from "@smil/bezier/index";
 
 /**
@@ -9,12 +10,6 @@ import { getEaseBezier } from "@smil/bezier/index";
  * 所有可选字段在此填充默认值，后续计算逻辑无需再处理空值。
  */
 
-/** 默认切换时长：0.5 秒 */
-export const DEFAULT_SWITCH_DURATION = 0.5;
-/** 默认停留时长：0.5 秒 */
-export const DEFAULT_STAY_DURATION = 0.5;
-/** 默认方向：从右侧滑入 */
-export const DEFAULT_DIRECTION: I_NormalizedPicConfig["direction"] = "R";
 /** 默认缓动曲线：ease-in-out */
 export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 

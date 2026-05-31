@@ -15,6 +15,13 @@
 /** 滑入方向：L=左, R=右, T=上, B=下 */
 export type T_Direction = "L" | "R" | "T" | "B";
 
+/** 默认方向：从右侧滑入 */
+export const DEFAULT_DIRECTION: T_Direction = "R";
+/** 默认切换时长（秒） */
+export const DEFAULT_SWITCH_DURATION = 0.5;
+/** 默认停留时长（秒） */
+export const DEFAULT_STAY_DURATION = 0.5;
+
 /** 二维坐标点 */
 export interface I_Point {
     x: number;
