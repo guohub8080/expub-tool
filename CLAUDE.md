@@ -123,3 +123,4 @@ src/behaviors/
 - **默认值**：优先使用 `defaultTo(prop, fallback)` 而非解构默认值，保持风格统一
 - **优先 lodash**：类型判断、空判断优先用 lodash，尤其是 `isNil` 代替分别使用 `isUndefined` / `isNull`
 - **错误信息**：变量名用反引号包裹，首字母大写，句末加句号。例：`` `keyframes` must not be empty. ``
+- **styles 提取**：不需要所有样式都提取到独立文件，只有当重复内容多、影响可读性时再提取公共部分到 `styles.ts`

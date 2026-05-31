@@ -3,9 +3,11 @@ import SmilPage from './pages/SmilPage'
 import BehaviorsPage from './pages/BehaviorsPage'
 import CssPage from './pages/CssPage'
 import UtilsPage from './pages/UtilsPage'
+import SvgPage from './pages/SvgPage'
 
 const links = [
   { to: '/', label: 'SMIL' },
+  { to: '/svg', label: 'SVG' },
   { to: '/behaviors', label: 'Behaviors' },
   { to: '/css', label: 'CSS' },
   { to: '/utils', label: 'Utils' },
@@ -47,6 +49,7 @@ export default function App() {
       <main style={{ flex: 1, padding: 24, overflow: 'auto' }}>
         <Routes>
           <Route path="/" element={<SmilPage />} />
+          <Route path="/svg" element={<SvgPage />} />
           <Route path="/behaviors" element={<BehaviorsPage />} />
           <Route path="/css" element={<CssPage />} />
           <Route path="/utils" element={<UtilsPage />} />
