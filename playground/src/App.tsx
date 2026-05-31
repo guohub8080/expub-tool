@@ -5,11 +5,13 @@ import CssPage from './pages/CssPage'
 import UtilsPage from './pages/UtilsPage'
 import SvgPage from './pages/SvgPage'
 import CollapsibleBoxPage from './pages/CollapsibleBoxPage'
+import AnyPushPage from './pages/AnyPushPage'
 
 const links = [
   { to: '/', label: 'SMIL' },
   { to: '/svg', label: 'SVG' },
   { to: '/collapsible-box', label: 'CollapseBox' },
+  { to: '/any-push', label: 'AnyPush' },
   { to: '/behaviors', label: 'Behaviors' },
   { to: '/css', label: 'CSS' },
   { to: '/utils', label: 'Utils' },
@@ -53,6 +55,7 @@ export default function App() {
           <Route path="/" element={<SmilPage />} />
           <Route path="/svg" element={<SvgPage />} />
           <Route path="/collapsible-box" element={<CollapsibleBoxPage />} />
+          <Route path="/any-push" element={<AnyPushPage />} />
           <Route path="/behaviors" element={<BehaviorsPage />} />
           <Route path="/css" element={<CssPage />} />
           <Route path="/utils" element={<UtilsPage />} />
