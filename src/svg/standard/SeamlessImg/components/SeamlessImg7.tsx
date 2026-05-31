@@ -1,8 +1,8 @@
-import { CSSProperties } from "react"
-import svgURL from "@pub-utils/common/svgURL.ts"
-import SvgEx from "@pub-html/basicEx/SvgEx.tsx"
+import type { CSSProperties } from 'react'
+import svgURL from '@utils/svg/svgURL'
+import SvgEx from '@html/basicEx/SvgEx'
 
-const SeamlessImg7 = (props: { w: number, h: number, url: string, mpResult: CSSProperties }) => {
+const SeamlessImg7 = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
     return <section
         data-label="seamless-img-long-press-only"
         style={{
@@ -11,28 +11,25 @@ const SeamlessImg7 = (props: { w: number, h: number, url: string, mpResult: CSSP
             overflow: 'hidden',
             textAlign: 'center',
             lineHeight: 0,
-            ...props.mpResult
+            ...props.spacingResult
         }}
     >
-        {/* 透明的 img，用于长按识别 */}
-        <section style={{ 
-            lineHeight: 0, 
-            fontSize: 0, 
-            height: 0, 
-            position: 'relative' 
+        <section style={{
+            lineHeight: 0,
+            fontSize: 0,
+            height: 0,
+            position: 'relative'
         }}>
-            <img 
-                style={{ 
-                    width: '100%', 
+            <img
+                style={{
+                    width: '100%',
                     pointerEvents: 'painted',
-                    verticalAlign: 'top', 
-                    opacity: 0 
-                }} 
-                src={props.url} 
+                    verticalAlign: 'top',
+                    opacity: 0
+                }}
+                src={props.url}
             />
         </section>
-        
-        {/* 实际显示的 svg 背景图，不可点击弹出 */}
         <SvgEx
             style={{
                 backgroundImage: svgURL(props.url),
@@ -50,4 +47,3 @@ const SeamlessImg7 = (props: { w: number, h: number, url: string, mpResult: CSSP
 }
 
 export default SeamlessImg7
-

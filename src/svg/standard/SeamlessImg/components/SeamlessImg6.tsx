@@ -1,7 +1,7 @@
-import { CSSProperties } from "react"
-import SvgEx from "@pub-html/basicEx/SvgEx.tsx"
+import type { CSSProperties } from 'react'
+import SvgEx from '@html/basicEx/SvgEx'
 
-const SeamlessImg6 = (props: { w: number, h: number, url: string, mpResult: CSSProperties }) => {
+const SeamlessImg6 = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
     return <section
         data-label="seamless-img-replaceable-after-publish"
         style={{
@@ -10,7 +10,7 @@ const SeamlessImg6 = (props: { w: number, h: number, url: string, mpResult: CSSP
             overflow: 'hidden',
             textAlign: 'center',
             lineHeight: 0,
-            ...props.mpResult
+            ...props.spacingResult
         }}
     >
         <SvgEx
@@ -37,4 +37,3 @@ const SeamlessImg6 = (props: { w: number, h: number, url: string, mpResult: CSSP
 }
 
 export default SeamlessImg6
-
