@@ -1,4 +1,4 @@
-import type { I_PicConfig, I_NormalizedPicConfig } from "../types";
+import type { I_PicConfig, I_NormalizedPicConfig } from "./types";
 import defaultTo from "lodash/defaultTo";;
 import { getEaseBezier } from "@smil/bezier/index";
 

@@ -6,9 +6,9 @@ import type { T_SpacingProps } from "@css-fn/spacing"
 import type { T_CanvasSize } from "@svg/types"
 import useImgSize from "@utils/hooks/useImgSize"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
-import PushingImage from "./components/PushingImage"
+import PushingImage from "./PushingImage"
 import type { I_PicConfig } from "./types"
-import { normalizePics } from "./config/normalizer"
+import { normalizePics } from "./normalizer"
 import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
 
 /**
