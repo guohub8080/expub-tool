@@ -110,6 +110,7 @@ src/behaviors/
 | `@svg-comps/*` | `src/svg-comps/*` |
 | `@smil/*` | `src/smil/*` |
 | `@behaviors/*` | `src/behaviors/*` |
+| `@svg/*` | `src/svg/*` |
 | `@svg-utils/*` | `src/svg-utils/*` |
 | `@css-fn/*` | `src/css/cssFunctions/*` |
 | `@css-presets/*` | `src/css/cssPresets/*` |

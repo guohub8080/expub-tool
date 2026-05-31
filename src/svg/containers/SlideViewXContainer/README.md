@@ -1,6 +1,6 @@
-# EqDivSlideXContainer — 等分横向滑动容器
+# SlideViewXContainer — 横向滑动视口容器
 
-将多个子组件等分排列，用户可以左右自由滑动浏览。每个子组件宽度 = 容器宽度 / 子组件数量。
+将多个子组件排列在横向轨道上，用户可以左右自由滑动浏览。支持 `exposedPercent` 实现下一张部分透出效果。
 
 ## 原理
 
@@ -29,7 +29,8 @@
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| items | ReactNode[] | [] | 子组件数组，长度决定等分数 |
+| items | ReactNode[] | [] | 子组件数组 |
+| exposedPercent | number | — | 每个 item 占视口宽度的百分比，传入后右边露出下一张 |
 | isReverse | boolean | false | 是否反向排列（rtl） |
 | spacing | T_SpacingProps | SPACING_ZERO | 外边距配置 |
 
@@ -38,7 +39,17 @@
 ### 等分三栏滑动
 
 ```tsx
-<EqDivSlideXContainer items={[
+<SlideViewXContainer items={[
+  <img src="img1.jpg" style={{ width: '100%' }} />,
+  <img src="img2.jpg" style={{ width: '100%' }} />,
+  <img src="img3.jpg" style={{ width: '100%' }} />,
+]} />
+```
+
+### 下一张部分透出（peek）
+
+```tsx
+<SlideViewXContainer exposedPercent={80} items={[
   <img src="img1.jpg" style={{ width: '100%' }} />,
   <img src="img2.jpg" style={{ width: '100%' }} />,
   <img src="img3.jpg" style={{ width: '100%' }} />,
@@ -48,17 +59,11 @@
 ### 反向滑动（从右侧开始）
 
 ```tsx
-<EqDivSlideXContainer isReverse comps={[...]}>
-```
-
-### 带间距控制
-
-```tsx
-<EqDivSlideXContainer spacing={{ mt: 10, mb: 10 }} comps={[...]} />
+<SlideViewXContainer isReverse items={[...]} />
 ```
 
 ## 注意
 
 - `items` 为空时返回 null，不渲染任何内容
 - 轨道宽度通过 `important` 强制设置，确保不被外部样式覆盖
-- 与 EqDivSnapSlideContainer 的区别：本组件自由滑动，不带吸附效果
+- 与 SnapSlideViewXContainer 的区别：本组件自由滑动，不带吸附效果

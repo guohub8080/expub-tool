@@ -14,6 +14,7 @@ export default defineConfig({
       '@css-presets': resolve(__dirname, 'src/css/cssPresets'),
       '@svg-comps': resolve(__dirname, 'src/svg-comps'),
       '@behaviors': resolve(__dirname, 'src/behaviors'),
+      '@svg': resolve(__dirname, 'src/svg'),
     },
   },
   build: {

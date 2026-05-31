@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import ZeroHeightContainer from '../ZeroHeightContainer'
+import ZeroHeightContainer from '@svg/containers/ZeroHeightContainer'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 
 /**

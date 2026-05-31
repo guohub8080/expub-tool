@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 import {
-  EqDivSlideXContainer,
-  EqDivSnapSlideContainer,
-  EqDivSlideYContainer,
-  EqDivSnapSlideYContainer,
+  SlideViewXContainer,
+  SnapSlideViewXContainer,
+  SlideViewYContainer,
+  SnapSlideViewYContainer,
 } from 'expub-tool/svg'
 import { animateSoftBlink, animateHardBlink, transformBreathe, transformFloat } from 'expub-tool/behaviors'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
@@ -107,32 +107,32 @@ export default function SvgPage() {
     <div>
       <h2>SVG — Containers</h2>
 
-      <CopyDemo title="EqDivSlideXContainer — 横向自由滑动">
-        <EqDivSlideXContainer items={[
+      <CopyDemo title="SlideViewXContainer — 横向自由滑动（peek 露出）">
+        <SlideViewXContainer exposedPercent={80} items={[
           <ImgSvg url={getWechat300x300(1)} w={300} h={300} />,
           <ImgSvg url={getWechat300x300(2)} w={300} h={300} />,
           <ImgSvg url={getWechat300x300(3)} w={300} h={300} />,
         ]} />
       </CopyDemo>
 
-      <CopyDemo title="EqDivSnapSlideContainer — 横向吸附滑动">
-        <EqDivSnapSlideContainer items={[
+      <CopyDemo title="SnapSlideViewXContainer — 横向吸附滑动（peek 露出）">
+        <SnapSlideViewXContainer exposedPercent={80} items={[
           <ImgSvg url={getWechat300x300(4)} w={300} h={300} />,
           <ImgSvg url={getWechat300x300(5)} w={300} h={300} />,
           <ImgSvg url={getWechat300x300(6)} w={300} h={300} />,
         ]} />
       </CopyDemo>
 
-      <CopyDemo title="EqDivSlideYContainer — 纵向自由滑动">
-        <EqDivSlideYContainer w={300} h={500} items={[
+      <CopyDemo title="SlideViewYContainer — 纵向自由滑动">
+        <SlideViewYContainer w={300} h={500} items={[
           <ImgSvg url={getWechat300x500(1)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(2)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(3)} w={300} h={500} />,
         ]} />
       </CopyDemo>
 
-      <CopyDemo title="EqDivSnapSlideYContainer — 纵向吸附滑动（抖音效果）">
-        <EqDivSnapSlideYContainer w={300} h={500} items={[
+      <CopyDemo title="SnapSlideViewYContainer — 纵向吸附滑动（抖音效果）">
+        <SnapSlideViewYContainer w={300} h={500} items={[
           <ImgSvg url={getWechat300x500(4)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(5)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(6)} w={300} h={500} />,
@@ -140,7 +140,7 @@ export default function SvgPage() {
       </CopyDemo>
 
       <CopyDemo title="嵌套动画 — 背景图 + 各式指示动画">
-        <EqDivSnapSlideYContainer w={300} h={500} items={[
+        <SnapSlideViewYContainer w={300} h={500} items={[
           <BlinkArrowItem url={getWechat300x500(1)} />,
           <HardBlinkDotItem url={getWechat300x500(2)} />,
           <FloatArrowsItem url={getWechat300x500(3)} />,
@@ -149,7 +149,7 @@ export default function SvgPage() {
       </CopyDemo>
 
       <CopyDemo title="isBottomUp — 底部向上滑动（180° 翻转）">
-        <EqDivSlideYContainer w={300} h={500} isBottomUp items={[
+        <SlideViewYContainer w={300} h={500} isBottomUp items={[
           <ImgSvg url={getWechat300x500(1)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(2)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(3)} w={300} h={500} />,
@@ -157,7 +157,7 @@ export default function SvgPage() {
       </CopyDemo>
 
       <CopyDemo title="isBottomUp + snap — 底部向上吸附滑动">
-        <EqDivSnapSlideYContainer w={300} h={500} isBottomUp items={[
+        <SnapSlideViewYContainer w={300} h={500} isBottomUp items={[
           <ImgSvg url={getWechat300x500(4)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(5)} w={300} h={500} />,
           <ImgSvg url={getWechat300x500(6)} w={300} h={500} />,
