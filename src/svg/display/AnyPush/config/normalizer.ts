@@ -28,22 +28,16 @@ export const normalizePic = (pic: I_PicConfig): I_NormalizedPicConfig => ({
 });
 
 /**
- * 默认图片配置（空数组 — playground 应自行提供 pics）
- * 推入效果至少需要 2 张图才能形成循环
- */
-export const getDefaultPics = (): I_NormalizedPicConfig[] => []
-
-/**
  * 标准化整个图片数组
  *
  * 处理三种情况：
- * 1. 未提供 / 空数组 → 返回默认占位（目前为空数组）
+ * 1. 未提供 / 空数组 → 抛出错误（推入效果至少需要 1 张图）
  * 2. 仅 1 张图 → 自动复制一份（推入效果需要 ≥2 张）
  * 3. 多张图 → 逐个标准化
  */
 export const normalizePics = (pics?: I_PicConfig[]): I_NormalizedPicConfig[] => {
     if (!pics || pics.length === 0) {
-        return getDefaultPics();
+        throw new Error("`pics` must not be empty. AnyPush requires at least 1 image.")
     }
 
     if (pics.length === 1) {
