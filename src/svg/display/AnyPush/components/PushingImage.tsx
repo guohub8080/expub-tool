@@ -1,10 +1,10 @@
 import SvgEx from "@html/basicEx/SvgEx";
 import svgURL from "@utils/svg/svgURL";
 import { transformTranslate } from "@smil/index";
-import type { I_NormalizedPicConfig } from "./types";
-import { calculateDelayTime } from "./timeline/sequenceCalculator";
-import { getEntryOffset } from "./timeline/offsetCalculator";
-import { assembleTimeline } from "./timeline/segmentAssembler";
+import type { I_NormalizedPicConfig } from "../types";
+import { calculateDelayTime } from "../timeline/sequenceCalculator";
+import { getEntryOffset } from "../timeline/offsetCalculator";
+import { assembleTimeline } from "../timeline/segmentAssembler";
 
 /**
  * PushingImage — 单张推入图片组件
