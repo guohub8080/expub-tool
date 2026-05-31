@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
@@ -32,18 +31,21 @@ const AnyPush = (props: {
   return (
     <SectionEx
       {...(isDev ? { 'expubgo-label': 'any-push' } : {})}
-      style={{ WebkitTouchCallout: "none", userSelect: "text", overflow: "hidden", textAlign: "center", lineHeight: 0, ...spacingResult }}
+      style={{
+        WebkitTouchCallout: "none", userSelect: "text", overflow: "hidden",
+        textAlign: "center", lineHeight: 0, ...spacingResult
+      }}
     >
-      <section style={innerStyle}>
+      <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`}
-               style={svgStyle}
-               width="100%">
+          style={{ display: "block", margin: "0 auto" }}
+          width="100%">
           {pics.map((pic, index) => (
             <PushingImage key={index} pic={pic}
-                          index={index} pics={pics}
-                          viewBoxW={w}
-                          viewBoxH={h}
-                          totalCycleDuration={totalCycleDuration}/>
+              index={index} pics={pics}
+              viewBoxW={w}
+              viewBoxH={h}
+              totalCycleDuration={totalCycleDuration} />
           ))}
         </SvgEx>
       </section>
@@ -52,15 +54,3 @@ const AnyPush = (props: {
 }
 
 export default AnyPush
-
-
-const innerStyle: CSSProperties = {
-  overflow: "hidden",
-  lineHeight: 0,
-  margin: 0,
-}
-
-const svgStyle: CSSProperties = {
-  display: "block",
-  margin: "0 auto",
-}
