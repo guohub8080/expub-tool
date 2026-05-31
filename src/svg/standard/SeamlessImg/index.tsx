@@ -19,16 +19,6 @@ export type T_SeamlessImgMode =
   | 'replaceable'
   | 'longPress'
 
-const MODE_MAP = {
-  default: SeamlessImgDefault,
-  natural: SeamlessImgNatural,
-  passthrough: SeamlessImgPassthrough,
-  popable: SeamlessImgPopable,
-  touchable: SeamlessImgTouchable,
-  replaceable: SeamlessImgReplaceable,
-  longPress: SeamlessImgLongPress,
-} as const
-
 const CANVAS_SIZE_DEFAULT: Required<T_CanvasSize> = { w: 0, h: 0 }
 
 interface SeamlessImgProps {
@@ -43,9 +33,17 @@ const SeamlessImg = (props: SeamlessImgProps) => {
   const h = defaultTo(props.canvasSize?.h, CANVAS_SIZE_DEFAULT.h)
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const mode = defaultTo(props.mode, 'default' as T_SeamlessImgMode)
+  const commonProps = { w, h, url: props.url, spacingResult }
 
-  const Component = MODE_MAP[mode]
-  return <Component w={w} h={h} url={props.url} spacingResult={spacingResult} />
+  switch (mode) {
+    case 'natural': return <SeamlessImgNatural {...commonProps} />
+    case 'passthrough': return <SeamlessImgPassthrough {...commonProps} />
+    case 'popable': return <SeamlessImgPopable {...commonProps} />
+    case 'touchable': return <SeamlessImgTouchable {...commonProps} />
+    case 'replaceable': return <SeamlessImgReplaceable {...commonProps} />
+    case 'longPress': return <SeamlessImgLongPress {...commonProps} />
+    default: return <SeamlessImgDefault {...commonProps} />
+  }
 }
 
 export default SeamlessImg
