@@ -13,6 +13,7 @@ import { normalizeItems } from "./utils/normalizer"
 import { calculateLayout } from "./timeline/positionCalculator"
 import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
 
+
 /**
  * CoverFlow — 居中轮播组件
  *
