@@ -35,7 +35,10 @@ export const getCenterX = (layout: I_Layout): number => layout.centerX
 /** 左侧 peek 位置 */
 export const getLeftX = (layout: I_Layout): number => layout.leftX
 
-/** 屏幕外左侧（用于第 4 段滑出） */
+/** 屏幕外右侧（第 1 段：从屏外滑入右 peek） */
+export const getOffScreenRightX = (layout: I_Layout): number => layout.viewBoxW
+
+/** 屏幕外左侧（第 5 段：从左 peek 滑出屏外） */
 export const getOffScreenLeftX = (imageW: number, sideScale: number): number => {
     return -imageW * sideScale
 }

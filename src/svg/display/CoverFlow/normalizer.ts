@@ -1,5 +1,5 @@
-import type { I_CoverFlowItemConfig, I_NormalizedItemConfig } from "../types";
-import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types";
+import type { I_CoverFlowItemConfig, I_NormalizedItemConfig } from "./types";
+import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "./types";
 import defaultTo from "lodash/defaultTo";
 import { getEaseBezier } from "@smil/bezier";
 

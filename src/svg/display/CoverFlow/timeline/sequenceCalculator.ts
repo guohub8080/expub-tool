@@ -2,7 +2,7 @@ import type { I_NormalizedItemConfig } from "../types";
 import type { I_Layout } from "../types";
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
-import { getRightX, getCenterX, getLeftX, getOffScreenLeftX } from "./positionCalculator";
+import { getRightX, getCenterX, getLeftX, getOffScreenRightX, getOffScreenLeftX } from "./positionCalculator";
 
 /** 总周期时长 = Σ(switch + stay) */
 export const calculateTotalCycleDuration = (items: I_NormalizedItemConfig[]): number => {
@@ -34,10 +34,15 @@ export const calculateHoldTime = (
 }
 
 /**
- * translate 时间线
+ * translate 时间线（5 段）
  *
- * 单方向：右→中→左→继续向左滑出屏幕外
- * 循环重启时从屏幕外跳回右边（不可见）
+ * 1. 屏外右侧 → 右 peek（从不可见滑入）
+ * 2. 右 peek → 中心（switch in）
+ * 3. 中心 → 中心（stay）
+ * 4. 中心 → 左 peek（switch out）
+ * 5. 左 peek → 屏外左侧（滑出到不可见）
+ *
+ * 循环重启：屏外左侧 → 屏外右侧，都不可见，无缝衔接
  */
 export const assembleTranslateTimeline = (
     index: number,
@@ -50,20 +55,24 @@ export const assembleTranslateTimeline = (
     const current = items[index];
     const next = items[(index + 1) % items.length];
     const offScreenLeft = getOffScreenLeftX(imageW, sideScale);
+    const offScreenRight = getOffScreenRightX(layout);
+    const holdTime = calculateHoldTime(index, items, totalCycleDuration);
 
     return [
-        // 1. 进入段：右 → 中心
+        // 1. 屏外右侧 → 右 peek
+        { to: { x: getRightX(layout), y: layout.sideY }, durationSeconds: holdTime / 2, keySplines: current.keySplines },
+        // 2. 右 peek → 中心
         { to: { x: getCenterX(layout), y: 0 }, durationSeconds: current.switchDuration, keySplines: current.keySplines },
-        // 2. 停留段：中心不动
+        // 3. 中心 → 中心（停留）
         { to: { x: getCenterX(layout), y: 0 }, durationSeconds: current.stayDuration, keySplines: current.keySplines },
-        // 3. 退出段：中心 → 左 peek
+        // 4. 中心 → 左 peek
         { to: { x: getLeftX(layout), y: layout.sideY }, durationSeconds: next.switchDuration, keySplines: next.keySplines },
-        // 4. 滑出段：左 peek → 继续向左滑出屏幕外
-        { to: { x: offScreenLeft, y: layout.sideY }, durationSeconds: calculateHoldTime(index, items, totalCycleDuration), keySplines: current.keySplines },
+        // 5. 左 peek → 屏外左侧
+        { to: { x: offScreenLeft, y: layout.sideY }, durationSeconds: holdTime / 2, keySplines: current.keySplines },
     ];
 }
 
-/** scale 时间线：sideScale → 1.0 → 1.0 → sideScale → sideScale */
+/** scale 时间线（5 段）：sideScale → sideScale → 1 → 1 → sideScale → sideScale */
 export const assembleScaleTimeline = (
     index: number,
     items: I_NormalizedItemConfig[],
@@ -72,11 +81,18 @@ export const assembleScaleTimeline = (
 ): I_TimelineKeyframe<number>[] => {
     const current = items[index];
     const next = items[(index + 1) % items.length];
+    const holdTime = calculateHoldTime(index, items, totalCycleDuration);
 
     return [
+        // 1. 屏外滑入右 peek：保持 sideScale
+        { to: sideScale, durationSeconds: holdTime / 2, keySplines: current.keySplines },
+        // 2. 右 peek → 中心：放大到 1
         { to: 1, durationSeconds: current.switchDuration, keySplines: current.keySplines },
+        // 3. 中心停留：保持 1
         { to: 1, durationSeconds: current.stayDuration, keySplines: current.keySplines },
+        // 4. 中心 → 左 peek：缩小到 sideScale
         { to: sideScale, durationSeconds: next.switchDuration, keySplines: next.keySplines },
-        { to: sideScale, durationSeconds: calculateHoldTime(index, items, totalCycleDuration), keySplines: current.keySplines },
+        // 5. 左 peek → 屏外左侧：保持 sideScale
+        { to: sideScale, durationSeconds: holdTime / 2, keySplines: current.keySplines },
     ];
 }

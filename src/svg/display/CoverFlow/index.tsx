@@ -9,7 +9,7 @@ import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import CoverFlowItem from "./components/CoverFlowItem"
 import type { I_CoverFlowItemConfig } from "./types"
 import { DEFAULT_PEEK_PX, DEFAULT_GAP, DEFAULT_SIDE_SCALE } from "./types"
-import { normalizeItems } from "./config/normalizer"
+import { normalizeItems } from "./normalizer"
 import { calculateLayout } from "./timeline/positionCalculator"
 import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
 

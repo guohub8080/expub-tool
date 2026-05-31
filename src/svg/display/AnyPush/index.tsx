@@ -8,7 +8,7 @@ import useImgSize from "@utils/hooks/useImgSize"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import PushingImage from "./components/PushingImage"
 import type { I_PicConfig } from "./types"
-import { normalizePics } from "./config/normalizer"
+import { normalizePics } from "./normalizer"
 import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
 
 /**

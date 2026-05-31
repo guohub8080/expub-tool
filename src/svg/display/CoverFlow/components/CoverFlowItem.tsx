@@ -5,7 +5,7 @@ import { transformScale } from "@smil/index";
 import type { I_NormalizedItemConfig, I_Layout } from "../types";
 import { calculateDelayTime } from "../timeline/sequenceCalculator";
 import { assembleTranslateTimeline, assembleScaleTimeline } from "../timeline/sequenceCalculator";
-import { getRightX } from "../timeline/positionCalculator";
+import { getOffScreenRightX } from "../timeline/positionCalculator";
 
 /**
  * CoverFlowItem — 单项轮播组件
@@ -14,7 +14,7 @@ import { getRightX } from "../timeline/positionCalculator";
  *   translate (additive=replace) — 控制绝对位置
  *   scale (additive=sum, 三元素)  — 控制缩放 + origin 补偿
  *
- * 动画方向：右→中→左→继续向左滑出屏幕外
+ * 动画 5 段：屏外右侧→右peek→中心→左peek→屏外左侧，单方向循环
  */
 const CoverFlowItem = (props: {
     item: I_NormalizedItemConfig
@@ -60,9 +60,9 @@ const CoverFlowItem = (props: {
                 }
             </foreignObject>
 
-            {/* translate：右→中→左→滑出屏幕外，absolute positioning */}
+            {/* translate：5段，屏外右侧→右peek→中心→左peek→屏外左侧 */}
             {transformTranslate({
-                initValue: { x: props.layout.rightX, y: props.layout.sideY },
+                initValue: { x: getOffScreenRightX(props.layout), y: props.layout.sideY },
                 timeline: translateTimeline,
                 begin: beginStr,
                 loopCount: 0,
