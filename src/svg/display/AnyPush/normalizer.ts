@@ -13,7 +13,7 @@ import { getEaseBezier } from "@smil/bezier/index";
 /** 默认缓动曲线：ease-in-out */
 export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 
-/** @private 填充单张图片配置的默认值 */
+/** 内部函数，填充单张图片配置的默认值 */
 const fillDefaults = (pic: I_PicConfig): I_NormalizedPicConfig => ({
     url: pic.url,
     direction: defaultTo(pic.direction, DEFAULT_DIRECTION),
