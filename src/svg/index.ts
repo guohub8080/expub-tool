@@ -19,5 +19,8 @@ export { default as CollapsibleBox } from "./containers/CollapsibleBox"
 
 export { default as PlaceHolder } from "./standard/PlaceHolder"
 
+export { default as SeamlessImg } from "./standard/SeamlessImg"
+export type { T_SeamlessImgMode } from "./standard/SeamlessImg"
+
 export { default as SlideViewYContainer } from "./containers/SlideViewYContainer"
 export { default as SnapSlideViewYContainer } from "./containers/SnapSlideViewYContainer"

@@ -2,9 +2,9 @@ import type { CSSProperties } from 'react'
 import svgURL from '@utils/svg/svgURL'
 import SvgEx from '@html/basicEx/SvgEx'
 
-const SeamlessImg5 = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
+const SeamlessImgNatural = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
     return <section
-        data-label="seamless-img-dark-mode-maintain-force-touchable"
+        data-label="seamless-img-dark-mode-maintain-natural-priority"
         style={{
             WebkitTouchCallout: 'none',
             userSelect: 'text',
@@ -17,16 +17,15 @@ const SeamlessImg5 = (props: { w: number, h: number, url: string, spacingResult:
         <SvgEx
             style={{
                 backgroundImage: svgURL(props.url),
-                backgroundSize: '100% auto',
+                backgroundSize: '100%',
                 backgroundRepeat: 'no-repeat',
                 display: 'block',
                 lineHeight: 0,
-                marginTop: 0,
-                pointerEvents: 'visible'
+                marginTop: 0
             }}
             viewBox={`0 0 ${props.w} ${props.h}`}
         />
     </section>
 }
 
-export default SeamlessImg5
+export default SeamlessImgNatural

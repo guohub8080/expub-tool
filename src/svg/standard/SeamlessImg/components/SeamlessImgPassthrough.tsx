@@ -2,9 +2,9 @@ import type { CSSProperties } from 'react'
 import svgURL from '@utils/svg/svgURL'
 import SvgEx from '@html/basicEx/SvgEx'
 
-const SeamlessImg7 = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
+const SeamlessImgPassthrough = (props: { w: number, h: number, url: string, spacingResult: CSSProperties }) => {
     return <section
-        data-label="seamless-img-long-press-only"
+        data-label="seamless-img-dark-mode-maintain-event-pass-through"
         style={{
             WebkitTouchCallout: 'none',
             userSelect: 'text',
@@ -14,22 +14,6 @@ const SeamlessImg7 = (props: { w: number, h: number, url: string, spacingResult:
             ...props.spacingResult
         }}
     >
-        <section style={{
-            lineHeight: 0,
-            fontSize: 0,
-            height: 0,
-            position: 'relative'
-        }}>
-            <img
-                style={{
-                    width: '100%',
-                    pointerEvents: 'painted',
-                    verticalAlign: 'top',
-                    opacity: 0
-                }}
-                src={props.url}
-            />
-        </section>
         <SvgEx
             style={{
                 backgroundImage: svgURL(props.url),
@@ -37,8 +21,8 @@ const SeamlessImg7 = (props: { w: number, h: number, url: string, spacingResult:
                 backgroundRepeat: 'no-repeat',
                 display: 'block',
                 lineHeight: 0,
-                transform: 'scale(1)',
                 marginTop: 0,
+                transform: 'scale(1)',
                 pointerEvents: 'none'
             }}
             viewBox={`0 0 ${props.w} ${props.h}`}
@@ -46,4 +30,4 @@ const SeamlessImg7 = (props: { w: number, h: number, url: string, spacingResult:
     </section>
 }
 
-export default SeamlessImg7
+export default SeamlessImgPassthrough
