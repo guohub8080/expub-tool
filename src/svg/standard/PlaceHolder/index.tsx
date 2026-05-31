@@ -6,14 +6,17 @@ import { spacing, SPACING_ZERO } from '@css-fn/spacing'
 import type { T_SpacingProps } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 
+import type { T_CanvasSize } from '@svg/types'
+
+const CANVAS_SIZE_DEFAULT: Required<T_CanvasSize> = { w: 0, h: 0 }
+
 const PlaceHolder = (props: {
-  viewBoxW?: number
-  viewBoxH?: number
+  canvasSize?: T_CanvasSize
   color?: string
   spacing?: T_SpacingProps
 }) => {
-  const viewBoxW = defaultTo(props.viewBoxW, 0)
-  const viewBoxH = defaultTo(props.viewBoxH, 0)
+  const w = defaultTo(props.canvasSize?.w, CANVAS_SIZE_DEFAULT.w)
+  const h = defaultTo(props.canvasSize?.h, CANVAS_SIZE_DEFAULT.h)
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const isDev = ExPubGoConfig().mode === 'development'
 
@@ -22,7 +25,7 @@ const PlaceHolder = (props: {
       {...(isDev ? { 'expubgo-label': 'placeholder' } : {})}
       style={{ ...rootStyle, ...spacingResult }}
     >
-      <SvgEx style={svgStyle} viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}>
+      <SvgEx style={svgStyle} viewBox={`0 0 ${w} ${h}`}>
         {props.color && (
           <rect width="100%" height="100%" fill={props.color} />
         )}
