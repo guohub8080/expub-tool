@@ -13,5 +13,7 @@ export { default as OverlayContainer } from "./containers/OverlayContainer"
 
 export { default as TopPinedFrame } from "./containers/TopPinedFrame"
 
+export { default as BottomAlignedContainer } from "./containers/BottomAlignedContainer"
+
 export { default as SlideViewYContainer } from "./containers/SlideViewYContainer"
 export { default as SnapSlideViewYContainer } from "./containers/SnapSlideViewYContainer"
