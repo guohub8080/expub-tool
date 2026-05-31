@@ -13,14 +13,28 @@ import { getEaseBezier } from "@smil/bezier";
 /** 默认缓动曲线：ease-in-out */
 export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 
-/** 内部函数，填充单张图片配置的默认值 */
-const fillDefaults = (pic: I_PicConfig): I_NormalizedPicConfig => ({
-    url: pic.url,
-    direction: defaultTo(pic.direction, DEFAULT_DIRECTION),
-    switchDuration: defaultTo(pic.switchDuration, DEFAULT_SWITCH_DURATION),
-    stayDuration: defaultTo(pic.stayDuration, DEFAULT_STAY_DURATION),
-    keySplines: defaultTo(pic.keySplines, DEFAULT_KEY_SPLINES)
-})
+/** 内部函数，填充单张图片配置的默认值并校验 */
+const fillDefaults = (pic: I_PicConfig): I_NormalizedPicConfig => {
+    const useItem = !!pic.item
+
+    if (!pic.url && !pic.item) {
+        throw new Error("Each pic must have either `url` or `item`. `url` and `item` cannot both be empty.")
+    }
+
+    if (pic.url && pic.item) {
+        console.warn("`url` is ignored when `item` is also provided.")
+    }
+
+    return {
+        url: pic.url,
+        item: pic.item,
+        useItem,
+        direction: defaultTo(pic.direction, DEFAULT_DIRECTION),
+        switchDuration: defaultTo(pic.switchDuration, DEFAULT_SWITCH_DURATION),
+        stayDuration: defaultTo(pic.stayDuration, DEFAULT_STAY_DURATION),
+        keySplines: defaultTo(pic.keySplines, DEFAULT_KEY_SPLINES)
+    }
+}
 
 /**
  * 标准化图片数组

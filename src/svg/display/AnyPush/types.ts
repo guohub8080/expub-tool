@@ -12,11 +12,12 @@
  * 通过 delay 错开各自的启动时间，实现无缝循环。
  */
 
-/** 滑入方向：L=左, R=右, T=上, B=下 */
-export type T_Direction = "L" | "R" | "T" | "B";
+import type { ReactNode } from "react"
+import type { T_Direction4 } from "@svg/types"
+export type { T_Direction4 } from "@svg/types"
 
 /** 默认方向：从右侧滑入 */
-export const DEFAULT_DIRECTION: T_Direction = "R";
+export const DEFAULT_DIRECTION: T_Direction4 = "R";
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 0.5;
 /** 默认停留时长（秒） */
@@ -33,9 +34,12 @@ export interface I_Point {
  * 所有字段均可选，缺失值由 normalizer 填充默认值
  */
 export interface I_PicConfig {
-    url: string;
+    /** 图片地址（与 item 二选一） */
+    url?: string;
+    /** 自定义 SVG 内容（与 url 二选一，优先级高于 url） */
+    item?: ReactNode;
     /** 滑入方向，默认 "R" */
-    direction?: T_Direction;
+    direction?: T_Direction4;
     /** 从屏幕外滑入到中心的时长（秒），默认 0.5 */
     switchDuration?: number;
     /** 在中心停留的时长（秒），默认 0.5 */
@@ -49,10 +53,12 @@ export interface I_PicConfig {
  * 由 normalizer.ts 的 normalizePic() 生成
  */
 export interface I_NormalizedPicConfig extends I_PicConfig {
-    direction: T_Direction;
+    direction: T_Direction4;
     switchDuration: number;
     stayDuration: number;
     keySplines: string;
+    /** 标记 item 模式，用于判断渲染方式 */
+    useItem: boolean;
 }
 
 /**

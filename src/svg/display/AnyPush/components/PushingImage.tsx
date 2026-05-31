@@ -7,13 +7,14 @@ import { getEntryOffset } from "../timeline/offsetCalculator";
 import { assembleTimeline } from "../timeline/segmentAssembler";
 
 /**
- * PushingImage — 单张推入图片组件
+ * PushingImage — 单张推入内容组件
  *
- * 每个实例渲染一张图片及其推入动画，结构为：
+ * 每个实例渲染一项内容及其推入动画，结构为：
  *
  *   <g>                              ← SVG 分组容器
  *     <foreignObject x y w h>        ← 初始位置在屏幕外（由 direction 决定哪一边）
- *       <SvgEx backgroundImage=.../>  ← 用 SVG 背景图显示图片（避免 img 标签间隙）
+ *       <SvgEx backgroundImage=.../>  ← url 模式：SVG 背景图
+ *       {pic.item}                    ← item 模式：用户自定义 SVG 内容
  *     </foreignObject>
  *     <animateTransform translate/>   ← SMIL 平移动画，驱动 foreignObject 滑入/停留/滑出/等待
  *   </g>
@@ -27,11 +28,11 @@ import { assembleTimeline } from "../timeline/segmentAssembler";
  * - begin: `${delay}s`    — 错开各图片的启动时间
  */
 const PushingImage = (props: {
-    /** 当前图片的标准化配置 */
+    /** 当前内容的标准化配置 */
     pic: I_NormalizedPicConfig
-    /** 当前图片在数组中的索引 */
+    /** 当前内容在数组中的索引 */
     index: number
-    /** 所有图片的标准化配置（用于计算时间线） */
+    /** 所有内容的标准化配置（用于计算时间线） */
     pics: I_NormalizedPicConfig[]
     /** viewBox 宽度 */
     viewBoxW: number
@@ -46,19 +47,22 @@ const PushingImage = (props: {
 
     return (
         <g>
-            {/* 图片容器：初始位于屏幕外，由 animateTransform 驱动滑入 */}
+            {/* 内容容器：初始位于屏幕外，由 animateTransform 驱动滑入 */}
             <foreignObject x={initPos.x} y={initPos.y} width={props.viewBoxW} height={props.viewBoxH}>
-                <SvgEx
-                    style={{
-                        display: "block",
-                        backgroundImage: svgURL(props.pic.url),
-                        backgroundSize: "100% auto",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center",
-                    }}
-                    viewBox={`0 0 ${props.viewBoxW} ${props.viewBoxH}`}
-                    width="100%"
-                />
+                {props.pic.useItem
+                    ? props.pic.item
+                    : <SvgEx
+                        style={{
+                            display: "block",
+                            backgroundImage: svgURL(props.pic.url!),
+                            backgroundSize: "100% auto",
+                            backgroundRepeat: "no-repeat",
+                            backgroundPosition: "center",
+                        }}
+                        viewBox={`0 0 ${props.viewBoxW} ${props.viewBoxH}`}
+                        width="100%"
+                    />
+                }
             </foreignObject>
             {/* SMIL 平移动画：4 段时间线 + 延迟启动 = 无限循环推入效果 */}
             {transformTranslate({

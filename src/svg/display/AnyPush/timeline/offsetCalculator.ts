@@ -1,4 +1,4 @@
-import type { T_Direction, I_Point } from "../types";
+import type { T_Direction4, I_Point } from "../types";
 
 /**
  * 方向位移计算器
@@ -21,7 +21,7 @@ import type { T_Direction, I_Point } from "../types";
  * 图片从这个位置开始，通过 translate 动画滑到中心 (0,0)
  */
 export const getEntryOffset = (
-    direction: T_Direction,
+    direction: T_Direction4,
     viewBoxW: number,
     viewBoxH: number
 ): I_Point => {
@@ -40,7 +40,7 @@ export const getEntryOffset = (
  * 所以在 assembleTimeline 中，进入段的 to 值使用 exitOffset。
  */
 export const getExitOffset = (
-    direction: T_Direction,
+    direction: T_Direction4,
     viewBoxW: number,
     viewBoxH: number
 ): I_Point => {
@@ -54,7 +54,7 @@ export const getExitOffset = (
 
 /** 初始位置 = 进入偏移（供 foreignObject 的 x/y 属性使用） */
 export const getInitialPosition = (
-    direction: T_Direction,
+    direction: T_Direction4,
     viewBoxW: number,
     viewBoxH: number
 ): I_Point => {
