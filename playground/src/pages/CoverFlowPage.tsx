@@ -1,0 +1,139 @@
+import { useRef, useState } from 'react'
+import { CoverFlow } from 'expub-tool/svg'
+import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
+
+const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    const html = ref.current?.innerHTML
+    if (html) {
+      navigator.clipboard.writeText(html)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  return (
+    <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <h3 style={{ margin: 0, fontSize: 15 }}>{title}</h3>
+        <button
+          onClick={handleCopy}
+          style={{
+            padding: '4px 12px', fontSize: 12, borderRadius: 4,
+            border: '1px solid #d1d5db', background: copied ? '#10b981' : '#fff',
+            color: copied ? '#fff' : '#374151', cursor: 'pointer',
+          }}
+        >
+          {copied ? 'Copied!' : 'Copy HTML'}
+        </button>
+      </div>
+      <div ref={ref}>{children}</div>
+    </div>
+  )
+}
+
+const ColorBlockItem = ({ color, label }: { color: string; label: string }) => (
+  <svg viewBox="0 0 300 500" style={{ width: '100%', display: 'block', backgroundColor: color }}>
+    <text x="150" y="260" textAnchor="middle" fill="white" fontSize="32" fontFamily="system-ui">
+      {label}
+    </text>
+  </svg>
+)
+
+export default function CoverFlowPage() {
+  return (
+    <div>
+      <h2>CoverFlow — 居中轮播</h2>
+
+      <CopyDemo title="基础 2 图轮播 — 默认参数">
+        <CoverFlow
+          canvasSize={{ w: 300, h: 500 }}
+          pics={[
+            { url: getWechat300x500(1) },
+            { url: getWechat300x500(2) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="3 图轮播">
+        <CoverFlow
+          canvasSize={{ w: 300, h: 500 }}
+          pics={[
+            { url: getWechat300x500(3) },
+            { url: getWechat300x500(4) },
+            { url: getWechat300x500(5) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="大 peek + 大 gap">
+        <CoverFlow
+          canvasSize={{ w: 300, h: 500 }}
+          peekPx={60}
+          gap={20}
+          pics={[
+            { url: getWechat300x500(6) },
+            { url: getWechat300x500(7) },
+            { url: getWechat300x500(8) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="小 sideScale (0.6)">
+        <CoverFlow
+          canvasSize={{ w: 300, h: 500 }}
+          sideScale={0.6}
+          pics={[
+            { url: getWechat300x500(1) },
+            { url: getWechat300x500(2) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="快速切换 — switchDuration=0.3, stayDuration=0.5">
+        <CoverFlow
+          canvasSize={{ w: 300, h: 500 }}
+          pics={[
+            { url: getWechat300x500(3), switchDuration: 0.3, stayDuration: 0.5 },
+            { url: getWechat300x500(4), switchDuration: 0.3, stayDuration: 0.5 },
+            { url: getWechat300x500(5), switchDuration: 0.3, stayDuration: 0.5 },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="Item 模式 — 自定义 SVG">
+        <CoverFlow
+          canvasSize={{ w: 300, h: 500 }}
+          pics={[
+            { item: <ColorBlockItem color="#dc2626" label="Red" /> },
+            { item: <ColorBlockItem color="#2563eb" label="Blue" /> },
+            { item: <ColorBlockItem color="#059669" label="Green" /> },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="混合 url + item">
+        <CoverFlow
+          canvasSize={{ w: 300, h: 500 }}
+          pics={[
+            { url: getWechat300x500(9) },
+            { item: <ColorBlockItem color="#7c3aed" label="Purple" /> },
+            { url: getWechat300x500(1) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="单图自动复制">
+        <CoverFlow
+          canvasSize={{ w: 300, h: 500 }}
+          pics={[
+            { url: getWechat300x500(2) },
+          ]}
+        />
+      </CopyDemo>
+    </div>
+  )
+}
