@@ -13,15 +13,6 @@ import { getEaseBezier } from "@smil/bezier/index";
 /** 默认缓动曲线：ease-in-out */
 export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 
-/** 将 I_PicConfig 填充默认值 */
-const normalize = (pic: I_PicConfig): I_NormalizedPicConfig => ({
-    url: pic.url,
-    direction: defaultTo(pic.direction, DEFAULT_DIRECTION),
-    switchDuration: defaultTo(pic.switchDuration, DEFAULT_SWITCH_DURATION),
-    stayDuration: defaultTo(pic.stayDuration, DEFAULT_STAY_DURATION),
-    keySplines: defaultTo(pic.keySplines, DEFAULT_KEY_SPLINES)
-});
-
 /**
  * 标准化图片数组
  *
@@ -34,10 +25,18 @@ export const normalizePics = (pics?: I_PicConfig[]): I_NormalizedPicConfig[] => 
         throw new Error("`pics` must not be empty. AnyPush requires at least 1 image.")
     }
 
+    const filled = (pic: I_PicConfig): I_NormalizedPicConfig => ({
+        url: pic.url,
+        direction: defaultTo(pic.direction, DEFAULT_DIRECTION),
+        switchDuration: defaultTo(pic.switchDuration, DEFAULT_SWITCH_DURATION),
+        stayDuration: defaultTo(pic.stayDuration, DEFAULT_STAY_DURATION),
+        keySplines: defaultTo(pic.keySplines, DEFAULT_KEY_SPLINES)
+    })
+
     if (pics.length === 1) {
-        const normalized = normalize(pics[0]);
+        const normalized = filled(pics[0]);
         return [normalized, normalized];
     }
 
-    return pics.map(normalize);
+    return pics.map(filled);
 };
