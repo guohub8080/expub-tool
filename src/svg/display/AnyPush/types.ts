@@ -65,7 +65,7 @@ export interface I_TimelineSegment {
     /** 本段持续时间（秒） */
     durationSeconds: number;
     /** 本段的缓动曲线 */
-    keySpline: string;
+    keySplines: string;
 }
 
 /** 完整的时间线 = 有序的时间线段数组 */

@@ -49,8 +49,7 @@ const AnyPush = (props: {
   const isDev = ExPubGoConfig().mode === 'development'
 
   return (
-    <SectionEx
-      {...(isDev ? { 'expubgo-label': 'any-push' } : {})}
+    <SectionEx   {...(isDev ? { 'expubgo-label': 'any-push' } : {})}
       style={{
         WebkitTouchCallout: "none", userSelect: "text", overflow: "hidden",
         textAlign: "center", lineHeight: 0, ...spacingResult

@@ -5,7 +5,7 @@ export interface I_FloatConfig {
   floatRangeY?: number
   floatRangeX?: number
   duration?: number
-  keySpline?: string
+  keySplines?: string
   begin?: string
   loopCount?: number
 }
@@ -14,7 +14,7 @@ export function transformFloat(config?: I_FloatConfig) {
   const floatRangeY = defaultTo(config?.floatRangeY, 20)
   const floatRangeX = defaultTo(config?.floatRangeX, 0)
   const duration = defaultTo(config?.duration, 4)
-  const keySpline = defaultTo(config?.keySpline, '0.24 0 0.24 1')
+  const keySplines = defaultTo(config?.keySplines, '0.24 0 0.24 1')
   const loopCount = defaultTo(config?.loopCount, 0)
 
   const half = duration / 2
@@ -22,8 +22,8 @@ export function transformFloat(config?: I_FloatConfig) {
   return transformTranslate({
     initValue: { x: floatRangeX, y: 0 },
     timeline: [
-      { to: { x: -floatRangeX, y: -floatRangeY }, durationSeconds: half, keySpline },
-      { to: { x: floatRangeX, y: 0 }, durationSeconds: half, keySpline },
+      { to: { x: -floatRangeX, y: -floatRangeY }, durationSeconds: half, keySplines },
+      { to: { x: floatRangeX, y: 0 }, durationSeconds: half, keySplines },
     ],
     begin: config?.begin,
     loopCount,

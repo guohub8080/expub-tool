@@ -33,14 +33,14 @@ export function transformSkewX(config: I_SkewXConfig) {
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
     to: angles[i + 1],
-    keySpline: seg.keySpline ?? LINEAR_KEY_SPLINE,
+    keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 
   const result = compileTimeline(fullKeyframes, String, initValue)
 
   // 3. 公共属性
-  const hasKeySpline = timeline.some(seg => seg.keySpline)
-  const finalCalcMode = calcMode ?? (hasKeySpline ? 'spline' : 'linear')
+  const hasKeySplines = timeline.some(seg => seg.keySplines)
+  const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount
 
   return (

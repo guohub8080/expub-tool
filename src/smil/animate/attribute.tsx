@@ -43,14 +43,14 @@ export function animateAttribute<T extends number | string>(
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
     to: values[i + 1],
-    keySpline: seg.keySpline ?? LINEAR_KEY_SPLINE,
+    keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 
   const serializer = (v: T) => String(v)
   const result = compileTimeline(fullKeyframes, serializer, initValue)
 
-  const hasKeySpline = timeline.some(seg => seg.keySpline)
-  const finalCalcMode = calcMode ?? (hasKeySpline ? 'spline' : 'linear')
+  const hasKeySplines = timeline.some(seg => seg.keySplines)
+  const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount
 
   return (

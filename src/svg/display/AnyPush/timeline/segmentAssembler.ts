@@ -46,14 +46,14 @@ export const assembleTimeline = (
     const entrySegment: I_TimelineSegment = {
         to: getExitOffset(currentPic.direction, viewBoxW, viewBoxH),
         durationSeconds: currentPic.switchDuration,
-        keySpline: currentPic.keySplines
+        keySplines: currentPic.keySplines
     };
 
     // 2. 停留段：在中心不动
     const staySegment: I_TimelineSegment = {
         to: { x: 0, y: 0 },
         durationSeconds: currentPic.stayDuration,
-        keySpline: currentPic.keySplines
+        keySplines: currentPic.keySplines
     };
 
     // 3. 退出段：从中心滑到屏幕外（沿下一张图的退出方向）
@@ -61,14 +61,14 @@ export const assembleTimeline = (
     const exitSegment: I_TimelineSegment = {
         to: getExitOffset(nextPic.direction, viewBoxW, viewBoxH),
         durationSeconds: nextPic.switchDuration,
-        keySpline: nextPic.keySplines
+        keySplines: nextPic.keySplines
     };
 
     // 4. 保持段：在屏幕外等待，直到自己的下一轮进入
     const holdSegment: I_TimelineSegment = {
         to: { x: 0, y: 0 },
         durationSeconds: calculateHoldTime(index, pics, totalCycleDuration),
-        keySpline: currentPic.keySplines
+        keySplines: currentPic.keySplines
     };
 
     return [entrySegment, staySegment, exitSegment, holdSegment];

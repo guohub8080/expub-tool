@@ -5,7 +5,7 @@
 export interface I_TimelineKeyframe<T> {
   durationSeconds: number
   to: T
-  keySpline?: string
+  keySplines?: string
 }
 
 export interface I_TimelineResult {

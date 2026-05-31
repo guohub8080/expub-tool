@@ -52,7 +52,7 @@ export function compileTimeline<T>(
   const keyTimes = keyTimesList.join(';')
 
   // 4. keySplines（n 个，= values 点数 - 1，未填默认线性）
-  const keySplines = keyframes.map(k => k.keySpline ?? LINEAR_KEY_SPLINE).join(';')
+  const keySplines = keyframes.map(k => k.keySplines ?? LINEAR_KEY_SPLINE).join(';')
 
   return { values, keyTimes, keySplines, totalDuration }
 }
