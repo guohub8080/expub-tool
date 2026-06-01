@@ -4,6 +4,7 @@ import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
+import { resolveCanvasBg } from "@utils/svg/resolveCanvasBg"
 import { normalizeChildItems } from "./utils/normalizer"
 import { validateJsxViewBox } from "./utils/validateJsx"
 import { calculateTotalDuration } from "./timeline/sequenceCalculator"
@@ -37,6 +38,8 @@ const AnySkewPush = (props: {
   childItems: I_AnySkewPushChildItem[]
   /** 内容与画布边缘间距（像素），默认 0 */
   itemGap?: number
+  /** 画布背景：颜色字符串（如 "#fff"）或图片 URL */
+  canvasBg?: string
   /** 外间距配置 */
   spacing?: T_SpacingProps
 }) => {
@@ -70,7 +73,7 @@ const AnySkewPush = (props: {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`}
-          style={{ display: "block", margin: "0 auto" }} width="100%">
+          style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }} width="100%">
           {/*
             初始 visibility="hidden"，0.05s 后变 visible。
             目的：SMIL 引擎在第一个 paint 之前尚未初始化，若不隐藏，
