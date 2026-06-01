@@ -3,7 +3,7 @@ import { CoverFlow } from 'expub-tool/svg'
 import { getPowerBezier } from 'expub-tool/smil'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
 
-const power3 = getPowerBezier({ power: 3, isIn: true, isOut: true })
+const power3 = getPowerBezier({ power: 3, isIn: false, isOut: true })
 
 const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null)

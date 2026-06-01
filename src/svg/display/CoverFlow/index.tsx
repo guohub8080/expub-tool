@@ -26,6 +26,7 @@ const CoverFlow = (props: {
   itemCanvasSize: { w: number; h: number }
   itemGap?: number
   itemScale?: number
+  reverse?: boolean
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.pics?.[0]
@@ -40,37 +41,33 @@ const CoverFlow = (props: {
 
   const items = normalizeItems(props.pics)
   const N = items.length
+  const reverse = defaultTo(props.reverse, false)
   const isDev = ExPubGoConfig().mode === 'development'
 
-  // 间距 = imageW + gap（slot 之间的水平距离）
   const step = imageW + gap
-  // slot 的 Y 坐标（图片在 viewBox 中垂直居中）
   const slotY = (viewBoxH - imageH) / 2
-  // 放大时的 translate 补偿（保持居中）
   const scaleDx = -imageW * (fullScale - 1) / 2
   const scaleDy = -imageH * (fullScale - 1) / 2
-
-  // 中心位置 x（图片水平居中于 viewBox）
   const centerX = (viewBoxW - imageW) / 2
-  // 右 peek 位置 x = centerX + step
-  const rightPeekX = centerX + step
 
-  // slots: N+3 个（1 首副本 + N+1 有动画 + 1 尾副本）
-  // 有动画的 slot 比图片数多 1，确保外层平移 N*step 后尾部 slot 与首部重合
+  // 正向：slot 从右到左排列，外层向右平移
+  // 反向：slot 从左到右排列，外层向左平移
   const slots: { item: I_NormalizedItemConfig; x: number }[] = []
   for (let i = 0; i < N + 3; i++) {
-    const itemIdx = i % N
-    const x = rightPeekX - i * step
+    const itemIdx = (i - 1 + N * 10) % N  // slot[1] 显示 items[0]
+    const x = reverse
+      ? centerX - step + i * step   // 从左 peek 向右排列
+      : centerX + step - i * step   // 从右 peek 向左排列
     slots.push({ item: items[itemIdx], x })
   }
 
-  // 外层大 <g> 的 translate 动画：每段向右平移 step
   const outerTimeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   for (let i = 0; i < N; i++) {
     const item = items[i]
-    const targetX = (i + 1) * step
-    outerTimeline.push({ to: { x: targetX, y: 0 }, durationSeconds: item.switchDuration, keySplines: item.keySplines })
-    outerTimeline.push({ to: { x: targetX, y: 0 }, durationSeconds: item.stayDuration })
+    const delta = (i + 1) * step
+    const target = reverse ? { x: -delta, y: 0 } : { x: delta, y: 0 }
+    outerTimeline.push({ to: target, durationSeconds: item.switchDuration, keySplines: item.keySplines })
+    outerTimeline.push({ to: target, durationSeconds: item.stayDuration })
   }
 
   return (
