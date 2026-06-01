@@ -7,7 +7,7 @@ import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import svgURL from "@utils/svg/svgURL"
 import { compileTimeline } from "@smil/timeline/compile"
 import { renderSkewAnim, renderRotateAnim, renderGhostLayer } from "./animations"
-import { oppositeDir, getBegin, getOffscreenTy, DEFAULT_STAY, DEFAULT_SWITCH, DEFAULT_DIRECTION } from "./timeline"
+import { oppositeDir, getBegin, getOffscreenTranslate, DEFAULT_STAY, DEFAULT_SWITCH, DEFAULT_DIRECTION } from "./timeline"
 import type { I_AnySkewPushChildItem } from "./types"
 
 export type { I_SkewConfig, I_AnySkewPushChildItem } from "./types"
@@ -86,8 +86,8 @@ const AnySkewPush = (props: {
                 // hold = 在屏幕外等待下一轮进入的时间
                 const holdDuration = totalDuration - switchDuration - stayDuration - nextSwitchDuration
                 const begin = getBegin({ index: i, items, totalDuration })
-                const enterOffscreenTranslate = getOffscreenTy({ direction: dir, canvasWidth: w, canvasHeight: h })
-                const exitOffscreenTranslate = getOffscreenTy({ direction: exitDir, canvasWidth: w, canvasHeight: h })
+                const enterOffscreenTranslate = getOffscreenTranslate({ direction: dir, canvasWidth: w, canvasHeight: h })
+                const exitOffscreenTranslate = getOffscreenTranslate({ direction: exitDir, canvasWidth: w, canvasHeight: h })
 
                 // translate 4段时间线：进入 → stay → 退出 → hold
                 // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）
@@ -127,7 +127,7 @@ const AnySkewPush = (props: {
               {/* Ghost Layer：图1的视觉副本，解决图N覆盖图1的 z-order 问题 */}
               {renderGhostLayer({
                 item0: items[0],
-                enterOffscreenTranslate: getOffscreenTy({
+                enterOffscreenTranslate: getOffscreenTranslate({
                   direction: defaultTo(items[0].entryDirection, DEFAULT_DIRECTION),
                   canvasWidth: w,
                   canvasHeight: h,

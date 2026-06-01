@@ -147,7 +147,7 @@ export const renderGhostLayer = ({
 }: {
   /** 图1的配置 */
   item0: I_AnySkewPushChildItem
-  /** 图1的屏幕外进入坐标（由 getOffscreenTy 计算，如 "0 -300"） */
+  /** 图1的屏幕外进入坐标（由 getOffscreenTranslate 计算，如 "0 -300"） */
   enterOffscreenTranslate: string
   /** 图1的切换动画时长（秒） */
   switchDuration: number

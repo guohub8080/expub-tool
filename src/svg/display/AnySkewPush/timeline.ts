@@ -47,7 +47,7 @@ export const getBegin = ({
  *   L（从左进入）→ 图片初始在右方边界外：x = +(w+1)
  *   R（从右进入）→ 图片初始在左方边界外：x = -(w+1)
  */
-export const getOffscreenTy = ({
+export const getOffscreenTranslate = ({
   direction,
   canvasWidth,
   canvasHeight,
