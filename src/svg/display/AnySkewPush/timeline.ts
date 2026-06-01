@@ -18,10 +18,22 @@ export const oppositeDir = (dir: T_Direction4): T_Direction4 =>
  * 确保 t=0 时所有图的动画都已经运行过一轮、处于正确位置——
  * 否则 begin > 0 的图在 t=0 时动画尚未开始，<g> 会停在原点（全屏中心）造成闪烁。
  */
-export const getBegin = (i: number, items: I_AnySkewPushChildItem[], T: number): number => {
-  if (i === 0) return -defaultTo(items[0].switchDuration, DEFAULT_SWITCH)
+export const getBegin = ({
+  index,
+  items,
+  totalDuration,
+}: {
+  /** 当前图的索引（0 = 图1） */
+  index: number
+  /** 所有图的配置数组 */
+  items: I_AnySkewPushChildItem[]
+  /** 总动画周期（秒） */
+  totalDuration: number
+}): number => {
+  const T = totalDuration
+  if (index === 0) return -defaultTo(items[0].switchDuration, DEFAULT_SWITCH)
   let b = defaultTo(items[0].stayDuration, DEFAULT_STAY)
-  for (let j = 1; j < i; j++)
+  for (let j = 1; j < index; j++)
     b += defaultTo(items[j].switchDuration, DEFAULT_SWITCH) + defaultTo(items[j].stayDuration, DEFAULT_STAY)
   return b - T
 }
@@ -35,8 +47,21 @@ export const getBegin = (i: number, items: I_AnySkewPushChildItem[], T: number):
  *   L（从左进入）→ 图片初始在右方边界外：x = +(w+1)
  *   R（从右进入）→ 图片初始在左方边界外：x = -(w+1)
  */
-export const getOffscreenTy = (dir: T_Direction4, w: number, h: number): string => {
-  switch (dir) {
+export const getOffscreenTy = ({
+  direction,
+  canvasWidth,
+  canvasHeight,
+}: {
+  /** 推入/推出方向 */
+  direction: T_Direction4
+  /** 画布宽度 */
+  canvasWidth: number
+  /** 画布高度 */
+  canvasHeight: number
+}): string => {
+  const w = canvasWidth
+  const h = canvasHeight
+  switch (direction) {
     case 'T': return `0 ${h + 1}`
     case 'B': return `0 ${-(h + 1)}`
     case 'L': return `${w + 1} 0`
