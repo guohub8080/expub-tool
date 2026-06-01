@@ -77,6 +77,21 @@ export default function CoverFlowPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="反向 — reverse">
+        <CoverFlow
+          canvasSize={{ w: 1000, h: 800 }}
+          itemCanvasSize={{ w: 300, h: 500 }}
+          itemScale={1.4}
+          itemGap={100}
+          reverse
+          pics={[
+            { url: getWechat300x500(3), keySplines: power3 },
+            { url: getWechat300x500(4), keySplines: power3 },
+            { url: getWechat300x500(5), keySplines: power3 },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="快速切换 — switchDuration=0.3, stayDuration=0.5">
         <CoverFlow
           canvasSize={{ w: 1000, h: 800 }}
