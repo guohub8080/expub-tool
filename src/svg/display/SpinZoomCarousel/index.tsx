@@ -8,7 +8,6 @@ import svgURL from "@utils/svg/svgURL"
 import { getEaseBezier } from "@smil/bezier"
 
 const EASE = getEaseBezier({ isIn: true, isOut: true })
-const EASE_SPIN = "0.42 0 0.58 1"
 
 const DEFAULT_STAY   = 1.3
 const DEFAULT_SWITCH = 0.7
@@ -17,12 +16,15 @@ export interface I_SpinZoomItem {
   url: string
   stayDuration?: number
   switchDuration?: number
+  keySplines?: string
 }
 
 const SpinZoomCarousel = (props: {
   canvasSize: { w: number; h: number }
   pics: I_SpinZoomItem[]
   minScale?: number
+  isReversedSpin?: boolean
+  spinCount?: number
   spacing?: T_SpacingProps
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -34,6 +36,8 @@ const SpinZoomCarousel = (props: {
   const pics = props.pics
   const N = pics.length
   const minScale = defaultTo(props.minScale, 0.55)
+  const reverseRot = defaultTo(props.isReversedSpin, false)
+  const spinCount = defaultTo(props.spinCount, 1)
   const isDev = ExPubGoConfig().mode === 'development'
 
   // 每个 slot 的时长 = stayDuration + switchDuration
@@ -89,9 +93,10 @@ const SpinZoomCarousel = (props: {
               slotV  = `0; 1; 1; 0; 0`
             }
 
-            // 旋转：[rotStart, rotEnd] 内 0→360
+            // 旋转：[rotStart, rotEnd] 内 0→N×360（isReversedSpin 时反向）
+            const endAngle = spinCount * 360 * (reverseRot ? -1 : 1)
             const rotKT = `0; ${kt(rotStart)}; ${kt(rotEnd)}; 1`
-            const rotV  = `0 0 0; 0 0 0; 360 0 0; 360 0 0`
+            const rotV  = `0 0 0; 0 0 0; ${endAngle} 0 0; ${endAngle} 0 0`
 
             // 缩放：[rotStart, scaleMid, rotEnd] 内 1→minScale→1
             const scaleKT = `0; ${kt(rotStart)}; ${kt(scaleMid)}; ${kt(rotEnd)}; 1`
@@ -106,8 +111,9 @@ const SpinZoomCarousel = (props: {
             const nextV  = `0; 0; 1; 1`
 
             const spline3 = `${EASE}; ${EASE}; ${EASE}`
-            const spinSpline3 = `${EASE_SPIN}; ${EASE_SPIN}; ${EASE_SPIN}`
-            const spinSpline4 = `${EASE_SPIN}; ${EASE_SPIN}; ${EASE_SPIN}; ${EASE_SPIN}`
+            const sp = defaultTo(pic.keySplines, EASE)
+            const spinSpline3 = `${sp}; ${sp}; ${sp}`
+            const spinSpline4 = `${sp}; ${sp}; ${sp}; ${sp}`
 
             return (
               <g key={i} transform={`translate(${cx} ${cy})`} opacity={isFirst ? 1 : 0}>
