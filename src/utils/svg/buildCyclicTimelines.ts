@@ -50,22 +50,35 @@
  *   图2: begin=-8 → [-8,-6) entry → [-6,-6) stay(跳过) → [-6,-3) exit → [-3,1) hold → 循环
  *   图3: begin=-6 → [-6,-3) entry → [-3,-2) stay → [-2,0) exit → [0,3) hold → 循环
  *
- * ── begin 负偏移技巧 ──
+ * ── begin 偏移 ──
  *
  * SMIL 的 begin 属性控制动画从何时开始播放。配合 repeatCount="indefinite"（无限循环），
  * 动画会以 dur=T 为周期不断重复。
  *
- * 我们使用负的 begin 值，使得动画在页面加载（t=0）之前就已经开始播放。
- * 这样 t=0 时每一项都处于正确的视觉位置：
- *   - 图1：刚好完成 entry，处于 stay 起始（完整可见）
- *   - 其他图：处于 hold 状态（在屏幕外等待）
+ * 通过 `negativeBegin` 选项控制两种偏移策略：
+ *
+ * 1. negativeBegin = true（默认）— 所有 begin 都为负数
+ *    使用负的 begin 值，使得动画在页面加载（t=0）之前就已经开始播放。
+ *    t=0 时每一项都处于正确的视觉位置：
+ *      - 图1：刚好完成 entry，处于 stay 起始（完整可见）
+ *      - 其他图：处于 hold 状态（在屏幕外等待）
+ *    适用于 visibility="hidden" 初始隐藏策略（如 AnySkewPush），
+ *    因为 t=0 时所有动画必须已在运行，否则 hidden→visible 时元素会闪在原点。
+ *
+ * 2. negativeBegin = false — 非首项 begin 为正数（自然开始时刻）
+ *    非首项的 begin = beginPrefix[i]（不减 totalDuration），
+ *    t=0 时这些图的动画尚未启动，元素停在原生属性位置。
+ *    适用于元素初始位置已在屏幕外的场景（如 AnyPush 的 foreignObject x/y 设在屏幕外），
+ *    正 delay 时元素自然不可见，不需要 visibility 隐藏。
+ *
+ *    注意：两种模式视觉等价（差值 = totalDuration，取模后相同），
+ *    区别仅在于 t=0 时元素"停在屏幕外"的机制不同。
  *
  * begin 的计算规则：
  *   - 图1: begin = -entryDuration（= -switchDuration）
  *     → t=0 时图1走了 |begin| = switchDuration 的时间，entry 刚好播完
- *   - 图 i (i > 0): begin = beginPrefix[i] - totalDuration
- *     → beginPrefix[i] 是图 i 在周期内的"自然开始时刻"
- *     → 减去 totalDuration 映射到负时间轴
+ *   - 图 i (i > 0), negativeBegin=true:  begin = beginPrefix[i] - totalDuration
+ *   - 图 i (i > 0), negativeBegin=false: begin = beginPrefix[i]
  *
  * beginPrefix 的累加（跳过图1 的 switchDuration，因为图1 的 entry 在周期末尾）：
  *   beginPrefix[0] = 0
@@ -80,12 +93,30 @@
  *   3. 设置 SMIL 属性：dur = `${totalDuration}s`, begin = `${timeline.begin}s`
  */
 
+import defaultTo from "lodash/defaultTo"
+
 /** 每一项的切换配置 */
 export type T_SwitchPhase = {
   /** 切换时长（秒），即 entry 段时长。必须 > 0 */
   switchDuration: number
   /** 停留时长（秒），即 stay 段时长。>= 0，= 0 时跳过 stay 段 */
   stayDuration: number
+}
+
+/** 构建选项 */
+export interface I_CyclicTimelineOptions {
+  /**
+   * 是否对非首项的 begin 应用 -totalDuration 偏移。
+   *
+   * - true（默认）：所有 begin 都为负数，t=0 时所有动画已在运行。
+   *   适用于 visibility="hidden" 初始隐藏策略（AnySkewPush 风格）。
+   * - false：非首项 begin 为正数（自然开始时刻）。
+   *   适用于元素初始位置已在屏幕外的场景（AnyPush 风格）。
+   *
+   * 两种模式视觉等价（差值 = totalDuration，SMIL 取模后相同），
+   * 区别仅在于 t=0 时元素"停在屏幕外"的机制。
+   */
+  negativeBegin?: boolean
 }
 
 /** 单项时间轴结果 */
@@ -126,10 +157,12 @@ export interface I_CyclicTimelines {
  * 构建循环推送时间轴
  *
  * @param items — 每一项的 { switchDuration, stayDuration }，至少 1 项
+ * @param options — 构建选项，详见 I_CyclicTimelineOptions
  * @returns 总周期 + 每项的四段时间分配及 begin 偏移
  * @throws items 为空、switchDuration <= 0、stayDuration < 0 时抛错
  *
  * @example
+ * // negativeBegin = true（默认，AnySkewPush 风格）
  * const result = buildCyclicTimelines([
  *   { switchDuration: 2, stayDuration: 1 },
  *   { switchDuration: 2, stayDuration: 0 },
@@ -139,12 +172,25 @@ export interface I_CyclicTimelines {
  * // result.itemTimelines[0] === { begin: -2, entryDuration: 2, stayDuration: 1, exitDuration: 2, holdDuration: 4 }
  * // result.itemTimelines[1] === { begin: -8, entryDuration: 2, stayDuration: 0, exitDuration: 3, holdDuration: 4 }
  * // result.itemTimelines[2] === { begin: -6, entryDuration: 3, stayDuration: 1, exitDuration: 2, holdDuration: 3 }
+ *
+ * @example
+ * // negativeBegin = false（AnyPush 风格，非首项 begin 为正数）
+ * const result = buildCyclicTimelines([
+ *   { switchDuration: 2, stayDuration: 1 },
+ *   { switchDuration: 2, stayDuration: 0 },
+ *   { switchDuration: 3, stayDuration: 1 },
+ * ], { negativeBegin: false })
+ * // result.totalDuration === 9
+ * // result.itemTimelines[0] === { begin: -2, entryDuration: 2, stayDuration: 1, exitDuration: 2, holdDuration: 4 }
+ * // result.itemTimelines[1] === { begin: 1,  entryDuration: 2, stayDuration: 0, exitDuration: 3, holdDuration: 4 }
+ * // result.itemTimelines[2] === { begin: 3,  entryDuration: 3, stayDuration: 1, exitDuration: 2, holdDuration: 3 }
  */
-export const buildCyclicTimelines = (items: T_SwitchPhase[]): I_CyclicTimelines => {
+export const buildCyclicTimelines = (items: T_SwitchPhase[], options?: I_CyclicTimelineOptions): I_CyclicTimelines => {
   if (!items.length) {
     throw new Error('`items` must not be empty.')
   }
 
+  const negativeBegin = defaultTo(options?.negativeBegin, true)
   const N = items.length
 
   // 校验每一项的参数合法性
@@ -174,7 +220,8 @@ export const buildCyclicTimelines = (items: T_SwitchPhase[]): I_CyclicTimelines 
    *
    * 然后：
    *   图1 的 begin = -entryDuration（特殊处理，让 t=0 时图1 刚好完成 entry）
-   *   其他图的 begin = beginPrefix[i] - totalDuration
+   *   negativeBegin=true:  其他图的 begin = beginPrefix[i] - totalDuration
+   *   negativeBegin=false: 其他图的 begin = beginPrefix[i]
    */
   const beginPrefix: number[] = [0]
   if (N > 1) {
@@ -200,10 +247,12 @@ export const buildCyclicTimelines = (items: T_SwitchPhase[]): I_CyclicTimelines 
     const holdDuration = totalDuration - entryDuration - stayDuration - exitDuration
 
     // 图1 特殊处理：begin = -entryDuration，t=0 时刚好完成 entry
-    // 其他图：begin = beginPrefix[i] - totalDuration，映射到负时间轴
+    // 其他图：根据 negativeBegin 决定是否减去 totalDuration
     const begin = i === 0
       ? -entryDuration
-      : beginPrefix[i] - totalDuration
+      : negativeBegin
+        ? beginPrefix[i] - totalDuration
+        : beginPrefix[i]
 
     return {
       begin,
