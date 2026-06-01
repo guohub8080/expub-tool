@@ -47,89 +47,79 @@ export default function StackCarouselPage() {
           pics={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
-            { url: getWechat300x300(3), link: "www.baidu.com" },
+            { url: getWechat300x300(3) },
             { url: getWechat300x300(4) },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="每张不同速度 — sw/stay 精细调整">
+      <CopyDemo title="5 图 — 四面八方退场 + 长短不一的停留">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
           pics={[
-            { url: getWechat300x300(1), switchDuration: 0.3, stayDuration: 2 },
-            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5 },
-            { url: getWechat300x300(3), switchDuration: 0.6, stayDuration: 1.5 },
-            { url: getWechat300x300(4), switchDuration: 0.8, stayDuration: 1 },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2.5, exitDirection: "L" },
+            { url: getWechat300x300(2), switchDuration: 1.2, stayDuration: 0.3, exitDirection: "R" },
+            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 1.5, exitDirection: "L" },
+            { url: getWechat300x300(4), switchDuration: 0.4, stayDuration: 3,   exitDirection: "R" },
+            { url: getWechat300x300(5), switchDuration: 1,   stayDuration: 0.8, exitDirection: "L" },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="每张不同退场方向 — exitDirection per item">
+      <CopyDemo title="3 图 — 极端时间差（快速切+超长停）">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
           pics={[
-            { url: getWechat300x300(1), exitDirection: "L" },
-            { url: getWechat300x300(2), exitDirection: "R" },
-            { url: getWechat300x300(3), exitDirection: "L" },
-            { url: getWechat300x300(4), exitDirection: "R" },
+            { url: getWechat300x300(6), switchDuration: 0.2, stayDuration: 4,   exitDirection: "R" },
+            { url: getWechat300x300(7), switchDuration: 1.5, stayDuration: 0.2, exitDirection: "L" },
+            { url: getWechat300x300(8), switchDuration: 0.6, stayDuration: 2,   exitDirection: "R" },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="反向 isReversed + 快速切换">
-        <StackCarouselX
-          canvasSize={{ w: 1080, h: 1080 }}
-          itemCanvasSize={{ w: 972, h: 972 }}
-          isReversed
-          pics={[
-            { url: getWechat300x300(5), switchDuration: 0.4, stayDuration: 0.6 },
-            { url: getWechat300x300(6), switchDuration: 0.4, stayDuration: 0.6 },
-            { url: getWechat300x300(7), switchDuration: 0.4, stayDuration: 0.6 },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="自定义缩放 + 偏移 + 每张不同时间">
+      <CopyDemo title="反向 + 自定义缩放 + 偏移">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
           scales={[0.6, 0.75, 0.9]}
           backOffset={200}
+          isReversed
           pics={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2 },
-            { url: getWechat300x300(2), switchDuration: 1.2, stayDuration: 0.3 },
-            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 1 },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exitDirection: "L" },
+            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exitDirection: "R" },
+            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 2,   exitDirection: "L" },
+            { url: getWechat300x300(4), switchDuration: 0.3, stayDuration: 3,   exitDirection: "R" },
           ]}
         />
       </CopyDemo>
 
       <h2 style={{ marginTop: 32 }}>StackCarouselY — 纵向叠层轮播</h2>
 
-      <CopyDemo title="4 图纵向 — 每张不同速度 + 不同退场">
+      <CopyDemo title="5 图纵向 — 四面八方退场 + 长短停留">
         <StackCarouselY
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
           pics={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exitDirection: "R" },
-            { url: getWechat300x300(2), switchDuration: 0.8, stayDuration: 0.8, exitDirection: "L" },
-            { url: getWechat300x300(3), switchDuration: 0.3, stayDuration: 2,   exitDirection: "R" },
-            { url: getWechat300x300(4), switchDuration: 1,   stayDuration: 0.5, exitDirection: "L" },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2,   exitDirection: "L" },
+            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exitDirection: "R" },
+            { url: getWechat300x300(3), switchDuration: 0.3, stayDuration: 3,   exitDirection: "L" },
+            { url: getWechat300x300(4), switchDuration: 0.8, stayDuration: 1,   exitDirection: "R" },
+            { url: getWechat300x300(5), switchDuration: 1.2, stayDuration: 0.2, exitDirection: "L" },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="纵向反向 — isReversed">
+      <CopyDemo title="纵向反向 + 极端时间差">
         <StackCarouselY
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
           isReversed
           pics={[
-            { url: getWechat300x300(5), switchDuration: 0.5, stayDuration: 1 },
-            { url: getWechat300x300(6), switchDuration: 0.5, stayDuration: 1 },
-            { url: getWechat300x300(7), switchDuration: 0.5, stayDuration: 1 },
+            { url: getWechat300x300(6), switchDuration: 0.2, stayDuration: 3.5, exitDirection: "L" },
+            { url: getWechat300x300(7), switchDuration: 1.5, stayDuration: 0.3, exitDirection: "R" },
+            { url: getWechat300x300(8), switchDuration: 0.6, stayDuration: 1.5, exitDirection: "R" },
           ]}
         />
       </CopyDemo>
