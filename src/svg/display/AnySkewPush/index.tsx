@@ -1,60 +1,56 @@
-import SectionEx from "@html/basicEx/SectionEx"
-import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
-import svgURL from "@utils/svg/svgURL"
-import { compileTimeline } from "@smil/timeline/compile"
-import { renderSkewAnim, renderRotateAnim, renderGhostLayer } from "./animations"
-import { oppositeDir, getBegin, getOffscreenTranslate, DEFAULT_STAY, DEFAULT_SWITCH, DEFAULT_DIRECTION } from "./timeline"
+import SectionEx from "@html/basicEx/SectionEx"
+import SvgEx from "@html/basicEx/SvgEx"
+import { normalizeChildItems } from "./utils/normalizer"
+import { calculateTotalDuration } from "./timeline/sequenceCalculator"
+import { getOffscreenTranslate } from "./timeline/offsetCalculator"
+import SkewPushItem from "./components/SkewPushItem"
+import GhostLayer from "./components/GhostLayer"
 import type { I_AnySkewPushChildItem } from "./types"
 
 export type { I_SkewConfig, I_AnySkewPushChildItem } from "./types"
 
-const EASE = "0.42 0 0.58 1"
-
+/**
+ * AnySkewPush — 多图循环"斜切推入"切换组件
+ *
+ * 效果演示：
+ *   图片从不同方向（左/右/上/下）推入画布中心，支持 skew 斜切和 rotate 旋转，
+ *   多张图片交替执行形成无限循环。
+ *
+ * 渲染结构：
+ *   SectionEx（根容器 + dev label）
+ *   └─ section（overflow 裁剪，隐藏屏幕外的图片）
+ *      └─ SvgEx（SVG 画布，viewBox 由 canvasSize 决定）
+ *         └─ <g visibility="hidden">（初始隐藏，0.05s 后变 visible，避免 SMIL 初始闪烁）
+ *            └─ <g>（坐标系平移到画布中心）
+ *               ├─ SkewPushItem × N（每张图独立渲染 + 动画）
+ *               └─ GhostLayer（图1副本，解决 z-order 遮挡问题）
+ */
 const AnySkewPush = (props: {
+  /** 画布尺寸 { w, h } */
   canvasSize: { w: number; h: number }
+  /** 子项配置数组，每项包含 url 或 jsx + direction / skew / rotation / duration */
   childItems: I_AnySkewPushChildItem[]
+  /** 内容与画布边缘间距（像素），默认 0 */
   itemGap?: number
+  /** 外间距配置 */
   spacing?: T_SpacingProps
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   if (!props.childItems?.length) {
-    throw new Error(`\`childItems\` must not be empty.`)
+    throw new Error("`childItems` must not be empty.")
   }
 
   const { w, h } = props.canvasSize
-  // 只传1张图时复制一份，保证至少2张图，动画逻辑统一
-  const rawItems = props.childItems
-  const items = rawItems.length < 2 ? [...rawItems, ...rawItems] : rawItems
-  const N = items.length
+  const items = normalizeChildItems(props.childItems)
+  const totalDuration = calculateTotalDuration(items)
   const itemGap = defaultTo(props.itemGap, 0)
   const contentW = Math.max(1, w - itemGap * 2)
   const contentH = Math.max(1, h - itemGap * 2)
   const isDev = ExPubGoConfig().mode === 'development'
-
-  // 总动画周期 = 所有图的 (switchDuration + stayDuration) 之和
-  const totalDuration = items.reduce((s, p) =>
-    s + defaultTo(p.stayDuration, DEFAULT_STAY) + defaultTo(p.switchDuration, DEFAULT_SWITCH), 0)
-
-  // 渲染图片内容（url 模式或 jsx 模式），坐标系以画布中心为原点，这里平移回左上角
-  const renderContent = (item: I_AnySkewPushChildItem) => (
-    <g transform={`translate(${-contentW / 2}, ${-contentH / 2})`}>
-      <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
-        {item.jsx
-          ? item.jsx
-          : <SvgEx viewBox={`0 0 ${contentW + 1} ${contentH + 1}`}
-            style={{
-              backgroundImage: svgURL(item.url!), backgroundSize: "cover",
-              backgroundPosition: "50% 50%", backgroundRepeat: "no-repeat",
-              width: "100%", display: "block", boxSizing: "border-box",
-            }} />
-        }
-      </foreignObject>
-    </g>
-  )
 
   return (
     <SectionEx
@@ -76,66 +72,25 @@ const AnySkewPush = (props: {
             <set attributeName="visibility" to="visible" begin="0.05s" fill="freeze" />
             {/* 坐标系平移到画布中心，所有图的 translate 动画以中心为原点计算 */}
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
-              {items.map((item, i) => {
-                const dir = defaultTo(item.entryDirection, DEFAULT_DIRECTION)
-                const exitDir = defaultTo(item.exitDirection, oppositeDir(dir))
-                const stayDuration = defaultTo(item.stayDuration, DEFAULT_STAY)
-                const switchDuration = defaultTo(item.switchDuration, DEFAULT_SWITCH)
-                // 退出时长由下一张图的 switchDuration 决定（下一张进入时覆盖当前图退出）
-                const nextSwitchDuration = defaultTo(items[(i + 1) % N].switchDuration, DEFAULT_SWITCH)
-                // hold = 在屏幕外等待下一轮进入的时间
-                const holdDuration = totalDuration - switchDuration - stayDuration - nextSwitchDuration
-                const begin = getBegin({ index: i, items, totalDuration })
-                const enterOffscreenTranslate = getOffscreenTranslate({ direction: dir, canvasWidth: w, canvasHeight: h })
-                const exitOffscreenTranslate = getOffscreenTranslate({ direction: exitDir, canvasWidth: w, canvasHeight: h })
-
-                // translate 4段时间线：进入 → stay → 退出 → hold
-                // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）
-                const tySegs = [
-                  { durationSeconds: switchDuration, to: '0 0', keySplines: EASE },
-                  ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: '0 0', keySplines: EASE }] : []),
-                  { durationSeconds: nextSwitchDuration, to: exitOffscreenTranslate, keySplines: EASE },
-                  { durationSeconds: holdDuration, to: exitOffscreenTranslate, keySplines: EASE },
-                ]
-                const tyResult = compileTimeline(tySegs, v => v, enterOffscreenTranslate)
-
-                return (
-                  <g key={i}>
-                    {/* 外层 translate：控制图片的进入/退出位移 */}
-                    <animateTransform attributeName="transform" type="translate"
-                      values={tyResult.values} keyTimes={tyResult.keyTimes} keySplines={tyResult.keySplines}
-                      dur={`${totalDuration}s`} calcMode="spline" repeatCount="indefinite"
-                      begin={`${begin}s`} fill="freeze" />
-                    <g>
-                      {/* 可选变换：skew 和 rotate，不传时不渲染对应的 animateTransform */}
-                      {renderSkewAnim({
-                        entrySkew: item.entrySkew, exitSkew: item.exitSkew,
-                        stayDuration, switchDuration, nextSwitchDuration,
-                        holdDuration, begin, totalDuration,
-                      })}
-                      {renderRotateAnim({
-                        entryRotation: item.entryRotation, exitRotation: item.exitRotation,
-                        stayDuration, switchDuration, nextSwitchDuration,
-                        holdDuration, begin, totalDuration,
-                      })}
-                      {renderContent(item)}
-                    </g>
-                  </g>
-                )
-              })}
+              {items.map((item, i) => (
+                <SkewPushItem key={i}
+                  item={item} index={i} items={items}
+                  totalDuration={totalDuration}
+                  contentWidth={contentW} contentHeight={contentH}
+                  canvasWidth={w} canvasHeight={h} />
+              ))}
 
               {/* Ghost Layer：图1的视觉副本，解决图N覆盖图1的 z-order 问题 */}
-              {renderGhostLayer({
-                item0: items[0],
-                enterOffscreenTranslate: getOffscreenTranslate({
-                  direction: defaultTo(items[0].entryDirection, DEFAULT_DIRECTION),
-                  canvasWidth: w,
-                  canvasHeight: h,
-                }),
-                switchDuration: defaultTo(items[0].switchDuration, DEFAULT_SWITCH),
-                totalDuration,
-                renderContent,
-              })}
+              <GhostLayer
+                firstItem={items[0]}
+                enterOffscreenTranslate={getOffscreenTranslate({
+                  direction: items[0].entryDirection, canvasWidth: w, canvasHeight: h,
+                })}
+                switchDuration={items[0].switchDuration}
+                totalDuration={totalDuration}
+                contentWidth={contentW}
+                contentHeight={contentH}
+              />
             </g>
           </g>
         </SvgEx>

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { T_Direction4 } from "../../types"
+import type { T_Direction4 } from "@svg/types"
 
 export interface I_SkewConfig {
   /** skewX 或 skewY，决定斜切轴方向 */
