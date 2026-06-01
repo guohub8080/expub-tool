@@ -1,6 +1,5 @@
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
-import type { T_DirectionX } from "@svg/types"
 import type { I_NormalizedStackItem } from "../types"
 
 /**
@@ -38,21 +37,20 @@ function getPosition(si: number, N: number, boundary: number): number {
 /**
  * 构建单个 slot 的 translate + scale 时间线
  *
- * 每个段可能属于不同的 item，不同 item 可以有不同的 exitDirection，
- * 因此 exit 的 translate 值需按段动态计算。
+ * 退场 translate 由 slot 自身对应的 item 决定（不随段变化），避免已退场的卡牌飘移。
  *
- * @param si         slot 索引（0 ~ N+2）
- * @param N          唯一图片数量
- * @param items      标准化后的配置数组
- * @param posConfig  位置值配置（exit 位的 translate 会被按段覆盖）
- * @param getExitTranslate  根据段所属 item 的 exitDirection 计算退场 translate
+ * @param si               slot 索引（0 ~ N+2）
+ * @param N                唯一图片数量
+ * @param items            标准化后的配置数组
+ * @param posConfig        位置值配置（exit 位的 translate 会被 exitTranslate 覆盖）
+ * @param exitTranslate    本 slot 的退场 translate（由 slot 对应的 item.exitDirection 计算）
  */
 export function buildSlotTimelines(
   si: number,
   N: number,
   items: I_NormalizedStackItem[],
   posConfig: I_PositionConfig,
-  getExitTranslate: (exitDirection: T_DirectionX | undefined) => Partial<I_TranslateValue>,
+  exitTranslate: Partial<I_TranslateValue>,
 ) {
   const startPos = Math.max(0, si - N)
   const totalSegs = N * 2
@@ -72,13 +70,8 @@ export function buildSlotTimelines(
 
     const nextPos = getPosition(si, N, seg + 1)
 
-    // exit 位使用该 item 的 exitDirection 计算退场 translate
-    const exitTranslate = nextPos === 3
-      ? getExitTranslate(item.exitDirection)
-      : posConfig.translateValues[nextPos]
-
     translateTimeline.push({
-      to: exitTranslate,
+      to: nextPos === 3 ? exitTranslate : posConfig.translateValues[nextPos],
       durationSeconds: dur,
       keySplines: splines,
     })

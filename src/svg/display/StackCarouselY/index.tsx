@@ -109,8 +109,9 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
             {Array.from({ length: totalSlots }, (_, si) => {
               const itemIdx = (N + 2 - si + N * 10) % N
               const item = items[itemIdx]
+              const slotExitTranslate = getExitTranslate(item.exitDirection)
               const { initTranslate, initScale, translateTimeline, scaleTimeline } =
-                buildSlotTimelines(si, N, items, posConfig, getExitTranslate)
+                buildSlotTimelines(si, N, items, posConfig, slotExitTranslate)
 
               return (
                 <g key={si}>
