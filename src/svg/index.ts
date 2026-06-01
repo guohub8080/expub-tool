@@ -41,3 +41,8 @@ export type { I_SkewPushChildItem } from "./display/SkewPushY"
 
 export { default as AnySkewPush } from "./display/AnySkewPush"
 export type { I_AnySkewPushChildItem } from "./display/AnySkewPush"
+
+export { default as StackCarouselX } from "./display/StackCarouselX"
+export type { I_StackCarouselItem } from "./display/StackCarouselX"
+
+export { default as StackCarouselY } from "./display/StackCarouselY"
