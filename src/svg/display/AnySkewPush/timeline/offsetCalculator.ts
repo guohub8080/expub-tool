@@ -46,13 +46,16 @@ export const getRotationOrigin = ({
   contentWidth,
   contentHeight,
 }: {
-  /** 九宫格位置 */
+  /** 九宫格位置或自定义坐标 */
   origin: T_RotationOrigin
   /** 内容区域宽度 */
   contentWidth: number
   /** 内容区域高度 */
   contentHeight: number
 }): string => {
+  // 自定义坐标直接返回
+  if (typeof origin === 'object') return `${origin.cx} ${origin.cy}`
+
   const hw = contentWidth / 2
   const hh = contentHeight / 2
 

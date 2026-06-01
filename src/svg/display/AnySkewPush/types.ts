@@ -8,11 +8,12 @@ export interface I_SkewConfig {
   angle: number
 }
 
-/** 旋转中心九宫格位置 */
+/** 旋转中心九宫格位置，或自定义坐标 */
 export type T_RotationOrigin =
   | 'TopLeft' | 'Top' | 'TopRight'
   | 'Left'   | 'Center' | 'Right'
   | 'BottomLeft' | 'Bottom' | 'BottomRight'
+  | { cx: number; cy: number }
 
 export interface I_AnySkewPushChildItem {
   /** 图片地址（与 jsx 二选一） */
