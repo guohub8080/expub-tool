@@ -76,9 +76,8 @@ export default function CoverFlowPage() {
 
       <CopyDemo title="快速切换 — switchDuration=0.3, stayDuration=0.5">
         <CoverFlow
-          canvasSize={{ w: 800, h: 600 }}
-          itemCanvasSize={{ w: 300, h: 400 }}
-          itemGap={50}
+          canvasSize={{ w: 1000, h: 800 }}
+          itemCanvasSize={{ w: 300, h: 500 }}
           pics={[
             { url: getWechat300x500(3), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(4), switchDuration: 0.3, stayDuration: 0.5 },
