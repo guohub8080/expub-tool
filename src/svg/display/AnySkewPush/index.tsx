@@ -1,13 +1,21 @@
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import svgURL from "@utils/svg/svgURL"
 import { compileTimeline } from "@smil/timeline/compile"
 import type { ReactNode } from "react"
-import type { T_DirectionX, T_Direction4 } from "../../types"
+import type { T_Direction4 } from "../../types"
+
+export interface I_SkewConfig {
+  /** skewX 或 skewY */
+  type: 'X' | 'Y'
+  /** 斜切角度，正负决定方向，建议 0–45 */
+  angle: number
+}
 
 export interface I_AnySkewPushChildItem {
   /** 图片地址（与 jsx 二选一） */
@@ -18,19 +26,17 @@ export interface I_AnySkewPushChildItem {
   entryDirection?: T_Direction4
   /** 退出方向 L/R/T/B，默认与进入方向相反（T↔B，L↔R） */
   exitDirection?: T_Direction4
-  /** 进入时的 skew 方向（L=正角度 / R=负角度），不传则由全局 isReversed 决定 */
-  skewIn?: T_DirectionX
-  /** 退出时的 skew 方向，不传则与 skewIn 相反 */
-  skewOut?: T_DirectionX
+  /** 进入时的 skew，不传则无 skew */
+  entrySkew?: I_SkewConfig
+  /** 退出时的 skew，不传则无 skew */
+  exitSkew?: I_SkewConfig
   /** 停留时长（秒），默认 2 */
   stayDuration?: number
   /** 切换动画时长（秒），默认 2 */
   switchDuration?: number
 }
 
-// ease-in-out cubic-bezier，用于所有进入/退出动画
 const EASE = "0.42 0 0.58 1"
-const DEFAULT_SKEW_ANGLE = 15
 const DEFAULT_STAY = 2
 const DEFAULT_SWITCH = 2
 const DEFAULT_DIRECTION: T_Direction4 = 'T'
@@ -38,8 +44,6 @@ const DEFAULT_DIRECTION: T_Direction4 = 'T'
 const AnySkewPush = (props: {
   canvasSize: { w: number; h: number }
   childItems: I_AnySkewPushChildItem[]
-  skewAngle?: number
-  isReversed?: boolean
   itemGap?: number
   spacing?: T_SpacingProps
 }) => {
@@ -50,19 +54,13 @@ const AnySkewPush = (props: {
   const items = props.childItems
   const N = items.length
   const itemGap = defaultTo(props.itemGap, 0)
-  const rawAngle = defaultTo(props.skewAngle, DEFAULT_SKEW_ANGLE)
   const contentW = Math.max(1, w - itemGap * 2)
   const contentH = Math.max(1, h - itemGap * 2)
-  const reverse = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === 'development'
 
   // 总动画周期 = 所有图的 (switchDuration + stayDuration) 之和
   const T = items.reduce((s, p) =>
     s + defaultTo(p.stayDuration, DEFAULT_STAY) + defaultTo(p.switchDuration, DEFAULT_SWITCH), 0)
-
-  // L → 正 skew 角，R → 负 skew 角，undefined → 由调用方决定默认值
-  const resolveSkew = (dir?: T_DirectionX, angle: number = 15) =>
-    dir === 'L' ? angle : dir === 'R' ? -angle : undefined
 
   /**
    * 计算第 i 张图的 SMIL begin 时间。
@@ -78,6 +76,16 @@ const AnySkewPush = (props: {
     for (let j = 1; j < i; j++)
       b += defaultTo(items[j].switchDuration, DEFAULT_SWITCH) + defaultTo(items[j].stayDuration, DEFAULT_STAY)
     return b - T
+  }
+
+  // 根据推入/推出方向计算屏幕外坐标（translate 的起点/终点）
+  const getOffscreenTy = (dir: T_Direction4) => {
+    switch (dir) {
+      case 'T': return `0 ${h + 1}`
+      case 'B': return `0 ${-(h + 1)}`
+      case 'L': return `${w + 1} 0`
+      case 'R': return `${-(w + 1)} 0`
+    }
   }
 
   // 渲染图片内容（url 模式或 jsx 模式），坐标系以画布中心为原点，这里平移回左上角
@@ -96,6 +104,40 @@ const AnySkewPush = (props: {
       </foreignObject>
     </g>
   )
+
+  // 为一张图生成 skew animateTransform（无 skew 时返回 null）
+  const renderSkewAnim = (
+    entrySkew: I_SkewConfig | undefined,
+    exitSkew: I_SkewConfig | undefined,
+    stay: number,
+    sw: number,
+    nextSw: number,
+    holdTime: number,
+    actualBegin: number,
+  ) => {
+    // entrySkew 和 exitSkew 都没有时，不渲染 skew 动画
+    if (isNil(entrySkew) && isNil(exitSkew)) return null
+
+    const entryAngle = entrySkew?.angle ?? 0
+    const exitAngle  = exitSkew?.angle  ?? 0
+    // skewX 优先，两者都有时以 entrySkew.type 为准
+    const skewType = `skew${(entrySkew ?? exitSkew)!.type}` as 'skewX' | 'skewY'
+
+    const skSegs = [
+      { durationSeconds: sw,       to: 0,          keySplines: EASE },
+      ...(stay > 0 ? [{ durationSeconds: stay, to: 0, keySplines: EASE }] : []),
+      { durationSeconds: nextSw,   to: exitAngle,  keySplines: EASE },
+      { durationSeconds: holdTime, to: exitAngle,  keySplines: EASE },
+    ]
+    const skResult = compileTimeline(skSegs, v => `${v}`, entryAngle)
+
+    return (
+      <animateTransform attributeName="transform" type={skewType}
+        values={skResult.values} keyTimes={skResult.keyTimes} keySplines={skResult.keySplines}
+        dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
+        begin={`${actualBegin}s`} fill="freeze" />
+    )
+  }
 
   return (
     <SectionEx
@@ -119,7 +161,6 @@ const AnySkewPush = (props: {
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => {
                 const dir = defaultTo(item.entryDirection, DEFAULT_DIRECTION)
-                const isVertical = dir === 'T' || dir === 'B'
                 const isPositiveDir = dir === 'B' || dir === 'R'
                 const stay = defaultTo(item.stayDuration, DEFAULT_STAY)
                 const sw = defaultTo(item.switchDuration, DEFAULT_SWITCH)
@@ -129,40 +170,11 @@ const AnySkewPush = (props: {
                 const holdTime = T - sw - stay - nextSw
                 const actualBegin = getBegin(i)
 
-                // skew 角度上限：防止图片边缘超出画布
-                const maxAngle = isVertical
-                  ? Math.max(1, Math.floor(Math.atan(contentW / contentH) * 180 / Math.PI))
-                  : Math.max(1, Math.floor(Math.atan(contentH / contentW) * 180 / Math.PI))
-                const skewAngle = Math.min(Math.max(rawAngle, 1), maxAngle)
-                const defaultIn = reverse ? skewAngle : -skewAngle
-                const itemSkewIn = resolveSkew(item.skewIn, skewAngle) ?? defaultIn
-                const itemSkewOut = resolveSkew(item.skewOut, skewAngle) ?? -defaultIn
+                const exitDir = defaultTo(item.exitDirection,
+                  dir === 'T' ? 'B' : dir === 'B' ? 'T' : dir === 'L' ? 'R' : 'L')
 
-                // 进入/退出位置（translate 的起点和终点）
-                // T/B 方向：skewX + Y 轴位移；L/R 方向：skewY + X 轴位移
-                // xOff/yOff 是 skew 造成的横向/纵向补偿偏移，使图片边缘对齐画布边缘
-                const exitDir = defaultTo(item.exitDirection, isVertical
-                  ? (isPositiveDir ? 'T' : 'B')   // T进→B出，B进→T出
-                  : (isPositiveDir ? 'L' : 'R'))   // R进→L出，L进→R出
-                const isExitVertical = exitDir === 'T' || exitDir === 'B'
-                const isExitPositive = exitDir === 'B' || exitDir === 'R'
-
-                let enterTy: string, exitTy: string, skewType: 'skewX' | 'skewY'
-                if (isVertical) {
-                  const offset = Math.round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
-                  const xOff = itemSkewIn > 0 ? -offset : offset
-                  enterTy = `${xOff} ${isPositiveDir ? h + 1 : -(h + 1)}`
-                  skewType = 'skewX'
-                } else {
-                  const offset = Math.round(contentH * Math.tan(skewAngle * Math.PI / 180) / 2)
-                  const yOff = itemSkewIn > 0 ? -offset : offset
-                  enterTy = `${isPositiveDir ? w + 1 : -(w + 1)} ${yOff}`
-                  skewType = 'skewY'
-                }
-                // exitTy 根据 exitDirection 独立计算，不依赖进入方向
-                exitTy = isExitVertical
-                  ? `0 ${isExitPositive ? -(h + 1) : h + 1}`
-                  : `${isExitPositive ? -(w + 1) : w + 1} 0`
+                const enterTy = getOffscreenTy(dir)
+                const exitTy  = getOffscreenTy(exitDir)
 
                 // 4 段时间线：进入 → stay → 退出 → hold（stay=0 时跳过 stay 段，避免 keyTimes 相邻相等）
                 // compileTimeline 不过滤 durationSeconds=0 的段，相邻相等的 keyTimes 在 calcMode="spline" 下非法
@@ -172,28 +184,18 @@ const AnySkewPush = (props: {
                   { durationSeconds: nextSw,   to: exitTy, keySplines: EASE },
                   { durationSeconds: holdTime, to: exitTy, keySplines: EASE },
                 ]
-                const skSegs = [
-                  { durationSeconds: sw,       to: 0,           keySplines: EASE },
-                  ...(stay > 0 ? [{ durationSeconds: stay, to: 0, keySplines: EASE }] : []),
-                  { durationSeconds: nextSw,   to: itemSkewOut, keySplines: EASE },
-                  { durationSeconds: holdTime, to: itemSkewOut, keySplines: EASE },
-                ]
                 const tyResult = compileTimeline(tySegs, v => v, enterTy)
-                const skResult = compileTimeline(skSegs, v => `${v}`, itemSkewIn)
 
                 return (
                   <g key={i}>
-                    {/* 外层 translate：控制图片在 Y（或 X）轴上的进入/退出位移 */}
+                    {/* 外层 translate：控制图片的进入/退出位移 */}
                     <animateTransform attributeName="transform" type="translate"
                       values={tyResult.values} keyTimes={tyResult.keyTimes} keySplines={tyResult.keySplines}
                       dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
                       begin={`${actualBegin}s`} fill="freeze" />
                     <g>
-                      {/* 内层 skew：控制图片的斜切角度，与 translate 同步 */}
-                      <animateTransform attributeName="transform" type={skewType}
-                        values={skResult.values} keyTimes={skResult.keyTimes} keySplines={skResult.keySplines}
-                        dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
-                        begin={`${actualBegin}s`} fill="freeze" />
+                      {/* 内层 skew：进入/退出时的斜切，entrySkew/exitSkew 均不传时不渲染 */}
+                      {renderSkewAnim(item.entrySkew, item.exitSkew, stay, sw, nextSw, holdTime, actualBegin)}
                       {renderContent(item)}
                     </g>
                   </g>
@@ -219,27 +221,12 @@ const AnySkewPush = (props: {
               {N > 1 && (() => {
                 const item0 = items[0]
                 const dir0 = defaultTo(item0.entryDirection, DEFAULT_DIRECTION)
-                const isVertical0 = dir0 === 'T' || dir0 === 'B'
-                const isPositive0 = dir0 === 'B' || dir0 === 'R'
                 const sw0 = defaultTo(item0.switchDuration, DEFAULT_SWITCH)
+                const stay0 = defaultTo(item0.stayDuration, DEFAULT_STAY)
+                const nextSw0 = defaultTo(items[1].switchDuration, DEFAULT_SWITCH)
+                const holdTime0 = T - sw0 - stay0 - nextSw0
 
-                const maxAngle0 = isVertical0
-                  ? Math.max(1, Math.floor(Math.atan(contentW / contentH) * 180 / Math.PI))
-                  : Math.max(1, Math.floor(Math.atan(contentH / contentW) * 180 / Math.PI))
-                const skewAngle0 = Math.min(Math.max(rawAngle, 1), maxAngle0)
-                const defaultIn0 = reverse ? skewAngle0 : -skewAngle0
-                const skewIn0 = resolveSkew(item0.skewIn, skewAngle0) ?? defaultIn0
-
-                let ghostEnterTy: string, ghostSkewType: 'skewX' | 'skewY'
-                if (isVertical0) {
-                  const offset = Math.round(contentW * Math.tan(skewAngle0 * Math.PI / 180) / 2)
-                  ghostEnterTy = `${skewIn0 > 0 ? -offset : offset} ${isPositive0 ? h + 1 : -(h + 1)}`
-                  ghostSkewType = 'skewX'
-                } else {
-                  const offset = Math.round(contentH * Math.tan(skewAngle0 * Math.PI / 180) / 2)
-                  ghostEnterTy = `${isPositive0 ? w + 1 : -(w + 1)} ${skewIn0 > 0 ? -offset : offset}`
-                  ghostSkewType = 'skewY'
-                }
+                const ghostEnterTy = getOffscreenTy(dir0)
 
                 // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
                 const ghostShowKt = ((T - sw0) / T).toFixed(6)
@@ -252,15 +239,6 @@ const AnySkewPush = (props: {
                   ],
                   v => v,
                   ghostEnterTy,
-                )
-                // Ghost skew：前段保持进入角度，后段随进入动画归零
-                const ghostSk = compileTimeline(
-                  [
-                    { durationSeconds: T - sw0, to: skewIn0, keySplines: EASE },
-                    { durationSeconds: sw0,     to: 0,       keySplines: EASE },
-                  ],
-                  v => `${v}`,
-                  skewIn0,
                 )
 
                 return (
@@ -276,10 +254,8 @@ const AnySkewPush = (props: {
                       dur={`${T}s`} calcMode="spline"
                       repeatCount="indefinite" begin="0s" fill="freeze" />
                     <g>
-                      <animateTransform attributeName="transform" type={ghostSkewType}
-                        values={ghostSk.values} keyTimes={ghostSk.keyTimes} keySplines={ghostSk.keySplines}
-                        dur={`${T}s`} calcMode="spline"
-                        repeatCount="indefinite" begin="0s" fill="freeze" />
+                      {/* Ghost 的 skew 与图1进入段完全同步 */}
+                      {renderSkewAnim(item0.entrySkew, item0.exitSkew, stay0, sw0, nextSw0, holdTime0, -(T - sw0))}
                       {renderContent(item0)}
                     </g>
                   </g>
