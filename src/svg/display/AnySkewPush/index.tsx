@@ -11,9 +11,9 @@ import type { ReactNode } from "react"
 import type { T_Direction4 } from "../../types"
 
 export interface I_SkewConfig {
-  /** skewX 或 skewY */
+  /** skewX 或 skewY，决定斜切轴方向 */
   type: 'X' | 'Y'
-  /** 斜切角度，正负决定方向，建议 0–45 */
+  /** 斜切角度（度），正负决定倾斜方向，建议 0–45 */
   angle: number
 }
 
@@ -22,30 +22,53 @@ export interface I_AnySkewPushChildItem {
   url?: string
   /** 自定义 React 内容（与 url 二选一） */
   jsx?: ReactNode
-  /** 进入方向 L/R/T/B，默认 T */
+  /**
+   * 进入方向：图片从哪个方向推入画布，默认 T（从上方进入）
+   * T = 从上方进入，B = 从下方，L = 从左，R = 从右
+   */
   entryDirection?: T_Direction4
-  /** 退出方向 L/R/T/B，默认与进入方向相反（T↔B，L↔R） */
+  /**
+   * 退出方向：图片向哪个方向推出画布，默认与进入方向相反（T↔B，L↔R）
+   * 可独立配置，例如从上进入、从右退出
+   */
   exitDirection?: T_Direction4
-  /** 进入时的 skew，不传则无 skew */
+  /**
+   * 进入时的 skew 变换配置，不传则进入无 skew
+   * angle 为进入起始角度，动画结束时归零（全屏静止时无 skew）
+   */
   entrySkew?: I_SkewConfig
-  /** 退出时的 skew，不传则无 skew */
+  /**
+   * 退出时的 skew 变换配置，不传则退出无 skew
+   * angle 为退出终止角度，从零开始动画到该角度
+   */
   exitSkew?: I_SkewConfig
-  /** 进入时的旋转角度（度），正=顺时针，不传则无旋转 */
+  /**
+   * 进入时的旋转角度（度），正值=顺时针，不传则进入无旋转
+   * 以画布中心为旋转原点，进入起始角度，动画结束时归零
+   */
   entryRotation?: number
-  /** 退出时的旋转角度（度），正=顺时针，不传则无旋转 */
+  /**
+   * 退出时的旋转角度（度），正值=顺时针，不传则退出无旋转
+   * 以画布中心为旋转原点，从零开始动画到该角度
+   */
   exitRotation?: number
-  /** 停留时长（秒），默认 2 */
+  /** 停留时长（秒），图片全屏静止的持续时间，默认 2 */
   stayDuration?: number
-  /** 切换动画时长（秒），默认 2 */
+  /**
+   * 切换动画时长（秒），默认 2
+   * 注意：当前图的退出时长由【下一张图】的 switchDuration 决定，
+   * 因为下一张图进入时会覆盖当前图的退出，两者共享同一段时间。
+   */
   switchDuration?: number
 }
 
+// ease-in-out cubic-bezier，用于所有进入/退出动画
 const EASE = "0.42 0 0.58 1"
 const DEFAULT_STAY = 2
 const DEFAULT_SWITCH = 2
 const DEFAULT_DIRECTION: T_Direction4 = 'T'
 
-/** 进入方向取反，作为默认退出方向 */
+/** 进入方向取反，作为默认退出方向（T↔B，L↔R） */
 const oppositeDir = (dir: T_Direction4): T_Direction4 =>
   dir === 'T' ? 'B' : dir === 'B' ? 'T' : dir === 'L' ? 'R' : 'L'
 
@@ -86,7 +109,15 @@ const AnySkewPush = (props: {
     return b - T
   }
 
-  // 根据推入/推出方向计算屏幕外坐标（translate 的起点/终点）
+  /**
+   * 根据推入/推出方向返回屏幕外的 translate 坐标字符串（"x y" 格式）。
+   *
+   * 坐标系以画布中心为原点：
+   *   T（从上进入）→ 图片初始在下方边界外：y = +(h+1)
+   *   B（从下进入）→ 图片初始在上方边界外：y = -(h+1)
+   *   L（从左进入）→ 图片初始在右方边界外：x = +(w+1)
+   *   R（从右进入）→ 图片初始在左方边界外：x = -(w+1)
+   */
   const getOffscreenTy = (dir: T_Direction4) => {
     switch (dir) {
       case 'T': return `0 ${h + 1}`
@@ -114,9 +145,21 @@ const AnySkewPush = (props: {
   )
 
   /**
-   * 生成 skew animateTransform（无 skew 配置时返回 null）。
-   * 4段时间线：进入角度 → 0（stay）→ 退出角度 → hold
-   * stay=0 时跳过 stay 段，避免 compileTimeline 生成相邻相等的 keyTimes（calcMode=spline 下非法）
+   * 生成 skew animateTransform（entrySkew 和 exitSkew 均不传时返回 null）。
+   *
+   * 时间线4段（stay=0 时跳过 stay 段，避免 keyTimes 相邻相等导致 calcMode=spline 非法）：
+   *   进入段 sw：    entryAngle → 0（skew 随图片进入归零）
+   *   stay 段：      0 → 0（全屏静止，无 skew）
+   *   退出段 nextSw：0 → exitAngle（skew 随图片退出增大）
+   *   hold 段：      exitAngle（停在屏幕外，保持退出角度）
+   *
+   * @param entrySkew  进入 skew 配置（type + angle）
+   * @param exitSkew   退出 skew 配置（type + angle）
+   * @param stay       停留时长（秒）
+   * @param sw         当前图进入时长（秒）
+   * @param nextSw     下一张图进入时长 = 当前图退出时长（秒）
+   * @param holdTime   屏幕外等待时长（秒）
+   * @param begin      SMIL begin 时间（秒）
    */
   const renderSkewAnim = (
     entrySkew: I_SkewConfig | undefined,
@@ -131,6 +174,7 @@ const AnySkewPush = (props: {
 
     const entryAngle = entrySkew?.angle ?? 0
     const exitAngle  = exitSkew?.angle  ?? 0
+    // 两者都传时以 entrySkew.type 为准（进入和退出共用同一个 skew 轴）
     const skewType   = `skew${(entrySkew ?? exitSkew)!.type}` as 'skewX' | 'skewY'
 
     const segs = [
@@ -150,9 +194,10 @@ const AnySkewPush = (props: {
   }
 
   /**
-   * 生成 rotate animateTransform（无 rotation 配置时返回 null）。
-   * rotate values 格式为 "angle 0 0"，以坐标系原点（画布中心）为旋转中心。
-   * 时间线结构与 skew 完全一致。
+   * 生成 rotate animateTransform（entryRotation 和 exitRotation 均不传时返回 null）。
+   *
+   * rotate values 格式为 "angle cx cy"，cx=cy=0 表示以坐标系原点（画布中心）为旋转中心。
+   * 时间线结构与 renderSkewAnim 完全一致，参数含义相同。
    */
   const renderRotateAnim = (
     entryRotation: number | undefined,
@@ -214,7 +259,7 @@ const AnySkewPush = (props: {
     // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
     const ghostShowKt = ((T - sw0) / T).toFixed(6)
 
-    // Ghost translate：前段停在屏幕外，后段执行进入动画（→ 0 0）
+    // Ghost translate：前段停在屏幕外（enterTy0），后段执行进入动画（→ 0 0）
     const ghostTy = compileTimeline(
       [
         { durationSeconds: T - sw0, to: enterTy0, keySplines: EASE },
@@ -224,7 +269,8 @@ const AnySkewPush = (props: {
       enterTy0,
     )
 
-    // Ghost skew：前段保持 entryAngle，后段随进入动画归零
+    // Ghost skew：仅在 entrySkew 存在时渲染
+    // 前段保持 entryAngle（图1在屏幕外时的 skew 状态），后段随进入动画归零
     const ghostSkewAnim = item0.entrySkew && (() => {
       const result = compileTimeline(
         [
@@ -241,7 +287,7 @@ const AnySkewPush = (props: {
       )
     })()
 
-    // Ghost rotate：前段保持 entryRotation，后段归零
+    // Ghost rotate：仅在 entryRotation 存在时渲染，结构与 ghostSkewAnim 完全对称
     const ghostRotateAnim = !isNil(item0.entryRotation) && (() => {
       const result = compileTimeline(
         [
@@ -329,7 +375,7 @@ const AnySkewPush = (props: {
                       dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
                       begin={`${begin}s`} fill="freeze" />
                     <g>
-                      {/* 可选变换：skew 和 rotate，不传时不渲染 */}
+                      {/* 可选变换：skew 和 rotate，不传时不渲染对应的 animateTransform */}
                       {renderSkewAnim(item.entrySkew, item.exitSkew, stay, sw, nextSw, holdTime, begin)}
                       {renderRotateAnim(item.entryRotation, item.exitRotation, stay, sw, nextSw, holdTime, begin)}
                       {renderContent(item)}
