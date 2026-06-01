@@ -14,8 +14,10 @@ export interface I_AnySkewPushChildItem {
   url?: string
   /** 自定义 React 内容（与 url 二选一） */
   jsx?: ReactNode
-  /** 推入方向 L/R/T/B，默认 T */
+  /** 进入方向 L/R/T/B，默认 T */
   direction?: T_Direction4
+  /** 退出方向 L/R/T/B，默认与进入方向相反（T↔B，L↔R） */
+  exitDirection?: T_Direction4
   /** 进入时的 skew 方向（L=正角度 / R=负角度），不传则由全局 isReversed 决定 */
   skewIn?: T_DirectionX
   /** 退出时的 skew 方向，不传则与 skewIn 相反 */
@@ -139,20 +141,28 @@ const AnySkewPush = (props: {
                 // 进入/退出位置（translate 的起点和终点）
                 // T/B 方向：skewX + Y 轴位移；L/R 方向：skewY + X 轴位移
                 // xOff/yOff 是 skew 造成的横向/纵向补偿偏移，使图片边缘对齐画布边缘
+                const exitDir = defaultTo(item.exitDirection, isVertical
+                  ? (isPositiveDir ? 'T' : 'B')   // T进→B出，B进→T出
+                  : (isPositiveDir ? 'L' : 'R'))   // R进→L出，L进→R出
+                const isExitVertical = exitDir === 'T' || exitDir === 'B'
+                const isExitPositive = exitDir === 'B' || exitDir === 'R'
+
                 let enterTy: string, exitTy: string, skewType: 'skewX' | 'skewY'
                 if (isVertical) {
                   const offset = Math.round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
                   const xOff = itemSkewIn > 0 ? -offset : offset
                   enterTy = `${xOff} ${isPositiveDir ? h + 1 : -(h + 1)}`
-                  exitTy  = `${xOff} ${isPositiveDir ? -(h + 1) : h + 1}`
                   skewType = 'skewX'
                 } else {
                   const offset = Math.round(contentH * Math.tan(skewAngle * Math.PI / 180) / 2)
                   const yOff = itemSkewIn > 0 ? -offset : offset
                   enterTy = `${isPositiveDir ? w + 1 : -(w + 1)} ${yOff}`
-                  exitTy  = `${isPositiveDir ? -(w + 1) : w + 1} ${yOff}`
                   skewType = 'skewY'
                 }
+                // exitTy 根据 exitDirection 独立计算，不依赖进入方向
+                exitTy = isExitVertical
+                  ? `0 ${isExitPositive ? -(h + 1) : h + 1}`
+                  : `${isExitPositive ? -(w + 1) : w + 1} 0`
 
                 // 4 段时间线：进入 → stay → 退出 → hold（stay=0 时跳过 stay 段，避免 keyTimes 相邻相等）
                 // compileTimeline 不过滤 durationSeconds=0 的段，相邻相等的 keyTimes 在 calcMode="spline" 下非法
