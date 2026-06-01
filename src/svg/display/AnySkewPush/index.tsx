@@ -5,6 +5,7 @@ import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { normalizeChildItems } from "./utils/normalizer"
+import { validateJsxViewBox } from "./utils/validateJsx"
 import { calculateTotalDuration } from "./timeline/sequenceCalculator"
 import { getOffscreenTranslate } from "./timeline/offsetCalculator"
 import SkewPushItem from "./components/SkewPushItem"
@@ -51,6 +52,13 @@ const AnySkewPush = (props: {
   const contentW = Math.max(1, w - itemGap * 2)
   const contentH = Math.max(1, h - itemGap * 2)
   const isDev = ExPubGoConfig().mode === 'development'
+
+  // 校验 jsx 模式下最外层 SVG 的 viewBox 是否跟内容区域尺寸一致
+  items.forEach(item => {
+    if (item.jsx) {
+      validateJsxViewBox({ jsx: item.jsx, contentWidth: contentW, contentHeight: contentH })
+    }
+  })
 
   return (
     <SectionEx
