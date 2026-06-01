@@ -2,7 +2,7 @@ import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
 import { compileTimeline } from "@smil/timeline/compile"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
-import { calculateBegin, calculateHoldDuration } from "../timeline/sequenceCalculator"
+import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
 import { renderChildItemContent } from "./ChildItemContent"
 
@@ -26,10 +26,8 @@ const DEFAULT_EASE = "0.42 0 0.58 1"
 const SkewPushItem = (props: {
   /** 当前子项的标准化配置 */
   item: I_NormalizedChildItem
-  /** 当前子项的索引 */
-  index: number
-  /** 所有子项的标准化配置（用于计算时间线） */
-  items: I_NormalizedChildItem[]
+  /** 当前子项的时间轴信息（由 buildCyclicTimelines 计算） */
+  timeline: I_ItemTimeline
   /** 总动画周期（秒） */
   totalDuration: number
   /** 内容区域宽度（已扣除 itemGap） */
@@ -41,14 +39,9 @@ const SkewPushItem = (props: {
   /** 画布高度 */
   canvasHeight: number
 }) => {
-  const { item, index, items, totalDuration, contentWidth, contentHeight, canvasWidth, canvasHeight } = props
-  const N = items.length
+  const { item, timeline, totalDuration, contentWidth, contentHeight, canvasWidth, canvasHeight } = props
 
-  const switchDuration = item.switchDuration
-  const stayDuration = item.stayDuration
-  const nextSwitchDuration = items[(index + 1) % N].switchDuration
-  const holdDuration = calculateHoldDuration({ index, items, totalDuration })
-  const begin = calculateBegin({ index, items, totalDuration })
+  const { begin, entryDuration: switchDuration, stayDuration, exitDuration: nextSwitchDuration, holdDuration } = timeline
 
   const enterOffscreenTranslate = getOffscreenTranslate({ direction: item.entryDirection, canvasWidth, canvasHeight })
   const exitOffscreenTranslate = getOffscreenTranslate({ direction: item.exitDirection, canvasWidth, canvasHeight })

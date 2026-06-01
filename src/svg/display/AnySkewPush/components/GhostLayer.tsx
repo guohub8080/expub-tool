@@ -2,6 +2,7 @@ import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
 import { compileTimeline } from "@smil/timeline/compile"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
+import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
 import { renderChildItemContent } from "./ChildItemContent"
 
@@ -29,8 +30,8 @@ const GhostLayer = (props: {
   firstItem: I_NormalizedChildItem
   /** 图1的屏幕外进入坐标（由 getOffscreenTranslate 计算，如 "0 -300"） */
   enterOffscreenTranslate: string
-  /** 图1的切换动画时长（秒） */
-  switchDuration: number
+  /** Ghost 层时间轴（由 buildCyclicTimelines 计算） */
+  ghostTimeline: I_GhostTimeline
   /** 总动画周期（秒） */
   totalDuration: number
   /** 内容区域宽度（已扣除 itemGap） */
@@ -38,9 +39,9 @@ const GhostLayer = (props: {
   /** 内容区域高度（已扣除 itemGap） */
   contentHeight: number
 }) => {
-  const { firstItem, enterOffscreenTranslate, switchDuration, totalDuration, contentWidth, contentHeight } = props
+  const { firstItem, enterOffscreenTranslate, ghostTimeline, totalDuration, contentWidth, contentHeight } = props
   const T = totalDuration
-  const sw = switchDuration
+  const sw = ghostTimeline.entryDuration
 
   // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
   const ghostShowKeyTime = ((T - sw) / T).toFixed(6)

@@ -7,7 +7,7 @@ import SvgEx from "@html/basicEx/SvgEx"
 import { resolveCanvasBg } from "@utils/svg/resolveCanvasBg"
 import { normalizeChildItems } from "./utils/normalizer"
 import { validateJsxViewBox } from "./utils/validateJsx"
-import { calculateTotalDuration } from "./timeline/sequenceCalculator"
+import { buildCyclicTimelines } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate } from "./timeline/offsetCalculator"
 import SkewPushItem from "./components/SkewPushItem"
 import GhostLayer from "./components/GhostLayer"
@@ -50,7 +50,7 @@ const AnySkewPush = (props: {
 
   const { w, h } = props.canvasSize
   const items = normalizeChildItems(props.childItems)
-  const totalDuration = calculateTotalDuration(items)
+  const { totalDuration, itemTimelines, ghostTimeline } = buildCyclicTimelines(items)
   const itemGap = defaultTo(props.itemGap, 0)
   const contentW = Math.max(1, w - itemGap * 2)
   const contentH = Math.max(1, h - itemGap * 2)
@@ -85,23 +85,25 @@ const AnySkewPush = (props: {
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => (
                 <SkewPushItem key={i}
-                  item={item} index={i} items={items}
+                  item={item} timeline={itemTimelines[i]}
                   totalDuration={totalDuration}
                   contentWidth={contentW} contentHeight={contentH}
                   canvasWidth={w} canvasHeight={h} />
               ))}
 
               {/* Ghost Layer：图1的视觉副本，解决图N覆盖图1的 z-order 问题 */}
-              <GhostLayer
-                firstItem={items[0]}
-                enterOffscreenTranslate={getOffscreenTranslate({
-                  direction: items[0].entryDirection, canvasWidth: w, canvasHeight: h,
-                })}
-                switchDuration={items[0].switchDuration}
-                totalDuration={totalDuration}
-                contentWidth={contentW}
-                contentHeight={contentH}
-              />
+              {ghostTimeline && (
+                <GhostLayer
+                  firstItem={items[0]}
+                  enterOffscreenTranslate={getOffscreenTranslate({
+                    direction: items[0].entryDirection, canvasWidth: w, canvasHeight: h,
+                  })}
+                  ghostTimeline={ghostTimeline}
+                  totalDuration={totalDuration}
+                  contentWidth={contentW}
+                  contentHeight={contentH}
+                />
+              )}
             </g>
           </g>
         </SvgEx>
