@@ -5,7 +5,7 @@ export { default as Container180 } from "./containers/Container180"
 
 export { default as SlideViewXContainer } from "./containers/SlideViewXContainer"
 export { default as SnapSlideViewXContainer } from "./containers/SnapSlideViewXContainer"
-export type { T_SnapAlign, T_CanvasSize, T_Direction4, T_HotArea } from "./types"
+export type { T_SnapAlign, T_CanvasSize, T_Direction4, T_DirectionX, T_HotArea } from "./types"
 
 export { default as LongImgSlideX } from "./containers/LongImgSlideX"
 
@@ -36,3 +36,4 @@ export { default as SnapSlideViewYContainer } from "./containers/SnapSlideViewYC
 export { default as SpinZoomCarousel } from "./display/SpinZoomCarousel"
 export { default as SkewSlideCarousel } from "./display/SkewSlideCarousel"
 export { default as SkewSlideCarouselY } from "./display/SkewSlideCarouselY"
+export { default as SkewPushY } from "./display/SkewPushY"

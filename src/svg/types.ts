@@ -7,6 +7,8 @@ export type T_CanvasSize = {
 
 export type T_Direction4 = "L" | "R" | "T" | "B"
 
+export type T_DirectionX = "L" | "R"
+
 export type T_HotArea = {
   x?: number
   y?: number

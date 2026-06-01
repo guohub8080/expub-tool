@@ -6,22 +6,16 @@ import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import svgURL from "@utils/svg/svgURL"
 import type { ReactNode } from "react"
+import type { I_SkewSlideItem } from "../SkewSlideCarousel"
 import type { T_DirectionX } from "../../types"
+
+export type { I_SkewSlideItem }
 
 const EASE = "0.42 0 0.58 1"
 const DEFAULT_SKEW_ANGLE = 15
 const DEFAULT_STEP = 4
 
-export interface I_SkewSlideItem {
-  url?: string
-  item?: ReactNode
-  /** 进入方向，不传则继承全局 isReversed。L = 正角度，R = 负角度 */
-  skewIn?: T_DirectionX
-  /** 退出方向，不传则继承全局 isReversed。L = 正角度，R = 负角度 */
-  skewOut?: T_DirectionX
-}
-
-const SkewSlideCarousel = (props: {
+const SkewPushY = (props: {
   canvasSize: { w: number; h: number }
   items: I_SkewSlideItem[]
   skewAngle?: number
@@ -41,7 +35,7 @@ const SkewSlideCarousel = (props: {
   const rawAngle = defaultTo(props.skewAngle, DEFAULT_SKEW_ANGLE)
   const contentW = Math.max(1, w - itemGap * 2)
   const contentH = Math.max(1, h - itemGap * 2)
-  const maxAngle = Math.max(1, Math.floor(Math.atan(contentW / contentH) * 180 / Math.PI))
+  const maxAngle = Math.max(1, Math.floor(Math.atan(contentH / contentW) * 180 / Math.PI))
   const skewAngle = Math.min(Math.max(rawAngle, 1), maxAngle)
 
   const step = defaultTo(props.stepDuration, DEFAULT_STEP)
@@ -49,13 +43,16 @@ const SkewSlideCarousel = (props: {
   const reverse = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === 'development'
 
-  const offset = Math.round(contentH * Math.tan(skewAngle * Math.PI / 180) / 2)
-  const yOff = reverse ? offset : -offset
+  const offset = Math.round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
+  const xOff = reverse ? -offset : offset
 
-  // 4 段式：入场 → 中心 → 出场 → 停留
-  const tx = `${w} ${yOff}; 0 0; ${-w} ${yOff}; ${-w} ${yOff}`
-  const sa = reverse ? skewAngle : -skewAngle
-  const sk = `${sa}; 0; ${-sa}; ${-sa}`
+  // 纵向：Y 方向飞入飞出，X 方向 offset 补偿
+  const ty = `${xOff} ${h}; 0 0; ${xOff} ${-h}; ${xOff} ${-h}`
+
+  const defaultIn = reverse ? skewAngle : -skewAngle
+  const defaultOut = -defaultIn
+  const resolveSkew = (dir?: T_DirectionX) =>
+    dir === 'L' ? skewAngle : dir === 'R' ? -skewAngle : undefined
 
   const keySplines = `${EASE}; ${EASE}; ${EASE}`
   const k1 = (step / dur).toFixed(6)
@@ -64,7 +61,7 @@ const SkewSlideCarousel = (props: {
 
   return (
     <SectionEx
-      {...(isDev ? { 'expubgo-label': 'skew-slide-carousel' } : {})}
+      {...(isDev ? { 'expubgo-label': 'skew-push-y' } : {})}
       style={{
         WebkitTouchCallout: "none", userSelect: "text", overflow: "hidden",
         textAlign: "center", lineHeight: 0, ...spacingResult
@@ -74,25 +71,28 @@ const SkewSlideCarousel = (props: {
         <SvgEx viewBox={`0 0 ${w} ${h}`}
           style={{ display: "block", margin: "0 auto" }} width="100%">
           <g transform={`translate(${itemGap}, ${itemGap})`}>
-            <g transform={`translate(${contentW / 2}, ${contentH})`}>
+            <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => {
                 const begin = (i - 1) * step
                 const useItem = !!item.item
+                const itemSkewIn = resolveSkew(item.skewIn) ?? defaultIn
+                const itemSkewOut = resolveSkew(item.skewOut) ?? defaultOut
+                const sk = `${itemSkewIn}; 0; ${itemSkewOut}; ${itemSkewOut}`
 
                 return (
                   <g key={i} opacity={i === 0 ? 1 : 0}>
                     <animate attributeName="opacity" values="0; 1" dur="1ms" fill="freeze"
                       begin={`${begin}s`} />
                     <animateTransform attributeName="transform" type="translate"
-                      values={tx} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
+                      values={ty} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
                       calcMode="spline" repeatCount="indefinite"
                       begin={`${begin}s`} fill="freeze" />
                     <g>
-                      <animateTransform attributeName="transform" type="skewY"
+                      <animateTransform attributeName="transform" type="skewX"
                         values={sk} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
                         calcMode="spline" repeatCount="indefinite"
                         begin={`${begin}s`} fill="freeze" />
-                      <g transform={`translate(${-contentW / 2}, ${-contentH})`}>
+                      <g transform={`translate(${-contentW / 2}, ${-contentH / 2})`}>
                         <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
                           {useItem
                             ? item.item
@@ -117,4 +117,4 @@ const SkewSlideCarousel = (props: {
   )
 }
 
-export default SkewSlideCarousel
+export default SkewPushY

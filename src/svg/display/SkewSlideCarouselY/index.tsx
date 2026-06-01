@@ -34,7 +34,7 @@ const SkewSlideCarouselY = (props: {
   const rawAngle = defaultTo(props.skewAngle, DEFAULT_SKEW_ANGLE)
   const contentW = Math.max(1, w - itemGap * 2)
   const contentH = Math.max(1, h - itemGap * 2)
-  const maxAngle = Math.max(1, Math.floor(Math.atan(contentH / contentW) * 180 / Math.PI))
+  const maxAngle = Math.max(1, Math.floor(Math.atan(contentW / contentH) * 180 / Math.PI))
   const skewAngle = Math.min(Math.max(rawAngle, 1), maxAngle)
 
   const step = defaultTo(props.stepDuration, DEFAULT_STEP)
@@ -43,11 +43,12 @@ const SkewSlideCarouselY = (props: {
   const isDev = ExPubGoConfig().mode === 'development'
 
   const offset = Math.round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
-  const xOff = reverse ? offset : -offset
+  const xOff = reverse ? -offset : offset
 
   // 纵向：Y 方向飞入飞出，X 方向 offset 补偿
+  // 原点 = 内容顶部中心，图片向下延伸
   const ty = `${xOff} ${h}; 0 0; ${xOff} ${-h}; ${xOff} ${-h}`
-  const sa = reverse ? -skewAngle : skewAngle
+  const sa = reverse ? skewAngle : -skewAngle
   const sk = `${sa}; 0; ${-sa}; ${-sa}`
 
   const keySplines = `${EASE}; ${EASE}; ${EASE}`
@@ -67,7 +68,7 @@ const SkewSlideCarouselY = (props: {
         <SvgEx viewBox={`0 0 ${w} ${h}`}
           style={{ display: "block", margin: "0 auto" }} width="100%">
           <g transform={`translate(${itemGap}, ${itemGap})`}>
-            <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
+            <g transform={`translate(${contentW / 2}, 0)`}>
               {items.map((item, i) => {
                 const begin = (i - 1) * step
                 const useItem = !!item.item
@@ -85,7 +86,7 @@ const SkewSlideCarouselY = (props: {
                         values={sk} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
                         calcMode="spline" repeatCount="indefinite"
                         begin={`${begin}s`} fill="freeze" />
-                      <g transform={`translate(${-contentW / 2}, ${-contentH / 2})`}>
+                      <g transform={`translate(${-contentW / 2}, 0)`}>
                         <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
                           {useItem
                             ? item.item
