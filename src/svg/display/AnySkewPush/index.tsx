@@ -45,6 +45,10 @@ const DEFAULT_STAY = 2
 const DEFAULT_SWITCH = 2
 const DEFAULT_DIRECTION: T_Direction4 = 'T'
 
+/** 进入方向取反，作为默认退出方向 */
+const oppositeDir = (dir: T_Direction4): T_Direction4 =>
+  dir === 'T' ? 'B' : dir === 'B' ? 'T' : dir === 'L' ? 'R' : 'L'
+
 const AnySkewPush = (props: {
   canvasSize: { w: number; h: number }
   childItems: I_AnySkewPushChildItem[]
@@ -109,7 +113,11 @@ const AnySkewPush = (props: {
     </g>
   )
 
-  // 为一张图生成 skew animateTransform（无 skew 时返回 null）
+  /**
+   * 生成 skew animateTransform（无 skew 配置时返回 null）。
+   * 4段时间线：进入角度 → 0（stay）→ 退出角度 → hold
+   * stay=0 时跳过 stay 段，避免 compileTimeline 生成相邻相等的 keyTimes（calcMode=spline 下非法）
+   */
   const renderSkewAnim = (
     entrySkew: I_SkewConfig | undefined,
     exitSkew: I_SkewConfig | undefined,
@@ -117,29 +125,35 @@ const AnySkewPush = (props: {
     sw: number,
     nextSw: number,
     holdTime: number,
-    actualBegin: number,
+    begin: number,
   ) => {
     if (isNil(entrySkew) && isNil(exitSkew)) return null
+
     const entryAngle = entrySkew?.angle ?? 0
     const exitAngle  = exitSkew?.angle  ?? 0
-    const skewType = `skew${(entrySkew ?? exitSkew)!.type}` as 'skewX' | 'skewY'
-    const skSegs = [
-      { durationSeconds: sw,       to: 0,          keySplines: EASE },
+    const skewType   = `skew${(entrySkew ?? exitSkew)!.type}` as 'skewX' | 'skewY'
+
+    const segs = [
+      { durationSeconds: sw,       to: 0,         keySplines: EASE },
       ...(stay > 0 ? [{ durationSeconds: stay, to: 0, keySplines: EASE }] : []),
-      { durationSeconds: nextSw,   to: exitAngle,  keySplines: EASE },
-      { durationSeconds: holdTime, to: exitAngle,  keySplines: EASE },
+      { durationSeconds: nextSw,   to: exitAngle, keySplines: EASE },
+      { durationSeconds: holdTime, to: exitAngle, keySplines: EASE },
     ]
-    const skResult = compileTimeline(skSegs, v => `${v}`, entryAngle)
+    const result = compileTimeline(segs, v => `${v}`, entryAngle)
+
     return (
       <animateTransform attributeName="transform" type={skewType}
-        values={skResult.values} keyTimes={skResult.keyTimes} keySplines={skResult.keySplines}
+        values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
         dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
-        begin={`${actualBegin}s`} fill="freeze" />
+        begin={`${begin}s`} fill="freeze" />
     )
   }
 
-  // 为一张图生成 rotate animateTransform（无 rotation 时返回 null）
-  // rotate values 格式为 "angle 0 0"，以坐标系原点（画布中心）为旋转中心
+  /**
+   * 生成 rotate animateTransform（无 rotation 配置时返回 null）。
+   * rotate values 格式为 "angle 0 0"，以坐标系原点（画布中心）为旋转中心。
+   * 时间线结构与 skew 完全一致。
+   */
   const renderRotateAnim = (
     entryRotation: number | undefined,
     exitRotation: number | undefined,
@@ -147,23 +161,120 @@ const AnySkewPush = (props: {
     sw: number,
     nextSw: number,
     holdTime: number,
-    actualBegin: number,
+    begin: number,
   ) => {
     if (isNil(entryRotation) && isNil(exitRotation)) return null
+
     const entryAngle = entryRotation ?? 0
     const exitAngle  = exitRotation  ?? 0
+
     const segs = [
-      { durationSeconds: sw,       to: 0,          keySplines: EASE },
+      { durationSeconds: sw,       to: 0,         keySplines: EASE },
       ...(stay > 0 ? [{ durationSeconds: stay, to: 0, keySplines: EASE }] : []),
-      { durationSeconds: nextSw,   to: exitAngle,  keySplines: EASE },
-      { durationSeconds: holdTime, to: exitAngle,  keySplines: EASE },
+      { durationSeconds: nextSw,   to: exitAngle, keySplines: EASE },
+      { durationSeconds: holdTime, to: exitAngle, keySplines: EASE },
     ]
     const result = compileTimeline(segs, v => `${v} 0 0`, entryAngle)
+
     return (
       <animateTransform attributeName="transform" type="rotate"
         values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
         dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
-        begin={`${actualBegin}s`} fill="freeze" />
+        begin={`${begin}s`} fill="freeze" />
+    )
+  }
+
+  /**
+   * Ghost Layer：图1的视觉副本，渲染在 DOM 最后（SVG z 轴最顶层）。
+   *
+   * 问题背景：SVG 使用 painter's algorithm，DOM 靠后的元素覆盖靠前的元素。
+   * 图1在 DOM 第一位（最底层），图N在最后（最顶层）。
+   * 当图N退出、图1进入时，图N在上层会遮住图1，导致图1的进入动画不可见。
+   *
+   * 解决方案：在 DOM 末尾放一个与图1完全相同的副本（Ghost），
+   * 只在图1进入的那段时间内可见（visibility: hidden → visible → hidden），
+   * 其余时间隐藏。这样视觉上图1始终能覆盖图N，实现"新图永远盖住旧图"的效果。
+   *
+   * 时序：Ghost 的动画周期 = T，begin = 0s。
+   * - [0, T-sw0)：停在屏幕外，visibility=hidden（图1处于 stay/退出/hold 阶段）
+   * - [T-sw0, T)：执行与图1完全相同的进入动画，visibility=visible（图1进入阶段）
+   * - T 时刻：瞬间 hidden，图1已到位，Ghost 完成使命
+   *
+   * Ghost 的 skew/rotate 用2段时间线（前段保持进入值，后段归零），
+   * 与 Ghost translate 同构，begin 统一为 0s。
+   */
+  const renderGhostLayer = () => {
+    if (N <= 1) return null
+
+    const item0    = items[0]
+    const dir0     = defaultTo(item0.entryDirection, DEFAULT_DIRECTION)
+    const sw0      = defaultTo(item0.switchDuration, DEFAULT_SWITCH)
+    const enterTy0 = getOffscreenTy(dir0)
+
+    // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
+    const ghostShowKt = ((T - sw0) / T).toFixed(6)
+
+    // Ghost translate：前段停在屏幕外，后段执行进入动画（→ 0 0）
+    const ghostTy = compileTimeline(
+      [
+        { durationSeconds: T - sw0, to: enterTy0, keySplines: EASE },
+        { durationSeconds: sw0,     to: '0 0',    keySplines: EASE },
+      ],
+      v => v,
+      enterTy0,
+    )
+
+    // Ghost skew：前段保持 entryAngle，后段随进入动画归零
+    const ghostSkewAnim = item0.entrySkew && (() => {
+      const result = compileTimeline(
+        [
+          { durationSeconds: T - sw0, to: item0.entrySkew!.angle, keySplines: EASE },
+          { durationSeconds: sw0,     to: 0,                      keySplines: EASE },
+        ],
+        v => `${v}`,
+        item0.entrySkew!.angle,
+      )
+      return (
+        <animateTransform attributeName="transform" type={`skew${item0.entrySkew!.type}` as 'skewX' | 'skewY'}
+          values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
+          dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
+      )
+    })()
+
+    // Ghost rotate：前段保持 entryRotation，后段归零
+    const ghostRotateAnim = !isNil(item0.entryRotation) && (() => {
+      const result = compileTimeline(
+        [
+          { durationSeconds: T - sw0, to: item0.entryRotation!, keySplines: EASE },
+          { durationSeconds: sw0,     to: 0,                    keySplines: EASE },
+        ],
+        v => `${v} 0 0`,
+        item0.entryRotation!,
+      )
+      return (
+        <animateTransform attributeName="transform" type="rotate"
+          values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
+          dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
+      )
+    })()
+
+    return (
+      <g key="ghost" visibility="hidden">
+        {/* visibility 切换：在图1进入段瞬间变 visible，进入完成后瞬间 hidden */}
+        <animate attributeName="visibility"
+          values="hidden; visible; hidden"
+          keyTimes={`0; ${ghostShowKt}; 1`}
+          dur={`${T}s`} calcMode="discrete"
+          repeatCount="indefinite" begin="0s" fill="freeze" />
+        <animateTransform attributeName="transform" type="translate"
+          values={ghostTy.values} keyTimes={ghostTy.keyTimes} keySplines={ghostTy.keySplines}
+          dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
+        <g>
+          {ghostSkewAnim}
+          {ghostRotateAnim}
+          {renderContent(item0)}
+        </g>
+      </g>
     )
   }
 
@@ -188,24 +299,20 @@ const AnySkewPush = (props: {
             {/* 坐标系平移到画布中心，所有图的 translate 动画以中心为原点计算 */}
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => {
-                const dir = defaultTo(item.entryDirection, DEFAULT_DIRECTION)
-                const isPositiveDir = dir === 'B' || dir === 'R'
-                const stay = defaultTo(item.stayDuration, DEFAULT_STAY)
-                const sw = defaultTo(item.switchDuration, DEFAULT_SWITCH)
+                const dir      = defaultTo(item.entryDirection, DEFAULT_DIRECTION)
+                const exitDir  = defaultTo(item.exitDirection, oppositeDir(dir))
+                const stay     = defaultTo(item.stayDuration, DEFAULT_STAY)
+                const sw       = defaultTo(item.switchDuration, DEFAULT_SWITCH)
                 // 退出时长由下一张图的 switchDuration 决定（下一张进入时覆盖当前图退出）
-                const nextSw = defaultTo(items[(i + 1) % N].switchDuration, DEFAULT_SWITCH)
+                const nextSw   = defaultTo(items[(i + 1) % N].switchDuration, DEFAULT_SWITCH)
                 // hold = 在屏幕外等待下一轮进入的时间
                 const holdTime = T - sw - stay - nextSw
-                const actualBegin = getBegin(i)
+                const begin    = getBegin(i)
+                const enterTy  = getOffscreenTy(dir)
+                const exitTy   = getOffscreenTy(exitDir)
 
-                const exitDir = defaultTo(item.exitDirection,
-                  dir === 'T' ? 'B' : dir === 'B' ? 'T' : dir === 'L' ? 'R' : 'L')
-
-                const enterTy = getOffscreenTy(dir)
-                const exitTy  = getOffscreenTy(exitDir)
-
-                // 4 段时间线：进入 → stay → 退出 → hold（stay=0 时跳过 stay 段，避免 keyTimes 相邻相等）
-                // compileTimeline 不过滤 durationSeconds=0 的段，相邻相等的 keyTimes 在 calcMode="spline" 下非法
+                // translate 4段时间线：进入 → stay → 退出 → hold
+                // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）
                 const tySegs = [
                   { durationSeconds: sw,       to: '0 0',  keySplines: EASE },
                   ...(stay > 0 ? [{ durationSeconds: stay, to: '0 0', keySplines: EASE }] : []),
@@ -220,108 +327,18 @@ const AnySkewPush = (props: {
                     <animateTransform attributeName="transform" type="translate"
                       values={tyResult.values} keyTimes={tyResult.keyTimes} keySplines={tyResult.keySplines}
                       dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
-                      begin={`${actualBegin}s`} fill="freeze" />
+                      begin={`${begin}s`} fill="freeze" />
                     <g>
-                      {/* 内层 skew / rotate：进入/退出时的变换，不传时不渲染 */}
-                      {renderSkewAnim(item.entrySkew, item.exitSkew, stay, sw, nextSw, holdTime, actualBegin)}
-                      {renderRotateAnim(item.entryRotation, item.exitRotation, stay, sw, nextSw, holdTime, actualBegin)}
+                      {/* 可选变换：skew 和 rotate，不传时不渲染 */}
+                      {renderSkewAnim(item.entrySkew, item.exitSkew, stay, sw, nextSw, holdTime, begin)}
+                      {renderRotateAnim(item.entryRotation, item.exitRotation, stay, sw, nextSw, holdTime, begin)}
                       {renderContent(item)}
                     </g>
                   </g>
                 )
               })}
 
-              {/*
-                Ghost Layer：图1的视觉副本，渲染在 DOM 最后（SVG z 轴最顶层）。
-
-                问题背景：SVG 使用 painter's algorithm，DOM 靠后的元素覆盖靠前的元素。
-                图1在 DOM 第一位（最底层），图N在最后（最顶层）。
-                当图N退出、图1进入时，图N在上层会遮住图1，导致图1的进入动画不可见。
-
-                解决方案：在 DOM 末尾放一个与图1完全相同的副本（Ghost），
-                只在图1进入的那段时间内可见（visibility: hidden → visible → hidden），
-                其余时间隐藏。这样视觉上图1始终能覆盖图N，实现"新图永远盖住旧图"的效果。
-
-                时序：Ghost 的动画周期 = T，begin = 0s。
-                - [0, T-sw0)：停在屏幕外，visibility=hidden（图1处于 stay/退出/hold 阶段）
-                - [T-sw0, T)：执行与图1完全相同的进入动画，visibility=visible（图1进入阶段）
-                - T 时刻：瞬间 hidden，图1已到位，Ghost 完成使命
-              */}
-              {N > 1 && (() => {
-                const item0 = items[0]
-                const dir0 = defaultTo(item0.entryDirection, DEFAULT_DIRECTION)
-                const sw0 = defaultTo(item0.switchDuration, DEFAULT_SWITCH)
-                const stay0 = defaultTo(item0.stayDuration, DEFAULT_STAY)
-                const nextSw0 = defaultTo(items[1].switchDuration, DEFAULT_SWITCH)
-                const holdTime0 = T - sw0 - stay0 - nextSw0
-
-                const ghostEnterTy = getOffscreenTy(dir0)
-
-                // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
-                const ghostShowKt = ((T - sw0) / T).toFixed(6)
-
-                // Ghost translate：前段停在屏幕外（enterTy），后段执行进入动画（→ 0 0）
-                const ghostTy = compileTimeline(
-                  [
-                    { durationSeconds: T - sw0, to: ghostEnterTy, keySplines: EASE },
-                    { durationSeconds: sw0,     to: '0 0',        keySplines: EASE },
-                  ],
-                  v => v,
-                  ghostEnterTy,
-                )
-
-                return (
-                  <g key="ghost" visibility="hidden">
-                    {/* visibility 切换：在图1进入段瞬间变 visible，进入完成后瞬间 hidden */}
-                    <animate attributeName="visibility"
-                      values={`hidden; visible; hidden`}
-                      keyTimes={`0; ${ghostShowKt}; 1`}
-                      dur={`${T}s`} calcMode="discrete"
-                      repeatCount="indefinite" begin="0s" fill="freeze" />
-                    <animateTransform attributeName="transform" type="translate"
-                      values={ghostTy.values} keyTimes={ghostTy.keyTimes} keySplines={ghostTy.keySplines}
-                      dur={`${T}s`} calcMode="spline"
-                      repeatCount="indefinite" begin="0s" fill="freeze" />
-                    <g>
-                      {/* Ghost skew：与 translate 同构，前段保持 entryAngle，后段随进入动画归零 */}
-                      {item0.entrySkew && (() => {
-                        const ghostSk = compileTimeline(
-                          [
-                            { durationSeconds: T - sw0, to: item0.entrySkew.angle, keySplines: EASE },
-                            { durationSeconds: sw0,     to: 0,                     keySplines: EASE },
-                          ],
-                          v => `${v}`,
-                          item0.entrySkew.angle,
-                        )
-                        return (
-                          <animateTransform attributeName="transform" type={`skew${item0.entrySkew.type}` as 'skewX' | 'skewY'}
-                            values={ghostSk.values} keyTimes={ghostSk.keyTimes} keySplines={ghostSk.keySplines}
-                            dur={`${T}s`} calcMode="spline"
-                            repeatCount="indefinite" begin="0s" fill="freeze" />
-                        )
-                      })()}
-                      {/* Ghost rotate：同构，前段保持 entryRotation，后段归零 */}
-                      {!isNil(item0.entryRotation) && (() => {
-                        const ghostRot = compileTimeline(
-                          [
-                            { durationSeconds: T - sw0, to: item0.entryRotation!, keySplines: EASE },
-                            { durationSeconds: sw0,     to: 0,                    keySplines: EASE },
-                          ],
-                          v => `${v} 0 0`,
-                          item0.entryRotation!,
-                        )
-                        return (
-                          <animateTransform attributeName="transform" type="rotate"
-                            values={ghostRot.values} keyTimes={ghostRot.keyTimes} keySplines={ghostRot.keySplines}
-                            dur={`${T}s`} calcMode="spline"
-                            repeatCount="indefinite" begin="0s" fill="freeze" />
-                        )
-                      })()}
-                      {renderContent(item0)}
-                    </g>
-                  </g>
-                )
-              })()}
+              {renderGhostLayer()}
             </g>
           </g>
         </SvgEx>
