@@ -30,6 +30,10 @@ export interface I_AnySkewPushChildItem {
   entrySkew?: I_SkewConfig
   /** 退出时的 skew，不传则无 skew */
   exitSkew?: I_SkewConfig
+  /** 进入时的旋转角度（度），正=顺时针，不传则无旋转 */
+  entryRotation?: number
+  /** 退出时的旋转角度（度），正=顺时针，不传则无旋转 */
+  exitRotation?: number
   /** 停留时长（秒），默认 2 */
   stayDuration?: number
   /** 切换动画时长（秒），默认 2 */
@@ -115,14 +119,10 @@ const AnySkewPush = (props: {
     holdTime: number,
     actualBegin: number,
   ) => {
-    // entrySkew 和 exitSkew 都没有时，不渲染 skew 动画
     if (isNil(entrySkew) && isNil(exitSkew)) return null
-
     const entryAngle = entrySkew?.angle ?? 0
     const exitAngle  = exitSkew?.angle  ?? 0
-    // skewX 优先，两者都有时以 entrySkew.type 为准
     const skewType = `skew${(entrySkew ?? exitSkew)!.type}` as 'skewX' | 'skewY'
-
     const skSegs = [
       { durationSeconds: sw,       to: 0,          keySplines: EASE },
       ...(stay > 0 ? [{ durationSeconds: stay, to: 0, keySplines: EASE }] : []),
@@ -130,10 +130,38 @@ const AnySkewPush = (props: {
       { durationSeconds: holdTime, to: exitAngle,  keySplines: EASE },
     ]
     const skResult = compileTimeline(skSegs, v => `${v}`, entryAngle)
-
     return (
       <animateTransform attributeName="transform" type={skewType}
         values={skResult.values} keyTimes={skResult.keyTimes} keySplines={skResult.keySplines}
+        dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
+        begin={`${actualBegin}s`} fill="freeze" />
+    )
+  }
+
+  // 为一张图生成 rotate animateTransform（无 rotation 时返回 null）
+  // rotate values 格式为 "angle 0 0"，以坐标系原点（画布中心）为旋转中心
+  const renderRotateAnim = (
+    entryRotation: number | undefined,
+    exitRotation: number | undefined,
+    stay: number,
+    sw: number,
+    nextSw: number,
+    holdTime: number,
+    actualBegin: number,
+  ) => {
+    if (isNil(entryRotation) && isNil(exitRotation)) return null
+    const entryAngle = entryRotation ?? 0
+    const exitAngle  = exitRotation  ?? 0
+    const segs = [
+      { durationSeconds: sw,       to: 0,          keySplines: EASE },
+      ...(stay > 0 ? [{ durationSeconds: stay, to: 0, keySplines: EASE }] : []),
+      { durationSeconds: nextSw,   to: exitAngle,  keySplines: EASE },
+      { durationSeconds: holdTime, to: exitAngle,  keySplines: EASE },
+    ]
+    const result = compileTimeline(segs, v => `${v} 0 0`, entryAngle)
+    return (
+      <animateTransform attributeName="transform" type="rotate"
+        values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
         dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
         begin={`${actualBegin}s`} fill="freeze" />
     )
@@ -194,8 +222,9 @@ const AnySkewPush = (props: {
                       dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
                       begin={`${actualBegin}s`} fill="freeze" />
                     <g>
-                      {/* 内层 skew：进入/退出时的斜切，entrySkew/exitSkew 均不传时不渲染 */}
+                      {/* 内层 skew / rotate：进入/退出时的变换，不传时不渲染 */}
                       {renderSkewAnim(item.entrySkew, item.exitSkew, stay, sw, nextSw, holdTime, actualBegin)}
+                      {renderRotateAnim(item.entryRotation, item.exitRotation, stay, sw, nextSw, holdTime, actualBegin)}
                       {renderContent(item)}
                     </g>
                   </g>
@@ -267,6 +296,23 @@ const AnySkewPush = (props: {
                         return (
                           <animateTransform attributeName="transform" type={`skew${item0.entrySkew.type}` as 'skewX' | 'skewY'}
                             values={ghostSk.values} keyTimes={ghostSk.keyTimes} keySplines={ghostSk.keySplines}
+                            dur={`${T}s`} calcMode="spline"
+                            repeatCount="indefinite" begin="0s" fill="freeze" />
+                        )
+                      })()}
+                      {/* Ghost rotate：同构，前段保持 entryRotation，后段归零 */}
+                      {!isNil(item0.entryRotation) && (() => {
+                        const ghostRot = compileTimeline(
+                          [
+                            { durationSeconds: T - sw0, to: item0.entryRotation!, keySplines: EASE },
+                            { durationSeconds: sw0,     to: 0,                    keySplines: EASE },
+                          ],
+                          v => `${v} 0 0`,
+                          item0.entryRotation!,
+                        )
+                        return (
+                          <animateTransform attributeName="transform" type="rotate"
+                            values={ghostRot.values} keyTimes={ghostRot.keyTimes} keySplines={ghostRot.keySplines}
                             dur={`${T}s`} calcMode="spline"
                             repeatCount="indefinite" begin="0s" fill="freeze" />
                         )
