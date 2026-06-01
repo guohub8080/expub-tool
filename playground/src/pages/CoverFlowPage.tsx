@@ -1,6 +1,9 @@
 import { useRef, useState } from 'react'
 import { CoverFlow } from 'expub-tool/svg'
+import { getPowerBezier } from 'expub-tool/smil'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
+
+const power3 = getPowerBezier({ power: 3, isIn: true, isOut: true })
 
 const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null)
@@ -67,9 +70,9 @@ export default function CoverFlowPage() {
           itemScale={1.4}
           itemGap={100}
           pics={[
-            { url: getWechat300x500(3) },
-            { url: getWechat300x500(4) },
-            { url: getWechat300x500(5) },
+            { url: getWechat300x500(3), keySplines: power3 },
+            { url: getWechat300x500(4), keySplines: power3 },
+            { url: getWechat300x500(5), keySplines: power3 },
           ]}
         />
       </CopyDemo>
