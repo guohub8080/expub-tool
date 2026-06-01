@@ -58,8 +58,6 @@ const SkewPushY = (props: {
   const resolveSkew = (dir?: T_DirectionX) =>
     dir === 'L' ? skewAngle : dir === 'R' ? -skewAngle : undefined
 
-  const keySplines = `${EASE}; ${EASE}; ${EASE}; ${EASE}`
-
   return (
     <SectionEx
       {...(isDev ? { 'expubgo-label': 'skew-push-y' } : {})}
@@ -77,13 +75,27 @@ const SkewPushY = (props: {
                 const useItem = !!item.item
                 const stay = defaultTo(item.stayDuration, DEFAULT_STAY)
                 const sw = defaultTo(item.switchDuration, DEFAULT_SWITCH)
+                const nextSw = defaultTo(items[(i + 1) % N].switchDuration, DEFAULT_SWITCH)
                 const slotStart = slotStarts[i]
-                const begin = slotStart - sw / 2
+                // 参考 AnyPush 的 delay 逻辑
+                // i=0: begin = -sw_0
+                // i>0: begin = stay_0 + Σ_{j=1}^{i-1}(sw_j + stay_j)
+                let actualBegin: number
+                if (i === 0) {
+                  actualBegin = -sw
+                } else {
+                  actualBegin = defaultTo(items[0].stayDuration, DEFAULT_STAY)
+                  for (let j = 1; j < i; j++) {
+                    actualBegin += defaultTo(items[j].switchDuration, DEFAULT_SWITCH)
+                      + defaultTo(items[j].stayDuration, DEFAULT_STAY)
+                  }
+                }
 
-                const k1 = ((sw / 2) / T).toFixed(6)
-                const k2 = ((sw / 2 + stay) / T).toFixed(6)
-                const k3 = ((sw + stay) / T).toFixed(6)
+                const k1 = (sw / T).toFixed(6)
+                const k2 = ((sw + stay) / T).toFixed(6)
+                const k3 = ((sw + stay + nextSw) / T).toFixed(6)
                 const keyTimes = `0; ${k1}; ${k2}; ${k3}; 1`
+                const keySplines = `${EASE}; ${EASE}; ${EASE}; ${EASE}`
 
                 const itemSkewIn = resolveSkew(item.skewIn) ?? defaultIn
                 const itemSkewOut = resolveSkew(item.skewOut) ?? defaultOut
@@ -94,16 +106,16 @@ const SkewPushY = (props: {
                 return (
                   <g key={i} opacity={i === 0 ? 1 : 0}>
                     <animate attributeName="opacity" values="0; 1" dur="1ms" fill="freeze"
-                      begin={`${begin}s`} />
+                      begin={`${actualBegin}s`} />
                     <animateTransform attributeName="transform" type="translate"
                       values={ty} keyTimes={keyTimes} keySplines={keySplines} dur={`${T}s`}
                       calcMode="spline" repeatCount="indefinite"
-                      begin={`${begin}s`} fill="freeze" />
+                      begin={`${actualBegin}s`} fill="freeze" />
                     <g>
                       <animateTransform attributeName="transform" type="skewX"
                         values={sk} keyTimes={keyTimes} keySplines={keySplines} dur={`${T}s`}
                         calcMode="spline" repeatCount="indefinite"
-                        begin={`${begin}s`} fill="freeze" />
+                        begin={`${actualBegin}s`} fill="freeze" />
                       <g transform={`translate(${-contentW / 2}, ${-contentH / 2})`}>
                         <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
                           {useItem
