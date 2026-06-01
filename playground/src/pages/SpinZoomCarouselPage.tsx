@@ -1,5 +1,6 @@
 import { SpinZoomCarousel } from 'expub-tool/svg'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
+import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 export default function SpinZoomCarouselPage() {
   return (
@@ -47,12 +48,12 @@ export default function SpinZoomCarouselPage() {
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16 }}>
         <h3 style={{ margin: '0 0 8px' }}>3 图 — peakScale=1.8（放大更多）</h3>
         <SpinZoomCarousel
-          canvasSize={{ w: 300, h: 500 }}
+          canvasSize={{ w: 300, h: 300 }}
           peakScale={1.8}
           items={[
-            { url: getWechat300x500(1) },
-            { url: getWechat300x500(2) },
-            { url: getWechat300x500(3) },
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
           ]}
         />
       </div>

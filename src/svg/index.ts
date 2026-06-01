@@ -34,3 +34,4 @@ export { default as SlideViewYContainer } from "./containers/SlideViewYContainer
 export { default as SnapSlideViewYContainer } from "./containers/SnapSlideViewYContainer"
 
 export { default as SpinZoomCarousel } from "./display/SpinZoomCarousel"
+export { default as SkewSlideCarousel } from "./display/SkewSlideCarousel"
