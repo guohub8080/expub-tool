@@ -87,7 +87,8 @@ const AnySkewPush = (props: {
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`}
           style={{ display: "block", margin: "0 auto" }} width="100%">
-          <g transform={`translate(${itemGap}, ${itemGap})`}>
+          <g transform={`translate(${itemGap}, ${itemGap})`} visibility="hidden">
+            <set attributeName="visibility" to="visible" begin="0.05s" fill="freeze" />
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => {
                 const dir = defaultTo(item.direction, DEFAULT_DIRECTION)
