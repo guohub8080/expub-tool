@@ -5,6 +5,7 @@ import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import svgURL from "@utils/svg/svgURL"
+import { setVisibility } from "@smil/set/visibility"
 import type { ReactNode } from "react"
 import type { T_DirectionX, T_Direction4 } from "../../types"
 
@@ -30,6 +31,7 @@ const DEFAULT_SKEW_ANGLE = 15
 const DEFAULT_STAY = 2
 const DEFAULT_SWITCH = 2
 const DEFAULT_DIRECTION: T_Direction4 = 'T'
+
 
 const AnySkewPush = (props: {
   canvasSize: { w: number; h: number }
@@ -57,11 +59,6 @@ const AnySkewPush = (props: {
     defaultTo(p.stayDuration, DEFAULT_STAY) + defaultTo(p.switchDuration, DEFAULT_SWITCH)
   )
   const T = slotDurations.reduce((a, b) => a + b, 0)
-
-  const slotStarts = slotDurations.reduce<number[]>((acc, d, i) => {
-    acc.push(i === 0 ? 0 : acc[i - 1] + slotDurations[i - 1])
-    return acc
-  }, [])
 
   const resolveSkew = (dir?: T_DirectionX, angle: number = 15) =>
     dir === 'L' ? angle : dir === 'R' ? -angle : undefined
@@ -171,6 +168,87 @@ const AnySkewPush = (props: {
                   </g>
                 )
               })}
+              {/* ====== Ghost Layer: 图1副本，只渲染进入段，在最上层覆盖 ====== */}
+              {(() => {
+                if (N <= 1) return null
+                const firstItem = items[0]
+                const firstDir = defaultTo(firstItem.direction, DEFAULT_DIRECTION)
+                const firstIsVertical = firstDir === 'T' || firstDir === 'B'
+                const firstIsPositive = firstDir === 'B' || firstDir === 'R'
+                const firstSw = defaultTo(firstItem.switchDuration, DEFAULT_SWITCH)
+
+                const ghostMaxAngle = firstIsVertical
+                  ? Math.max(1, Math.floor(Math.atan(contentW / contentH) * 180 / Math.PI))
+                  : Math.max(1, Math.floor(Math.atan(contentH / contentW) * 180 / Math.PI))
+                const ghostSkewAngle = Math.min(Math.max(rawAngle, 1), ghostMaxAngle)
+
+                const ghostDefaultIn = reverse ? ghostSkewAngle : -ghostSkewAngle
+                const ghostSkewIn = resolveSkew(firstItem.skewIn, ghostSkewAngle) ?? ghostDefaultIn
+
+                let ghostTy: string
+                let ghostSk: string
+                let ghostSkewType: 'skewX' | 'skewY'
+
+                if (firstIsVertical) {
+                  const offset = Math.round(contentW * Math.tan(ghostSkewAngle * Math.PI / 180) / 2)
+                  const xOff = ghostSkewIn > 0 ? -offset : offset
+                  const enterY = firstIsPositive ? h + 1 : -(h + 1)
+                  ghostTy = `${xOff} ${enterY}; 0 0`
+                  ghostSk = `${ghostSkewIn}; 0`
+                  ghostSkewType = 'skewX'
+                } else {
+                  const offset = Math.round(contentH * Math.tan(ghostSkewAngle * Math.PI / 180) / 2)
+                  const yOff = ghostSkewIn > 0 ? -offset : offset
+                  const enterX = firstIsPositive ? w + 1 : -(w + 1)
+                  ghostTy = `${enterX} ${yOff}; 0 0`
+                  ghostSk = `${ghostSkewIn}; 0`
+                  ghostSkewType = 'skewY'
+                }
+
+                const firstUseItem = !!firstItem.jsx
+
+                // GhostLayer 只在图1进入时显示：第2轮及以后，每轮进入段期间
+                const ghostShowBegin = T - firstSw  // 第2轮图1进入开始
+                const ghostHideBegin = T            // 图1进入完成
+
+                return (
+                  <g key="ghost" visibility="hidden">
+                    {setVisibility({
+                      to: 'visible',
+                      begin: `${ghostShowBegin}s`,
+                      loopCount: 0,
+                    })}
+                    {setVisibility({
+                      to: 'hidden',
+                      begin: `${ghostHideBegin}s`,
+                      loopCount: 0,
+                    })}
+                    <animateTransform attributeName="transform" type="translate"
+                      values={ghostTy} keyTimes={`0; 1`} keySplines={EASE}
+                      dur={`${firstSw}s`} calcMode="spline"
+                      begin={`${ghostShowBegin}s`} fill="freeze" />
+                    <g>
+                      <animateTransform attributeName="transform" type={ghostSkewType}
+                        values={ghostSk} keyTimes={`0; 1`} keySplines={EASE}
+                        dur={`${firstSw}s`} calcMode="spline"
+                        begin={`${ghostShowBegin}s`} fill="freeze" />
+                      <g transform={`translate(${-contentW / 2}, ${-contentH / 2})`}>
+                        <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
+                          {firstUseItem
+                            ? firstItem.jsx
+                            : <SvgEx viewBox={`0 0 ${contentW + 1} ${contentH + 1}`}
+                                style={{
+                                  backgroundImage: svgURL(firstItem.url!), backgroundSize: "cover",
+                                  backgroundPosition: "50% 50%", backgroundRepeat: "no-repeat",
+                                  width: "100%", display: "block", boxSizing: "border-box",
+                                }} />
+                          }
+                        </foreignObject>
+                      </g>
+                    </g>
+                  </g>
+                )
+              })()}
             </g>
           </g>
         </SvgEx>
