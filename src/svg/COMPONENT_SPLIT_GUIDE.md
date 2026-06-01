@@ -104,7 +104,38 @@ timeline/
 
 ---
 
-## 第五步：确定 props 边界
+## 第五步：编码规范
+
+**默认值**：一律用 `defaultTo(prop, fallback)`，不用解构默认值：
+
+```ts
+// 正确
+const gap = defaultTo(props.itemGap, DEFAULT_ITEM_GAP)
+
+// 错误
+const { itemGap = DEFAULT_ITEM_GAP } = props
+```
+
+**spacing 替换规则**：参考代码中的 `margin-top: -1px` 不硬编码，改用 `spacing` prop + `T_SpacingProps` 系统：
+
+```tsx
+import { SPACING_ZERO, spacing } from "@css-fn/spacing"
+import type { T_SpacingProps } from "@css-fn/spacing"
+
+// props 加
+spacing?: T_SpacingProps
+
+// 使用
+const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
+// 然后展开到最外层容器的 style 里
+style={{ ...spacingResult }}
+```
+
+其他 margin 值（`margin: 0 auto`、`margin-top: 0` 等）保持与参考代码一致，不替换。
+
+---
+
+## 第六步：确定 props 边界
 
 不是所有魔法数字都要变成 prop，只有**用户合理需要调整**的才暴露：
 
@@ -117,7 +148,7 @@ timeline/
 
 ---
 
-## 第六步：判断是否需要拆分为多个组件
+## 第七步：判断是否需要拆分为多个组件
 
 完成单个组件后，判断是否存在方向/模式变体需要拆分：
 
@@ -136,7 +167,7 @@ timeline/
 
 ---
 
-## 第七步：验证
+## 第八步：验证
 
 用参考代码的原始参数值实例化组件，对比输出的 HTML/SVG 是否与参考一致。
 
@@ -147,7 +178,7 @@ timeline/
 
 ---
 
-## 第八步：写 README
+## 第九步：写 README
 
 README 只需包含：
 - 一句话描述
