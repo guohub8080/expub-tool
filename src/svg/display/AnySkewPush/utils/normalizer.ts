@@ -1,11 +1,29 @@
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import type { T_Direction4 } from "@svg/types"
-import type { I_SkewConfig, I_AnySkewPushChildItem, T_RotationOrigin } from "../types"
+import type { I_SkewConfig, I_AnySkewPushChildItem, I_RotationConfig, T_RotationOrigin } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
 export const DEFAULT_SWITCH_DURATION = 2
 export const DEFAULT_DIRECTION: T_Direction4 = 'T'
 export const DEFAULT_ROTATION_ORIGIN: T_RotationOrigin = 'Center'
+
+/** 标准化后的旋转配置（origin 和 angle 已填充默认值） */
+export interface I_NormalizedRotationConfig {
+  origin: T_RotationOrigin
+  angle: number
+  keySplines?: string
+}
+
+/** 标准化单个旋转配置：填充默认 origin 和 angle */
+const normalizeRotation = (rotation: I_RotationConfig | undefined): I_NormalizedRotationConfig | undefined => {
+  if (isNil(rotation)) return undefined
+  return {
+    origin: defaultTo(rotation.origin, DEFAULT_ROTATION_ORIGIN),
+    angle: defaultTo(rotation.angle, 0),
+    keySplines: rotation.keySplines,
+  }
+}
 
 /** 进入方向取反，作为默认退出方向（T↔B，L↔R） */
 export const oppositeDirection = (direction: T_Direction4): T_Direction4 =>
@@ -24,9 +42,8 @@ export interface I_NormalizedChildItem {
   exitDirection: T_Direction4
   entrySkew?: I_SkewConfig
   exitSkew?: I_SkewConfig
-  entryRotation?: number
-  exitRotation?: number
-  rotationOrigin: T_RotationOrigin
+  entryRotation?: I_NormalizedRotationConfig
+  exitRotation?: I_NormalizedRotationConfig
   stayDuration: number
   switchDuration: number
 }
@@ -46,9 +63,8 @@ const fillDefaults = (item: I_AnySkewPushChildItem): I_NormalizedChildItem => {
     exitDirection: defaultTo(item.exitDirection, oppositeDirection(entryDirection)),
     entrySkew: item.entrySkew,
     exitSkew: item.exitSkew,
-    entryRotation: item.entryRotation,
-    exitRotation: item.exitRotation,
-    rotationOrigin: defaultTo(item.rotationOrigin, DEFAULT_ROTATION_ORIGIN),
+    entryRotation: normalizeRotation(item.entryRotation),
+    exitRotation: normalizeRotation(item.exitRotation),
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
   }

@@ -1,11 +1,12 @@
 import isNil from "lodash/isNil"
+import defaultTo from "lodash/defaultTo"
 import { compileTimeline } from "@smil/timeline/compile"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
-const EASE = "0.42 0 0.58 1"
+const DEFAULT_EASE = "0.42 0 0.58 1"
 
 /**
  * GhostLayer — 图1的视觉副本，渲染在 DOM 最后（SVG z 轴最顶层）。
@@ -40,7 +41,6 @@ const GhostLayer = (props: {
   const { firstItem, enterOffscreenTranslate, switchDuration, totalDuration, contentWidth, contentHeight } = props
   const T = totalDuration
   const sw = switchDuration
-  const rotationOrigin = getRotationOrigin({ origin: firstItem.rotationOrigin, contentWidth, contentHeight })
 
   // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
   const ghostShowKeyTime = ((T - sw) / T).toFixed(6)
@@ -48,8 +48,8 @@ const GhostLayer = (props: {
   // Ghost translate：前段停在屏幕外，后段执行进入动画（→ 0 0）
   const ghostTranslate = compileTimeline(
     [
-      { durationSeconds: T - sw, to: enterOffscreenTranslate, keySplines: EASE },
-      { durationSeconds: sw,     to: '0 0',                   keySplines: EASE },
+      { durationSeconds: T - sw, to: enterOffscreenTranslate, keySplines: DEFAULT_EASE },
+      { durationSeconds: sw,     to: '0 0',                   keySplines: DEFAULT_EASE },
     ],
     v => v,
     enterOffscreenTranslate,
@@ -60,8 +60,8 @@ const GhostLayer = (props: {
   const ghostSkewAnim = firstItem.entrySkew && (() => {
     const result = compileTimeline(
       [
-        { durationSeconds: T - sw, to: firstItem.entrySkew!.angle, keySplines: EASE },
-        { durationSeconds: sw,     to: 0,                          keySplines: EASE },
+        { durationSeconds: T - sw, to: firstItem.entrySkew!.angle, keySplines: DEFAULT_EASE },
+        { durationSeconds: sw,     to: 0,                          keySplines: DEFAULT_EASE },
       ],
       v => `${v}`,
       firstItem.entrySkew!.angle,
@@ -73,15 +73,21 @@ const GhostLayer = (props: {
     )
   })()
 
-  // Ghost rotate：仅在 entryRotation 存在时渲染，结构与 ghostSkewAnim 完全对称
+  // Ghost rotate：仅在 entryRotation 存在时渲染，使用图1的 origin 和 keySplines
   const ghostRotateAnim = !isNil(firstItem.entryRotation) && (() => {
+    const rotationOrigin = getRotationOrigin({
+      origin: firstItem.entryRotation!.origin,
+      contentWidth,
+      contentHeight,
+    })
+    const ease = defaultTo(firstItem.entryRotation!.keySplines, DEFAULT_EASE)
     const result = compileTimeline(
       [
-        { durationSeconds: T - sw, to: firstItem.entryRotation!, keySplines: EASE },
-        { durationSeconds: sw,     to: 0,                        keySplines: EASE },
+        { durationSeconds: T - sw, to: firstItem.entryRotation!.angle, keySplines: ease },
+        { durationSeconds: sw,     to: 0,                              keySplines: ease },
       ],
       v => `${v} ${rotationOrigin}`,
-      firstItem.entryRotation!,
+      firstItem.entryRotation!.angle,
     )
     return (
       <animateTransform attributeName="transform" type="rotate"

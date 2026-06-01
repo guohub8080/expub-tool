@@ -1,4 +1,5 @@
 import isNil from "lodash/isNil"
+import defaultTo from "lodash/defaultTo"
 import { compileTimeline } from "@smil/timeline/compile"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { calculateBegin, calculateHoldDuration } from "../timeline/sequenceCalculator"
@@ -6,7 +7,7 @@ import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalc
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
-const EASE = "0.42 0 0.58 1"
+const DEFAULT_EASE = "0.42 0 0.58 1"
 
 /**
  * SkewPushItem — 单张斜切推入子项组件
@@ -55,24 +56,23 @@ const SkewPushItem = (props: {
   // ── translate 时间线：进入 → stay → 退出 → hold ──
   // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）
   const translateSegs = [
-    { durationSeconds: switchDuration, to: '0 0', keySplines: EASE },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: '0 0', keySplines: EASE }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitOffscreenTranslate, keySplines: EASE },
-    { durationSeconds: holdDuration, to: exitOffscreenTranslate, keySplines: EASE },
+    { durationSeconds: switchDuration, to: '0 0', keySplines: DEFAULT_EASE },
+    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: '0 0', keySplines: DEFAULT_EASE }] : []),
+    { durationSeconds: nextSwitchDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
+    { durationSeconds: holdDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
   ]
   const translateResult = compileTimeline(translateSegs, v => v, enterOffscreenTranslate)
 
-  // ── skew 时间线：进入段 entryAngle→0, stay 0→0, 退出段 0→exitAngle, hold exitAngle ──
+  // ── skew 时间线 ──
   const skewAnim = renderSkewAnim({
     entrySkew: item.entrySkew, exitSkew: item.exitSkew,
     stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
   })
 
-  // ── rotate 时间线：结构同 skew，使用九宫格旋转中心 ──
-  const rotationOrigin = getRotationOrigin({ origin: item.rotationOrigin, contentWidth, contentHeight })
+  // ── rotate 时间线（使用 item 自带的 origin 和 keySplines） ──
   const rotateAnim = renderRotateAnim({
     entryRotation: item.entryRotation, exitRotation: item.exitRotation,
-    rotationOrigin,
+    contentWidth, contentHeight,
     stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
   })
 
@@ -114,10 +114,10 @@ const renderSkewAnim = ({
   const skewType   = `skew${(entrySkew ?? exitSkew)!.type}` as 'skewX' | 'skewY'
 
   const segs = [
-    { durationSeconds: switchDuration,    to: 0,         keySplines: EASE },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: EASE }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: EASE },
-    { durationSeconds: holdDuration,       to: exitAngle, keySplines: EASE },
+    { durationSeconds: switchDuration,    to: 0,         keySplines: DEFAULT_EASE },
+    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: DEFAULT_EASE }] : []),
+    { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: DEFAULT_EASE },
+    { durationSeconds: holdDuration,       to: exitAngle, keySplines: DEFAULT_EASE },
   ]
   const result = compileTimeline(segs, v => `${v}`, entryAngle)
 
@@ -131,13 +131,13 @@ const renderSkewAnim = ({
 
 /** 生成 rotate animateTransform（entryRotation 和 exitRotation 均不传时返回 null） */
 const renderRotateAnim = ({
-  entryRotation, exitRotation, rotationOrigin,
+  entryRotation, exitRotation, contentWidth, contentHeight,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
 }: {
-  entryRotation?: number
-  exitRotation?: number
-  /** 旋转中心坐标（"cx cy" 格式），由 getRotationOrigin 计算 */
-  rotationOrigin: string
+  entryRotation?: I_NormalizedChildItem['entryRotation']
+  exitRotation?: I_NormalizedChildItem['exitRotation']
+  contentWidth: number
+  contentHeight: number
   stayDuration: number
   switchDuration: number
   nextSwitchDuration: number
@@ -147,14 +147,23 @@ const renderRotateAnim = ({
 }) => {
   if (isNil(entryRotation) && isNil(exitRotation)) return null
 
-  const entryAngle = entryRotation ?? 0
-  const exitAngle  = exitRotation  ?? 0
+  const entryAngle = defaultTo(entryRotation?.angle, 0)
+  const exitAngle  = defaultTo(exitRotation?.angle, 0)
+
+  // 进入和退出的 origin 可能不同，取 entryRotation 的 origin（主旋转中心）
+  const rotationOrigin = getRotationOrigin({
+    origin: defaultTo(entryRotation?.origin, exitRotation?.origin ?? 'Center'),
+    contentWidth,
+    contentHeight,
+  })
+
+  const ease = entryRotation?.keySplines ?? exitRotation?.keySplines ?? DEFAULT_EASE
 
   const segs = [
-    { durationSeconds: switchDuration,    to: 0,         keySplines: EASE },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: EASE }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: EASE },
-    { durationSeconds: holdDuration,       to: exitAngle, keySplines: EASE },
+    { durationSeconds: switchDuration,    to: 0,         keySplines: ease },
+    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: ease }] : []),
+    { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: ease },
+    { durationSeconds: holdDuration,       to: exitAngle, keySplines: ease },
   ]
   // rotate values 格式："angle cx cy"
   const result = compileTimeline(segs, v => `${v} ${rotationOrigin}`, entryAngle)

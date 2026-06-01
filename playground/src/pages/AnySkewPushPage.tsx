@@ -4,7 +4,7 @@ import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 export default function AnySkewPushPage() {
   return (
     <div>
-      <h2>AnySkewPush — 四方向斜切</h2>
+      <h2>AnySkewPush — 四方向斜切推入</h2>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B（上下交替，无 skew）</h3>
@@ -46,40 +46,53 @@ export default function AnySkewPushPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B，entryRotation 360° Center</h3>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° Center</h3>
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'Center' },
-            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'Center' },
-            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'Center' },
-            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'Center' },
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: { angle: 360 } },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: { angle: -360 } },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: { angle: 360 } },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: { angle: -360 } },
           ]}
         />
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B，entryRotation 360° TopLeft</h3>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° TopLeft</h3>
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'TopLeft' },
-            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'TopLeft' },
-            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'TopLeft' },
-            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'TopLeft' },
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: { angle: 360, origin: 'TopLeft' } },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: { angle: -360, origin: 'TopLeft' } },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: { angle: 360, origin: 'TopLeft' } },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: { angle: -360, origin: 'TopLeft' } },
           ]}
         />
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B，entryRotation 360° BottomRight</h3>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° BottomRight</h3>
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'BottomRight' },
-            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'BottomRight' },
-            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'BottomRight' },
-            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'BottomRight' },
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: { angle: 360, origin: 'BottomRight' } },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: { angle: -360, origin: 'BottomRight' } },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: { angle: 360, origin: 'BottomRight' } },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: { angle: -360, origin: 'BottomRight' } },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° 自定义坐标 { cx: 50, cy: -50 }</h3>
+        <AnySkewPush
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: { angle: 360, origin: { cx: 50, cy: -50 } } },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: { angle: -360, origin: { cx: 50, cy: -50 } } },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: { angle: 360, origin: { cx: 50, cy: -50 } } },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: { angle: -360, origin: { cx: 50, cy: -50 } } },
           ]}
         />
       </div>
