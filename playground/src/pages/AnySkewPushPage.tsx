@@ -85,7 +85,7 @@ export default function AnySkewPushPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° 自定义坐标 { cx: 50, cy: -50 }</h3>
+        <h3 style={{ margin: '0 0 8px' }}>{'4 图 — rotation 360° 自定义坐标 { cx: 50, cy: -50 }'}</h3>
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
