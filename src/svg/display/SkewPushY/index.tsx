@@ -6,10 +6,22 @@ import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import svgURL from "@utils/svg/svgURL"
 import type { ReactNode } from "react"
-import type { I_SkewSlideItem } from "../SkewSlideCarousel"
 import type { T_DirectionX } from "../../types"
 
-export type { I_SkewSlideItem }
+export interface I_SkewPushChildItem {
+  /** 图片地址（与 jsx 二选一） */
+  url?: string
+  /** 自定义 React 内容（与 url 二选一，优先级高于 url） */
+  jsx?: ReactNode
+  /** 进入方向，不传则继承全局 isReversed。L = 正角度，R = 负角度 */
+  skewIn?: T_DirectionX
+  /** 退出方向，不传则继承全局 isReversed。L = 正角度，R = 负角度 */
+  skewOut?: T_DirectionX
+  /** 停留时长（秒），默认 2 */
+  stayDuration?: number
+  /** 切换动画时长（秒），默认 2 */
+  switchDuration?: number
+}
 
 const EASE = "0.42 0 0.58 1"
 const DEFAULT_SKEW_ANGLE = 15
@@ -18,17 +30,17 @@ const DEFAULT_SWITCH = 2
 
 const SkewPushY = (props: {
   canvasSize: { w: number; h: number }
-  items: I_SkewSlideItem[]
+  childItems: I_SkewPushChildItem[]
   skewAngle?: number
   isReversed?: boolean
   itemGap?: number
   spacing?: T_SpacingProps
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  if (!props.items?.length) return null
+  if (!props.childItems?.length) return null
 
   const { w, h } = props.canvasSize
-  const items = props.items
+  const items = props.childItems
   const N = items.length
   const itemGap = defaultTo(props.itemGap, 0)
 
@@ -72,7 +84,7 @@ const SkewPushY = (props: {
           <g transform={`translate(${itemGap}, ${itemGap})`}>
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => {
-                const useItem = !!item.item
+                const useItem = !!item.jsx
                 const stay = defaultTo(item.stayDuration, DEFAULT_STAY)
                 const sw = defaultTo(item.switchDuration, DEFAULT_SWITCH)
                 const nextSw = defaultTo(items[(i + 1) % N].switchDuration, DEFAULT_SWITCH)
@@ -117,7 +129,7 @@ const SkewPushY = (props: {
                       <g transform={`translate(${-contentW / 2}, ${-contentH / 2})`}>
                         <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
                           {useItem
-                            ? item.item
+                            ? item.jsx
                             : <SvgEx viewBox={`0 0 ${contentW + 1} ${contentH + 1}`}
                                 style={{
                                   backgroundImage: svgURL(item.url!), backgroundSize: "cover",

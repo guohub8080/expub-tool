@@ -10,7 +10,7 @@ export default function SkewPushYPage() {
         <h3 style={{ margin: '0 0 8px' }}>3 图 — 默认（stay=0）</h3>
         <SkewPushY
           canvasSize={{ w: 300, h: 300 }}
-          items={[
+          childItems={[
             { url: getWechat300x300(1), stayDuration: 0 },
             { url: getWechat300x300(2), stayDuration: 0 },
             { url: getWechat300x300(3), stayDuration: 0 },
@@ -23,7 +23,7 @@ export default function SkewPushYPage() {
         <SkewPushY
           canvasSize={{ w: 300, h: 300 }}
           isReversed
-          items={[
+          childItems={[
             { url: getWechat300x300(1), stayDuration: 0 },
             { url: getWechat300x300(2), stayDuration: 0 },
             { url: getWechat300x300(3), stayDuration: 0 },
@@ -35,7 +35,7 @@ export default function SkewPushYPage() {
         <h3 style={{ margin: '0 0 8px' }}>3 图 — L→R, R→L, L→L（stay=0）</h3>
         <SkewPushY
           canvasSize={{ w: 300, h: 300 }}
-          items={[
+          childItems={[
             { url: getWechat300x300(1), skewIn: 'L', skewOut: 'R', stayDuration: 0 },
             { url: getWechat300x300(2), skewIn: 'R', skewOut: 'L', stayDuration: 0 },
             { url: getWechat300x300(3), skewIn: 'L', skewOut: 'L', stayDuration: 0 },
@@ -47,7 +47,7 @@ export default function SkewPushYPage() {
         <h3 style={{ margin: '0 0 8px' }}>3 图 — R→R, L→R, R→L（stay=0）</h3>
         <SkewPushY
           canvasSize={{ w: 300, h: 300 }}
-          items={[
+          childItems={[
             { url: getWechat300x300(1), skewIn: 'R', skewOut: 'R', stayDuration: 0 },
             { url: getWechat300x300(2), skewIn: 'L', skewOut: 'R', stayDuration: 0 },
             { url: getWechat300x300(3), skewIn: 'R', skewOut: 'L', stayDuration: 0 },
@@ -59,7 +59,7 @@ export default function SkewPushYPage() {
         <h3 style={{ margin: '0 0 8px' }}>3 图 — 全部 L→L（stay=0）</h3>
         <SkewPushY
           canvasSize={{ w: 300, h: 300 }}
-          items={[
+          childItems={[
             { url: getWechat300x300(1), skewIn: 'L', skewOut: 'L', stayDuration: 0 },
             { url: getWechat300x300(2), skewIn: 'L', skewOut: 'L', stayDuration: 0 },
             { url: getWechat300x300(3), skewIn: 'L', skewOut: 'L', stayDuration: 0 },
@@ -71,7 +71,7 @@ export default function SkewPushYPage() {
         <h3 style={{ margin: '0 0 8px' }}>3 图 — 全部 R→R（stay=0）</h3>
         <SkewPushY
           canvasSize={{ w: 300, h: 300 }}
-          items={[
+          childItems={[
             { url: getWechat300x300(1), skewIn: 'R', skewOut: 'R', stayDuration: 0 },
             { url: getWechat300x300(2), skewIn: 'R', skewOut: 'R', stayDuration: 0 },
             { url: getWechat300x300(3), skewIn: 'R', skewOut: 'R', stayDuration: 0 },
@@ -84,7 +84,7 @@ export default function SkewPushYPage() {
         <SkewPushY
           canvasSize={{ w: 300, h: 300 }}
           skewAngle={30}
-          items={[
+          childItems={[
             { url: getWechat300x300(1), skewIn: 'L', skewOut: 'R', stayDuration: 0 },
             { url: getWechat300x300(2), skewIn: 'R', skewOut: 'L', stayDuration: 0 },
             { url: getWechat300x300(3), skewIn: 'L', skewOut: 'L', stayDuration: 0 },
