@@ -44,10 +44,6 @@ const SkewPushY = (props: {
   const isDev = ExPubGoConfig().mode === 'development'
 
   const offset = Math.round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
-  const xOff = reverse ? -offset : offset
-
-  // 纵向：Y 方向飞入飞出，X 方向 offset 补偿
-  const ty = `${xOff} ${h}; 0 0; ${xOff} ${-h}; ${xOff} ${-h}`
 
   const defaultIn = reverse ? skewAngle : -skewAngle
   const defaultOut = -defaultIn
@@ -77,6 +73,8 @@ const SkewPushY = (props: {
                 const useItem = !!item.item
                 const itemSkewIn = resolveSkew(item.skewIn) ?? defaultIn
                 const itemSkewOut = resolveSkew(item.skewOut) ?? defaultOut
+                const itemXOff = itemSkewIn > 0 ? -offset : offset
+                const ty = `${itemXOff} ${h}; 0 0; ${itemXOff} ${-h}; ${itemXOff} ${-h}`
                 const sk = `${itemSkewIn}; 0; ${itemSkewOut}; ${itemSkewOut}`
 
                 return (
