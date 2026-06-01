@@ -58,7 +58,7 @@ const SkewPushY = (props: {
   const resolveSkew = (dir?: T_DirectionX) =>
     dir === 'L' ? skewAngle : dir === 'R' ? -skewAngle : undefined
 
-  const keySplines = `${EASE}; ${EASE}; ${EASE}`
+  const keySplines = `${EASE}; ${EASE}; ${EASE}; ${EASE}`
 
   return (
     <SectionEx
@@ -82,13 +82,14 @@ const SkewPushY = (props: {
 
                 const k1 = ((sw / 2) / T).toFixed(6)
                 const k2 = ((sw / 2 + stay) / T).toFixed(6)
-                const keyTimes = `0; ${k1}; ${k2}; 1`
+                const k3 = ((sw + stay) / T).toFixed(6)
+                const keyTimes = `0; ${k1}; ${k2}; ${k3}; 1`
 
                 const itemSkewIn = resolveSkew(item.skewIn) ?? defaultIn
                 const itemSkewOut = resolveSkew(item.skewOut) ?? defaultOut
                 const itemXOff = itemSkewIn > 0 ? -offset : offset
-                const ty = `${itemXOff} ${h}; 0 0; ${itemXOff} ${-h}; ${itemXOff} ${-h}`
-                const sk = `${itemSkewIn}; 0; ${itemSkewOut}; ${itemSkewOut}`
+                const ty = `${itemXOff} ${h}; 0 0; 0 0; ${itemXOff} ${-h}; ${itemXOff} ${-h}`
+                const sk = `${itemSkewIn}; 0; 0; ${itemSkewOut}; ${itemSkewOut}`
 
                 return (
                   <g key={i} opacity={i === 0 ? 1 : 0}>
