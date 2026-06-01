@@ -11,10 +11,10 @@ export default function AnySkewPushPage() {
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), direction: 'T', stayDuration: 0 },
-            { url: getWechat300x300(2), direction: 'B', stayDuration: 0 },
-            { url: getWechat300x300(3), direction: 'T', stayDuration: 0 },
-            { url: getWechat300x300(4), direction: 'B', stayDuration: 0 },
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0 },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0 },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0 },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0 },
           ]}
         />
       </div>
@@ -24,10 +24,10 @@ export default function AnySkewPushPage() {
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), direction: 'L', stayDuration: 0 },
-            { url: getWechat300x300(2), direction: 'R', stayDuration: 0 },
-            { url: getWechat300x300(3), direction: 'L', stayDuration: 0 },
-            { url: getWechat300x300(4), direction: 'R', stayDuration: 0 },
+            { url: getWechat300x300(1), entryDirection: 'L', stayDuration: 0 },
+            { url: getWechat300x300(2), entryDirection: 'R', stayDuration: 0 },
+            { url: getWechat300x300(3), entryDirection: 'L', stayDuration: 0 },
+            { url: getWechat300x300(4), entryDirection: 'R', stayDuration: 0 },
           ]}
         />
       </div>
@@ -37,10 +37,10 @@ export default function AnySkewPushPage() {
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), direction: 'T', stayDuration: 0 },
-            { url: getWechat300x300(2), direction: 'R', stayDuration: 0 },
-            { url: getWechat300x300(3), direction: 'B', stayDuration: 0 },
-            { url: getWechat300x300(4), direction: 'L', stayDuration: 0 },
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0 },
+            { url: getWechat300x300(2), entryDirection: 'R', stayDuration: 0 },
+            { url: getWechat300x300(3), entryDirection: 'B', stayDuration: 0 },
+            { url: getWechat300x300(4), entryDirection: 'L', stayDuration: 0 },
           ]}
         />
       </div>
@@ -50,10 +50,10 @@ export default function AnySkewPushPage() {
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), direction: 'T', stayDuration: 0 },
-            { url: getWechat300x300(2), direction: 'L', stayDuration: 0 },
-            { url: getWechat300x300(3), direction: 'B', stayDuration: 0 },
-            { url: getWechat300x300(4), direction: 'R', stayDuration: 0 },
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0 },
+            { url: getWechat300x300(2), entryDirection: 'L', stayDuration: 0 },
+            { url: getWechat300x300(3), entryDirection: 'B', stayDuration: 0 },
+            { url: getWechat300x300(4), entryDirection: 'R', stayDuration: 0 },
           ]}
         />
       </div>
@@ -64,10 +64,10 @@ export default function AnySkewPushPage() {
           canvasSize={{ w: 300, h: 300 }}
           skewAngle={30}
           childItems={[
-            { url: getWechat300x300(1), direction: 'T', stayDuration: 0 },
-            { url: getWechat300x300(2), direction: 'R', stayDuration: 0 },
-            { url: getWechat300x300(3), direction: 'B', stayDuration: 0 },
-            { url: getWechat300x300(4), direction: 'L', stayDuration: 0 },
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0 },
+            { url: getWechat300x300(2), entryDirection: 'R', stayDuration: 0 },
+            { url: getWechat300x300(3), entryDirection: 'B', stayDuration: 0 },
+            { url: getWechat300x300(4), entryDirection: 'L', stayDuration: 0 },
           ]}
         />
       </div>
@@ -77,10 +77,10 @@ export default function AnySkewPushPage() {
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), direction: 'T', skewIn: 'L', skewOut: 'R', stayDuration: 0 },
-            { url: getWechat300x300(2), direction: 'R', skewIn: 'L', skewOut: 'L', stayDuration: 0 },
-            { url: getWechat300x300(3), direction: 'B', skewIn: 'R', skewOut: 'L', stayDuration: 0 },
-            { url: getWechat300x300(4), direction: 'L', skewIn: 'R', skewOut: 'R', stayDuration: 0 },
+            { url: getWechat300x300(1), entryDirection: 'T', skewIn: 'L', skewOut: 'R', stayDuration: 0 },
+            { url: getWechat300x300(2), entryDirection: 'R', skewIn: 'L', skewOut: 'L', stayDuration: 0 },
+            { url: getWechat300x300(3), entryDirection: 'B', skewIn: 'R', skewOut: 'L', stayDuration: 0 },
+            { url: getWechat300x300(4), entryDirection: 'L', skewIn: 'R', skewOut: 'R', stayDuration: 0 },
           ]}
         />
       </div>

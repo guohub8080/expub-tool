@@ -15,7 +15,7 @@ export interface I_AnySkewPushChildItem {
   /** 自定义 React 内容（与 url 二选一） */
   jsx?: ReactNode
   /** 进入方向 L/R/T/B，默认 T */
-  direction?: T_Direction4
+  entryDirection?: T_Direction4
   /** 退出方向 L/R/T/B，默认与进入方向相反（T↔B，L↔R） */
   exitDirection?: T_Direction4
   /** 进入时的 skew 方向（L=正角度 / R=负角度），不传则由全局 isReversed 决定 */
@@ -118,7 +118,7 @@ const AnySkewPush = (props: {
             {/* 坐标系平移到画布中心，所有图的 translate 动画以中心为原点计算 */}
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => {
-                const dir = defaultTo(item.direction, DEFAULT_DIRECTION)
+                const dir = defaultTo(item.entryDirection, DEFAULT_DIRECTION)
                 const isVertical = dir === 'T' || dir === 'B'
                 const isPositiveDir = dir === 'B' || dir === 'R'
                 const stay = defaultTo(item.stayDuration, DEFAULT_STAY)
@@ -218,7 +218,7 @@ const AnySkewPush = (props: {
               */}
               {N > 1 && (() => {
                 const item0 = items[0]
-                const dir0 = defaultTo(item0.direction, DEFAULT_DIRECTION)
+                const dir0 = defaultTo(item0.entryDirection, DEFAULT_DIRECTION)
                 const isVertical0 = dir0 === 'T' || dir0 === 'B'
                 const isPositive0 = dir0 === 'B' || dir0 === 'R'
                 const sw0 = defaultTo(item0.switchDuration, DEFAULT_SWITCH)
