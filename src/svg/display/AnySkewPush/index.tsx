@@ -122,26 +122,20 @@ const AnySkewPush = (props: {
                   skewType = 'skewY'
                 }
 
-                const tyResult = compileTimeline(
-                  [
-                    { durationSeconds: sw,       to: '0 0',   keySplines: EASE },
-                    { durationSeconds: stay,      to: '0 0',   keySplines: EASE },
-                    { durationSeconds: nextSw,    to: exitTy,  keySplines: EASE },
-                    { durationSeconds: holdTime,  to: exitTy,  keySplines: EASE },
-                  ],
-                  v => v,
-                  enterTy,
-                )
-                const skResult = compileTimeline(
-                  [
-                    { durationSeconds: sw,       to: 0,           keySplines: EASE },
-                    { durationSeconds: stay,      to: 0,           keySplines: EASE },
-                    { durationSeconds: nextSw,    to: itemSkewOut, keySplines: EASE },
-                    { durationSeconds: holdTime,  to: itemSkewOut, keySplines: EASE },
-                  ],
-                  v => `${v}`,
-                  itemSkewIn,
-                )
+                const tySegs = [
+                  { durationSeconds: sw,      to: '0 0',  keySplines: EASE },
+                  ...(stay > 0 ? [{ durationSeconds: stay, to: '0 0', keySplines: EASE }] : []),
+                  { durationSeconds: nextSw,  to: exitTy, keySplines: EASE },
+                  { durationSeconds: holdTime, to: exitTy, keySplines: EASE },
+                ]
+                const skSegs = [
+                  { durationSeconds: sw,      to: 0,           keySplines: EASE },
+                  ...(stay > 0 ? [{ durationSeconds: stay, to: 0, keySplines: EASE }] : []),
+                  { durationSeconds: nextSw,  to: itemSkewOut, keySplines: EASE },
+                  { durationSeconds: holdTime, to: itemSkewOut, keySplines: EASE },
+                ]
+                const tyResult = compileTimeline(tySegs, v => v, enterTy)
+                const skResult = compileTimeline(skSegs, v => `${v}`, itemSkewIn)
 
                 return (
                   <g key={i}>
@@ -215,16 +209,16 @@ const AnySkewPush = (props: {
                       values={`hidden; visible; hidden`}
                       keyTimes={`0; ${ghostShowKt}; 1`}
                       dur={`${T}s`} calcMode="discrete"
-                      repeatCount="indefinite" begin={`${-sw0}s`} fill="freeze" />
+                      repeatCount="indefinite" begin="0s" fill="freeze" />
                     <animateTransform attributeName="transform" type="translate"
                       values={ghostTy.values} keyTimes={ghostTy.keyTimes} keySplines={ghostTy.keySplines}
                       dur={`${T}s`} calcMode="spline"
-                      repeatCount="indefinite" begin={`${-sw0}s`} fill="freeze" />
+                      repeatCount="indefinite" begin="0s" fill="freeze" />
                     <g>
                       <animateTransform attributeName="transform" type={ghostSkewType}
                         values={ghostSk.values} keyTimes={ghostSk.keyTimes} keySplines={ghostSk.keySplines}
                         dur={`${T}s`} calcMode="spline"
-                        repeatCount="indefinite" begin={`${-sw0}s`} fill="freeze" />
+                        repeatCount="indefinite" begin="0s" fill="freeze" />
                       {renderContent(item0)}
                     </g>
                   </g>
