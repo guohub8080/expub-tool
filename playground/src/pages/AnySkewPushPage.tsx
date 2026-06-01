@@ -46,6 +46,19 @@ export default function AnySkewPushPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B，entryRotation 360°</h3>
+        <AnySkewPush
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: 360 },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: -360 },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: 360 },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: -360 },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>4 图 — L→R→L→R，skewY 30°</h3>
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
