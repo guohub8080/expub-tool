@@ -57,7 +57,7 @@ const AnySkewPush = (props: {
     let b = defaultTo(items[0].stayDuration, DEFAULT_STAY)
     for (let j = 1; j < i; j++)
       b += defaultTo(items[j].switchDuration, DEFAULT_SWITCH) + defaultTo(items[j].stayDuration, DEFAULT_STAY)
-    return b
+    return b - T  // 提前一个完整周期，确保 t=0 时动画已处于正确位置
   }
 
   const renderContent = (item: I_AnySkewPushChildItem) => (
