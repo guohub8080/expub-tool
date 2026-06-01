@@ -1,19 +1,17 @@
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
-import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import svgURL from "@utils/svg/svgURL"
 import { compileTimeline } from "@smil/timeline/compile"
-import { renderSkewAnim, renderRotateAnim } from "./animations"
+import { renderSkewAnim, renderRotateAnim, renderGhostLayer } from "./animations"
 import { oppositeDir, getBegin, getOffscreenTy, DEFAULT_STAY, DEFAULT_SWITCH, DEFAULT_DIRECTION } from "./timeline"
 import type { I_AnySkewPushChildItem } from "./types"
 
 export type { I_SkewConfig, I_AnySkewPushChildItem } from "./types"
 
-// ease-in-out cubic-bezier，用于所有进入/退出动画
 const EASE = "0.42 0 0.58 1"
 
 const AnySkewPush = (props: {
@@ -54,87 +52,6 @@ const AnySkewPush = (props: {
     </g>
   )
 
-  /**
-   * Ghost Layer：图1的视觉副本，渲染在 DOM 最后（SVG z 轴最顶层）。
-   *
-   * 问题背景：SVG 使用 painter's algorithm，DOM 靠后的元素覆盖靠前的元素。
-   * 图1在 DOM 第一位（最底层），图N在最后（最顶层）。
-   * 当图N退出、图1进入时，图N在上层会遮住图1，导致图1的进入动画不可见。
-   *
-   * 解决方案：在 DOM 末尾放一个与图1完全相同的副本（Ghost），
-   * 只在图1进入的那段时间内可见（visibility: hidden → visible → hidden），
-   * 其余时间隐藏。这样视觉上图1始终能覆盖图N，实现"新图永远盖住旧图"的效果。
-   */
-  const renderGhostLayer = () => {
-    if (N <= 1) return null
-
-    const item0    = items[0]
-    const dir0     = defaultTo(item0.entryDirection, DEFAULT_DIRECTION)
-    const sw0      = defaultTo(item0.switchDuration, DEFAULT_SWITCH)
-    const enterTy0 = getOffscreenTy(dir0, w, h)
-
-    const ghostShowKt = ((T - sw0) / T).toFixed(6)
-
-    const ghostTy = compileTimeline(
-      [
-        { durationSeconds: T - sw0, to: enterTy0, keySplines: EASE },
-        { durationSeconds: sw0,     to: '0 0',    keySplines: EASE },
-      ],
-      v => v,
-      enterTy0,
-    )
-
-    const ghostSkewAnim = item0.entrySkew && (() => {
-      const result = compileTimeline(
-        [
-          { durationSeconds: T - sw0, to: item0.entrySkew!.angle, keySplines: EASE },
-          { durationSeconds: sw0,     to: 0,                      keySplines: EASE },
-        ],
-        v => `${v}`,
-        item0.entrySkew!.angle,
-      )
-      return (
-        <animateTransform attributeName="transform" type={`skew${item0.entrySkew!.type}` as 'skewX' | 'skewY'}
-          values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
-          dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
-      )
-    })()
-
-    const ghostRotateAnim = !isNil(item0.entryRotation) && (() => {
-      const result = compileTimeline(
-        [
-          { durationSeconds: T - sw0, to: item0.entryRotation!, keySplines: EASE },
-          { durationSeconds: sw0,     to: 0,                    keySplines: EASE },
-        ],
-        v => `${v} 0 0`,
-        item0.entryRotation!,
-      )
-      return (
-        <animateTransform attributeName="transform" type="rotate"
-          values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
-          dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
-      )
-    })()
-
-    return (
-      <g key="ghost" visibility="hidden">
-        <animate attributeName="visibility"
-          values="hidden; visible; hidden"
-          keyTimes={`0; ${ghostShowKt}; 1`}
-          dur={`${T}s`} calcMode="discrete"
-          repeatCount="indefinite" begin="0s" fill="freeze" />
-        <animateTransform attributeName="transform" type="translate"
-          values={ghostTy.values} keyTimes={ghostTy.keyTimes} keySplines={ghostTy.keySplines}
-          dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
-        <g>
-          {ghostSkewAnim}
-          {ghostRotateAnim}
-          {renderContent(item0)}
-        </g>
-      </g>
-    )
-  }
-
   return (
     <SectionEx
       {...(isDev ? { 'expubgo-label': 'any-skew-push' } : {})}
@@ -160,12 +77,16 @@ const AnySkewPush = (props: {
                 const exitDir  = defaultTo(item.exitDirection, oppositeDir(dir))
                 const stay     = defaultTo(item.stayDuration, DEFAULT_STAY)
                 const sw       = defaultTo(item.switchDuration, DEFAULT_SWITCH)
+                // 退出时长由下一张图的 switchDuration 决定（下一张进入时覆盖当前图退出）
                 const nextSw   = defaultTo(items[(i + 1) % N].switchDuration, DEFAULT_SWITCH)
+                // hold = 在屏幕外等待下一轮进入的时间
                 const holdTime = T - sw - stay - nextSw
                 const begin    = getBegin(i, items, T)
                 const enterTy  = getOffscreenTy(dir, w, h)
                 const exitTy   = getOffscreenTy(exitDir, w, h)
 
+                // translate 4段时间线：进入 → stay → 退出 → hold
+                // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）
                 const tySegs = [
                   { durationSeconds: sw,       to: '0 0',  keySplines: EASE },
                   ...(stay > 0 ? [{ durationSeconds: stay, to: '0 0', keySplines: EASE }] : []),
@@ -176,11 +97,13 @@ const AnySkewPush = (props: {
 
                 return (
                   <g key={i}>
+                    {/* 外层 translate：控制图片的进入/退出位移 */}
                     <animateTransform attributeName="transform" type="translate"
                       values={tyResult.values} keyTimes={tyResult.keyTimes} keySplines={tyResult.keySplines}
                       dur={`${T}s`} calcMode="spline" repeatCount="indefinite"
                       begin={`${begin}s`} fill="freeze" />
                     <g>
+                      {/* 可选变换：skew 和 rotate，不传时不渲染对应的 animateTransform */}
                       {renderSkewAnim(item.entrySkew, item.exitSkew, stay, sw, nextSw, holdTime, begin, T)}
                       {renderRotateAnim(item.entryRotation, item.exitRotation, stay, sw, nextSw, holdTime, begin, T)}
                       {renderContent(item)}
@@ -189,7 +112,13 @@ const AnySkewPush = (props: {
                 )
               })}
 
-              {renderGhostLayer()}
+              {N > 1 && renderGhostLayer(
+                items[0],
+                getOffscreenTy(defaultTo(items[0].entryDirection, DEFAULT_DIRECTION), w, h),
+                defaultTo(items[0].switchDuration, DEFAULT_SWITCH),
+                T,
+                renderContent,
+              )}
             </g>
           </g>
         </SvgEx>
