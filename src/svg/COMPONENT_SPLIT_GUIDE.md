@@ -37,17 +37,38 @@
 
 ### 两个常见技巧，读结构时要识别出来
 
-**零高度容器（前后遮挡）**
+**零高度容器（前后遮挡 / 视差叠层）**
 
-特征：`height: 0`、`overflow: hidden`、`margin-top: -1px`（负边距让下一个元素上移覆盖）。
-作用：让一个 SVG 层在视觉上"悬浮"在下一个元素上方，实现前后遮挡效果。
-对应组件：`ZeroHeightContainer`，用 `spacing` prop 控制 `margin-top`。
+特征：`section` 带 `height: 0; display: block; pointer-events: none`，内部 SVG 正常渲染但不占文档流高度。下一个 `section` 用 `margin-top: -1px` 上移覆盖，实现视觉叠加。
 
-**远端定位触发点击（连续点击 / 热区）**
+```html
+<section style="height: 0; display: block; pointer-events: none;">
+  <svg viewBox="0 0 300 300">...</svg>   <!-- 背景层，不占高度 -->
+</section>
+<section style="margin-top: -1px">       <!-- 内容层，覆盖在背景上 -->
+  ...
+</section>
+```
 
-特征：某个元素被 `translate` 到画布外极远处（如 `translate(9999, 0)` 或 `translate(-9999, 0)`），或用 `set` 动画在某时刻把元素移走再移回来。
-作用：把可点击热区移出可见区域来"禁用"它，或在动画结束后把热区移回来触发下一次点击。这是微信 SVG 里实现"动画结束后可再次点击"的标准手法。
-识别时不要把这个 translate 当成布局数字去推公式，它是一个开关机制。
+对应组件：`ZeroHeightContainer`（背景层）+ `spacing` prop 控制内容层的 `margin-top`。
+
+**远端定位热区（控制点击触发时机）**
+
+有两种变体：
+
+1. **按住触发、松开停止**（`touchstart` / `touchmove` 开关）：
+```xml
+<!-- 点击时把热区移到 -10000，动画触发；touchmove 时移回来，可再次触发 -->
+<animateTransform values="0 0;-10000 0;-10000 0" begin="touchstart" dur="1000s" restart="always" fill="freeze"/>
+<animateTransform values="0 0;0 0;0 0"           begin="touchmove"  dur="1000s" restart="always" fill="freeze"/>
+```
+
+2. **点击一次后永久禁用**（`set visibility="hidden" restart="never"`）：
+```xml
+<set attributeName="visibility" to="hidden" begin="click" fill="freeze" restart="never"/>
+```
+
+识别要点：看到 `-10000`、`9999` 这类极端坐标，或 `restart="never"` + `set visibility`，不要当成布局数字，这是热区开关机制。
 
 ---
 
