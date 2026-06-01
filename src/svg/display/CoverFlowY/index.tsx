@@ -3,30 +3,27 @@ import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
-import type { T_CanvasSize } from "@svg/types"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate } from "@smil/index"
 import { transformScaleRaw } from "@smil/index"
 import svgURL from "@utils/svg/svgURL"
-import type { I_CoverFlowItemConfig, I_NormalizedItemConfig } from "./types"
-import { normalizeItems } from "./utils/normalizer"
-import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
+import type { I_CoverFlowItemConfig, I_NormalizedItemConfig } from "../CoverFlowX/types"
+import { normalizeItems } from "../CoverFlowX/utils/normalizer"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
-/** 默认 item 间距 */
 const DEFAULT_ITEM_GAP = 100
-/** 默认放大比 */
 const DEFAULT_ITEM_SCALE = 1.4
 
-const CoverFlow = (props: {
+const CoverFlowY = (props: {
   canvasSize: { w: number; h: number }
   spacing?: T_SpacingProps
   pics?: I_CoverFlowItemConfig[]
   itemCanvasSize: { w: number; h: number }
   itemGap?: number
   itemScale?: number
-  reverse?: boolean
+  itemAlign?: 'left' | 'center' | 'right'
+  isReversed?: boolean
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.pics?.[0]
@@ -41,38 +38,41 @@ const CoverFlow = (props: {
 
   const items = normalizeItems(props.pics)
   const N = items.length
-  const reverse = defaultTo(props.reverse, false)
+  const reverse = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === 'development'
 
-  const step = imageW + gap
-  const slotY = (viewBoxH - imageH) / 2
-  const scaleDx = -imageW * (fullScale - 1) / 2
+  const align = defaultTo(props.itemAlign, 'center')
+  const step = imageH + gap
+  const slotXMap = { left: 0, center: (viewBoxW - imageW) / 2, right: viewBoxW - imageW }
+  const scaleDxMap = { left: 0, center: -imageW * (fullScale - 1) / 2, right: -imageW * (fullScale - 1) }
+  const slotX = slotXMap[align]
+  const scaleDx = scaleDxMap[align]
   const scaleDy = -imageH * (fullScale - 1) / 2
-  const centerX = (viewBoxW - imageW) / 2
+  const centerY = (viewBoxH - imageH) / 2
 
-  // 正向：slot 从右到左排列，外层向右平移
-  // 反向：slot 从左到右排列，外层向左平移
-  const slots: { item: I_NormalizedItemConfig; x: number }[] = []
+  // 正向：slot 从上到下排列，外层向上平移（图片向上走）
+  // 反向：slot 从下到上排列，外层向下平移（图片向下走）
+  const slots: { item: I_NormalizedItemConfig; y: number }[] = []
   for (let i = 0; i < N + 3; i++) {
-    const itemIdx = (i - 1 + N * 10) % N  // slot[1] 显示 items[0]
-    const x = reverse
-      ? centerX - step + i * step   // 从左 peek 向右排列
-      : centerX + step - i * step   // 从右 peek 向左排列
-    slots.push({ item: items[itemIdx], x })
+    const itemIdx = (i - 1 + N * 10) % N
+    const y = reverse
+      ? centerY + step - i * step
+      : centerY - step + i * step
+    slots.push({ item: items[itemIdx], y })
   }
 
   const outerTimeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   for (let i = 0; i < N; i++) {
     const item = items[i]
     const delta = (i + 1) * step
-    const target = reverse ? { x: -delta, y: 0 } : { x: delta, y: 0 }
+    const target = reverse ? { x: 0, y: delta } : { x: 0, y: -delta }
     outerTimeline.push({ to: target, durationSeconds: item.switchDuration, keySplines: item.keySplines })
     outerTimeline.push({ to: target, durationSeconds: item.stayDuration })
   }
 
   return (
     <SectionEx
-      {...(isDev ? { 'expubgo-label': 'cover-flow' } : {})}
+      {...(isDev ? { 'expubgo-label': 'cover-flow-y' } : {})}
       style={{
         WebkitTouchCallout: "none", userSelect: "text", overflow: "hidden",
         textAlign: "center", lineHeight: 0, ...spacingResult
@@ -84,14 +84,11 @@ const CoverFlow = (props: {
           width="100%">
           <g>
             {slots.map((slot, si) => {
-              // slot[1] 是初始中心位置，它在第 0 段放大
-              // slot[2] 在第 1 段放大，slot[3] 在第 2 段...
-              // 首尾副本（si=0 和 si=N+1）不做动画
               const activeIdx = si - 1
               const isEdge = si === 0 || si === slots.length - 1
               const isInitCenter = activeIdx === 0
               return (
-                <g key={si} transform={`translate(${slot.x},${slotY})`}>
+                <g key={si} transform={`translate(${slotX},${slot.y})`}>
                   <g>
                     <g>
                       <foreignObject x={0} y={0} width={imageW} height={imageH}>
@@ -144,83 +141,53 @@ const CoverFlow = (props: {
   )
 }
 
-/**
- * slot 的 scale timeline
- *
- * 参考规律（N=3 为例，6段）：
- * - index1 (activeIdx=0): initValue=fullScale, [缩回,stay1, 1,stay1, 1,stay1]
- * - index2 (activeIdx=1): initValue=1, [放大,stayF, 缩回,stay1, 1,stay1]
- * - index3 (activeIdx=2): initValue=1, [1,stay1, 放大,stayF, 缩回,stay1]
- * - index4 (activeIdx=3): initValue=1, [1,stay1, 1,stay1, 放大,stayF]
- *
- * 放大发生在段 (activeIdx-1)*2，保持在 (activeIdx-1)*2+1，缩回在 (activeIdx-1)*2+2
- * activeIdx=0 特殊：initValue=fullScale，第0段直接缩回
- */
 function buildSlotScale(
   activeIdx: number, N: number, items: I_NormalizedItemConfig[], fullScale: number,
 ): I_TimelineKeyframe<number>[] {
   const timeline: I_TimelineKeyframe<number>[] = []
   const totalSegs = N * 2
-
   for (let seg = 0; seg < totalSegs; seg++) {
     const itemIdx = Math.floor(seg / 2)
     const item = items[itemIdx % N]
     const isSwitch = seg % 2 === 0
     const dur = isSwitch ? item.switchDuration : item.stayDuration
     const splines = isSwitch ? item.keySplines : undefined
-
     let targetValue: number
     if (activeIdx === 0) {
-      // initValue=fullScale, 第0段缩回1，之后全是1
       targetValue = 1
     } else {
       const enlargeSeg = (activeIdx - 1) * 2
       const holdSeg = enlargeSeg + 1
-      if (seg === enlargeSeg) {
-        targetValue = fullScale
-      } else if (seg === holdSeg) {
-        targetValue = fullScale
-      } else {
-        targetValue = 1
-      }
+      targetValue = (seg === enlargeSeg || seg === holdSeg) ? fullScale : 1
     }
-
     timeline.push({ to: targetValue, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
   }
   return timeline
 }
 
-/** slot 的 translate 补偿 timeline，与 scale 同步 */
 function buildSlotTranslate(
   activeIdx: number, N: number, items: I_NormalizedItemConfig[],
   scaleDx: number, scaleDy: number,
 ): I_TimelineKeyframe<Partial<I_TranslateValue>>[] {
   const timeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   const totalSegs = N * 2
-
   for (let seg = 0; seg < totalSegs; seg++) {
     const itemIdx = Math.floor(seg / 2)
     const item = items[itemIdx % N]
     const isSwitch = seg % 2 === 0
     const dur = isSwitch ? item.switchDuration : item.stayDuration
     const splines = isSwitch ? item.keySplines : undefined
-
     let target: { x: number; y: number }
     if (activeIdx === 0) {
       target = { x: 0, y: 0 }
     } else {
       const enlargeSeg = (activeIdx - 1) * 2
       const holdSeg = enlargeSeg + 1
-      if (seg === enlargeSeg || seg === holdSeg) {
-        target = { x: scaleDx, y: scaleDy }
-      } else {
-        target = { x: 0, y: 0 }
-      }
+      target = (seg === enlargeSeg || seg === holdSeg) ? { x: scaleDx, y: scaleDy } : { x: 0, y: 0 }
     }
-
     timeline.push({ to: target, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
   }
   return timeline
 }
 
-export default CoverFlow
+export default CoverFlowY

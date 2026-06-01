@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react'
-import { CoverFlow } from 'expub-tool/svg'
+import { CoverFlowX, CoverFlowY } from 'expub-tool/svg'
 import { getPowerBezier } from 'expub-tool/smil'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
+import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 const power3 = getPowerBezier({ power: 3, isIn: false, isOut: true })
 
@@ -49,10 +50,10 @@ const ColorBlockItem = ({ color, label }: { color: string; label: string }) => (
 export default function CoverFlowPage() {
   return (
     <div>
-      <h2>CoverFlow — 居中轮播</h2>
+      <h2>CoverFlowX — 横向轮播</h2>
 
       <CopyDemo title="3 图轮播 — 默认参数">
-        <CoverFlow
+        <CoverFlowX
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 400, h: 600 }}
           pics={[
@@ -64,7 +65,7 @@ export default function CoverFlowPage() {
       </CopyDemo>
 
       <CopyDemo title="3 图 — itemScale=1.4, itemGap=100">
-        <CoverFlow
+        <CoverFlowX
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           itemScale={1.4}
@@ -78,12 +79,12 @@ export default function CoverFlowPage() {
       </CopyDemo>
 
       <CopyDemo title="反向 — reverse">
-        <CoverFlow
+        <CoverFlowX
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           itemScale={1.4}
           itemGap={100}
-          reverse
+          isReversed
           pics={[
             { url: getWechat300x500(3), keySplines: power3 },
             { url: getWechat300x500(4), keySplines: power3 },
@@ -93,7 +94,7 @@ export default function CoverFlowPage() {
       </CopyDemo>
 
       <CopyDemo title="快速切换 — switchDuration=0.3, stayDuration=0.5">
-        <CoverFlow
+        <CoverFlowX
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           pics={[
@@ -104,8 +105,34 @@ export default function CoverFlowPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="上对齐 — itemAlign=top">
+        <CoverFlowX
+          canvasSize={{ w: 1000, h: 800 }}
+          itemCanvasSize={{ w: 300, h: 500 }}
+          itemAlign="top"
+          pics={[
+            { url: getWechat300x500(1) },
+            { url: getWechat300x500(2) },
+            { url: getWechat300x500(3) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="下对齐 — itemAlign=bottom">
+        <CoverFlowX
+          canvasSize={{ w: 1000, h: 800 }}
+          itemCanvasSize={{ w: 300, h: 500 }}
+          itemAlign="bottom"
+          pics={[
+            { url: getWechat300x500(1) },
+            { url: getWechat300x500(2) },
+            { url: getWechat300x500(3) },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="Item 模式 — 自定义 SVG">
-        <CoverFlow
+        <CoverFlowX
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           itemGap={80}
@@ -114,6 +141,59 @@ export default function CoverFlowPage() {
             { item: <ColorBlockItem color="#dc2626" label="Red" /> },
             { item: <ColorBlockItem color="#2563eb" label="Blue" /> },
             { item: <ColorBlockItem color="#059669" label="Green" /> },
+          ]}
+        />
+      </CopyDemo>
+
+      <h2 style={{ marginTop: 32 }}>CoverFlowY — 纵向轮播</h2>
+
+      <CopyDemo title="3 图纵向 — 默认参数">
+        <CoverFlowY
+          canvasSize={{ w: 600, h: 1000 }}
+          itemCanvasSize={{ w: 300, h: 300 }}
+          pics={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="纵向 — 反向">
+        <CoverFlowY
+          canvasSize={{ w: 600, h: 1000 }}
+          itemCanvasSize={{ w: 300, h: 300 }}
+          isReversed
+          pics={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="纵向 — 左对齐 itemAlign=left">
+        <CoverFlowY
+          canvasSize={{ w: 600, h: 1000 }}
+          itemCanvasSize={{ w: 300, h: 300 }}
+          itemAlign="left"
+          pics={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="纵向 — 右对齐 itemAlign=right">
+        <CoverFlowY
+          canvasSize={{ w: 600, h: 1000 }}
+          itemCanvasSize={{ w: 300, h: 300 }}
+          itemAlign="right"
+          pics={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
           ]}
         />
       </CopyDemo>
