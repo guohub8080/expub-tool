@@ -100,7 +100,7 @@ const SkewPushY = (props: {
                 const itemSkewIn = resolveSkew(item.skewIn) ?? defaultIn
                 const itemSkewOut = resolveSkew(item.skewOut) ?? defaultOut
                 const itemXOff = itemSkewIn > 0 ? -offset : offset
-                const ty = `${itemXOff} ${h}; 0 0; 0 0; ${itemXOff} ${-h}; ${itemXOff} ${-h}`
+                const ty = `${itemXOff} ${h + 1}; 0 0; 0 0; ${itemXOff} ${-(h + 1)}; ${itemXOff} ${-(h + 1)}`
                 const sk = `${itemSkewIn}; 0; 0; ${itemSkewOut}; ${itemSkewOut}`
 
                 const opValues = `0; 1; 1; 0; 0`
