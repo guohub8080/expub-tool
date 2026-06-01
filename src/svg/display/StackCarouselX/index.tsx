@@ -63,9 +63,14 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const sign = reversed ? -1 : 1
 
   // 退场 translate 计算：item 级 exitDirection，默认 "L"
-  const getExitTranslate = (exitDirection: "L" | "R" | undefined): Partial<I_TranslateValue> => {
+  const getExitTranslate = (exitDirection: "L" | "R" | "T" | "B" | undefined): Partial<I_TranslateValue> => {
     const dir = defaultTo(exitDirection, "L")
-    return { x: dir === "L" ? -viewBoxW : viewBoxW, y: 0 }
+    switch (dir) {
+      case "L": return { x: -viewBoxW, y: 0 }
+      case "R": return { x: viewBoxW, y: 0 }
+      case "T": return { x: 0, y: -viewBoxH }
+      case "B": return { x: 0, y: viewBoxH }
+    }
   }
 
   const posConfig: I_PositionConfig = {

@@ -60,8 +60,8 @@ export default function StackCarouselPage() {
           pics={[
             { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2.5, exitDirection: "L" },
             { url: getWechat300x300(2), switchDuration: 1.2, stayDuration: 0.3, exitDirection: "R" },
-            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 1.5, exitDirection: "L" },
-            { url: getWechat300x300(4), switchDuration: 0.4, stayDuration: 3,   exitDirection: "R" },
+            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 1.5, exitDirection: "T" },
+            { url: getWechat300x300(4), switchDuration: 0.4, stayDuration: 3,   exitDirection: "B" },
             { url: getWechat300x300(5), switchDuration: 1,   stayDuration: 0.8, exitDirection: "L" },
           ]}
         />
@@ -104,8 +104,8 @@ export default function StackCarouselPage() {
           pics={[
             { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2,   exitDirection: "L" },
             { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exitDirection: "R" },
-            { url: getWechat300x300(3), switchDuration: 0.3, stayDuration: 3,   exitDirection: "L" },
-            { url: getWechat300x300(4), switchDuration: 0.8, stayDuration: 1,   exitDirection: "R" },
+            { url: getWechat300x300(3), switchDuration: 0.3, stayDuration: 3,   exitDirection: "T" },
+            { url: getWechat300x300(4), switchDuration: 0.8, stayDuration: 1,   exitDirection: "B" },
             { url: getWechat300x300(5), switchDuration: 1.2, stayDuration: 0.2, exitDirection: "L" },
           ]}
         />
