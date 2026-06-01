@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import type { T_DirectionX } from "@svg/types"
 
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 1
@@ -9,12 +10,14 @@ export const DEFAULT_STAY_DURATION = 1
  * 用户传入的单项配置
  */
 export interface I_StackCarouselItem {
-  /** 图片地址（与 item 二选一） */
+  /** 图片地址（与 jsx 二选一） */
   url?: string
   /** 自定义 SVG 内容（与 url 二选一，优先级高于 url） */
-  item?: ReactNode
+  jsx?: ReactNode
   /** 点击跳转链接（可选） */
   link?: string
+  /** 退场方向，默认取组件级 exitDirection */
+  exitDirection?: T_DirectionX
   /** 切换时长（秒），默认 1 */
   switchDuration?: number
   /** 停留时长（秒），默认 1 */
@@ -28,8 +31,9 @@ export interface I_StackCarouselItem {
  */
 export interface I_NormalizedStackItem {
   url?: string
-  item?: ReactNode
+  jsx?: ReactNode
   link?: string
+  exitDirection?: T_DirectionX
   useItem: boolean
   switchDuration: number
   stayDuration: number

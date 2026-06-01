@@ -2,6 +2,7 @@ import React from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
@@ -11,16 +12,12 @@ import type { I_StackCarouselItem, I_NormalizedStackItem } from "./types"
 import { normalizeItems } from "./utils/normalizer"
 import { buildSlotTimelines } from "./timeline/slotTimeline"
 import type { I_PositionConfig } from "./timeline/slotTimeline"
+import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
-/** 默认 back 位置偏移量 */
 const DEFAULT_BACK_OFFSET = 162
-/** 默认三层缩放：back / mid / center */
 const DEFAULT_SCALES: [number, number, number] = [0.7, 0.8, 0.9]
 
 export type { I_StackCarouselItem } from "./types"
-
-import type { T_DirectionX } from "@svg/types"
-export type { T_DirectionX }
 
 interface I_StackCarouselXProps {
   /** SVG 画布尺寸（viewBox） */
@@ -33,11 +30,9 @@ interface I_StackCarouselXProps {
   scales?: [number, number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
-  /** 退场方向，默认 "L" */
-  exitDirection?: T_DirectionX
   /** 画布背景色，默认 #FFFFFF */
   canvasBg?: string
-  /** 反向：叠层偏移在左侧，卡牌从左向右退场 */
+  /** 反向：叠层偏移在左侧 */
   isReversed?: boolean
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
@@ -46,7 +41,7 @@ interface I_StackCarouselXProps {
 const StackCarouselX = (props: I_StackCarouselXProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.pics?.[0]
-  if (!firstPic?.url && !firstPic?.item) return null
+  if (isNil(firstPic?.url) && isNil(firstPic?.jsx)) return null
 
   const viewBoxW = props.canvasSize.w
   const viewBoxH = props.canvasSize.h
@@ -56,7 +51,6 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
-  const exitDir = defaultTo(props.exitDirection, "L")
   const bgColor = defaultTo(props.canvasBg, "#FFFFFF")
   const isDev = ExPubGoConfig().mode === "development"
 
@@ -64,22 +58,26 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const N = items.length
   const totalSlots = N + 3
 
-  // 正向：叠层偏移在右侧(+backOffset)，退场向左(-viewBoxW)
-  // 反向：叠层偏移在左侧(-backOffset)，退场向右(+viewBoxW)
+  // 正向：叠层偏移在右侧(+backOffset)
+  // 反向：叠层偏移在左侧(-backOffset)
   const sign = reversed ? -1 : 1
-  const exitOffset = exitDir === "L" ? -viewBoxW : viewBoxW
+
+  // 退场 translate 计算：item 级 exitDirection，默认 "L"
+  const getExitTranslate = (exitDirection: "L" | "R" | undefined): Partial<I_TranslateValue> => {
+    const dir = defaultTo(exitDirection, "L")
+    return { x: dir === "L" ? -viewBoxW : viewBoxW, y: 0 }
+  }
 
   const posConfig: I_PositionConfig = {
     translateValues: [
       { x: sign * backOffset, y: 0 },   // back
       { x: sign * midOffset, y: 0 },    // mid
       { x: 0, y: 0 },                   // center
-      { x: exitOffset, y: 0 },          // exit
+      { x: 0, y: 0 },                   // exit（占位，实际由 getExitTranslate 按段覆盖）
     ],
     scaleValues: [scales[0], scales[1], scales[2], scales[2]],
   }
 
-  // 内容居中偏移
   const contentOffsetX = -imageW / 2
   const contentOffsetY = -imageH / 2
 
@@ -111,10 +109,11 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
           {/* 中心原点 */}
           <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
             {Array.from({ length: totalSlots }, (_, si) => {
-              const itemIdx = si % N
+              // center slot (si=N+2) 显示 items[0]，向前依次排列
+              const itemIdx = (N + 2 - si + N * 10) % N
               const item = items[itemIdx]
               const { initTranslate, initScale, translateTimeline, scaleTimeline } =
-                buildSlotTimelines(si, N, items, posConfig)
+                buildSlotTimelines(si, N, items, posConfig, getExitTranslate)
 
               return (
                 <g key={si}>
@@ -161,7 +160,7 @@ const ItemImage = ({ item, imageW, imageH }: {
   imageH: number
 }) => {
   if (item.useItem) {
-    return <>{item.item}</>
+    return <>{item.jsx}</>
   }
 
   return (

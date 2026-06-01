@@ -1,4 +1,5 @@
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import { getEaseBezier } from "@smil/bezier"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "../types"
 import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types"
@@ -6,17 +7,18 @@ import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types"
 const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true })
 
 const fillDefaults = (item: I_StackCarouselItem): I_NormalizedStackItem => {
-  const useItem = !!item.item
-  if (!item.url && !item.item) {
-    throw new Error("Each item must have either `url` or `item`.")
+  const useItem = !isNil(item.jsx)
+  if (isNil(item.url) && isNil(item.jsx)) {
+    throw new Error("Each item must have either `url` or `jsx`.")
   }
-  if (item.url && item.item) {
-    console.warn("`url` is ignored when `item` is also provided.")
+  if (!isNil(item.url) && !isNil(item.jsx)) {
+    console.warn("`url` is ignored when `jsx` is also provided.")
   }
   return {
     url: item.url,
-    item: item.item,
+    jsx: item.jsx,
     link: item.link,
+    exitDirection: item.exitDirection,
     useItem,
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),

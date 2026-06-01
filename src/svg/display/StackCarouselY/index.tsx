@@ -2,16 +2,17 @@ import React from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate, transformScaleRaw } from "@smil/index"
 import svgURL from "@utils/svg/svgURL"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "../StackCarouselX/types"
-import type { T_DirectionX } from "@svg/types"
 import { normalizeItems } from "../StackCarouselX/utils/normalizer"
 import { buildSlotTimelines } from "../StackCarouselX/timeline/slotTimeline"
 import type { I_PositionConfig } from "../StackCarouselX/timeline/slotTimeline"
+import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 const DEFAULT_BACK_OFFSET = 162
 const DEFAULT_SCALES: [number, number, number] = [0.7, 0.8, 0.9]
@@ -27,11 +28,9 @@ interface I_StackCarouselYProps {
   scales?: [number, number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
-  /** 退场方向（跨轴），默认 "R" */
-  exitDirection?: T_DirectionX
   /** 画布背景色，默认 #FFFFFF */
   canvasBg?: string
-  /** 反向：叠层偏移在下方，卡牌从左向右退场改为从右向左 */
+  /** 反向：叠层偏移在下方 */
   isReversed?: boolean
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
@@ -40,7 +39,7 @@ interface I_StackCarouselYProps {
 const StackCarouselY = (props: I_StackCarouselYProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.pics?.[0]
-  if (!firstPic?.url && !firstPic?.item) return null
+  if (isNil(firstPic?.url) && isNil(firstPic?.jsx)) return null
 
   const viewBoxW = props.canvasSize.w
   const viewBoxH = props.canvasSize.h
@@ -50,7 +49,6 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
-  const exitDir = defaultTo(props.exitDirection, "R")
   const bgColor = defaultTo(props.canvasBg, "#FFFFFF")
   const isDev = ExPubGoConfig().mode === "development"
 
@@ -59,17 +57,22 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const totalSlots = N + 3
 
   // 纵向叠层：偏移在 Y 轴
-  // 正向：叠层向上(-backOffset)，退场跨轴向右(+viewBoxW)
-  // 反向：叠层向下(+backOffset)，退场跨轴向左(-viewBoxW)
+  // 正向：叠层向上(-backOffset)
+  // 反向：叠层向下(+backOffset)
   const sign = reversed ? -1 : 1
-  const exitOffset = exitDir === "R" ? viewBoxW : -viewBoxW
+
+  // 退场 translate 计算：item 级 exitDirection，默认 "R"（跨轴向右）
+  const getExitTranslate = (exitDirection: "L" | "R" | undefined): Partial<I_TranslateValue> => {
+    const dir = defaultTo(exitDirection, "R")
+    return { x: dir === "R" ? viewBoxW : -viewBoxW, y: 0 }
+  }
 
   const posConfig: I_PositionConfig = {
     translateValues: [
       { x: 0, y: sign * -backOffset },   // back
       { x: 0, y: sign * -midOffset },    // mid
       { x: 0, y: 0 },                    // center
-      { x: exitOffset, y: 0 },           // exit（跨轴退场）
+      { x: 0, y: 0 },                    // exit（占位，实际由 getExitTranslate 按段覆盖）
     ],
     scaleValues: [scales[0], scales[1], scales[2], scales[2]],
   }
@@ -104,10 +107,10 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
 
           <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
             {Array.from({ length: totalSlots }, (_, si) => {
-              const itemIdx = si % N
+              const itemIdx = (N + 2 - si + N * 10) % N
               const item = items[itemIdx]
               const { initTranslate, initScale, translateTimeline, scaleTimeline } =
-                buildSlotTimelines(si, N, items, posConfig)
+                buildSlotTimelines(si, N, items, posConfig, getExitTranslate)
 
               return (
                 <g key={si}>
@@ -153,7 +156,7 @@ const ItemImageY = ({ item, imageW, imageH }: {
   imageH: number
 }) => {
   if (item.useItem) {
-    return <>{item.item}</>
+    return <>{item.jsx}</>
   }
 
   return (
