@@ -8,6 +8,7 @@ import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate, transformScaleRaw } from "@smil/index"
 import svgURL from "@utils/svg/svgURL"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "../StackCarouselX/types"
+import type { T_ExitDirection } from "../StackCarouselX/index"
 import { normalizeItems } from "../StackCarouselX/utils/normalizer"
 import { buildSlotTimelines } from "../StackCarouselX/timeline/slotTimeline"
 import type { I_PositionConfig } from "../StackCarouselX/timeline/slotTimeline"
@@ -16,13 +17,23 @@ const DEFAULT_BACK_OFFSET = 162
 const DEFAULT_SCALES: [number, number, number] = [0.7, 0.8, 0.9]
 
 interface I_StackCarouselYProps {
+  /** SVG 画布尺寸（viewBox） */
   canvasSize: { w: number; h: number }
+  /** 单张图片画布尺寸 */
   itemCanvasSize: { w: number; h: number }
+  /** 图片/内容配置数组，至少 1 项 */
   pics?: I_StackCarouselItem[]
+  /** 三层缩放 [back, mid, center]，默认 [0.7, 0.8, 0.9] */
   scales?: [number, number, number]
+  /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
-  exitOffset?: number
+  /** 退场方向（跨轴），默认 "right" */
+  exitDirection?: T_ExitDirection
+  /** 背景色，默认 #FFFFFF */
   backgroundColor?: string
+  /** 反向：叠层偏移在下方，卡牌从左向右退场改为从右向左 */
+  isReversed?: boolean
+  /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
 }
 
@@ -38,7 +49,8 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const scales = defaultTo(props.scales, DEFAULT_SCALES)
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
-  const exitOffset = defaultTo(props.exitOffset, viewBoxW)
+  const reversed = defaultTo(props.isReversed, false)
+  const exitDir = defaultTo(props.exitDirection, "right")
   const bgColor = defaultTo(props.backgroundColor, "#FFFFFF")
   const isDev = ExPubGoConfig().mode === "development"
 
@@ -46,13 +58,18 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const N = items.length
   const totalSlots = N + 3
 
-  // 位置配置：纵向叠层，偏移在 Y 轴（负方向 = 上方），退场在 X 轴正方向
+  // 纵向叠层：偏移在 Y 轴
+  // 正向：叠层向上(-backOffset)，退场跨轴向右(+viewBoxW)
+  // 反向：叠层向下(+backOffset)，退场跨轴向左(-viewBoxW)
+  const sign = reversed ? -1 : 1
+  const exitOffset = exitDir === "right" ? viewBoxW : -viewBoxW
+
   const posConfig: I_PositionConfig = {
     translateValues: [
-      { x: 0, y: -backOffset },   // back
-      { x: 0, y: -midOffset },    // mid
-      { x: 0, y: 0 },             // center
-      { x: exitOffset, y: 0 },    // exit（跨轴退场：向右飞出）
+      { x: 0, y: sign * -backOffset },   // back
+      { x: 0, y: sign * -midOffset },    // mid
+      { x: 0, y: 0 },                    // center
+      { x: exitOffset, y: 0 },           // exit（跨轴退场）
     ],
     scaleValues: [scales[0], scales[1], scales[2], scales[2]],
   }

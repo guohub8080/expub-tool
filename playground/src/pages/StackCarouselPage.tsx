@@ -35,6 +35,13 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
   )
 }
 
+const pics4 = [
+  { url: getWechat300x300(1) },
+  { url: getWechat300x300(2) },
+  { url: getWechat300x300(3), link: "www.baidu.com" },
+  { url: getWechat300x300(4) },
+]
+
 export default function StackCarouselPage() {
   return (
     <div>
@@ -44,12 +51,25 @@ export default function StackCarouselPage() {
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
-          pics={[
-            { url: getWechat300x300(1) },
-            { url: getWechat300x300(2) },
-            { url: getWechat300x300(3), link: "www.baidu.com" },
-            { url: getWechat300x300(4) },
-          ]}
+          pics={pics4}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="反向 — isReversed（叠层偏左，卡牌向右退场）">
+        <StackCarouselX
+          canvasSize={{ w: 1080, h: 1080 }}
+          itemCanvasSize={{ w: 972, h: 972 }}
+          isReversed
+          pics={pics4}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="退场方向 — exitDirection=&quot;right&quot;">
+        <StackCarouselX
+          canvasSize={{ w: 1080, h: 1080 }}
+          itemCanvasSize={{ w: 972, h: 972 }}
+          exitDirection="right"
+          pics={pics4}
         />
       </CopyDemo>
 
@@ -81,16 +101,29 @@ export default function StackCarouselPage() {
 
       <h2 style={{ marginTop: 32 }}>StackCarouselY — 纵向叠层轮播</h2>
 
-      <CopyDemo title="4 图纵向 — 默认参数">
+      <CopyDemo title="4 图纵向 — 默认参数（叠层向上，向右退场）">
         <StackCarouselY
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
-          pics={[
-            { url: getWechat300x300(1) },
-            { url: getWechat300x300(2) },
-            { url: getWechat300x300(3), link: "www.baidu.com" },
-            { url: getWechat300x300(4) },
-          ]}
+          pics={pics4}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="纵向反向 — isReversed（叠层向下，向左退场）">
+        <StackCarouselY
+          canvasSize={{ w: 1080, h: 1080 }}
+          itemCanvasSize={{ w: 972, h: 972 }}
+          isReversed
+          pics={pics4}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="纵向退场 — exitDirection=&quot;left&quot;">
+        <StackCarouselY
+          canvasSize={{ w: 1080, h: 1080 }}
+          itemCanvasSize={{ w: 972, h: 972 }}
+          exitDirection="left"
+          pics={pics4}
         />
       </CopyDemo>
     </div>

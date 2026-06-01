@@ -19,6 +19,9 @@ const DEFAULT_SCALES: [number, number, number] = [0.7, 0.8, 0.9]
 
 export type { I_StackCarouselItem } from "./types"
 
+/** 退场方向 */
+export type T_ExitDirection = "left" | "right"
+
 interface I_StackCarouselXProps {
   /** SVG 画布尺寸（viewBox） */
   canvasSize: { w: number; h: number }
@@ -30,10 +33,12 @@ interface I_StackCarouselXProps {
   scales?: [number, number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
-  /** 退场偏移量，默认 -canvasSize.w */
-  exitOffset?: number
+  /** 退场方向，默认 "left" */
+  exitDirection?: T_ExitDirection
   /** 背景色，默认 #FFFFFF */
   backgroundColor?: string
+  /** 反向：叠层偏移在左侧，卡牌从左向右退场 */
+  isReversed?: boolean
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
 }
@@ -50,7 +55,8 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const scales = defaultTo(props.scales, DEFAULT_SCALES)
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
-  const exitOffset = defaultTo(props.exitOffset, -viewBoxW)
+  const reversed = defaultTo(props.isReversed, false)
+  const exitDir = defaultTo(props.exitDirection, "left")
   const bgColor = defaultTo(props.backgroundColor, "#FFFFFF")
   const isDev = ExPubGoConfig().mode === "development"
 
@@ -58,13 +64,17 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const N = items.length
   const totalSlots = N + 3
 
-  // 位置配置：横向叠层，偏移在 X 轴
+  // 正向：叠层偏移在右侧(+backOffset)，退场向左(-viewBoxW)
+  // 反向：叠层偏移在左侧(-backOffset)，退场向右(+viewBoxW)
+  const sign = reversed ? -1 : 1
+  const exitOffset = exitDir === "left" ? -viewBoxW : viewBoxW
+
   const posConfig: I_PositionConfig = {
     translateValues: [
-      { x: backOffset, y: 0 },   // back
-      { x: midOffset, y: 0 },    // mid
-      { x: 0, y: 0 },            // center
-      { x: exitOffset, y: 0 },   // exit
+      { x: sign * backOffset, y: 0 },   // back
+      { x: sign * midOffset, y: 0 },    // mid
+      { x: 0, y: 0 },                   // center
+      { x: exitOffset, y: 0 },          // exit
     ],
     scaleValues: [scales[0], scales[1], scales[2], scales[2]],
   }
