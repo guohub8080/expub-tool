@@ -7,6 +7,7 @@ export default defineConfig({
   root: resolve(__dirname, 'playground'),
   resolve: {
     alias: {
+      'expub-tool/svg': resolve(__dirname, 'dist/esm/svg/index.mjs'),
       'expub-tool/smil': resolve(__dirname, 'dist/esm/smil/index.mjs'),
       'expub-tool/behaviors': resolve(__dirname, 'dist/esm/behaviors/index.mjs'),
       'expub-tool/html': resolve(__dirname, 'dist/esm/html/index.mjs'),

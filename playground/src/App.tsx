@@ -7,6 +7,7 @@ import SvgPage from './pages/SvgPage'
 import CollapsibleBoxPage from './pages/CollapsibleBoxPage'
 import AnyPushPage from './pages/AnyPushPage'
 import CoverFlowPage from './pages/CoverFlowPage'
+import SpinZoomCarouselPage from './pages/SpinZoomCarouselPage'
 
 const links = [
   { to: '/', label: 'SMIL' },
@@ -14,6 +15,7 @@ const links = [
   { to: '/collapsible-box', label: 'CollapseBox' },
   { to: '/any-push', label: 'AnyPush' },
   { to: '/cover-flow', label: 'CoverFlow' },
+  { to: '/spin-zoom', label: 'SpinZoom' },
   { to: '/behaviors', label: 'Behaviors' },
   { to: '/css', label: 'CSS' },
   { to: '/utils', label: 'Utils' },
@@ -59,6 +61,7 @@ export default function App() {
           <Route path="/collapsible-box" element={<CollapsibleBoxPage />} />
           <Route path="/any-push" element={<AnyPushPage />} />
           <Route path="/cover-flow" element={<CoverFlowPage />} />
+          <Route path="/spin-zoom" element={<SpinZoomCarouselPage />} />
           <Route path="/behaviors" element={<BehaviorsPage />} />
           <Route path="/css" element={<CssPage />} />
           <Route path="/utils" element={<UtilsPage />} />
