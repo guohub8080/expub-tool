@@ -2,7 +2,7 @@ import isNil from "lodash/isNil"
 import { compileTimeline } from "@smil/timeline/compile"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { calculateBegin, calculateHoldDuration } from "../timeline/sequenceCalculator"
-import { getOffscreenTranslate } from "../timeline/offsetCalculator"
+import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -68,9 +68,11 @@ const SkewPushItem = (props: {
     stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
   })
 
-  // ── rotate 时间线：结构同 skew ──
+  // ── rotate 时间线：结构同 skew，使用九宫格旋转中心 ──
+  const rotationOrigin = getRotationOrigin({ origin: item.rotationOrigin, contentWidth, contentHeight })
   const rotateAnim = renderRotateAnim({
     entryRotation: item.entryRotation, exitRotation: item.exitRotation,
+    rotationOrigin,
     stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
   })
 
@@ -129,10 +131,13 @@ const renderSkewAnim = ({
 
 /** 生成 rotate animateTransform（entryRotation 和 exitRotation 均不传时返回 null） */
 const renderRotateAnim = ({
-  entryRotation, exitRotation, stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
+  entryRotation, exitRotation, rotationOrigin,
+  stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
 }: {
   entryRotation?: number
   exitRotation?: number
+  /** 旋转中心坐标（"cx cy" 格式），由 getRotationOrigin 计算 */
+  rotationOrigin: string
   stayDuration: number
   switchDuration: number
   nextSwitchDuration: number
@@ -151,7 +156,8 @@ const renderRotateAnim = ({
     { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: EASE },
     { durationSeconds: holdDuration,       to: exitAngle, keySplines: EASE },
   ]
-  const result = compileTimeline(segs, v => `${v} 0 0`, entryAngle)
+  // rotate values 格式："angle cx cy"
+  const result = compileTimeline(segs, v => `${v} ${rotationOrigin}`, entryAngle)
 
   return (
     <animateTransform attributeName="transform" type="rotate"

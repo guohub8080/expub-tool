@@ -1,6 +1,7 @@
 import isNil from "lodash/isNil"
 import { compileTimeline } from "@smil/timeline/compile"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
+import { getRotationOrigin } from "../timeline/offsetCalculator"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -39,6 +40,7 @@ const GhostLayer = (props: {
   const { firstItem, enterOffscreenTranslate, switchDuration, totalDuration, contentWidth, contentHeight } = props
   const T = totalDuration
   const sw = switchDuration
+  const rotationOrigin = getRotationOrigin({ origin: firstItem.rotationOrigin, contentWidth, contentHeight })
 
   // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
   const ghostShowKeyTime = ((T - sw) / T).toFixed(6)
@@ -78,7 +80,7 @@ const GhostLayer = (props: {
         { durationSeconds: T - sw, to: firstItem.entryRotation!, keySplines: EASE },
         { durationSeconds: sw,     to: 0,                        keySplines: EASE },
       ],
-      v => `${v} 0 0`,
+      v => `${v} ${rotationOrigin}`,
       firstItem.entryRotation!,
     )
     return (

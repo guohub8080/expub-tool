@@ -8,6 +8,12 @@ export interface I_SkewConfig {
   angle: number
 }
 
+/** 旋转中心九宫格位置 */
+export type T_RotationOrigin =
+  | 'TopLeft' | 'Top' | 'TopRight'
+  | 'Left'   | 'Center' | 'Right'
+  | 'BottomLeft' | 'Bottom' | 'BottomRight'
+
 export interface I_AnySkewPushChildItem {
   /** 图片地址（与 jsx 二选一） */
   url?: string
@@ -35,14 +41,19 @@ export interface I_AnySkewPushChildItem {
   exitSkew?: I_SkewConfig
   /**
    * 进入时的旋转角度（度），正值=顺时针，不传则进入无旋转
-   * 以画布中心为旋转原点，进入起始角度，动画结束时归零
+   * 以 rotationOrigin 为旋转原点，进入起始角度，动画结束时归零
    */
   entryRotation?: number
   /**
    * 退出时的旋转角度（度），正值=顺时针，不传则退出无旋转
-   * 以画布中心为旋转原点，从零开始动画到该角度
+   * 以 rotationOrigin 为旋转原点，从零开始动画到该角度
    */
   exitRotation?: number
+  /**
+   * 旋转中心位置，默认 Center（画布中心）
+   * 九宫格：TopLeft / Top / TopRight / Left / Center / Right / BottomLeft / Bottom / BottomRight
+   */
+  rotationOrigin?: T_RotationOrigin
   /** 停留时长（秒），图片全屏静止的持续时间，默认 2 */
   stayDuration?: number
   /**

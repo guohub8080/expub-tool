@@ -46,14 +46,40 @@ export default function AnySkewPushPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B，entryRotation 360°</h3>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B，entryRotation 360° Center</h3>
         <AnySkewPush
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: 360 },
-            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: -360 },
-            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: 360 },
-            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: -360 },
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'Center' },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'Center' },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'Center' },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'Center' },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B，entryRotation 360° TopLeft</h3>
+        <AnySkewPush
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'TopLeft' },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'TopLeft' },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'TopLeft' },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'TopLeft' },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B，entryRotation 360° BottomRight</h3>
+        <AnySkewPush
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { url: getWechat300x300(1), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'BottomRight' },
+            { url: getWechat300x300(2), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'BottomRight' },
+            { url: getWechat300x300(3), entryDirection: 'T', stayDuration: 0, entryRotation: 360, rotationOrigin: 'BottomRight' },
+            { url: getWechat300x300(4), entryDirection: 'B', stayDuration: 0, entryRotation: -360, rotationOrigin: 'BottomRight' },
           ]}
         />
       </div>

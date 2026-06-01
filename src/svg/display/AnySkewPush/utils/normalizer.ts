@@ -1,10 +1,11 @@
 import defaultTo from "lodash/defaultTo"
 import type { T_Direction4 } from "@svg/types"
-import type { I_SkewConfig, I_AnySkewPushChildItem } from "../types"
+import type { I_SkewConfig, I_AnySkewPushChildItem, T_RotationOrigin } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
 export const DEFAULT_SWITCH_DURATION = 2
 export const DEFAULT_DIRECTION: T_Direction4 = 'T'
+export const DEFAULT_ROTATION_ORIGIN: T_RotationOrigin = 'Center'
 
 /** 进入方向取反，作为默认退出方向（T↔B，L↔R） */
 export const oppositeDirection = (direction: T_Direction4): T_Direction4 =>
@@ -25,6 +26,7 @@ export interface I_NormalizedChildItem {
   exitSkew?: I_SkewConfig
   entryRotation?: number
   exitRotation?: number
+  rotationOrigin: T_RotationOrigin
   stayDuration: number
   switchDuration: number
 }
@@ -46,6 +48,7 @@ const fillDefaults = (item: I_AnySkewPushChildItem): I_NormalizedChildItem => {
     exitSkew: item.exitSkew,
     entryRotation: item.entryRotation,
     exitRotation: item.exitRotation,
+    rotationOrigin: defaultTo(item.rotationOrigin, DEFAULT_ROTATION_ORIGIN),
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
   }
