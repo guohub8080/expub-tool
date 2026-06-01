@@ -7,7 +7,7 @@ import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import svgURL from "@utils/svg/svgURL"
 import { getEaseBezier } from "@smil/bezier"
 
-const EASE = getEaseBezier({ isIn: true, isOut: true })
+const EASE_IN_OUT = getEaseBezier({ isIn: true, isOut: true })
 
 const DEFAULT_STAY   = 1.3
 const DEFAULT_SWITCH = 0.7
@@ -110,8 +110,8 @@ const SpinZoomCarousel = (props: {
             const nextKT = `0; ${kt(rotStart)}; ${kt(slotEnd)}; 1`
             const nextV  = `0; 0; 1; 1`
 
-            const spline3 = `${EASE}; ${EASE}; ${EASE}`
-            const sp = defaultTo(pic.keySplines, EASE)
+            const spline3 = `${EASE_IN_OUT}; ${EASE_IN_OUT}; ${EASE_IN_OUT}`
+            const sp = defaultTo(pic.keySplines, EASE_IN_OUT)
             const spinSpline3 = `${sp}; ${sp}; ${sp}`
             const spinSpline4 = `${sp}; ${sp}; ${sp}; ${sp}`
 
