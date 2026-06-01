@@ -50,8 +50,8 @@ export default function CoverFlowPage() {
 
       <CopyDemo title="3 图轮播 — 默认参数">
         <CoverFlow
-          canvasSize={{ w: 1000, h: 1000 }}
-          itemCanvasSize={{ w: 400, h: 400 }}
+          canvasSize={{ w: 1000, h: 800 }}
+          itemCanvasSize={{ w: 400, h: 600 }}
           pics={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },

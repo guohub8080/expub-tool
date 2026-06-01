@@ -15,9 +15,9 @@ import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 /** 默认 item 间距 */
-const DEFAULT_ITEM_GAP = 20
+const DEFAULT_ITEM_GAP = 100
 /** 默认放大比 */
-const DEFAULT_ITEM_SCALE = 1.2
+const DEFAULT_ITEM_SCALE = 1.4
 
 const CoverFlow = (props: {
   canvasSize: { w: number; h: number }
