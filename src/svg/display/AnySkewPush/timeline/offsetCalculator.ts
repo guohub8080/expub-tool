@@ -1,3 +1,5 @@
+import isPlainObject from "lodash/isPlainObject"
+import isString from "lodash/isString"
 import type { T_Direction4 } from "@svg/types"
 import type { T_RotationOrigin } from "../types"
 
@@ -54,20 +56,18 @@ export const getRotationOrigin = ({
   contentHeight: number
 }): string => {
   // 自定义坐标直接返回
-  if (typeof origin === 'object') return `${origin.cx} ${origin.cy}`
+  if (isPlainObject(origin)) {
+    const { cx, cy } = origin as { cx: number; cy: number }
+    return `${cx} ${cy}`
+  }
 
+  // 九宫格预设（origin 此时一定是 string）
   const hw = contentWidth / 2
   const hh = contentHeight / 2
-
-  switch (origin) {
-    case 'TopLeft':     return `${-hw} ${-hh}`
-    case 'Top':         return `0 ${-hh}`
-    case 'TopRight':    return `${hw} ${-hh}`
-    case 'Left':        return `${-hw} 0`
-    case 'Center':      return `0 0`
-    case 'Right':       return `${hw} 0`
-    case 'BottomLeft':  return `${-hw} ${hh}`
-    case 'Bottom':      return `0 ${hh}`
-    case 'BottomRight': return `${hw} ${hh}`
+  const grid: Record<string, string> = {
+    TopLeft: `${-hw} ${-hh}`,    Top: `0 ${-hh}`,      TopRight: `${hw} ${-hh}`,
+    Left: `${-hw} 0`,            Center: `0 0`,         Right: `${hw} 0`,
+    BottomLeft: `${-hw} ${hh}`,  Bottom: `0 ${hh}`,     BottomRight: `${hw} ${hh}`,
   }
+  return grid[origin as string]
 }
