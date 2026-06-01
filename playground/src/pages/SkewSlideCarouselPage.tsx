@@ -62,6 +62,20 @@ export default function SkewSlideCarouselPage() {
           ]}
         />
       </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16 }}>
+        <h3 style={{ margin: '0 0 8px' }}>3 图 — margin=30（带间距）</h3>
+        <SkewSlideCarousel
+          canvasSize={{ w: 300, h: 300 }}
+          itemGap={30}
+          stepDuration={3}
+          items={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+          ]}
+        />
+      </div>
     </div>
   )
 }
