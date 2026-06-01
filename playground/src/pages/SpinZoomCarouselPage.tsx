@@ -45,10 +45,10 @@ export default function SpinZoomCarouselPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16 }}>
-        <h3 style={{ margin: '0 0 8px' }}>3 图 — peakScale=1.3（放大）</h3>
+        <h3 style={{ margin: '0 0 8px' }}>3 图 — peakScale=1.8（放大更多）</h3>
         <SpinZoomCarousel
           canvasSize={{ w: 300, h: 500 }}
-          peakScale={1.3}
+          peakScale={1.8}
           items={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
@@ -68,6 +68,18 @@ export default function SpinZoomCarouselPage() {
           ]}
         />
       </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16 }}>
+        <h3 style={{ margin: '0 0 8px' }}>3 图 — canvasBg 颜色</h3>
+        <SpinZoomCarousel
+          canvasSize={{ w: 300, h: 500 }}
+          canvasBg="#1e1b4b"
+          items={[
+            { url: getWechat300x500(1) },
+            { url: getWechat300x500(2) },
+            { url: getWechat300x500(3) },
+          ]}
+        />
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16 }}>
