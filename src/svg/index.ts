@@ -38,3 +38,6 @@ export { default as SkewSlideCarousel } from "./display/SkewSlideCarousel"
 export { default as SkewSlideCarouselY } from "./display/SkewSlideCarouselY"
 export { default as SkewPushY } from "./display/SkewPushY"
 export type { I_SkewPushChildItem } from "./display/SkewPushY"
+
+export { default as AnySkewPush } from "./display/AnySkewPush"
+export type { I_AnySkewPushChildItem } from "./display/AnySkewPush"

@@ -11,6 +11,7 @@ import SpinZoomCarouselPage from './pages/SpinZoomCarouselPage'
 import SkewSlideCarouselPage from './pages/SkewSlideCarouselPage'
 import SkewSlideCarouselYPage from './pages/SkewSlideCarouselYPage'
 import SkewPushYPage from './pages/SkewPushYPage'
+import AnySkewPushPage from './pages/AnySkewPushPage'
 
 const links = [
   { to: '/', label: 'SMIL' },
@@ -22,6 +23,7 @@ const links = [
   { to: '/skew-slide', label: 'SkewSlide' },
   { to: '/skew-slide-y', label: 'SkewSlideY' },
   { to: '/skew-push-y', label: 'SkewPushY' },
+  { to: '/any-skew-push', label: 'AnySkewPush' },
   { to: '/behaviors', label: 'Behaviors' },
   { to: '/css', label: 'CSS' },
   { to: '/utils', label: 'Utils' },
@@ -71,6 +73,7 @@ export default function App() {
           <Route path="/skew-slide" element={<SkewSlideCarouselPage />} />
           <Route path="/skew-slide-y" element={<SkewSlideCarouselYPage />} />
           <Route path="/skew-push-y" element={<SkewPushYPage />} />
+          <Route path="/any-skew-push" element={<AnySkewPushPage />} />
           <Route path="/behaviors" element={<BehaviorsPage />} />
           <Route path="/css" element={<CssPage />} />
           <Route path="/utils" element={<UtilsPage />} />
