@@ -39,18 +39,18 @@
 
 **零高度容器（前后遮挡 / 视差叠层）**
 
-特征：`section` 带 `height: 0; display: block; pointer-events: none`，内部 SVG 正常渲染但不占文档流高度。下一个 `section` 用 `margin-top: -1px` 上移覆盖，实现视觉叠加。
+特征：`section` 带 `height: 0; display: block; pointer-events: none`，内部 SVG 正常渲染但不占文档流高度。下一个 `section` 上移覆盖，实现视觉叠加。
 
 ```html
 <section style="height: 0; display: block; pointer-events: none;">
   <svg viewBox="0 0 300 300">...</svg>   <!-- 背景层，不占高度 -->
 </section>
-<section style="margin-top: -1px">       <!-- 内容层，覆盖在背景上 -->
+<section>                                <!-- 内容层，覆盖在背景上 -->
   ...
 </section>
 ```
 
-对应组件：`ZeroHeightContainer`（背景层）+ `spacing` prop 控制内容层的 `margin-top`。
+对应组件：`ZeroHeightContainer`（背景层）+ `spacing` prop 控制内容层的上移量。
 
 **远端定位热区（控制点击触发时机）**
 
