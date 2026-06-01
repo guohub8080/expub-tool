@@ -7,19 +7,21 @@ import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import svgURL from "@utils/svg/svgURL"
 import type { ReactNode } from "react"
 import type { I_SkewSlideItem } from "../SkewSlideCarousel"
+import type { T_DirectionX } from "../../types"
 
 export type { I_SkewSlideItem }
 
 const EASE = "0.42 0 0.58 1"
 const DEFAULT_SKEW_ANGLE = 15
 const DEFAULT_STEP = 4
+const DEFAULT_SKEW_IN: T_DirectionX = 'L'
+const DEFAULT_SKEW_OUT: T_DirectionX = 'R'
 
 const SkewSlideCarouselY = (props: {
   canvasSize: { w: number; h: number }
   items: I_SkewSlideItem[]
   skewAngle?: number
   stepDuration?: number
-  isReversed?: boolean
   itemGap?: number
   spacing?: T_SpacingProps
 }) => {
@@ -39,17 +41,9 @@ const SkewSlideCarouselY = (props: {
 
   const step = defaultTo(props.stepDuration, DEFAULT_STEP)
   const dur = N * step
-  const reverse = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === 'development'
 
   const offset = Math.round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
-  const xOff = reverse ? -offset : offset
-
-  // 纵向：Y 方向飞入飞出，X 方向 offset 补偿
-  // 原点 = 内容顶部中心，图片向下延伸
-  const ty = `${xOff} ${h}; 0 0; ${xOff} ${-h}; ${xOff} ${-h}`
-  const sa = reverse ? skewAngle : -skewAngle
-  const sk = `${sa}; 0; ${-sa}; ${-sa}`
 
   const keySplines = `${EASE}; ${EASE}; ${EASE}`
   const k1 = (step / dur).toFixed(6)
@@ -72,6 +66,12 @@ const SkewSlideCarouselY = (props: {
               {items.map((item, i) => {
                 const begin = (i - 1) * step
                 const useItem = !!item.item
+                const dirIn = item.skewIn ?? DEFAULT_SKEW_IN
+                const dirOut = item.skewOut ?? DEFAULT_SKEW_OUT
+                const sa = dirIn === 'L' ? skewAngle : -skewAngle
+                const xOff = dirIn === 'L' ? -offset : offset
+                const ty = `${xOff} ${h}; 0 0; ${xOff} ${-h}; ${xOff} ${-h}`
+                const sk = `${sa}; 0; ${dirOut === 'L' ? skewAngle : -skewAngle}; ${dirOut === 'L' ? skewAngle : -skewAngle}`
 
                 return (
                   <g key={i} opacity={i === 0 ? 1 : 0}>

@@ -21,16 +21,15 @@ export default function SkewSlideCarouselYPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>5 图 — 纵向 isReversed</h3>
+        <h3 style={{ margin: '0 0 8px' }}>5 图 — 纵向 skewIn/skewOut 自定义</h3>
         <SkewSlideCarouselY
           canvasSize={{ w: 300, h: 500 }}
-          isReversed
           items={[
-            { url: getWechat300x300(1) },
-            { url: getWechat300x300(2) },
+            { url: getWechat300x300(1), skewIn: 'R', skewOut: 'L' },
+            { url: getWechat300x300(2), skewIn: 'L', skewOut: 'R' },
             { url: getWechat300x300(3) },
-            { url: getWechat300x300(4) },
-            { url: getWechat300x300(5) },
+            { url: getWechat300x300(4), skewIn: 'R', skewOut: 'R' },
+            { url: getWechat300x300(5), skewIn: 'L', skewOut: 'L' },
           ]}
         />
       </div>
