@@ -78,7 +78,33 @@ x = centerX + step - i * step   // step = imageW + gap
 
 ---
 
-## 第四步：确定 props 边界
+## 第四步：提取工具函数到独立文件
+
+当 `index.tsx` 里出现以下情况时，把相关逻辑提取到子目录：
+
+**提取到 `utils/`**：输入标准化、默认值填充、校验逻辑。
+```
+utils/
+└── normalizer.ts   # 填充默认值、补齐数组（如 N<3 时复制）、校验必填字段
+```
+
+**提取到 `timeline/`**：纯数学计算，输入是 props 推导值，输出是动画所需的坐标序列或时长。
+```
+timeline/
+├── positionCalculator.ts   # 布局坐标计算（centerX、slotX、offScreenX 等）
+└── sequenceCalculator.ts   # 时间轴计算（总周期时长、每段 dur 等）
+```
+
+判断标准：
+- 函数是**纯函数**（无副作用、无 JSX）→ 可以提取
+- 函数超过 **15 行**或被**多处调用** → 应该提取
+- 函数只在 `index.tsx` 里用一次且很短 → 留在 `index.tsx` 底部即可
+
+提取后 `index.tsx` 只负责：读 props → 调用计算函数 → 组装 JSX。
+
+---
+
+## 第五步：确定 props 边界
 
 不是所有魔法数字都要变成 prop，只有**用户合理需要调整**的才暴露：
 
@@ -91,7 +117,7 @@ x = centerX + step - i * step   // step = imageW + gap
 
 ---
 
-## 第五步：验证
+## 第六步：验证
 
 用参考代码的原始参数值实例化组件，对比输出的 HTML/SVG 是否与参考一致。
 
@@ -102,7 +128,7 @@ x = centerX + step - i * step   // step = imageW + gap
 
 ---
 
-## 第六步：写 README
+## 第七步：写 README
 
 README 只需包含：
 - 一句话描述
