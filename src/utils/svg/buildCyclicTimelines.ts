@@ -55,9 +55,9 @@
  * SMIL 的 begin 属性控制动画从何时开始播放。配合 repeatCount="indefinite"（无限循环），
  * 动画会以 dur=T 为周期不断重复。
  *
- * 通过 `negativeBegin` 选项控制两种偏移策略：
+ * 通过 `isNegativeBegin` 选项控制两种偏移策略：
  *
- * 1. negativeBegin = true（默认）— 所有 begin 都为负数
+ * 1. isNegativeBegin = true（默认）— 所有 begin 都为负数
  *    使用负的 begin 值，使得动画在页面加载（t=0）之前就已经开始播放。
  *    t=0 时每一项都处于正确的视觉位置：
  *      - 图1：刚好完成 entry，处于 stay 起始（完整可见）
@@ -65,7 +65,7 @@
  *    适用于 visibility="hidden" 初始隐藏策略（如 AnySkewPush），
  *    因为 t=0 时所有动画必须已在运行，否则 hidden→visible 时元素会闪在原点。
  *
- * 2. negativeBegin = false — 非首项 begin 为正数（自然开始时刻）
+ * 2. isNegativeBegin = false — 非首项 begin 为正数（自然开始时刻）
  *    非首项的 begin = beginPrefix[i]（不减 totalDuration），
  *    t=0 时这些图的动画尚未启动，元素停在原生属性位置。
  *    适用于元素初始位置已在屏幕外的场景（如 AnyPush 的 foreignObject x/y 设在屏幕外），
@@ -77,13 +77,28 @@
  * begin 的计算规则：
  *   - 图1: begin = -entryDuration（= -switchDuration）
  *     → t=0 时图1走了 |begin| = switchDuration 的时间，entry 刚好播完
- *   - 图 i (i > 0), negativeBegin=true:  begin = beginPrefix[i] - totalDuration
- *   - 图 i (i > 0), negativeBegin=false: begin = beginPrefix[i]
+ *   - 图 i (i > 0), isNegativeBegin=true:  begin = beginPrefix[i] - totalDuration
+ *   - 图 i (i > 0), isNegativeBegin=false: begin = beginPrefix[i]
  *
  * beginPrefix 的累加（跳过图1 的 switchDuration，因为图1 的 entry 在周期末尾）：
  *   beginPrefix[0] = 0
  *   beginPrefix[1] = items[0].stayDuration
  *   beginPrefix[i] = beginPrefix[i-1] + items[i-1].switchDuration + items[i-1].stayDuration
+ *
+ * ── Ghost 层 ──
+ *
+ * 当 N > 1 时，输出包含 ghostTimeline，用于渲染图1 的视觉副本（Ghost）。
+ * Ghost 渲染在 DOM 最后（SVG z 轴最顶层），解决 painter's algorithm 下
+ * 图N 遮住图1 进入动画的问题。
+ *
+ * Ghost 的时间轴只有两个阶段：
+ *   - hold: T - items[0].switchDuration（停在屏幕外，不可见）
+ *   - entry: items[0].switchDuration（执行进入动画，可见）
+ *
+ * Ghost 的 begin 始终为 0，不受 isNegativeBegin 影响：
+ *   Ghost 的可见段（entry）在周期末尾 [T-sw, T)，与图1 的进入时间自然对齐。
+ *   无论 isNegativeBegin 取何值，图1 的 begin 都是 -switchDuration，
+ *   图1 的 entry 在取模后始终落在 [T-sw, T)，与 Ghost 的可见段完全重合。
  *
  * ── 用途 ──
  *
@@ -116,7 +131,7 @@ export interface I_CyclicTimelineOptions {
    * 两种模式视觉等价（差值 = totalDuration，SMIL 取模后相同），
    * 区别仅在于 t=0 时元素"停在屏幕外"的机制。
    */
-  negativeBegin?: boolean
+  isNegativeBegin?: boolean
 }
 
 /** 单项时间轴结果 */
@@ -145,12 +160,34 @@ export interface I_ItemTimeline {
   holdDuration: number
 }
 
+/** Ghost 层时间轴结果 */
+export interface I_GhostTimeline {
+  /**
+   * SMIL begin 偏移（秒），始终为 0。
+   *
+   * Ghost 的可见段（entry）在周期末尾 [T-sw, T)，
+   * 与图1 的进入时间自然对齐，不受 isNegativeBegin 影响。
+   */
+  begin: number
+  /** hold 段时长（秒）= totalDuration - items[0].switchDuration（在屏幕外等待） */
+  holdDuration: number
+  /** entry 段时长（秒）= items[0].switchDuration（执行进入动画，可见） */
+  entryDuration: number
+}
+
 /** 循环时间轴构建结果 */
 export interface I_CyclicTimelines {
   /** 总周期时长（秒），所有项共享，= Σ(switchDuration + stayDuration) */
   totalDuration: number
   /** 每一项的时间轴信息，与输入数组一一对应 */
   itemTimelines: I_ItemTimeline[]
+  /**
+   * Ghost 层时间轴（仅在 N > 1 时存在）。
+   *
+   * Ghost 是图1 的视觉副本，渲染在 DOM 最后（SVG z 轴最顶层），
+   * 只在图1 进入的那段时间内可见，解决 painter's algorithm 下图N 遮住图1 的问题。
+   */
+  ghostTimeline?: I_GhostTimeline
 }
 
 /**
@@ -162,7 +199,7 @@ export interface I_CyclicTimelines {
  * @throws items 为空、switchDuration <= 0、stayDuration < 0 时抛错
  *
  * @example
- * // negativeBegin = true（默认，AnySkewPush 风格）
+ * // isNegativeBegin = true（默认，AnySkewPush 风格）
  * const result = buildCyclicTimelines([
  *   { switchDuration: 2, stayDuration: 1 },
  *   { switchDuration: 2, stayDuration: 0 },
@@ -172,25 +209,27 @@ export interface I_CyclicTimelines {
  * // result.itemTimelines[0] === { begin: -2, entryDuration: 2, stayDuration: 1, exitDuration: 2, holdDuration: 4 }
  * // result.itemTimelines[1] === { begin: -8, entryDuration: 2, stayDuration: 0, exitDuration: 3, holdDuration: 4 }
  * // result.itemTimelines[2] === { begin: -6, entryDuration: 3, stayDuration: 1, exitDuration: 2, holdDuration: 3 }
+ * // result.ghostTimeline === { begin: 0, holdDuration: 7, entryDuration: 2 }
  *
  * @example
- * // negativeBegin = false（AnyPush 风格，非首项 begin 为正数）
+ * // isNegativeBegin = false（AnyPush 风格，非首项 begin 为正数）
  * const result = buildCyclicTimelines([
  *   { switchDuration: 2, stayDuration: 1 },
  *   { switchDuration: 2, stayDuration: 0 },
  *   { switchDuration: 3, stayDuration: 1 },
- * ], { negativeBegin: false })
+ * ], { isNegativeBegin: false })
  * // result.totalDuration === 9
  * // result.itemTimelines[0] === { begin: -2, entryDuration: 2, stayDuration: 1, exitDuration: 2, holdDuration: 4 }
  * // result.itemTimelines[1] === { begin: 1,  entryDuration: 2, stayDuration: 0, exitDuration: 3, holdDuration: 4 }
  * // result.itemTimelines[2] === { begin: 3,  entryDuration: 3, stayDuration: 1, exitDuration: 2, holdDuration: 3 }
+ * // result.ghostTimeline === { begin: 0, holdDuration: 7, entryDuration: 2 }
  */
 export const buildCyclicTimelines = (items: T_SwitchPhase[], options?: I_CyclicTimelineOptions): I_CyclicTimelines => {
   if (!items.length) {
     throw new Error('`items` must not be empty.')
   }
 
-  const negativeBegin = defaultTo(options?.negativeBegin, true)
+  const isNegativeBegin = defaultTo(options?.isNegativeBegin, true)
   const N = items.length
 
   // 校验每一项的参数合法性
@@ -220,8 +259,8 @@ export const buildCyclicTimelines = (items: T_SwitchPhase[], options?: I_CyclicT
    *
    * 然后：
    *   图1 的 begin = -entryDuration（特殊处理，让 t=0 时图1 刚好完成 entry）
-   *   negativeBegin=true:  其他图的 begin = beginPrefix[i] - totalDuration
-   *   negativeBegin=false: 其他图的 begin = beginPrefix[i]
+   *   isNegativeBegin=true:  其他图的 begin = beginPrefix[i] - totalDuration
+   *   isNegativeBegin=false: 其他图的 begin = beginPrefix[i]
    */
   const beginPrefix: number[] = [0]
   if (N > 1) {
@@ -247,10 +286,10 @@ export const buildCyclicTimelines = (items: T_SwitchPhase[], options?: I_CyclicT
     const holdDuration = totalDuration - entryDuration - stayDuration - exitDuration
 
     // 图1 特殊处理：begin = -entryDuration，t=0 时刚好完成 entry
-    // 其他图：根据 negativeBegin 决定是否减去 totalDuration
+    // 其他图：根据 isNegativeBegin 决定是否减去 totalDuration
     const begin = i === 0
       ? -entryDuration
-      : negativeBegin
+      : isNegativeBegin
         ? beginPrefix[i] - totalDuration
         : beginPrefix[i]
 
@@ -263,5 +302,13 @@ export const buildCyclicTimelines = (items: T_SwitchPhase[], options?: I_CyclicT
     }
   })
 
-  return { totalDuration, itemTimelines }
+  // Ghost 层时间轴：图1 的视觉副本，只在周期末尾（图1 进入时）可见
+  // begin 始终为 0，不受 isNegativeBegin 影响（详见模块文档 "Ghost 层" 章节）
+  const ghostTimeline = N > 1 ? {
+    begin: 0 as number,
+    holdDuration: totalDuration - items[0].switchDuration,
+    entryDuration: items[0].switchDuration,
+  } : undefined
+
+  return { totalDuration, itemTimelines, ghostTimeline }
 }
