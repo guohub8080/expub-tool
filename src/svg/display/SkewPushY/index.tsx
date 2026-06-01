@@ -103,13 +103,8 @@ const SkewPushY = (props: {
                 const ty = `${itemXOff} ${h + 1}; 0 0; 0 0; ${itemXOff} ${-(h + 1)}; ${itemXOff} ${-(h + 1)}`
                 const sk = `${itemSkewIn}; 0; 0; ${itemSkewOut}; ${itemSkewOut}`
 
-                const opValues = `0; 1; 1; 0; 0`
-
                 return (
-                  <g key={i} opacity={i === 0 ? 1 : 0}>
-                    <animate attributeName="opacity" values={opValues} keyTimes={keyTimes}
-                      dur={`${T}s`} calcMode="discrete"
-                      repeatCount="indefinite" begin={`${actualBegin}s`} fill="freeze" />
+                  <g key={i}>
                     <animateTransform attributeName="transform" type="translate"
                       values={ty} keyTimes={keyTimes} keySplines={keySplines} dur={`${T}s`}
                       calcMode="spline" repeatCount="indefinite"
