@@ -64,11 +64,11 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="退场方向 — exitDirection=&quot;right&quot;">
+      <CopyDemo title='退场方向 — exitDirection="R"'>
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
-          exitDirection="right"
+          exitDirection="R"
           pics={pics4}
         />
       </CopyDemo>
@@ -118,11 +118,11 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="纵向退场 — exitDirection=&quot;left&quot;">
+      <CopyDemo title='纵向退场 — exitDirection="L"'>
         <StackCarouselY
           canvasSize={{ w: 1080, h: 1080 }}
           itemCanvasSize={{ w: 972, h: 972 }}
-          exitDirection="left"
+          exitDirection="L"
           pics={pics4}
         />
       </CopyDemo>

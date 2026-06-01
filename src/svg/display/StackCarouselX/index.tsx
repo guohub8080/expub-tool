@@ -19,8 +19,8 @@ const DEFAULT_SCALES: [number, number, number] = [0.7, 0.8, 0.9]
 
 export type { I_StackCarouselItem } from "./types"
 
-/** 退场方向 */
-export type T_ExitDirection = "left" | "right"
+import type { T_DirectionX } from "@svg/types"
+export type { T_DirectionX }
 
 interface I_StackCarouselXProps {
   /** SVG 画布尺寸（viewBox） */
@@ -33,10 +33,10 @@ interface I_StackCarouselXProps {
   scales?: [number, number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
-  /** 退场方向，默认 "left" */
-  exitDirection?: T_ExitDirection
-  /** 背景色，默认 #FFFFFF */
-  backgroundColor?: string
+  /** 退场方向，默认 "L" */
+  exitDirection?: T_DirectionX
+  /** 画布背景色，默认 #FFFFFF */
+  canvasBg?: string
   /** 反向：叠层偏移在左侧，卡牌从左向右退场 */
   isReversed?: boolean
   /** 外层 margin-top 间距 */
@@ -56,8 +56,8 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
-  const exitDir = defaultTo(props.exitDirection, "left")
-  const bgColor = defaultTo(props.backgroundColor, "#FFFFFF")
+  const exitDir = defaultTo(props.exitDirection, "L")
+  const bgColor = defaultTo(props.canvasBg, "#FFFFFF")
   const isDev = ExPubGoConfig().mode === "development"
 
   const items = normalizeItems(props.pics)
@@ -67,7 +67,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   // 正向：叠层偏移在右侧(+backOffset)，退场向左(-viewBoxW)
   // 反向：叠层偏移在左侧(-backOffset)，退场向右(+viewBoxW)
   const sign = reversed ? -1 : 1
-  const exitOffset = exitDir === "left" ? -viewBoxW : viewBoxW
+  const exitOffset = exitDir === "L" ? -viewBoxW : viewBoxW
 
   const posConfig: I_PositionConfig = {
     translateValues: [

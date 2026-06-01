@@ -8,7 +8,7 @@ import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate, transformScaleRaw } from "@smil/index"
 import svgURL from "@utils/svg/svgURL"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "../StackCarouselX/types"
-import type { T_ExitDirection } from "../StackCarouselX/index"
+import type { T_DirectionX } from "@svg/types"
 import { normalizeItems } from "../StackCarouselX/utils/normalizer"
 import { buildSlotTimelines } from "../StackCarouselX/timeline/slotTimeline"
 import type { I_PositionConfig } from "../StackCarouselX/timeline/slotTimeline"
@@ -27,10 +27,10 @@ interface I_StackCarouselYProps {
   scales?: [number, number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
-  /** 退场方向（跨轴），默认 "right" */
-  exitDirection?: T_ExitDirection
-  /** 背景色，默认 #FFFFFF */
-  backgroundColor?: string
+  /** 退场方向（跨轴），默认 "R" */
+  exitDirection?: T_DirectionX
+  /** 画布背景色，默认 #FFFFFF */
+  canvasBg?: string
   /** 反向：叠层偏移在下方，卡牌从左向右退场改为从右向左 */
   isReversed?: boolean
   /** 外层 margin-top 间距 */
@@ -50,8 +50,8 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
-  const exitDir = defaultTo(props.exitDirection, "right")
-  const bgColor = defaultTo(props.backgroundColor, "#FFFFFF")
+  const exitDir = defaultTo(props.exitDirection, "R")
+  const bgColor = defaultTo(props.canvasBg, "#FFFFFF")
   const isDev = ExPubGoConfig().mode === "development"
 
   const items = normalizeItems(props.pics)
@@ -62,7 +62,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   // 正向：叠层向上(-backOffset)，退场跨轴向右(+viewBoxW)
   // 反向：叠层向下(+backOffset)，退场跨轴向左(-viewBoxW)
   const sign = reversed ? -1 : 1
-  const exitOffset = exitDir === "right" ? viewBoxW : -viewBoxW
+  const exitOffset = exitDir === "R" ? viewBoxW : -viewBoxW
 
   const posConfig: I_PositionConfig = {
     translateValues: [
