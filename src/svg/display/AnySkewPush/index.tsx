@@ -21,10 +21,14 @@ const AnySkewPush = (props: {
   spacing?: T_SpacingProps
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  if (!props.childItems?.length) return null
+  if (!props.childItems?.length) {
+    throw new Error(`\`childItems\` must not be empty.`)
+  }
 
   const { w, h } = props.canvasSize
-  const items = props.childItems
+  // 只传1张图时复制一份，保证至少2张图，动画逻辑统一
+  const rawItems = props.childItems
+  const items = rawItems.length < 2 ? [...rawItems, ...rawItems] : rawItems
   const N = items.length
   const itemGap = defaultTo(props.itemGap, 0)
   const contentW = Math.max(1, w - itemGap * 2)
@@ -120,7 +124,8 @@ const AnySkewPush = (props: {
                 )
               })}
 
-              {N > 1 && renderGhostLayer({
+              {/* Ghost Layer：图1的视觉副本，解决图N覆盖图1的 z-order 问题 */}
+              {renderGhostLayer({
                 item0: items[0],
                 enterOffscreenTranslate: getOffscreenTy({
                   direction: defaultTo(items[0].entryDirection, DEFAULT_DIRECTION),
