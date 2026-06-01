@@ -13,13 +13,13 @@ export type { I_SkewSlideItem }
 
 const EASE = "0.42 0 0.58 1"
 const DEFAULT_SKEW_ANGLE = 15
-const DEFAULT_STEP = 4
+const DEFAULT_STAY = 2
+const DEFAULT_SWITCH = 2
 
 const SkewPushY = (props: {
   canvasSize: { w: number; h: number }
   items: I_SkewSlideItem[]
   skewAngle?: number
-  stepDuration?: number
   isReversed?: boolean
   itemGap?: number
   spacing?: T_SpacingProps
@@ -38,10 +38,18 @@ const SkewPushY = (props: {
   const maxAngle = Math.max(1, Math.floor(Math.atan(contentH / contentW) * 180 / Math.PI))
   const skewAngle = Math.min(Math.max(rawAngle, 1), maxAngle)
 
-  const step = defaultTo(props.stepDuration, DEFAULT_STEP)
-  const dur = N * step
   const reverse = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === 'development'
+
+  const slotDurations = items.map(p =>
+    defaultTo(p.stayDuration, DEFAULT_STAY) + defaultTo(p.switchDuration, DEFAULT_SWITCH)
+  )
+  const T = slotDurations.reduce((a, b) => a + b, 0)
+
+  const slotStarts = slotDurations.reduce<number[]>((acc, d, i) => {
+    acc.push(i === 0 ? 0 : acc[i - 1] + slotDurations[i - 1])
+    return acc
+  }, [])
 
   const offset = Math.round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
 
@@ -51,9 +59,6 @@ const SkewPushY = (props: {
     dir === 'L' ? skewAngle : dir === 'R' ? -skewAngle : undefined
 
   const keySplines = `${EASE}; ${EASE}; ${EASE}`
-  const k1 = (step / dur).toFixed(6)
-  const k2 = ((2 * step) / dur).toFixed(6)
-  const keyTimes = `0; ${k1}; ${k2}; 1`
 
   return (
     <SectionEx
@@ -69,8 +74,16 @@ const SkewPushY = (props: {
           <g transform={`translate(${itemGap}, ${itemGap})`}>
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => {
-                const begin = (i - 1) * step
                 const useItem = !!item.item
+                const stay = defaultTo(item.stayDuration, DEFAULT_STAY)
+                const sw = defaultTo(item.switchDuration, DEFAULT_SWITCH)
+                const slotStart = slotStarts[i]
+                const begin = slotStart - sw / 2
+
+                const k1 = ((sw / 2) / T).toFixed(6)
+                const k2 = ((sw / 2 + stay) / T).toFixed(6)
+                const keyTimes = `0; ${k1}; ${k2}; 1`
+
                 const itemSkewIn = resolveSkew(item.skewIn) ?? defaultIn
                 const itemSkewOut = resolveSkew(item.skewOut) ?? defaultOut
                 const itemXOff = itemSkewIn > 0 ? -offset : offset
@@ -82,12 +95,12 @@ const SkewPushY = (props: {
                     <animate attributeName="opacity" values="0; 1" dur="1ms" fill="freeze"
                       begin={`${begin}s`} />
                     <animateTransform attributeName="transform" type="translate"
-                      values={ty} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
+                      values={ty} keyTimes={keyTimes} keySplines={keySplines} dur={`${T}s`}
                       calcMode="spline" repeatCount="indefinite"
                       begin={`${begin}s`} fill="freeze" />
                     <g>
                       <animateTransform attributeName="transform" type="skewX"
-                        values={sk} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
+                        values={sk} keyTimes={keyTimes} keySplines={keySplines} dur={`${T}s`}
                         calcMode="spline" repeatCount="indefinite"
                         begin={`${begin}s`} fill="freeze" />
                       <g transform={`translate(${-contentW / 2}, ${-contentH / 2})`}>

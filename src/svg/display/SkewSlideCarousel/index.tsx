@@ -19,6 +19,10 @@ export interface I_SkewSlideItem {
   skewIn?: T_DirectionX
   /** 退出方向，不传则继承全局 isReversed。L = 正角度，R = 负角度 */
   skewOut?: T_DirectionX
+  /** 停留时长（秒），默认 2 */
+  stayDuration?: number
+  /** 切换动画时长（秒），默认 2 */
+  switchDuration?: number
 }
 
 const SkewSlideCarousel = (props: {
