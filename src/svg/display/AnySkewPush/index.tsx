@@ -254,8 +254,23 @@ const AnySkewPush = (props: {
                       dur={`${T}s`} calcMode="spline"
                       repeatCount="indefinite" begin="0s" fill="freeze" />
                     <g>
-                      {/* Ghost 的 skew 与图1进入段完全同步 */}
-                      {renderSkewAnim(item0.entrySkew, item0.exitSkew, stay0, sw0, nextSw0, holdTime0, -(T - sw0))}
+                      {/* Ghost skew：与 translate 同构，前段保持 entryAngle，后段随进入动画归零 */}
+                      {item0.entrySkew && (() => {
+                        const ghostSk = compileTimeline(
+                          [
+                            { durationSeconds: T - sw0, to: item0.entrySkew.angle, keySplines: EASE },
+                            { durationSeconds: sw0,     to: 0,                     keySplines: EASE },
+                          ],
+                          v => `${v}`,
+                          item0.entrySkew.angle,
+                        )
+                        return (
+                          <animateTransform attributeName="transform" type={`skew${item0.entrySkew.type}` as 'skewX' | 'skewY'}
+                            values={ghostSk.values} keyTimes={ghostSk.keyTimes} keySplines={ghostSk.keySplines}
+                            dur={`${T}s`} calcMode="spline"
+                            repeatCount="indefinite" begin="0s" fill="freeze" />
+                        )
+                      })()}
                       {renderContent(item0)}
                     </g>
                   </g>
