@@ -17,6 +17,8 @@ import { FaceContent } from './FaceContent'
 import type { I_ClickFlipProps } from './types'
 
 const DEFAULT_FLIP_DURATION = 1
+const MIN_FLIP_DURATION = 0.3
+const MAX_FLIP_DURATION = 1.5
 /** mousedown/touchstart 翻转前的静止等待时间（秒） */
 const HOLD_TIME = 0.2
 const EASE_IN_OUT = getEaseBezier({ isIn: true, isOut: true })
@@ -31,7 +33,8 @@ const ClickFlipCard = (props: I_ClickFlipProps) => {
 	const W = props.canvasSize.w
 	const H = props.canvasSize.h
 	const bgColor = defaultTo(props.canvasBg, '#FFFFFF')
-	const flipDur = defaultTo(props.flipDuration, DEFAULT_FLIP_DURATION)
+	const rawFlipDur = defaultTo(props.flipDuration, DEFAULT_FLIP_DURATION)
+	const flipDur = Math.max(MIN_FLIP_DURATION, Math.min(MAX_FLIP_DURATION, rawFlipDur))
 	const pressFlipDur = flipDur + HOLD_TIME
 	const discreteDur = flipDur * 2
 	const halfW = W / 2

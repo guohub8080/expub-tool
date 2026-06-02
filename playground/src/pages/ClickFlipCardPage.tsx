@@ -25,11 +25,11 @@ export default function ClickFlipCardPage() {
 			</div>
 
 			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-				<h3 style={{ margin: '0 0 8px' }}>自定义背景色 + 慢翻转 (2s)</h3>
+				<h3 style={{ margin: '0 0 8px' }}>自定义背景色 + 慢翻转 (1.5s 上限)</h3>
 				<ClickFlipCard
 					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#1a1a2e"
-					flipDuration={2}
+					flipDuration={1.5}
 					frontSide={{ url: getWechat300x300(5) }}
 					backSide={{ url: getWechat300x300(6) }}
 				/>
