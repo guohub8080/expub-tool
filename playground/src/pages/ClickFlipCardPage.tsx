@@ -1,5 +1,6 @@
 import { ClickFlipCard } from 'expub-tool/svg'
 import { animateSoftBlink, transformBreathe, transformFloat } from 'expub-tool/behaviors'
+import { svgURL } from 'expub-tool'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 export default function ClickFlipCardPage() {
@@ -57,7 +58,7 @@ export default function ClickFlipCardPage() {
 											style={{
 												display: 'block',
 												width: '100%',
-												backgroundImage: `url("${getWechat300x300(7)}")`,
+												backgroundImage: svgURL(getWechat300x300(7)),
 												backgroundSize: '100% 100%',
 												backgroundRepeat: 'no-repeat',
 											}}
