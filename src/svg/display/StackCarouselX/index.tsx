@@ -121,7 +121,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
               // 退场 translate 由本 slot 的 item 决定，不随段变化
               const slotExitTranslate = getExitTranslate(item.exitDirection)
               const { initTranslate, initScale, translateTimeline, scaleTimeline } =
-                buildSlotTimelines(si, N, items, posConfig, slotExitTranslate)
+                buildSlotTimelines({ si, N, items, posConfig, exitTranslate: slotExitTranslate })
 
               return (
                 <g key={si}>
