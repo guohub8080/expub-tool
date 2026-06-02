@@ -1,6 +1,7 @@
+import isNil from "lodash/isNil"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
-import type { I_NormalizedStackItem } from "../types"
+import type { I_NormalizedStackItem, I_NormalizedExitConfig, I_SkewConfig, I_RotationConfig } from "../types"
 
 /**
  * 位置定义：0=back, 1=mid, 2=center, 3=exit
@@ -15,8 +16,16 @@ export type T_SlotPosition = 0 | 1 | 2 | 3
 export interface I_PositionConfig {
   /** 各位置的 translate 值，索引 = T_SlotPosition */
   translateValues: Partial<I_TranslateValue>[]
-  /** 各位置的 scale 值，索引 = T_SlotPosition */
+  /** 各位置的 scale 值，索引 = T_SlotPosition（exit 位由 exitConfig.scale 覆盖） */
   scaleValues: number[]
+}
+
+/** 本 slot 的退场行为 */
+export interface I_SlotExitConfig {
+  translate: Partial<I_TranslateValue>
+  skew?: I_SkewConfig
+  rotation?: I_RotationConfig
+  scale: number
 }
 
 /**
@@ -39,16 +48,16 @@ function getPosition({ slotIndex, itemCount, boundary }: {
 }
 
 /**
- * 构建单个 slot 的 translate + scale 时间线
+ * 构建单个 slot 的 translate + scale + skew + rotate 时间线
  *
- * 退场 translate 由 slot 自身对应的 item 决定（不随段变化），避免已退场的卡牌飘移。
+ * 退场行为由 slot 自身对应的 item 决定（不随段变化），避免已退场的卡牌飘移。
  */
 export function buildSlotTimelines({
   slotIndex,
   itemCount,
   items,
   posConfig,
-  exitTranslate,
+  exitConfig,
 }: {
   /** slot 索引（0 ~ itemCount+2） */
   slotIndex: number
@@ -56,10 +65,10 @@ export function buildSlotTimelines({
   itemCount: number
   /** 标准化后的配置数组 */
   items: I_NormalizedStackItem[]
-  /** 位置值配置（exit 位的 translate 会被 exitTranslate 覆盖） */
+  /** 位置值配置（exit 位的 translate/scale 会被 exitConfig 覆盖） */
   posConfig: I_PositionConfig
-  /** 本 slot 的退场 translate（由 slot 对应的 item.exitDirection 计算） */
-  exitTranslate: Partial<I_TranslateValue>
+  /** 本 slot 的退场配置 */
+  exitConfig: I_SlotExitConfig
 }) {
   const startPos = Math.max(0, slotIndex - itemCount)
   const totalSegs = itemCount * 2
@@ -67,8 +76,13 @@ export function buildSlotTimelines({
   const initTranslate = posConfig.translateValues[startPos]
   const initScale = posConfig.scaleValues[startPos]
 
+  const hasSkew = !isNil(exitConfig.skew)
+  const hasRotation = !isNil(exitConfig.rotation)
+
   const translateTimeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   const scaleTimeline: I_TimelineKeyframe<number>[] = []
+  const skewTimeline: I_TimelineKeyframe<number>[] = []
+  const rotateTimeline: I_TimelineKeyframe<number>[] = []
 
   for (let seg = 0; seg < totalSegs; seg++) {
     const itemIdx = Math.floor(seg / 2)
@@ -78,18 +92,44 @@ export function buildSlotTimelines({
     const splines = item.keySplines
 
     const nextPos = getPosition({ slotIndex, itemCount, boundary: seg + 1 })
+    const isExit = nextPos === 3
 
     translateTimeline.push({
-      to: nextPos === 3 ? exitTranslate : posConfig.translateValues[nextPos],
+      to: isExit ? exitConfig.translate : posConfig.translateValues[nextPos],
       durationSeconds: dur,
       keySplines: splines,
     })
+
     scaleTimeline.push({
-      to: posConfig.scaleValues[nextPos],
+      to: isExit ? exitConfig.scale : posConfig.scaleValues[nextPos],
       durationSeconds: dur,
       keySplines: splines,
     })
+
+    if (hasSkew) {
+      skewTimeline.push({
+        to: isExit ? exitConfig.skew!.angle : 0,
+        durationSeconds: dur,
+        keySplines: splines,
+      })
+    }
+
+    if (hasRotation) {
+      rotateTimeline.push({
+        to: isExit ? (exitConfig.rotation!.angle ?? 0) : 0,
+        durationSeconds: dur,
+        keySplines: exitConfig.rotation!.keySplines ?? splines,
+      })
+    }
   }
 
-  return { initTranslate, initScale, translateTimeline, scaleTimeline }
+  return {
+    initTranslate,
+    initScale,
+    translateTimeline,
+    scaleTimeline,
+    skewTimeline: hasSkew ? skewTimeline : undefined,
+    skewType: exitConfig.skew?.type,
+    rotateTimeline: hasRotation ? rotateTimeline : undefined,
+  }
 }

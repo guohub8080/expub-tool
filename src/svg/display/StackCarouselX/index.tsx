@@ -7,18 +7,22 @@ import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate, transformScaleRaw } from "@smil/index"
+import { transformSkewX } from "@smil/animateTransform/skewX"
+import { transformSkewY } from "@smil/animateTransform/skewY"
+import { transformRotate } from "@smil/animateTransform/rotate"
 import svgURL from "@utils/svg/svgURL"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "./types"
 import { normalizeItems } from "./utils/normalizer"
 import { buildSlotTimelines } from "./timeline/slotTimeline"
-import type { I_PositionConfig } from "./timeline/slotTimeline"
+import type { I_PositionConfig, I_SlotExitConfig } from "./timeline/slotTimeline"
+import { resolveRotationOrigin } from "./utils/rotationOrigin"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 const DEFAULT_BACK_OFFSET = 162
 /** back/mid 缩放比例（center 恒为 1.0，mainChildItemSize 即中心卡牌显示尺寸） */
 const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
 
-export type { I_StackCarouselItem } from "./types"
+export type { I_StackCarouselItem, I_ExitConfig, I_SkewConfig, I_RotationConfig, T_RotationOrigin } from "./types"
 
 interface I_StackCarouselXProps {
   /** SVG 画布尺寸（viewBox） */
@@ -55,7 +59,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const bgColor = defaultTo(props.canvasBg, "#FFFFFF")
   const isDev = ExPubGoConfig().mode === "development"
 
-  const items = normalizeItems(props.pics)
+  const items = normalizeItems({ items: props.pics, defaultExitDirection: "L" })
   const itemCount = items.length
   const totalSlots = itemCount + 3
 
@@ -63,10 +67,8 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   // 反向：叠层偏移在左侧(-backOffset)
   const sign = reversed ? -1 : 1
 
-  // 退场 translate 计算：item 级 exitDirection，默认 "L"
-  const getExitTranslate = (exitDirection: "L" | "R" | "T" | "B" | undefined): Partial<I_TranslateValue> => {
-    const dir = defaultTo(exitDirection, "L")
-    switch (dir) {
+  const getExitTranslate = (direction: "L" | "R" | "T" | "B"): Partial<I_TranslateValue> => {
+    switch (direction) {
       case "L": return { x: -viewBoxW, y: 0 }
       case "R": return { x: viewBoxW, y: 0 }
       case "T": return { x: 0, y: -viewBoxH }
@@ -79,7 +81,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
       { x: sign * backOffset, y: 0 },   // back
       { x: sign * midOffset, y: 0 },    // mid
       { x: 0, y: 0 },                   // center
-      { x: 0, y: 0 },                   // exit（占位，实际由 getExitTranslate 按段覆盖）
+      { x: 0, y: 0 },                   // exit（占位，实际由 exitConfig 覆盖）
     ],
     scaleValues: [scales[0], scales[1], 1, 1],
   }
@@ -118,10 +120,27 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
               // center slot (slotIndex=itemCount+2) 显示 items[0]，向前依次排列
               const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
-              // 退场 translate 由本 slot 的 item 决定，不随段变化
-              const slotExitTranslate = getExitTranslate(item.exitDirection)
-              const { initTranslate, initScale, translateTimeline, scaleTimeline } =
-                buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitTranslate: slotExitTranslate })
+              const exitTranslate = getExitTranslate(item.exit.direction)
+              const slotExitConfig: I_SlotExitConfig = {
+                translate: exitTranslate,
+                skew: item.exit.skew,
+                rotation: item.exit.rotation,
+                scale: item.exit.scale,
+              }
+              const {
+                initTranslate, initScale,
+                translateTimeline, scaleTimeline,
+                skewTimeline, skewType,
+                rotateTimeline,
+              } = buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitConfig: slotExitConfig })
+
+              const rotationOrigin = !isNil(item.exit.rotation)
+                ? resolveRotationOrigin({
+                    origin: defaultTo(item.exit.rotation.origin, "Center"),
+                    cardWidth: cardW,
+                    cardHeight: cardH,
+                  })
+                : undefined
 
               return (
                 <g key={slotIndex}>
@@ -146,6 +165,36 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
                       restart: "whenNotActive",
                     })}
                     <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
+                      {!isNil(skewTimeline) && (skewType === 'Y'
+                        ? transformSkewY({
+                            initValue: 0,
+                            timeline: skewTimeline,
+                            begin: "0s",
+                            loopCount: 0,
+                            isFreeze: true,
+                            isAdditive: false,
+                            restart: "whenNotActive",
+                          })
+                        : transformSkewX({
+                            initValue: 0,
+                            timeline: skewTimeline,
+                            begin: "0s",
+                            loopCount: 0,
+                            isFreeze: true,
+                            isAdditive: false,
+                            restart: "whenNotActive",
+                          })
+                      )}
+                      {!isNil(rotateTimeline) && !isNil(rotationOrigin) && transformRotate({
+                        initValue: 0,
+                        timeline: rotateTimeline,
+                        origin: rotationOrigin,
+                        begin: "0s",
+                        loopCount: 0,
+                        isFreeze: true,
+                        isAdditive: false,
+                        restart: "whenNotActive",
+                      })}
                       <foreignObject x={0} y={0} width={cardW} height={cardH}>
                         <ItemImage item={item} imageW={cardW} imageH={cardH} />
                       </foreignObject>

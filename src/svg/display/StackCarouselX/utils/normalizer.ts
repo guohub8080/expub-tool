@@ -1,12 +1,23 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { getEaseBezier } from "@smil/bezier"
-import type { I_StackCarouselItem, I_NormalizedStackItem } from "../types"
+import type { T_Direction4 } from "@svg/types"
+import type { I_StackCarouselItem, I_NormalizedStackItem, I_NormalizedExitConfig } from "../types"
 import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types"
 
 const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true })
 
-const fillDefaults = (item: I_StackCarouselItem): I_NormalizedStackItem => {
+const normalizeExit = (item: I_StackCarouselItem, defaultDirection: T_Direction4): I_NormalizedExitConfig => {
+  const exit = item.exit
+  return {
+    direction: defaultTo(exit?.direction, defaultDirection),
+    skew: exit?.skew,
+    rotation: isNil(exit?.rotation?.angle) ? undefined : exit!.rotation,
+    scale: defaultTo(exit?.scale, 1),
+  }
+}
+
+const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Direction4): I_NormalizedStackItem => {
   const useItem = !isNil(item.jsx)
   if (isNil(item.url) && isNil(item.jsx)) {
     throw new Error("Each item must have either `url` or `jsx`.")
@@ -18,8 +29,8 @@ const fillDefaults = (item: I_StackCarouselItem): I_NormalizedStackItem => {
     url: item.url,
     jsx: item.jsx,
     link: item.link,
-    exitDirection: item.exitDirection,
     useItem,
+    exit: normalizeExit(item, defaultExitDirection),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     keySplines: defaultTo(item.keySplines, DEFAULT_KEY_SPLINES),
@@ -31,11 +42,14 @@ const fillDefaults = (item: I_StackCarouselItem): I_NormalizedStackItem => {
  *
  * 至少需要 3 张图：1→复制3，2→补成3，≥3→直接用
  */
-export const normalizeItems = (items?: I_StackCarouselItem[]): I_NormalizedStackItem[] => {
+export const normalizeItems = ({ items, defaultExitDirection }: {
+  items?: I_StackCarouselItem[]
+  defaultExitDirection: T_Direction4
+}): I_NormalizedStackItem[] => {
   if (!items || items.length === 0) {
     throw new Error("`pics` must not be empty. StackCarousel requires at least 1 item.")
   }
-  const normalized = items.map(fillDefaults)
+  const normalized = items.map(item => fillDefaults(item, defaultExitDirection))
   if (normalized.length === 1) {
     return [normalized[0], normalized[0], normalized[0]]
   }

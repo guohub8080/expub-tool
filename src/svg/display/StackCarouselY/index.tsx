@@ -7,11 +7,15 @@ import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate, transformScaleRaw } from "@smil/index"
+import { transformSkewX } from "@smil/animateTransform/skewX"
+import { transformSkewY } from "@smil/animateTransform/skewY"
+import { transformRotate } from "@smil/animateTransform/rotate"
 import svgURL from "@utils/svg/svgURL"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "../StackCarouselX/types"
 import { normalizeItems } from "../StackCarouselX/utils/normalizer"
 import { buildSlotTimelines } from "../StackCarouselX/timeline/slotTimeline"
-import type { I_PositionConfig } from "../StackCarouselX/timeline/slotTimeline"
+import type { I_PositionConfig, I_SlotExitConfig } from "../StackCarouselX/timeline/slotTimeline"
+import { resolveRotationOrigin } from "../StackCarouselX/utils/rotationOrigin"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 const DEFAULT_BACK_OFFSET = 162
@@ -53,7 +57,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const bgColor = defaultTo(props.canvasBg, "#FFFFFF")
   const isDev = ExPubGoConfig().mode === "development"
 
-  const items = normalizeItems(props.pics)
+  const items = normalizeItems({ items: props.pics, defaultExitDirection: "R" })
   const itemCount = items.length
   const totalSlots = itemCount + 3
 
@@ -62,10 +66,8 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   // 反向：叠层向下(+backOffset)
   const sign = reversed ? -1 : 1
 
-  // 退场 translate 计算：item 级 exitDirection，默认 "R"（跨轴向右）
-  const getExitTranslate = (exitDirection: "L" | "R" | "T" | "B" | undefined): Partial<I_TranslateValue> => {
-    const dir = defaultTo(exitDirection, "R")
-    switch (dir) {
+  const getExitTranslate = (direction: "L" | "R" | "T" | "B"): Partial<I_TranslateValue> => {
+    switch (direction) {
       case "L": return { x: -viewBoxW, y: 0 }
       case "R": return { x: viewBoxW, y: 0 }
       case "T": return { x: 0, y: -viewBoxH }
@@ -78,7 +80,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
       { x: 0, y: sign * -backOffset },   // back
       { x: 0, y: sign * -midOffset },    // mid
       { x: 0, y: 0 },                    // center
-      { x: 0, y: 0 },                    // exit（占位，实际由 getExitTranslate 按段覆盖）
+      { x: 0, y: 0 },                    // exit（占位，实际由 exitConfig 覆盖）
     ],
     scaleValues: [scales[0], scales[1], 1, 1],
   }
@@ -114,9 +116,27 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
             {Array.from({ length: totalSlots }, (_, slotIndex) => {
               const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
-              const slotExitTranslate = getExitTranslate(item.exitDirection)
-              const { initTranslate, initScale, translateTimeline, scaleTimeline } =
-                buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitTranslate: slotExitTranslate })
+              const exitTranslate = getExitTranslate(item.exit.direction)
+              const slotExitConfig: I_SlotExitConfig = {
+                translate: exitTranslate,
+                skew: item.exit.skew,
+                rotation: item.exit.rotation,
+                scale: item.exit.scale,
+              }
+              const {
+                initTranslate, initScale,
+                translateTimeline, scaleTimeline,
+                skewTimeline, skewType,
+                rotateTimeline,
+              } = buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitConfig: slotExitConfig })
+
+              const rotationOrigin = !isNil(item.exit.rotation)
+                ? resolveRotationOrigin({
+                    origin: defaultTo(item.exit.rotation.origin, "Center"),
+                    cardWidth: cardW,
+                    cardHeight: cardH,
+                  })
+                : undefined
 
               return (
                 <g key={slotIndex}>
@@ -141,6 +161,36 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
                       restart: "whenNotActive",
                     })}
                     <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
+                      {!isNil(skewTimeline) && (skewType === 'Y'
+                        ? transformSkewY({
+                            initValue: 0,
+                            timeline: skewTimeline,
+                            begin: "0s",
+                            loopCount: 0,
+                            isFreeze: true,
+                            isAdditive: false,
+                            restart: "whenNotActive",
+                          })
+                        : transformSkewX({
+                            initValue: 0,
+                            timeline: skewTimeline,
+                            begin: "0s",
+                            loopCount: 0,
+                            isFreeze: true,
+                            isAdditive: false,
+                            restart: "whenNotActive",
+                          })
+                      )}
+                      {!isNil(rotateTimeline) && !isNil(rotationOrigin) && transformRotate({
+                        initValue: 0,
+                        timeline: rotateTimeline,
+                        origin: rotationOrigin,
+                        begin: "0s",
+                        loopCount: 0,
+                        isFreeze: true,
+                        isAdditive: false,
+                        restart: "whenNotActive",
+                      })}
                       <foreignObject x={0} y={0} width={cardW} height={cardH}>
                         <ItemImageY item={item} imageW={cardW} imageH={cardH} />
                       </foreignObject>

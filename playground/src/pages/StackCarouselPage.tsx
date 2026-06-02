@@ -58,11 +58,11 @@ export default function StackCarouselPage() {
           canvasSize={{ w: 1080, h: 1080 }}
           mainChildItemSize={{ w: 900, h: 900 }}
           pics={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2.5, exitDirection: "L" },
-            { url: getWechat300x300(2), switchDuration: 1.2, stayDuration: 0.3, exitDirection: "R" },
-            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 1.5, exitDirection: "T" },
-            { url: getWechat300x300(4), switchDuration: 0.4, stayDuration: 3,   exitDirection: "B" },
-            { url: getWechat300x300(5), switchDuration: 1,   stayDuration: 0.8, exitDirection: "L" },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2.5, exit: { direction: "L" } },
+            { url: getWechat300x300(2), switchDuration: 1.2, stayDuration: 0.3, exit: { direction: "R" } },
+            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 1.5, exit: { direction: "T" } },
+            { url: getWechat300x300(4), switchDuration: 0.4, stayDuration: 3,   exit: { direction: "B" } },
+            { url: getWechat300x300(5), switchDuration: 1,   stayDuration: 0.8, exit: { direction: "L" } },
           ]}
         />
       </CopyDemo>
@@ -72,10 +72,10 @@ export default function StackCarouselPage() {
           canvasSize={{ w: 1080, h: 1080 }}
           mainChildItemSize={{ w: 600, h: 600 }}
           pics={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exitDirection: "L" },
-            { url: getWechat300x300(2), switchDuration: 0.8, stayDuration: 1, exitDirection: "R" },
-            { url: getWechat300x300(3), switchDuration: 0.6, stayDuration: 2, exitDirection: "T" },
-            { url: getWechat300x300(4), switchDuration: 1, stayDuration: 0.5, exitDirection: "B" },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exit: { direction: "L" } },
+            { url: getWechat300x300(2), switchDuration: 0.8, stayDuration: 1, exit: { direction: "R" } },
+            { url: getWechat300x300(3), switchDuration: 0.6, stayDuration: 2, exit: { direction: "T" } },
+            { url: getWechat300x300(4), switchDuration: 1, stayDuration: 0.5, exit: { direction: "B" } },
           ]}
         />
       </CopyDemo>
@@ -88,10 +88,23 @@ export default function StackCarouselPage() {
           backOffset={200}
           isReversed
           pics={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exitDirection: "L" },
-            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exitDirection: "R" },
-            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 2,   exitDirection: "L" },
-            { url: getWechat300x300(4), switchDuration: 0.3, stayDuration: 3,   exitDirection: "R" },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exit: { direction: "L" } },
+            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exit: { direction: "R" } },
+            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 2,   exit: { direction: "L" } },
+            { url: getWechat300x300(4), switchDuration: 0.3, stayDuration: 3,   exit: { direction: "R" } },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="退场 skew + rotate + scale">
+        <StackCarouselX
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
+          pics={[
+            { url: getWechat300x300(1), switchDuration: 0.6, stayDuration: 1, exit: { direction: "L", skew: { type: "Y", angle: 15 }, scale: 0.8 } },
+            { url: getWechat300x300(2), switchDuration: 0.8, stayDuration: 1, exit: { direction: "R", rotation: { origin: "TopRight", angle: 25 }, scale: 1.2 } },
+            { url: getWechat300x300(3), switchDuration: 0.5, stayDuration: 1, exit: { direction: "T", skew: { type: "X", angle: -10 }, rotation: { origin: "BottomLeft", angle: -15 } } },
+            { url: getWechat300x300(4), switchDuration: 1, stayDuration: 1, exit: { direction: "B", skew: { type: "Y", angle: 20 }, rotation: { angle: 30 }, scale: 0.5 } },
           ]}
         />
       </CopyDemo>
@@ -103,11 +116,11 @@ export default function StackCarouselPage() {
           canvasSize={{ w: 1080, h: 1080 }}
           mainChildItemSize={{ w: 900, h: 900 }}
           pics={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2,   exitDirection: "L" },
-            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exitDirection: "R" },
-            { url: getWechat300x300(3), switchDuration: 0.3, stayDuration: 3,   exitDirection: "T" },
-            { url: getWechat300x300(4), switchDuration: 0.8, stayDuration: 1,   exitDirection: "B" },
-            { url: getWechat300x300(5), switchDuration: 1.2, stayDuration: 0.2, exitDirection: "L" },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2,   exit: { direction: "L" } },
+            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exit: { direction: "R" } },
+            { url: getWechat300x300(3), switchDuration: 0.3, stayDuration: 3,   exit: { direction: "T" } },
+            { url: getWechat300x300(4), switchDuration: 0.8, stayDuration: 1,   exit: { direction: "B" } },
+            { url: getWechat300x300(5), switchDuration: 1.2, stayDuration: 0.2, exit: { direction: "L" } },
           ]}
         />
       </CopyDemo>
@@ -118,9 +131,9 @@ export default function StackCarouselPage() {
           mainChildItemSize={{ w: 900, h: 900 }}
           isReversed
           pics={[
-            { url: getWechat300x300(6), switchDuration: 0.2, stayDuration: 3.5, exitDirection: "L" },
-            { url: getWechat300x300(7), switchDuration: 1.5, stayDuration: 0.3, exitDirection: "R" },
-            { url: getWechat300x300(8), switchDuration: 0.6, stayDuration: 1.5, exitDirection: "R" },
+            { url: getWechat300x300(6), switchDuration: 0.2, stayDuration: 3.5, exit: { direction: "L" } },
+            { url: getWechat300x300(7), switchDuration: 1.5, stayDuration: 0.3, exit: { direction: "R" } },
+            { url: getWechat300x300(8), switchDuration: 0.6, stayDuration: 1.5, exit: { direction: "R" } },
           ]}
         />
       </CopyDemo>
