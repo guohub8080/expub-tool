@@ -15,21 +15,20 @@ import type { I_PositionConfig } from "./timeline/slotTimeline"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 const DEFAULT_BACK_OFFSET = 162
-const DEFAULT_SCALES: [number, number, number] = [0.7, 0.8, 0.9]
+/** back/mid 缩放比例（center 恒为 1.0，cardSize 即中心卡牌显示尺寸） */
+const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
 
 export type { I_StackCarouselItem } from "./types"
 
 interface I_StackCarouselXProps {
   /** SVG 画布尺寸（viewBox） */
   canvasSize: { w: number; h: number }
-  /** 单张图片画布尺寸（foreignObject 分辨率） */
-  itemCanvasSize: { w: number; h: number }
-  /** 中心卡牌显示尺寸（viewBox 坐标），设置后直接覆盖 scales[2] */
-  cardSize?: { w: number; h: number }
+  /** 中心卡牌显示尺寸（viewBox 坐标），即用户看到的卡牌大小 */
+  cardSize: { w: number; h: number }
   /** 图片/内容配置数组，至少 1 项 */
   pics?: I_StackCarouselItem[]
-  /** 三层缩放 [back, mid, center]，默认 [0.7, 0.8, 0.9]；cardSize 优先时 center 被覆盖 */
-  scales?: [number, number, number]
+  /** back/mid 缩放比例 [back, mid]，center 恒为 1.0，默认 [0.78, 0.89] */
+  scales?: [number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
   /** 画布背景色，默认 #FFFFFF */
@@ -47,11 +46,9 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
 
   const viewBoxW = props.canvasSize.w
   const viewBoxH = props.canvasSize.h
-  const imageW = props.itemCanvasSize.w
-  const imageH = props.itemCanvasSize.h
-  const rawScales = defaultTo(props.scales, DEFAULT_SCALES)
-  const centerScale = props.cardSize ? props.cardSize.w / imageW : rawScales[2]
-  const effectiveScales: [number, number, number] = [rawScales[0], rawScales[1], centerScale]
+  const cardW = props.cardSize.w
+  const cardH = props.cardSize.h
+  const scales = defaultTo(props.scales, DEFAULT_SCALES)
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
@@ -84,11 +81,11 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
       { x: 0, y: 0 },                   // center
       { x: 0, y: 0 },                   // exit（占位，实际由 getExitTranslate 按段覆盖）
     ],
-    scaleValues: [effectiveScales[0], effectiveScales[1], effectiveScales[2], effectiveScales[2]],
+    scaleValues: [scales[0], scales[1], 1, 1],
   }
 
-  const contentOffsetX = -imageW / 2
-  const contentOffsetY = -imageH / 2
+  const contentOffsetX = -cardW / 2
+  const contentOffsetY = -cardH / 2
 
   return (
     <SectionEx
@@ -149,8 +146,8 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
                       restart: "whenNotActive",
                     })}
                     <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
-                      <foreignObject x={0} y={0} width={imageW} height={imageH}>
-                        <ItemImage item={item} imageW={imageW} imageH={imageH} />
+                      <foreignObject x={0} y={0} width={cardW} height={cardH}>
+                        <ItemImage item={item} imageW={cardW} imageH={cardH} />
                       </foreignObject>
                     </g>
                   </g>
