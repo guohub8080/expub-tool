@@ -19,6 +19,8 @@ import { resolveRotationOrigin } from "./utils/rotationOrigin"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 const DEFAULT_BACK_OFFSET = 162
+/** back/mid 默认缩放比例（叠层深度效果，center 恒为 1.0） */
+const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
 
 export type { I_StackCarouselItem, I_ExitConfig } from "./types"
 export type { I_SkewConfig, I_RotationConfig } from "@svg/types"
@@ -79,7 +81,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
       { x: 0, y: 0 },                   // center
       { x: 0, y: 0 },                   // exit（占位，实际由 exitConfig 覆盖）
     ],
-    scaleValues: [1, 1, 1, 1],
+    scaleValues: [DEFAULT_SCALES[0], DEFAULT_SCALES[1], 1, 1],
   }
 
   const contentOffsetX = -cardW / 2
