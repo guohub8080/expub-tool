@@ -22,11 +22,13 @@ export type { I_StackCarouselItem } from "./types"
 interface I_StackCarouselXProps {
   /** SVG 画布尺寸（viewBox） */
   canvasSize: { w: number; h: number }
-  /** 单张图片画布尺寸 */
+  /** 单张图片画布尺寸（foreignObject 分辨率） */
   itemCanvasSize: { w: number; h: number }
+  /** 中心卡牌显示尺寸（viewBox 坐标），设置后直接覆盖 scales[2] */
+  cardSize?: { w: number; h: number }
   /** 图片/内容配置数组，至少 1 项 */
   pics?: I_StackCarouselItem[]
-  /** 三层缩放 [back, mid, center]，默认 [0.7, 0.8, 0.9] */
+  /** 三层缩放 [back, mid, center]，默认 [0.7, 0.8, 0.9]；cardSize 优先时 center 被覆盖 */
   scales?: [number, number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
@@ -47,7 +49,9 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const viewBoxH = props.canvasSize.h
   const imageW = props.itemCanvasSize.w
   const imageH = props.itemCanvasSize.h
-  const scales = defaultTo(props.scales, DEFAULT_SCALES)
+  const rawScales = defaultTo(props.scales, DEFAULT_SCALES)
+  const centerScale = props.cardSize ? props.cardSize.w / imageW : rawScales[2]
+  const effectiveScales: [number, number, number] = [rawScales[0], rawScales[1], centerScale]
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
@@ -80,7 +84,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
       { x: 0, y: 0 },                   // center
       { x: 0, y: 0 },                   // exit（占位，实际由 getExitTranslate 按段覆盖）
     ],
-    scaleValues: [scales[0], scales[1], scales[2], scales[2]],
+    scaleValues: [effectiveScales[0], effectiveScales[1], effectiveScales[2], effectiveScales[2]],
   }
 
   const contentOffsetX = -imageW / 2

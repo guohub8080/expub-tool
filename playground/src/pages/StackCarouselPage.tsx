@@ -79,6 +79,20 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="cardSize 直接指定卡牌大小 600×600">
+        <StackCarouselX
+          canvasSize={{ w: 1080, h: 1080 }}
+          itemCanvasSize={{ w: 972, h: 972 }}
+          cardSize={{ w: 600, h: 600 }}
+          pics={[
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exitDirection: "L" },
+            { url: getWechat300x300(2), switchDuration: 0.8, stayDuration: 1, exitDirection: "R" },
+            { url: getWechat300x300(3), switchDuration: 0.6, stayDuration: 2, exitDirection: "T" },
+            { url: getWechat300x300(4), switchDuration: 1, stayDuration: 0.5, exitDirection: "B" },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="反向 + 自定义缩放 + 偏移">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
