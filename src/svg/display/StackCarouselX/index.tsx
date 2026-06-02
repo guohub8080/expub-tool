@@ -32,6 +32,8 @@ interface I_StackCarouselXProps {
   mainChildItemSize: { w: number; h: number }
   /** 图片/内容配置数组，至少 1 项 */
   pics?: I_StackCarouselItem[]
+  /** back/mid 缩放比例 [back, mid]，center 恒为 1.0，默认 [0.78, 0.89] */
+  scales?: [number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
   /** 画布背景色，默认 #FFFFFF */
@@ -51,6 +53,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const viewBoxH = props.canvasSize.h
   const cardW = props.mainChildItemSize.w
   const cardH = props.mainChildItemSize.h
+  const scales = defaultTo(props.scales, DEFAULT_SCALES)
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
@@ -81,7 +84,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
       { x: 0, y: 0 },                   // center
       { x: 0, y: 0 },                   // exit（占位，实际由 exitConfig 覆盖）
     ],
-    scaleValues: [DEFAULT_SCALES[0], DEFAULT_SCALES[1], 1, 1],
+    scaleValues: [scales[0], scales[1], 1, 1],
   }
 
   const contentOffsetX = -cardW / 2

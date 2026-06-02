@@ -84,6 +84,7 @@ export default function StackCarouselPage() {
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
           mainChildItemSize={{ w: 900, h: 900 }}
+          scales={[0.6, 0.75]}
           backOffset={200}
           isReversed
           pics={[
