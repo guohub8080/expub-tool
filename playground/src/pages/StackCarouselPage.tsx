@@ -43,7 +43,7 @@ export default function StackCarouselPage() {
       <CopyDemo title="4 图 — 默认参数">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
-          cardSize={{ w: 900, h: 900 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
           pics={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
@@ -56,7 +56,7 @@ export default function StackCarouselPage() {
       <CopyDemo title="5 图 — 四面八方退场 + 长短不一的停留">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
-          cardSize={{ w: 900, h: 900 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
           pics={[
             { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2.5, exitDirection: "L" },
             { url: getWechat300x300(2), switchDuration: 1.2, stayDuration: 0.3, exitDirection: "R" },
@@ -70,7 +70,7 @@ export default function StackCarouselPage() {
       <CopyDemo title="小卡牌 600×600 — 四周留白大">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
-          cardSize={{ w: 600, h: 600 }}
+          mainChildItemSize={{ w: 600, h: 600 }}
           pics={[
             { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exitDirection: "L" },
             { url: getWechat300x300(2), switchDuration: 0.8, stayDuration: 1, exitDirection: "R" },
@@ -83,7 +83,7 @@ export default function StackCarouselPage() {
       <CopyDemo title="反向 + 自定义缩放 + 偏移">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
-          cardSize={{ w: 900, h: 900 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
           scales={[0.6, 0.75]}
           backOffset={200}
           isReversed
@@ -101,7 +101,7 @@ export default function StackCarouselPage() {
       <CopyDemo title="5 图纵向 — 四面八方退场 + 长短停留">
         <StackCarouselY
           canvasSize={{ w: 1080, h: 1080 }}
-          cardSize={{ w: 900, h: 900 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
           pics={[
             { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2,   exitDirection: "L" },
             { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exitDirection: "R" },
@@ -115,7 +115,7 @@ export default function StackCarouselPage() {
       <CopyDemo title="纵向反向 + 极端时间差">
         <StackCarouselY
           canvasSize={{ w: 1080, h: 1080 }}
-          cardSize={{ w: 900, h: 900 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
           isReversed
           pics={[
             { url: getWechat300x300(6), switchDuration: 0.2, stayDuration: 3.5, exitDirection: "L" },

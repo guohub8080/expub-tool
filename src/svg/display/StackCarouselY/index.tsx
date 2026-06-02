@@ -15,14 +15,14 @@ import type { I_PositionConfig } from "../StackCarouselX/timeline/slotTimeline"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 const DEFAULT_BACK_OFFSET = 162
-/** back/mid 缩放比例（center 恒为 1.0，cardSize 即中心卡牌显示尺寸） */
+/** back/mid 缩放比例（center 恒为 1.0，mainChildItemSize 即中心卡牌显示尺寸） */
 const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
 
 interface I_StackCarouselYProps {
   /** SVG 画布尺寸（viewBox） */
   canvasSize: { w: number; h: number }
   /** 中心卡牌显示尺寸（viewBox 坐标），即用户看到的卡牌大小 */
-  cardSize: { w: number; h: number }
+  mainChildItemSize: { w: number; h: number }
   /** 图片/内容配置数组，至少 1 项 */
   pics?: I_StackCarouselItem[]
   /** back/mid 缩放比例 [back, mid]，center 恒为 1.0，默认 [0.78, 0.89] */
@@ -44,8 +44,8 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
 
   const viewBoxW = props.canvasSize.w
   const viewBoxH = props.canvasSize.h
-  const cardW = props.cardSize.w
-  const cardH = props.cardSize.h
+  const cardW = props.mainChildItemSize.w
+  const cardH = props.mainChildItemSize.h
   const scales = defaultTo(props.scales, DEFAULT_SCALES)
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
