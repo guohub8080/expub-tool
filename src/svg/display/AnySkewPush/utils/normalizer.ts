@@ -1,7 +1,7 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
-import type { T_Direction4, T_Origin } from "@svg/types"
-import type { I_SkewConfig, I_AnySkewPushChildItem, I_RotationConfig } from "../types"
+import type { T_Direction4, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
+import type { I_AnySkewPushChildItem } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
 export const DEFAULT_SWITCH_DURATION = 2

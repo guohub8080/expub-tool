@@ -1,22 +1,7 @@
 import type { ReactNode } from "react"
-import type { T_Direction4, T_Origin } from "@svg/types"
+import type { T_Direction4, I_SkewConfig, I_RotationConfig } from "@svg/types"
 
-export interface I_SkewConfig {
-  /** skewX 或 skewY，决定斜切轴方向 */
-  type: 'X' | 'Y'
-  /** 斜切角度（度），正负决定倾斜方向，建议 0–45 */
-  angle: number
-}
-
-/** 旋转配置 */
-export interface I_RotationConfig {
-  /** 旋转中心，默认 Center */
-  origin?: T_Origin
-  /** 旋转角度（度），正值=顺时针，默认 0（无旋转） */
-  angle?: number
-  /** 缓动曲线，默认 ease-in-out */
-  keySplines?: string
-}
+export type { I_SkewConfig, I_RotationConfig } from "@svg/types"
 
 /** 进入配置 */
 export interface I_EntryConfig {

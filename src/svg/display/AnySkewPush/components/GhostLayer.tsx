@@ -61,8 +61,8 @@ const GhostLayer = (props: {
   const ghostSkewAnim = firstItem.entry.skew && (() => {
     const result = compileTimeline(
       [
-        { durationSeconds: T - sw, to: firstItem.entry.skew!.angle, keySplines: DEFAULT_EASE },
-        { durationSeconds: sw,     to: 0,                           keySplines: DEFAULT_EASE },
+        { durationSeconds: T - sw, to: firstItem.entry.skew!.angle, keySplines: defaultTo(firstItem.entry.skew!.keySplines, DEFAULT_EASE) },
+        { durationSeconds: sw,     to: 0,                           keySplines: defaultTo(firstItem.entry.skew!.keySplines, DEFAULT_EASE) },
       ],
       v => `${v}`,
       firstItem.entry.skew!.angle,

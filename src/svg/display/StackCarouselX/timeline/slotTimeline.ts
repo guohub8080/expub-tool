@@ -1,7 +1,9 @@
 import isNil from "lodash/isNil"
+import defaultTo from "lodash/defaultTo"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
-import type { I_NormalizedStackItem, I_NormalizedExitConfig, I_SkewConfig, I_RotationConfig } from "../types"
+import type { I_SkewConfig, I_RotationConfig } from "@svg/types"
+import type { I_NormalizedStackItem, I_NormalizedExitConfig } from "../types"
 
 /**
  * 位置定义：0=back, 1=mid, 2=center, 3=exit
@@ -78,6 +80,7 @@ export function buildSlotTimelines({
 
   const hasSkew = !isNil(exitConfig.skew)
   const hasRotation = !isNil(exitConfig.rotation)
+  const skewSplines = exitConfig.skew?.keySplines
 
   const translateTimeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   const scaleTimeline: I_TimelineKeyframe<number>[] = []
@@ -110,7 +113,7 @@ export function buildSlotTimelines({
       skewTimeline.push({
         to: isExit ? exitConfig.skew!.angle : 0,
         durationSeconds: dur,
-        keySplines: splines,
+        keySplines: defaultTo(skewSplines, splines),
       })
     }
 

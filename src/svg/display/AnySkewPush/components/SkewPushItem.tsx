@@ -105,12 +105,13 @@ const renderSkewAnim = ({
   const entryAngle = entrySkew?.angle ?? 0
   const exitAngle  = exitSkew?.angle  ?? 0
   const skewType   = `skew${(entrySkew ?? exitSkew)!.type}` as 'skewX' | 'skewY'
+  const skewEase   = defaultTo(entrySkew?.keySplines, defaultTo(exitSkew?.keySplines, DEFAULT_EASE))
 
   const segs = [
-    { durationSeconds: switchDuration,    to: 0,         keySplines: DEFAULT_EASE },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: DEFAULT_EASE }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: DEFAULT_EASE },
-    { durationSeconds: holdDuration,       to: exitAngle, keySplines: DEFAULT_EASE },
+    { durationSeconds: switchDuration,    to: 0,         keySplines: skewEase },
+    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: skewEase }] : []),
+    { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: defaultTo(exitSkew?.keySplines, skewEase) },
+    { durationSeconds: holdDuration,       to: exitAngle, keySplines: defaultTo(exitSkew?.keySplines, skewEase) },
   ]
   const result = compileTimeline(segs, v => `${v}`, entryAngle)
 
