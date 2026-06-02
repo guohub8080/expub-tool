@@ -166,39 +166,44 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
                       restart: "whenNotActive",
                     })}
                     <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
-                      {!isNil(skewTimeline) && (skewType === 'Y'
-                        ? transformSkewY({
+                      {/* 每个 animateTransform 必须包独立 <g>，避免互相覆盖 */}
+                      <g>
+                        {!isNil(skewTimeline) && (skewType === 'Y'
+                          ? transformSkewY({
+                              initValue: 0,
+                              timeline: skewTimeline,
+                              begin: "0s",
+                              loopCount: 0,
+                              isFreeze: true,
+                              isAdditive: false,
+                              restart: "whenNotActive",
+                            })
+                          : transformSkewX({
+                              initValue: 0,
+                              timeline: skewTimeline,
+                              begin: "0s",
+                              loopCount: 0,
+                              isFreeze: true,
+                              isAdditive: false,
+                              restart: "whenNotActive",
+                            })
+                        )}
+                        <g>
+                          {!isNil(rotateTimeline) && !isNil(rotationOrigin) && transformRotate({
                             initValue: 0,
-                            timeline: skewTimeline,
+                            timeline: rotateTimeline,
+                            origin: rotationOrigin,
                             begin: "0s",
                             loopCount: 0,
                             isFreeze: true,
                             isAdditive: false,
                             restart: "whenNotActive",
-                          })
-                        : transformSkewX({
-                            initValue: 0,
-                            timeline: skewTimeline,
-                            begin: "0s",
-                            loopCount: 0,
-                            isFreeze: true,
-                            isAdditive: false,
-                            restart: "whenNotActive",
-                          })
-                      )}
-                      {!isNil(rotateTimeline) && !isNil(rotationOrigin) && transformRotate({
-                        initValue: 0,
-                        timeline: rotateTimeline,
-                        origin: rotationOrigin,
-                        begin: "0s",
-                        loopCount: 0,
-                        isFreeze: true,
-                        isAdditive: false,
-                        restart: "whenNotActive",
-                      })}
-                      <foreignObject x={0} y={0} width={cardW} height={cardH}>
-                        <ItemImage item={item} imageW={cardW} imageH={cardH} />
-                      </foreignObject>
+                          })}
+                          <foreignObject x={0} y={0} width={cardW} height={cardH}>
+                            <ItemImage item={item} imageW={cardW} imageH={cardH} />
+                          </foreignObject>
+                        </g>
+                      </g>
                     </g>
                   </g>
                 </g>

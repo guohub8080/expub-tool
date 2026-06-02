@@ -92,6 +92,34 @@ src/behaviors/
    - 水印/版权属性（`powered-by`、`label`、`copyright`）→ 用 `resolveWatermark()` 系统替代
 3. **开发模式标注组件身份** — 当 `ExPubGoConfig().mode === 'development'` 时，组件最外层输出 `expubgo-label` 属性标明组件名称，方便 AI 审计。生产模式下不输出。
 
+## SMIL animateTransform 嵌套规则
+
+多个 `<animateTransform>` 不能放在同一个 `<g>` 上——后一个会覆盖前一个的 `transform`，且会覆盖该 `<g>` 上已有的静态 `transform` 属性。
+
+**正确做法：** 每个 `<animateTransform>` 必须包在独立的 `<g>` 中：
+
+```tsx
+{/* ✅ 正确：每层动画各自包 <g> */}
+<g transform={`translate(${offsetX}, ${offsetY})`}>
+  <g>
+    <animateTransform type="skewX" ... />
+    <g>
+      <animateTransform type="rotate" ... />
+      <foreignObject>content</foreignObject>
+    </g>
+  </g>
+</g>
+```
+
+```tsx
+{/* ❌ 错误：多个 animateTransform 在同一 <g> 上，互相覆盖 */}
+<g transform={`translate(${offsetX}, ${offsetY})`}>
+  <animateTransform type="skewX" ... />   {/* 覆盖了 translate(offset) */}
+  <animateTransform type="rotate" ... />   {/* 覆盖了 skewX */}
+  <foreignObject>content</foreignObject>
+</g>
+```
+
 ## 构建架构
 
 - **Vite + Rollup**，`preserveModules: true`，每个源文件在 dist 中保持独立模块
