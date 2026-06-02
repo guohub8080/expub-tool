@@ -68,12 +68,15 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   // 反向：叠层偏移在左侧(-backOffset)
   const sign = reversed ? -1 : 1
 
-  const getExitTranslate = (direction: "L" | "R" | "T" | "B"): Partial<I_TranslateValue> => {
+  const defaultExitDistance = Math.sqrt(cardW * cardW + cardH * cardH) * 1.2
+
+  const getExitTranslate = (direction: "L" | "R" | "T" | "B", distance?: number): Partial<I_TranslateValue> => {
+    const d = defaultTo(distance, defaultExitDistance)
     switch (direction) {
-      case "L": return { x: -viewBoxW, y: 0 }
-      case "R": return { x: viewBoxW, y: 0 }
-      case "T": return { x: 0, y: -viewBoxH }
-      case "B": return { x: 0, y: viewBoxH }
+      case "L": return { x: -d, y: 0 }
+      case "R": return { x: d, y: 0 }
+      case "T": return { x: 0, y: -d }
+      case "B": return { x: 0, y: d }
     }
   }
 
@@ -121,7 +124,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
               // center slot (slotIndex=itemCount+2) 显示 items[0]，向前依次排列
               const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
-              const exitTranslate = getExitTranslate(item.exit.direction)
+              const exitTranslate = getExitTranslate(item.exit.direction, item.exit.distance)
               const slotExitConfig: I_SlotExitConfig = {
                 translate: exitTranslate,
                 skew: item.exit.skew,

@@ -10,6 +10,8 @@ export const DEFAULT_STAY_DURATION = 1
 export interface I_ExitConfig {
   /** 退场方向，X 默认 "L"，Y 默认 "R" */
   direction?: T_Direction4
+  /** 退场移动距离，默认 viewBoxW/viewBoxH（有 skew/rotation 时可能需要加大） */
+  distance?: number
   /** 退场斜切，不传则退出无斜切 */
   skew?: I_SkewConfig
   /** 退场旋转，不传则退出无旋转 */
@@ -41,6 +43,7 @@ export interface I_StackCarouselItem {
 /** 标准化后的退场配置 */
 export interface I_NormalizedExitConfig {
   direction: T_Direction4
+  distance?: number
   skew?: I_SkewConfig
   rotation?: I_RotationConfig
   scale: number

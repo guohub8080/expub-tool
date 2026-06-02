@@ -14,6 +14,7 @@ const normalizeExit = (item: I_StackCarouselItem, defaultDirection: T_Direction4
     skew: exit?.skew,
     rotation: isNil(exit?.rotation?.angle) ? undefined : exit!.rotation,
     scale: defaultTo(exit?.scale, 1),
+    distance: exit?.distance,
   }
 }
 
