@@ -54,8 +54,8 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const isDev = ExPubGoConfig().mode === "development"
 
   const items = normalizeItems(props.pics)
-  const N = items.length
-  const totalSlots = N + 3
+  const itemCount = items.length
+  const totalSlots = itemCount + 3
 
   // 纵向叠层：偏移在 Y 轴
   // 正向：叠层向上(-backOffset)
@@ -111,15 +111,15 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
           </g>
 
           <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
-            {Array.from({ length: totalSlots }, (_, si) => {
-              const itemIdx = (N + 2 - si + N * 10) % N
+            {Array.from({ length: totalSlots }, (_, slotIndex) => {
+              const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
               const slotExitTranslate = getExitTranslate(item.exitDirection)
               const { initTranslate, initScale, translateTimeline, scaleTimeline } =
-                buildSlotTimelines({ si, N, items, posConfig, exitTranslate: slotExitTranslate })
+                buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitTranslate: slotExitTranslate })
 
               return (
-                <g key={si}>
+                <g key={slotIndex}>
                   {transformTranslate({
                     initValue: initTranslate,
                     timeline: translateTimeline,

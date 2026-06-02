@@ -56,8 +56,8 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const isDev = ExPubGoConfig().mode === "development"
 
   const items = normalizeItems(props.pics)
-  const N = items.length
-  const totalSlots = N + 3
+  const itemCount = items.length
+  const totalSlots = itemCount + 3
 
   // 正向：叠层偏移在右侧(+backOffset)
   // 反向：叠层偏移在左侧(-backOffset)
@@ -114,17 +114,17 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
 
           {/* 中心原点 */}
           <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
-            {Array.from({ length: totalSlots }, (_, si) => {
-              // center slot (si=N+2) 显示 items[0]，向前依次排列
-              const itemIdx = (N + 2 - si + N * 10) % N
+            {Array.from({ length: totalSlots }, (_, slotIndex) => {
+              // center slot (slotIndex=itemCount+2) 显示 items[0]，向前依次排列
+              const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
               // 退场 translate 由本 slot 的 item 决定，不随段变化
               const slotExitTranslate = getExitTranslate(item.exitDirection)
               const { initTranslate, initScale, translateTimeline, scaleTimeline } =
-                buildSlotTimelines({ si, N, items, posConfig, exitTranslate: slotExitTranslate })
+                buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitTranslate: slotExitTranslate })
 
               return (
-                <g key={si}>
+                <g key={slotIndex}>
                   {transformTranslate({
                     initValue: initTranslate,
                     timeline: translateTimeline,

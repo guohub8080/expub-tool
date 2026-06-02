@@ -22,18 +22,18 @@ export interface I_PositionConfig {
 /**
  * 计算 slot 在段边界处的位置
  *
- * 公式：enterBoundary(si, p) = (p === startPos) ? 0 : 2 × (N + p - si)
- * position(si, b) = max { p ≥ startPos | b ≥ enterBoundary(si, p) }
+ * 公式：enterBoundary(slotIndex, position) = (position === startPos) ? 0 : 2 × (itemCount + position - slotIndex)
+ * position(slotIndex, boundary) = max { position ≥ startPos | boundary ≥ enterBoundary(slotIndex, position) }
  */
-function getPosition({ si, N, boundary }: {
-  si: number
-  N: number
+function getPosition({ slotIndex, itemCount, boundary }: {
+  slotIndex: number
+  itemCount: number
   boundary: number
 }): number {
-  const startPos = Math.max(0, si - N)
-  for (let p = 3; p >= startPos; p--) {
-    const enterP = (p === startPos) ? 0 : 2 * (N + p - si)
-    if (boundary >= enterP) return p
+  const startPos = Math.max(0, slotIndex - itemCount)
+  for (let pos = 3; pos >= startPos; pos--) {
+    const enterPos = (pos === startPos) ? 0 : 2 * (itemCount + pos - slotIndex)
+    if (boundary >= enterPos) return pos
   }
   return startPos
 }
@@ -44,16 +44,16 @@ function getPosition({ si, N, boundary }: {
  * 退场 translate 由 slot 自身对应的 item 决定（不随段变化），避免已退场的卡牌飘移。
  */
 export function buildSlotTimelines({
-  si,
-  N,
+  slotIndex,
+  itemCount,
   items,
   posConfig,
   exitTranslate,
 }: {
-  /** slot 索引（0 ~ N+2） */
-  si: number
+  /** slot 索引（0 ~ itemCount+2） */
+  slotIndex: number
   /** 唯一图片数量 */
-  N: number
+  itemCount: number
   /** 标准化后的配置数组 */
   items: I_NormalizedStackItem[]
   /** 位置值配置（exit 位的 translate 会被 exitTranslate 覆盖） */
@@ -61,8 +61,8 @@ export function buildSlotTimelines({
   /** 本 slot 的退场 translate（由 slot 对应的 item.exitDirection 计算） */
   exitTranslate: Partial<I_TranslateValue>
 }) {
-  const startPos = Math.max(0, si - N)
-  const totalSegs = N * 2
+  const startPos = Math.max(0, slotIndex - itemCount)
+  const totalSegs = itemCount * 2
 
   const initTranslate = posConfig.translateValues[startPos]
   const initScale = posConfig.scaleValues[startPos]
@@ -72,12 +72,12 @@ export function buildSlotTimelines({
 
   for (let seg = 0; seg < totalSegs; seg++) {
     const itemIdx = Math.floor(seg / 2)
-    const item = items[itemIdx % N]
+    const item = items[itemIdx % itemCount]
     const isSwitch = seg % 2 === 0
     const dur = isSwitch ? item.switchDuration : item.stayDuration
     const splines = item.keySplines
 
-    const nextPos = getPosition({ si, N, boundary: seg + 1 })
+    const nextPos = getPosition({ slotIndex, itemCount, boundary: seg + 1 })
 
     translateTimeline.push({
       to: nextPos === 3 ? exitTranslate : posConfig.translateValues[nextPos],
