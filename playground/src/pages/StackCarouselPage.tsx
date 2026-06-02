@@ -80,18 +80,17 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="反向 + 自定义缩放 + 偏移">
+      <CopyDemo title="反向 + 退场缩放 + 偏移">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
           mainChildItemSize={{ w: 900, h: 900 }}
-          scales={[0.6, 0.75]}
           backOffset={200}
           isReversed
           pics={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exit: { direction: "L" } },
-            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exit: { direction: "R" } },
-            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 2,   exit: { direction: "L" } },
-            { url: getWechat300x300(4), switchDuration: 0.3, stayDuration: 3,   exit: { direction: "R" } },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exit: { direction: "L", scale: 0.6 } },
+            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exit: { direction: "R", scale: 1.3 } },
+            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 2,   exit: { direction: "L", scale: 0.4 } },
+            { url: getWechat300x300(4), switchDuration: 0.3, stayDuration: 3,   exit: { direction: "R", scale: 1.5 } },
           ]}
         />
       </CopyDemo>
