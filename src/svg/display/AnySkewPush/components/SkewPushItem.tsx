@@ -43,8 +43,8 @@ const SkewPushItem = (props: {
 
   const { begin, entryDuration: switchDuration, stayDuration, exitDuration: nextSwitchDuration, holdDuration } = timeline
 
-  const enterOffscreenTranslate = getOffscreenTranslate({ direction: item.entryDirection, canvasWidth, canvasHeight })
-  const exitOffscreenTranslate = getOffscreenTranslate({ direction: item.exitDirection, canvasWidth, canvasHeight })
+  const enterOffscreenTranslate = getOffscreenTranslate({ direction: item.entry.direction, canvasWidth, canvasHeight })
+  const exitOffscreenTranslate = getOffscreenTranslate({ direction: item.exit.direction, canvasWidth, canvasHeight })
 
   // ── translate 时间线：进入 → stay → 退出 → hold ──
   // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）
@@ -58,13 +58,13 @@ const SkewPushItem = (props: {
 
   // ── skew 时间线 ──
   const skewAnim = renderSkewAnim({
-    entrySkew: item.entrySkew, exitSkew: item.exitSkew,
+    entrySkew: item.entry.skew, exitSkew: item.exit.skew,
     stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
   })
 
   // ── rotate 时间线（使用 item 自带的 origin 和 keySplines） ──
   const rotateAnim = renderRotateAnim({
-    entryRotation: item.entryRotation, exitRotation: item.exitRotation,
+    entryRotation: item.entry.rotation, exitRotation: item.exit.rotation,
     contentWidth, contentHeight,
     stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
   })
@@ -91,8 +91,8 @@ const SkewPushItem = (props: {
 const renderSkewAnim = ({
   entrySkew, exitSkew, stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
 }: {
-  entrySkew?: I_NormalizedChildItem['entrySkew']
-  exitSkew?: I_NormalizedChildItem['exitSkew']
+  entrySkew?: I_NormalizedChildItem['entry']['skew']
+  exitSkew?: I_NormalizedChildItem['exit']['skew']
   stayDuration: number
   switchDuration: number
   nextSwitchDuration: number
@@ -127,8 +127,8 @@ const renderRotateAnim = ({
   entryRotation, exitRotation, contentWidth, contentHeight,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
 }: {
-  entryRotation?: I_NormalizedChildItem['entryRotation']
-  exitRotation?: I_NormalizedChildItem['exitRotation']
+  entryRotation?: I_NormalizedChildItem['entry']['rotation']
+  exitRotation?: I_NormalizedChildItem['exit']['rotation']
   contentWidth: number
   contentHeight: number
   stayDuration: number

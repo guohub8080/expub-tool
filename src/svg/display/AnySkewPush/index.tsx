@@ -13,7 +13,7 @@ import SkewPushItem from "./components/SkewPushItem"
 import GhostLayer from "./components/GhostLayer"
 import type { I_AnySkewPushChildItem } from "./types"
 
-export type { I_SkewConfig, I_AnySkewPushChildItem } from "./types"
+export type { I_SkewConfig, I_RotationConfig, I_EntryConfig, I_ExitConfig, I_AnySkewPushChildItem } from "./types"
 
 /**
  * AnySkewPush — 多图循环"斜切推入"切换组件
@@ -96,7 +96,7 @@ const AnySkewPush = (props: {
                 <GhostLayer
                   firstItem={items[0]}
                   enterOffscreenTranslate={getOffscreenTranslate({
-                    direction: items[0].entryDirection, canvasWidth: w, canvasHeight: h,
+                    direction: items[0].entry.direction, canvasWidth: w, canvasHeight: h,
                   })}
                   ghostTimeline={ghostTimeline}
                   totalDuration={totalDuration}

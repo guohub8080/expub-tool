@@ -56,39 +56,39 @@ const GhostLayer = (props: {
     enterOffscreenTranslate,
   )
 
-  // Ghost skew：仅在 entrySkew 存在时渲染
+  // Ghost skew：仅在 entry.skew 存在时渲染
   // 前段保持 entryAngle（图1在屏幕外时的 skew 状态），后段随进入动画归零
-  const ghostSkewAnim = firstItem.entrySkew && (() => {
+  const ghostSkewAnim = firstItem.entry.skew && (() => {
     const result = compileTimeline(
       [
-        { durationSeconds: T - sw, to: firstItem.entrySkew!.angle, keySplines: DEFAULT_EASE },
-        { durationSeconds: sw,     to: 0,                          keySplines: DEFAULT_EASE },
+        { durationSeconds: T - sw, to: firstItem.entry.skew!.angle, keySplines: DEFAULT_EASE },
+        { durationSeconds: sw,     to: 0,                           keySplines: DEFAULT_EASE },
       ],
       v => `${v}`,
-      firstItem.entrySkew!.angle,
+      firstItem.entry.skew!.angle,
     )
     return (
-      <animateTransform attributeName="transform" type={`skew${firstItem.entrySkew!.type}` as 'skewX' | 'skewY'}
+      <animateTransform attributeName="transform" type={`skew${firstItem.entry.skew!.type}` as 'skewX' | 'skewY'}
         values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
         dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
     )
   })()
 
-  // Ghost rotate：仅在 entryRotation 存在时渲染，使用图1的 origin 和 keySplines
-  const ghostRotateAnim = !isNil(firstItem.entryRotation) && (() => {
+  // Ghost rotate：仅在 entry.rotation 存在时渲染，使用图1的 origin 和 keySplines
+  const ghostRotateAnim = !isNil(firstItem.entry.rotation) && (() => {
     const rotationOrigin = getRotationOrigin({
-      origin: firstItem.entryRotation!.origin,
+      origin: firstItem.entry.rotation!.origin,
       contentWidth,
       contentHeight,
     })
-    const ease = defaultTo(firstItem.entryRotation!.keySplines, DEFAULT_EASE)
+    const ease = defaultTo(firstItem.entry.rotation!.keySplines, DEFAULT_EASE)
     const result = compileTimeline(
       [
-        { durationSeconds: T - sw, to: firstItem.entryRotation!.angle, keySplines: ease },
-        { durationSeconds: sw,     to: 0,                              keySplines: ease },
+        { durationSeconds: T - sw, to: firstItem.entry.rotation!.angle, keySplines: ease },
+        { durationSeconds: sw,     to: 0,                                keySplines: ease },
       ],
       v => `${v} ${rotationOrigin}`,
-      firstItem.entryRotation!.angle,
+      firstItem.entry.rotation!.angle,
     )
     return (
       <animateTransform attributeName="transform" type="rotate"

@@ -38,12 +38,16 @@ export const oppositeDirection = (direction: T_Direction4): T_Direction4 =>
 export interface I_NormalizedChildItem {
   url?: string
   jsx?: React.ReactNode
-  entryDirection: T_Direction4
-  exitDirection: T_Direction4
-  entrySkew?: I_SkewConfig
-  exitSkew?: I_SkewConfig
-  entryRotation?: I_NormalizedRotationConfig
-  exitRotation?: I_NormalizedRotationConfig
+  entry: {
+    direction: T_Direction4
+    skew?: I_SkewConfig
+    rotation?: I_NormalizedRotationConfig
+  }
+  exit: {
+    direction: T_Direction4
+    skew?: I_SkewConfig
+    rotation?: I_NormalizedRotationConfig
+  }
   stayDuration: number
   switchDuration: number
 }
@@ -54,17 +58,21 @@ const fillDefaults = (item: I_AnySkewPushChildItem): I_NormalizedChildItem => {
     throw new Error("Each childItem must have either `url` or `jsx`. Both cannot be empty.")
   }
 
-  const entryDirection = defaultTo(item.entryDirection, DEFAULT_DIRECTION)
+  const entryDirection = defaultTo(item.entry?.direction, DEFAULT_DIRECTION)
 
   return {
     url: item.url,
     jsx: item.jsx,
-    entryDirection,
-    exitDirection: defaultTo(item.exitDirection, oppositeDirection(entryDirection)),
-    entrySkew: item.entrySkew,
-    exitSkew: item.exitSkew,
-    entryRotation: normalizeRotation(item.entryRotation),
-    exitRotation: normalizeRotation(item.exitRotation),
+    entry: {
+      direction: entryDirection,
+      skew: item.entry?.skew,
+      rotation: normalizeRotation(item.entry?.rotation),
+    },
+    exit: {
+      direction: defaultTo(item.exit?.direction, oppositeDirection(entryDirection)),
+      skew: item.exit?.skew,
+      rotation: normalizeRotation(item.exit?.rotation),
+    },
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
   }
