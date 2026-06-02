@@ -1,8 +1,8 @@
 import isPlainObject from "lodash/isPlainObject"
-import type { T_RotationOrigin } from "../types"
+import type { T_Origin } from "@svg/types"
 
 /**
- * 九宫格旋转中心 → card 局部坐标 [cx, cy]
+ * 九宫格旋转中心 → card 局部坐标 [x, y]
  *
  * 坐标系：(0,0) = card 左上角，(cardWidth, cardHeight) = card 右下角
  */
@@ -11,13 +11,13 @@ export const resolveRotationOrigin = ({
   cardWidth,
   cardHeight,
 }: {
-  origin: T_RotationOrigin
+  origin: T_Origin
   cardWidth: number
   cardHeight: number
 }): [number, number] => {
   if (isPlainObject(origin)) {
-    const { cx, cy } = origin as { cx: number; cy: number }
-    return [cx, cy]
+    const { x, y } = origin as { x: number; y: number }
+    return [x, y]
   }
 
   const w = cardWidth

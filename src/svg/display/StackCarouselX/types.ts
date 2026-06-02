@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { T_Direction4 } from "@svg/types"
+import type { T_Direction4, T_Origin } from "@svg/types"
 
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 1
@@ -14,17 +14,10 @@ export interface I_SkewConfig {
   angle: number
 }
 
-/** 旋转中心：九宫格预设 或 自定义坐标（card 局部坐标系，0,0 = 左上角） */
-export type T_RotationOrigin =
-  | 'TopLeft' | 'Top' | 'TopRight'
-  | 'Left'   | 'Center' | 'Right'
-  | 'BottomLeft' | 'Bottom' | 'BottomRight'
-  | { cx: number; cy: number }
-
 /** 旋转配置 */
 export interface I_RotationConfig {
   /** 旋转中心（card 局部坐标），默认 Center */
-  origin?: T_RotationOrigin
+  origin?: T_Origin
   /** 旋转角度（度），正值=顺时针，默认 0 */
   angle?: number
   /** 缓动曲线，默认跟随 item 级 keySplines */

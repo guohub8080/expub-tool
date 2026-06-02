@@ -22,7 +22,7 @@ const DEFAULT_BACK_OFFSET = 162
 /** back/mid 缩放比例（center 恒为 1.0，mainChildItemSize 即中心卡牌显示尺寸） */
 const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
 
-export type { I_StackCarouselItem, I_ExitConfig, I_SkewConfig, I_RotationConfig, T_RotationOrigin } from "./types"
+export type { I_StackCarouselItem, I_ExitConfig, I_SkewConfig, I_RotationConfig } from "./types"
 
 interface I_StackCarouselXProps {
   /** SVG 画布尺寸（viewBox） */

@@ -1,7 +1,6 @@
 import isPlainObject from "lodash/isPlainObject"
 import isString from "lodash/isString"
-import type { T_Direction4 } from "@svg/types"
-import type { T_RotationOrigin } from "../types"
+import type { T_Direction4, T_Origin } from "@svg/types"
 
 /**
  * 方向位移计算器
@@ -49,7 +48,7 @@ export const getRotationOrigin = ({
   contentHeight,
 }: {
   /** 九宫格位置或自定义坐标 */
-  origin: T_RotationOrigin
+  origin: T_Origin
   /** 内容区域宽度 */
   contentWidth: number
   /** 内容区域高度 */
@@ -57,8 +56,8 @@ export const getRotationOrigin = ({
 }): string => {
   // 自定义坐标直接返回
   if (isPlainObject(origin)) {
-    const { cx, cy } = origin as { cx: number; cy: number }
-    return `${cx} ${cy}`
+    const { x, y } = origin as { x: number; y: number }
+    return `${x} ${y}`
   }
 
   // 九宫格预设（origin 此时一定是 string）
