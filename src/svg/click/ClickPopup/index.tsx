@@ -4,7 +4,6 @@ import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
-import svgURL from '@utils/svg/svgURL'
 import { popupBounceAnims, popupOpacityAnims } from './smil'
 import { FaceContent } from '../ClickFlipCard/FaceContent'
 import type { I_ClickPopupProps } from './types'
@@ -40,7 +39,7 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 				...spacingResult,
 			}}
 		>
-			{/* 背景层（静态底图） */}
+			{/* 背景层（静态底色） */}
 			<section style={{ height: 0 }}>
 				<SvgEx
 					viewBox={`0 0 ${W} ${H}`}
@@ -71,53 +70,29 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 						</foreignObject>
 					</g>
 
-					{/* 弹窗层：初始 opacity=0 + scale=0（隐藏） */}
-					<g opacity={0} transform={`translate(-10000 0)`}>
+					{/*
+						弹窗组：opacity + scale 动画 + click target 全在此组内
+						click target 用 pointer-events:all 确保父级 opacity=0 时仍可点击
+						事件从 click target 冒泡到本组 → 触发内部所有 begin="mousedown/mouseup"
+					*/}
+					<g opacity={0}>
 						{popupOpacityAnims()}
-
-						{/* 弹窗重置位移：mousedown → 移入可视区, mouseup → 移入可视区 */}
-						<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-							values="-10000 0;-10000 0;0 0;0 0" dur={`${bounceDur * 2}s`}
-							keyTimes="0;0.01;0.01;1" fill="freeze" begin="mousedown" />
-						<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-							values="-10000 0;-10000 0;0 0;0 0" dur={`${bounceDur * 2}s`}
-							keyTimes="0;0.01;0.01;1" fill="freeze" begin="touchstart" />
-						<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-							values="-10000 0;-10000 0;-10000 0;-10000 0" dur={`${bounceDur * 2}s`}
-							keyTimes="0;0.01;0.01;1" fill="freeze" begin="touchmove" />
-						<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-							values="0 0;0 0;-10000 0;-10000 0" dur={`${bounceDur * 2}s`}
-							keyTimes="0;0.5;0.5;1" fill="freeze" begin="mouseup" />
-						<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-							values="0 0;0 0;-10000 0;-10000 0" dur={`${bounceDur * 2}s`}
-							keyTimes="0;0.5;0.5;1" fill="freeze" begin="click" />
 
 						{/* 弹窗缩放中心 */}
 						<g transform={`translate(${halfW} ${halfH})`}>
 							<g>
 								{popupBounceAnims({ bounceDur, holdRatio })}
 								<g transform={`translate(${-halfW} ${-halfH})`}>
-									{/* 弹窗内容 */}
 									<foreignObject x={0} y={0} width={W} height={H}>
 										<FaceContent content={props.popup} width={W} height={H} />
 									</foreignObject>
-
-									{/* 点击交互区域 */}
-									<rect x={0} y={0} width={W} height={H} fill="#000" opacity={0} style={{ pointerEvents: 'visible' }} />
 								</g>
 							</g>
 						</g>
-					</g>
 
-					{/* 初始点击触发区域（封面层） */}
-					<g>
-						<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-							values="0 0;0 0;-10000 0;-10000 0" dur={`${bounceDur * 2}s`}
-							keyTimes="0;0.01;0.01;1" fill="freeze" begin="mousedown" />
-						<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-							values="0 0;0 0;-10000 0;-10000 0" dur={`${bounceDur * 2}s`}
-							keyTimes="0;0.01;0.01;1" fill="freeze" begin="touchstart" />
-						<rect x={0} y={0} width={W} height={H} fill="transparent" opacity={0} style={{ pointerEvents: 'visible' }} />
+						{/* 点击触发区域：在 scale 结构之外，始终可点击 */}
+						<rect x={0} y={0} width={W} height={H} fill="transparent" opacity={0}
+							style={{ pointerEvents: 'all' }} />
 					</g>
 				</SvgEx>
 			</section>
