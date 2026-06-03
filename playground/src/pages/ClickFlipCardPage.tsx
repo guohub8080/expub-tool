@@ -70,21 +70,21 @@ export default function ClickFlipCardPage() {
 
 									{/* 浮动标题 */}
 									<g transform="translate(150, 320)">
-										{transformFloat({ floatRange: 6, duration: 2.5, begin: '0s' })}
+										{transformFloat({ floatRangeY: 6, duration: 2.5, begin: '0s' })}
 										<text textAnchor="middle" fill="#fff" fontSize={22} fontWeight="bold" fontFamily="sans-serif">
 											Click to Flip
 										</text>
 									</g>
 
 									{/* 呼吸光圈 */}
-									<g>
-										{transformBreathe({ minScale: 0.8, maxScale: 1.2, duration: 1.5, begin: '0s' })}
-										<circle cx={150} cy={180} r={50} fill="rgba(255,255,255,0.15)" />
+									<g transform="translate(150, 180)">
+										{transformBreathe({ origin: [0, 0], fromScale: 0.8, toScale: 1.2, onceBreatheDurationSeconds: 1.5, begin: '0s' })}
+										<circle cx={0} cy={0} r={50} fill="rgba(255,255,255,0.15)" />
 									</g>
 
 									{/* 呼吸角标 */}
 									<g transform="translate(230, 40)">
-										{transformBreathe({ minScale: 0.9, maxScale: 1.1, duration: 2, begin: '0.3s' })}
+										{transformBreathe({ origin: [0, 0], fromScale: 0.9, toScale: 1.1, onceBreatheDurationSeconds: 2, begin: '0.3s' })}
 										<rect x={-24} y={-12} width={48} height={24} rx={12} fill="#ef4444" />
 										<text x={0} y={5} textAnchor="middle" fill="#fff" fontSize={11} fontWeight="bold" fontFamily="sans-serif">
 											NEW
@@ -115,7 +115,7 @@ export default function ClickFlipCardPage() {
 
 									{/* 中心图标区 */}
 									<g transform="translate(150, 160)">
-										{transformBreathe({ minScale: 0.85, maxScale: 1.15, duration: 1.8, begin: '0s' })}
+										{transformBreathe({ origin: [0, 0], fromScale: 0.85, toScale: 1.15, onceBreatheDurationSeconds: 1.8, begin: '0s' })}
 										<rect x={-50} y={-50} width={100} height={100} rx={20} fill="rgba(255,255,255,0.2)" />
 										<text x={0} y={8} textAnchor="middle" fill="#fff" fontSize={40} fontFamily="sans-serif">
 											★
@@ -124,7 +124,7 @@ export default function ClickFlipCardPage() {
 
 									{/* 闪烁提示文字 */}
 									<g>
-										{animateSoftBlink({ minOpacity: 0.3, maxOpacity: 1, duration: 1.2, begin: '0.5s' })}
+										{animateSoftBlink({ minOpacity: 0.3, maxOpacity: 1, onceBlinkDurationSeconds: 1.2, begin: '0.5s' })}
 										<text x={150} y={280} textAnchor="middle" fill="#fff" fontSize={18} fontWeight="bold" fontFamily="sans-serif">
 											Click to Back
 										</text>
@@ -132,7 +132,7 @@ export default function ClickFlipCardPage() {
 
 									{/* 底部闪烁小字 */}
 									<g>
-										{animateSoftBlink({ minOpacity: 0.2, maxOpacity: 0.8, duration: 1.5, begin: '0.8s' })}
+										{animateSoftBlink({ minOpacity: 0.2, maxOpacity: 0.8, onceBlinkDurationSeconds: 1.5, begin: '0.8s' })}
 										<text x={150} y={360} textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize={12} fontFamily="sans-serif">
 											infinite flip card
 										</text>
