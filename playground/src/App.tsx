@@ -14,6 +14,7 @@ import SkewPushYPage from './pages/SkewPushYPage'
 import AnySkewPushPage from './pages/AnySkewPushPage'
 import StackCarouselPage from './pages/StackCarouselPage'
 import ClickFlipCardPage from './pages/ClickFlipCardPage'
+import ClickPopupPage from './pages/ClickPopupPage'
 
 const links = [
   { to: '/', label: 'SMIL' },
@@ -28,6 +29,7 @@ const links = [
   { to: '/any-skew-push', label: 'AnySkewPush' },
   { to: '/stack-carousel', label: 'StackCarousel' },
   { to: '/click-flip', label: 'ClickFlip' },
+  { to: '/click-popup', label: 'ClickPopup' },
   { to: '/behaviors', label: 'Behaviors' },
   { to: '/css', label: 'CSS' },
   { to: '/utils', label: 'Utils' },
@@ -80,6 +82,7 @@ export default function App() {
           <Route path="/any-skew-push" element={<AnySkewPushPage />} />
           <Route path="/stack-carousel" element={<StackCarouselPage />} />
           <Route path="/click-flip" element={<ClickFlipCardPage />} />
+          <Route path="/click-popup" element={<ClickPopupPage />} />
           <Route path="/behaviors" element={<BehaviorsPage />} />
           <Route path="/css" element={<CssPage />} />
           <Route path="/utils" element={<UtilsPage />} />

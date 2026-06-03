@@ -49,3 +49,6 @@ export { default as StackCarouselY } from "./display/StackCarouselY"
 
 export { ClickFlipCard } from "./click"
 export type { I_ClickFlipProps, I_FaceContent } from "./click"
+
+export { ClickPopup } from "./click"
+export type { I_ClickPopupProps } from "./click"
