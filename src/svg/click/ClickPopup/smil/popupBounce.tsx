@@ -17,7 +17,7 @@ export function popupBounceAnims({ bounceDur, holdRatio }: {
 	const holdKeyTime = holdRatio.toFixed(6)
 	const mousedownDur = `${bounceDur + 0.2}s`
 	const mouseupDur = `${bounceDur}s`
-	const splines = '0.34 1.56 0.64 1'
+	const splines = '0.42 0 0.58 1'
 	const doubleSplines = `${splines};${splines}`
 
 	return (
