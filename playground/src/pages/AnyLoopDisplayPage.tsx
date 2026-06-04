@@ -10,6 +10,8 @@ export default function AnyLoopDisplayPage() {
         <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B（上下交替，无 skew）</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
+          childItemSize={{ w: 240, h: 240 }}
+          canvasBg="#f3f4f6"
           childItems={[
             { url: getWechat300x300(1), entry: { direction: 'T' }, stayDuration: 0 },
             { url: getWechat300x300(2), entry: { direction: 'B' }, stayDuration: 0 },

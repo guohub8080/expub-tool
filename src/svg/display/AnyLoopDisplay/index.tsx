@@ -1,6 +1,5 @@
 import defaultTo from "lodash/defaultTo"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
-import max from "lodash/max"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import SectionEx from "@html/basicEx/SectionEx"
@@ -38,8 +37,8 @@ const AnyLoopDisplay = (props: {
   canvasSize: { w: number; h: number }
   /** 子项配置数组，每项包含 url 或 jsx + direction / skew / rotation / duration */
   childItems: I_AnyLoopDisplayChildItem[]
-  /** 内容与画布边缘间距（像素），默认 0 */
-  itemGap?: number
+  /** 子项内容区域尺寸 { w, h }，不传则等于 canvasSize（撑满画布） */
+  childItemSize?: { w: number; h: number }
   /** 画布背景：颜色字符串（如 "#fff"）或图片 URL */
   canvasBg?: string
   /** 外间距配置 */
@@ -51,11 +50,12 @@ const AnyLoopDisplay = (props: {
   }
 
   const { w, h } = props.canvasSize
+  const contentW = props.childItemSize ? props.childItemSize.w : w
+  const contentH = props.childItemSize ? props.childItemSize.h : h
+  const offsetX = (w - contentW) / 2
+  const offsetY = (h - contentH) / 2
   const items = normalizeChildItems(props.childItems)
   const { totalDuration, itemTimelines, ghostTimeline } = buildCyclicTimelines(items)
-  const itemGap = defaultTo(props.itemGap, 0)
-  const contentW = max([1, w - itemGap * 2])
-  const contentH = max([1, h - itemGap * 2])
   const isDev = ExPubGoConfig().mode === 'development'
 
   // 校验 jsx 模式下最外层 SVG 的 viewBox 是否跟内容区域尺寸一致
@@ -81,7 +81,7 @@ const AnyLoopDisplay = (props: {
             目的：SMIL 引擎在第一个 paint 之前尚未初始化，若不隐藏，
             各图的 <g> 会在动画接管前短暂停在原点（全屏中心），造成初始闪烁。
           */}
-          <g transform={`translate(${itemGap}, ${itemGap})`} visibility="hidden">
+          <g transform={`translate(${offsetX}, ${offsetY})`} visibility="hidden">
             {setVisibility({ to: "visible", begin: "0.01s", isFreeze: true })}
             {/* 坐标系平移到画布中心，所有图的 translate 动画以中心为原点计算 */}
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
