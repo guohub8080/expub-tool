@@ -61,23 +61,22 @@ export default function ClickCascadePage() {
 								</svg>
 							),
 						},
-						{ url: getWechat300x300(9) },
+						{ url: getWechat300x300(1) },
 					]}
 				/>
 			</div>
 
 			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-				<h3 style={{ margin: '0 0 8px' }}>5 图 — 多层极限测试</h3>
+				<h3 style={{ margin: '0 0 8px' }}>4 图 — 多层快速切换 (0.3s)</h3>
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#fafafa"
-					fadeDuration={0.4}
+					fadeDuration={0.3}
 					layers={[
-						{ url: getWechat300x300(10) },
-						{ url: getWechat300x300(11) },
-						{ url: getWechat300x300(12) },
-						{ url: getWechat300x300(13) },
-						{ url: getWechat300x300(14) },
+						{ url: getWechat300x300(2) },
+						{ url: getWechat300x300(3) },
+						{ url: getWechat300x300(4) },
+						{ url: getWechat300x300(5) },
 					]}
 				/>
 			</div>
@@ -92,9 +91,9 @@ export default function ClickCascadePage() {
 					canvasBg="#18181b"
 					fadeDuration={0.8}
 					layers={[
-						{ url: getWechat300x300(15), hotArea: { x: 150, y: 200, w: 150, h: 200 } },
-						{ url: getWechat300x300(16), hotArea: { x: 150, y: 200, w: 150, h: 200 } },
-						{ url: getWechat300x300(17) },
+						{ url: getWechat300x300(6), hotArea: { x: 150, y: 200, w: 150, h: 200 } },
+						{ url: getWechat300x300(7), hotArea: { x: 150, y: 200, w: 150, h: 200 } },
+						{ url: getWechat300x300(8) },
 					]}
 				/>
 			</div>
