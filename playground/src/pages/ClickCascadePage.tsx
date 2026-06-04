@@ -44,8 +44,7 @@ export default function ClickCascadePage() {
 			<CopyDemo title="3 图 URL — 基础全屏点击">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
-					canvasBg="#1a1a2e"
-					layers={[
+					childItems={[
 						{ url: getWechat300x300(1) },
 						{ url: getWechat300x300(2) },
 						{ url: getWechat300x300(3) },
@@ -56,8 +55,7 @@ export default function ClickCascadePage() {
 			<CopyDemo title="3 图 JSX — 呼吸 + 浮动 + 旋转">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
-					fadeDuration={0.6}
-					layers={[
+					childItems={[
 						{
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
@@ -104,9 +102,7 @@ export default function ClickCascadePage() {
 			<CopyDemo title="3 图混合 — URL + JSX 闪烁">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
-					canvasBg="#1e293b"
-					fadeDuration={0.8}
-					layers={[
+					childItems={[
 						{ url: getWechat300x300(4) },
 						{
 							jsx: (
@@ -124,15 +120,13 @@ export default function ClickCascadePage() {
 				/>
 			</CopyDemo>
 
-			<CopyDemo title="4 图 — 慢速淡入 (1.5s)">
+			<CopyDemo title="4 图 — 每层不同速度">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
-					canvasBg="#0f0f23"
-					fadeDuration={1.5}
-					layers={[
-						{ url: getWechat300x300(6) },
-						{ url: getWechat300x300(7) },
-						{ url: getWechat300x300(8) },
+					childItems={[
+						{ url: getWechat300x300(6), fadeDuration: 1.5 },
+						{ url: getWechat300x300(7), fadeDuration: 0.3 },
+						{ url: getWechat300x300(8), fadeDuration: 0.8 },
 						{ url: getWechat300x300(1) },
 					]}
 				/>
@@ -144,9 +138,7 @@ export default function ClickCascadePage() {
 				</p>
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
-					canvasBg="#18181b"
-					fadeDuration={0.8}
-					layers={[
+					childItems={[
 						{ url: getWechat300x300(2), hotArea: { x: 150, y: 150, w: 150, h: 150 } },
 						{ url: getWechat300x300(3), hotArea: { x: 150, y: 150, w: 150, h: 150 } },
 						{ url: getWechat300x300(4) },

@@ -8,7 +8,7 @@ import { SPACING_ZERO, spacing } from '@css-fn/spacing'
 import { getEaseBezier } from '@smil/bezier'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import svgURL from '@utils/svg/svgURL'
-import type { I_ClickCascadeProps, I_CascadeLayer } from './types'
+import type { I_ClickCascadeProps, I_CascadeChildItem } from './types'
 
 const DEFAULT_FADE_DURATION = 0.8
 const EASE_IN_OUT = getEaseBezier({ isIn: true, isOut: true })
@@ -21,135 +21,128 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 
 	const W = props.canvasSize.w
 	const H = props.canvasSize.h
-	const bgColor = defaultTo(props.canvasBg, '#FFFFFF')
-	const fadeDur = defaultTo(props.fadeDuration, DEFAULT_FADE_DURATION)
-	const splines = defaultTo(props.keySplines, EASE_IN_OUT)
-	const layers = props.layers
+	const bgColor = props.canvasBg
+	const childItems = props.childItems
 
-	if (!layers || layers.length < 2) {
-		throw new Error('`layers` must contain at least 2 items.')
+	if (!childItems || childItems.length < 2) {
+		throw new Error('`childItems` must contain at least 2 items.')
 	}
-
-	const first = layers[0]
-	if (isNil(first.url) && isNil(first.jsx)) {
-		throw new Error('The first layer must have either `url` or `jsx`.')
-	}
-
-	const firstIsJsx = !isNil(first.jsx)
 
 	/** 移出视野的距离：取宽高较大值的 100 倍 */
 	const outOfView = defaultTo(max([W, H]), W) * 100
 
-	/** keyTime: 淡入完成时刻占总时长的比例 */
-	const holdKeyTime = fadeDur / (fadeDur + HOLD_DURATION)
+	/** 渲染单个 item 的内容 */
+	const renderContent = (item: I_CascadeChildItem) => {
+		if (!isNil(item.jsx)) return item.jsx
+		if (isNil(item.url)) return null
+		return (
+			<foreignObject x={0} y={0} width={W} height={H}>
+				<SvgEx
+					viewBox={`0 0 ${W} ${H}`}
+					style={{
+						backgroundImage: svgURL(item.url),
+						backgroundSize: '100% auto',
+						backgroundRepeat: 'no-repeat',
+						backgroundPosition: '50% 0',
+						display: 'inline-block',
+						pointerEvents: 'none',
+						userSelect: 'none',
+						verticalAlign: 'top',
+						width: '100%',
+					}}
+				/>
+			</foreignObject>
+		)
+	}
+
+	/** 构建单层的淡入动画 + 热区 */
+	const renderFadeIn = (item: I_CascadeChildItem) => {
+		const fadeDur = defaultTo(item.fadeDuration, DEFAULT_FADE_DURATION)
+		const splines = defaultTo(item.keySplines, EASE_IN_OUT)
+		const holdKeyTime = fadeDur / (fadeDur + HOLD_DURATION)
+
+		const hx = defaultTo(item.hotArea?.x, 0)
+		const hy = defaultTo(item.hotArea?.y, 0)
+		const hw = defaultTo(item.hotArea?.w, W)
+		const hh = defaultTo(item.hotArea?.h, H)
+
+		return (
+			<>
+				<animate
+					attributeName="opacity"
+					begin="click+0s"
+					calcMode="spline"
+					dur={`${fadeDur + HOLD_DURATION}s`}
+					fill="freeze"
+					keySplines={`${splines}; ${splines}`}
+					keyTimes={`0; ${holdKeyTime.toFixed(6)}; 1`}
+					restart="never"
+					values="0; 1; 1"
+				/>
+				<animateTransform
+					additive="sum"
+					attributeName="transform"
+					begin="click"
+					dur={`${fadeDur + HOLD_DURATION}s`}
+					fill="freeze"
+					restart="never"
+					type="translate"
+					values={`${outOfView} 0`}
+				/>
+				<rect
+					x={hx} y={hy} width={hw} height={hh}
+					opacity={0} fill="transparent"
+					style={{ pointerEvents: 'visible' }}
+				>
+					<set
+						attributeName="visibility"
+						from="visible"
+						to="hidden"
+						begin="click+0s"
+						dur="1ms"
+						fill="freeze"
+						restart="never"
+					/>
+				</rect>
+			</>
+		)
+	}
 
 	/**
-	 * 构建递归嵌套层
-	 * 第 1 张图 = SVG background 或 foreignObject（JSX），第 2 张开始递归
+	 * 递归构建所有层
+	 * - 第 1 层：无动画，直接渲染
+	 * - 中间层：opacity=0 + 淡入动画 + 热区
+	 * - 最后一层：无动画，静态内容（递归终点）
 	 */
-	const buildNestedLayers = (): React.ReactNode => {
-		const remaining = layers.slice(1)
-		if (remaining.length === 0) return null
+	const buildChain = (index: number): React.ReactNode => {
+		if (index >= childItems.length) return null
+		const item = childItems[index]
+		if (isNil(item.url) && isNil(item.jsx)) return null
 
-		const buildChain = (index: number): React.ReactNode => {
-			if (index >= remaining.length) return null
-			const layer = remaining[index]
-			const useItem = !isNil(layer.jsx)
-			if (isNil(layer.url) && isNil(layer.jsx)) return null
+		const isFirst = index === 0
+		const isLast = index === childItems.length - 1
 
-			const isLast = index === remaining.length - 1
-
-			// 热区
-			const hx = defaultTo(layer.hotArea?.x, 0)
-			const hy = defaultTo(layer.hotArea?.y, 0)
-			const hw = defaultTo(layer.hotArea?.w, W)
-			const hh = defaultTo(layer.hotArea?.h, H)
-
-			const renderContent = () => useItem
-				? layer.jsx
-				: (
-					<foreignObject x={0} y={0} width={W} height={H}>
-						<SvgEx
-							viewBox={`0 0 ${W} ${H}`}
-							style={{
-								backgroundImage: svgURL(layer.url!),
-								backgroundSize: '100% auto',
-								backgroundRepeat: 'no-repeat',
-								backgroundPosition: '50% 0',
-								display: 'inline-block',
-								pointerEvents: 'none',
-								userSelect: 'none',
-								verticalAlign: 'top',
-								width: '100%',
-							}}
-						/>
-					</foreignObject>
-				)
-
-			// 最后一层：静态内容，无动画
-			if (isLast) {
-				return (
-					<g transform={`translate(-${outOfView} 0)`}>
-						{renderContent()}
-					</g>
-				)
-			}
-
+		// 第一层或最后一层：无动画
+		if (isFirst || isLast) {
 			return (
-				<g opacity={0}>
-					{/* 淡入 */}
-					<animate
-						attributeName="opacity"
-						begin="click+0s"
-						calcMode="spline"
-						dur={`${fadeDur + HOLD_DURATION}s`}
-						fill="freeze"
-						keySplines={`${splines}; ${splines}`}
-						keyTimes={`0; ${holdKeyTime.toFixed(6)}; 1`}
-						restart="never"
-						values="0; 1; 1"
-					/>
-					{/* 平移抵消 */}
-					<animateTransform
-						additive="sum"
-						attributeName="transform"
-						begin="click"
-						dur={`${fadeDur + HOLD_DURATION}s`}
-						fill="freeze"
-						restart="never"
-						type="translate"
-						values={`${outOfView} 0`}
-					/>
-					{/* 热区 */}
-					<rect
-						x={hx} y={hy} width={hw} height={hh}
-						opacity={0} fill="transparent"
-						style={{ pointerEvents: 'visible' }}
-					>
-						<set
-							attributeName="visibility"
-							from="visible"
-							to="hidden"
-							begin="click+0s"
-							dur="1ms"
-							fill="freeze"
-							restart="never"
-						/>
-					</rect>
-					{/* 内容 + 下一层递归 */}
-					<g transform={`translate(-${outOfView} 0)`}>
-						{renderContent()}
-						{buildChain(index + 1)}
-					</g>
-				</g>
+				<>
+					{renderContent(item)}
+					{buildChain(index + 1)}
+				</>
 			)
 		}
 
-		return buildChain(0)
+		// 中间层：淡入 + 热区
+		return (
+			<g opacity={0}>
+				{renderFadeIn(item)}
+				<g transform={`translate(-${outOfView} 0)`}>
+					{renderContent(item)}
+					{buildChain(index + 1)}
+				</g>
+			</g>
+		)
 	}
-
-	// 第 1 张图：URL → background-image；JSX → foreignObject 直接渲染
-	const firstBg = firstIsJsx ? undefined : svgURL(first.url!)
 
 	return (
 		<SectionEx
@@ -168,10 +161,6 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 				<SvgEx
 					viewBox={`0 0 ${W} ${H}`}
 					style={{
-						backgroundImage: firstBg,
-						backgroundSize: '100% auto',
-						backgroundRepeat: 'no-repeat',
-						backgroundPosition: '50% 0',
 						backgroundColor: bgColor,
 						boxSizing: 'border-box',
 						display: 'inline-block',
@@ -181,13 +170,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 						width: '100%',
 					}}
 				>
-					{/* 第一层是 JSX 时，直接渲染内容（不用 background） */}
-					{firstIsJsx && (
-						<foreignObject x={0} y={0} width={W} height={H}>
-							{first.jsx}
-						</foreignObject>
-					)}
-					{buildNestedLayers()}
+					{buildChain(0)}
 				</SvgEx>
 			</section>
 		</SectionEx>

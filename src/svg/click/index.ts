@@ -5,4 +5,4 @@ export { default as ClickPopup } from './ClickPopup'
 export type { I_ClickPopupProps } from './ClickPopup/types'
 
 export { default as ClickCascade } from './ClickCascade'
-export type { I_ClickCascadeProps, I_CascadeLayer } from './ClickCascade/types'
+export type { I_ClickCascadeProps, I_CascadeChildItem } from './ClickCascade/types'
