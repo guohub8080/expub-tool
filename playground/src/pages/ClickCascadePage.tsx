@@ -1,5 +1,10 @@
 import { useRef, useState } from 'react'
 import { ClickCascade } from 'expub-tool/svg'
+import { animateSoftBlink } from 'expub-tool/behaviors'
+import { transformBreathe } from 'expub-tool/behaviors'
+import { transformFloat } from 'expub-tool/behaviors'
+import { animateOpacity } from 'expub-tool/smil'
+import { transformRotate } from 'expub-tool/smil'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
@@ -52,7 +57,7 @@ export default function ClickCascadePage() {
 				/>
 			</CopyDemo>
 
-			<CopyDemo title="3 图 JSX — 纯色">
+			<CopyDemo title="3 图 JSX — 呼吸 + 浮动 + 旋转">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
 					fadeDuration={0.6}
@@ -61,6 +66,10 @@ export default function ClickCascadePage() {
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
 									<rect width={300} height={300} fill="#6366f1" />
+									<g>
+										{transformBreathe({ dur: 2, minScale: 0.9, maxScale: 1.1 })}
+										<circle cx={150} cy={150} r={60} fill="#a5b4fc" />
+									</g>
 								</svg>
 							),
 						},
@@ -68,6 +77,10 @@ export default function ClickCascadePage() {
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
 									<rect width={300} height={300} fill="#ec4899" />
+									<g>
+										{transformFloat({ dur: 1.5, moveY: -15 })}
+										<circle cx={150} cy={150} r={50} fill="#fbbf24" />
+									</g>
 								</svg>
 							),
 						},
@@ -75,6 +88,10 @@ export default function ClickCascadePage() {
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
 									<rect width={300} height={300} fill="#10b981" />
+									<g transform="translate(150 150)">
+										{transformRotate({ initValue: 0, begin: '0s', dur: 6, loopCount: -1 })}
+										<rect x={-40} y={-40} width={80} height={80} rx={12} fill="#34d399" />
+									</g>
 								</svg>
 							),
 						},
@@ -82,7 +99,7 @@ export default function ClickCascadePage() {
 				/>
 			</CopyDemo>
 
-			<CopyDemo title="3 图混合 — URL + JSX">
+			<CopyDemo title="3 图混合 — URL + JSX 闪烁">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#1e293b"
@@ -92,7 +109,11 @@ export default function ClickCascadePage() {
 						{
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
-									<rect width={300} height={300} fill="#f59e0b" />
+									<rect width={300} height={300} fill="#0f172a" />
+									<g>
+										{animateSoftBlink({ dur: 1.2 })}
+										<circle cx={150} cy={150} r={80} fill="#f59e0b" />
+									</g>
 								</svg>
 							),
 						},
