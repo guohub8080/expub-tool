@@ -1,13 +1,46 @@
+import { useRef, useState } from 'react'
 import { ClickCascade } from 'expub-tool/svg'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
+
+const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
+	const ref = useRef<HTMLDivElement>(null)
+	const [copied, setCopied] = useState(false)
+
+	const handleCopy = () => {
+		const html = ref.current?.innerHTML
+		if (html) {
+			navigator.clipboard.writeText(html)
+			setCopied(true)
+			setTimeout(() => setCopied(false), 2000)
+		}
+	}
+
+	return (
+		<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16 }}>
+			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+				<h3 style={{ margin: 0, fontSize: 15 }}>{title}</h3>
+				<button
+					onClick={handleCopy}
+					style={{
+						padding: '4px 12px', fontSize: 12, borderRadius: 4,
+						border: '1px solid #d1d5db', background: copied ? '#10b981' : '#fff',
+						color: copied ? '#fff' : '#374151', cursor: 'pointer',
+					}}
+				>
+					{copied ? 'Copied!' : 'Copy HTML'}
+				</button>
+			</div>
+			<div ref={ref}>{children}</div>
+		</div>
+	)
+}
 
 export default function ClickCascadePage() {
 	return (
 		<div>
 			<h2>ClickCascade — 点击逐层渐显</h2>
 
-			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-				<h3 style={{ margin: '0 0 8px' }}>3 图 URL — 基础全屏点击</h3>
+			<CopyDemo title="3 图 URL — 基础全屏点击">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#1a1a2e"
@@ -17,10 +50,9 @@ export default function ClickCascadePage() {
 						{ url: getWechat300x300(3) },
 					]}
 				/>
-			</div>
+			</CopyDemo>
 
-			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-				<h3 style={{ margin: '0 0 8px' }}>3 图 JSX — 纯渐变文字</h3>
+			<CopyDemo title="3 图 JSX — 纯渐变文字">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
 					fadeDuration={0.6}
@@ -60,10 +92,9 @@ export default function ClickCascadePage() {
 						},
 					]}
 				/>
-			</div>
+			</CopyDemo>
 
-			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-				<h3 style={{ margin: '0 0 8px' }}>3 图混合 — URL + JSX</h3>
+			<CopyDemo title="3 图混合 — URL + JSX">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#1e293b"
@@ -87,10 +118,9 @@ export default function ClickCascadePage() {
 						{ url: getWechat300x300(5) },
 					]}
 				/>
-			</div>
+			</CopyDemo>
 
-			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-				<h3 style={{ margin: '0 0 8px' }}>4 图 — 慢速淡入 (1.5s)</h3>
+			<CopyDemo title="4 图 — 慢速淡入 (1.5s)">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#0f0f23"
@@ -102,10 +132,9 @@ export default function ClickCascadePage() {
 						{ url: getWechat300x300(1) },
 					]}
 				/>
-			</div>
+			</CopyDemo>
 
-			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-				<h3 style={{ margin: '0 0 8px' }}>3 图 — 右下角局部热区</h3>
+			<CopyDemo title="3 图 — 右下角局部热区">
 				<p style={{ margin: '0 0 8px', fontSize: 13, color: '#6b7280' }}>
 					只有右下角 1/4 区域可点击
 				</p>
@@ -119,7 +148,7 @@ export default function ClickCascadePage() {
 						{ url: getWechat300x300(4) },
 					]}
 				/>
-			</div>
+			</CopyDemo>
 		</div>
 	)
 }
