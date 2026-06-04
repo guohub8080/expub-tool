@@ -70,15 +70,10 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 						</foreignObject>
 					</g>
 
-					{/*
-						弹窗组：opacity + scale 动画 + click target 全在此组内
-						click target 用 pointer-events:all 确保父级 opacity=0 时仍可点击
-						事件从 click target 冒泡到本组 → 触发内部所有 begin="mousedown/mouseup"
-					*/}
+					{/* 弹窗层：opacity=0 隐藏，SMIL begin="mouseup/click" 为文档级事件，不受 opacity 限制 */}
 					<g opacity={0}>
 						{popupOpacityAnims()}
 
-						{/* 弹窗缩放中心 */}
 						<g transform={`translate(${halfW} ${halfH})`}>
 							<g>
 								{popupBounceAnims({ bounceDur, holdRatio })}
@@ -89,10 +84,12 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 								</g>
 							</g>
 						</g>
+					</g>
 
-						{/* 点击触发区域：在 scale 结构之外，始终可点击 */}
+					{/* 点击触发区域：SVG 底层，pointer-events:visible 覆盖 SVG 的 pointer-events:none */}
+					<g>
 						<rect x={0} y={0} width={W} height={H} fill="transparent" opacity={0}
-							style={{ pointerEvents: 'all' }} />
+							style={{ pointerEvents: 'visible' }} />
 					</g>
 				</SvgEx>
 			</section>
