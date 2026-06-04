@@ -12,6 +12,7 @@ import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import svgURL from "@utils/svg/svgURL"
 import { DIRECTION_8 } from "@svg/types"
+
 import max from "lodash/max"
 import min from "lodash/min"
 import type { T_Direction8 } from "@svg/types"
@@ -30,14 +31,14 @@ const getExitTranslate = (direction: T_Direction8, distance: number): Partial<I_
   const d = distance
   const dxy = d * 0.7
   switch (direction) {
-    case "L":  return { x: -d, y: 0 }
-    case "R":  return { x: d, y: 0 }
-    case "T":  return { x: 0, y: -d }
-    case "B":  return { x: 0, y: d }
-    case "TL": return { x: -dxy, y: -dxy }
-    case "TR": return { x: dxy, y: -dxy }
-    case "BL": return { x: -dxy, y: dxy }
-    case "BR": return { x: dxy, y: dxy }
+    case DIRECTION_8.Left:  return { x: -d, y: 0 }
+    case DIRECTION_8.Right: return { x: d, y: 0 }
+    case DIRECTION_8.Top:   return { x: 0, y: -d }
+    case DIRECTION_8.Bottom: return { x: 0, y: d }
+    case DIRECTION_8.TopLeft:     return { x: -dxy, y: -dxy }
+    case DIRECTION_8.TopRight:    return { x: dxy, y: -dxy }
+    case DIRECTION_8.BottomLeft:  return { x: -dxy, y: dxy }
+    case DIRECTION_8.BottomRight: return { x: dxy, y: dxy }
   }
 }
 

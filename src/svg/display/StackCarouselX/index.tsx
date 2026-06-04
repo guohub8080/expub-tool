@@ -1,6 +1,7 @@
 import React from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import { DIRECTION_8 } from '@svg/types'
+
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
 import max from "lodash/max"
@@ -52,14 +53,14 @@ const getExitTranslate = (direction: T_Direction8, distance: number, distanceXY?
   const d = distance
   const dxy = defaultTo(distanceXY, d * 0.7)
   switch (direction) {
-    case "L":  return { x: -d, y: 0 }
-    case "R":  return { x: d, y: 0 }
-    case "T":  return { x: 0, y: -d }
-    case "B":  return { x: 0, y: d }
-    case "TL": return { x: -dxy, y: -dxy }
-    case "TR": return { x: dxy, y: -dxy }
-    case "BL": return { x: -dxy, y: dxy }
-    case "BR": return { x: dxy, y: dxy }
+    case DIRECTION_8.Left:  return { x: -d, y: 0 }
+    case DIRECTION_8.Right: return { x: d, y: 0 }
+    case DIRECTION_8.Top:   return { x: 0, y: -d }
+    case DIRECTION_8.Bottom: return { x: 0, y: d }
+    case DIRECTION_8.TopLeft:     return { x: -dxy, y: -dxy }
+    case DIRECTION_8.TopRight:    return { x: dxy, y: -dxy }
+    case DIRECTION_8.BottomLeft:  return { x: -dxy, y: dxy }
+    case DIRECTION_8.BottomRight: return { x: dxy, y: dxy }
   }
 }
 

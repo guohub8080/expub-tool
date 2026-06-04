@@ -1,6 +1,5 @@
 import type { T_Direction8, I_Point } from "../types";
-import defaultTo from "lodash/defaultTo";
-import max from "lodash/max";
+import { DIRECTION_8 } from "@svg/types";
 
 /**
  * 方向位移计算器
@@ -12,12 +11,13 @@ import max from "lodash/max";
  *   → x 正方向（右）
  *   ↓ y 正方向（下）
  *
- *   "R"（从右侧进入）= foreignObject 初始在左边界外 (x = -viewBoxW)
- *   "L"（从左侧进入）= foreignObject 初始在右边界外 (x = +viewBoxW)
- *   "B"（从下方进入）= foreignObject 初始在上边界外 (y = -viewBoxH)
- *   "T"（从上方进入）= foreignObject 初始在下边界外 (y = +viewBoxH)
+ *   DIRECTION_8.Right（从右侧进入）= foreignObject 初始在左边界外 (x = -viewBoxW)
+ *   DIRECTION_8.Left（从左侧进入）= foreignObject 初始在右边界外 (x = +viewBoxW)
+ *   DIRECTION_8.Bottom（从下方进入）= foreignObject 初始在上边界外 (y = -viewBoxH)
+ *   DIRECTION_8.Top（从上方进入）= foreignObject 初始在下边界外 (y = +viewBoxH)
  *   对角方向：两轴分量的叠加
  */
+
 
 /** 对角方向分量系数 */
 const DIAGONAL_RATIO = 0.7
@@ -34,14 +34,14 @@ export const getEntryOffset = (
     const dx = viewBoxW * DIAGONAL_RATIO
     const dy = viewBoxH * DIAGONAL_RATIO
     switch (direction) {
-        case "L":  return { x: viewBoxW, y: 0 };
-        case "R":  return { x: -viewBoxW, y: 0 };
-        case "T":  return { x: 0, y: viewBoxH };
-        case "B":  return { x: 0, y: -viewBoxH };
-        case "TL": return { x: dx, y: dy };
-        case "TR": return { x: -dx, y: dy };
-        case "BL": return { x: dx, y: -dy };
-        case "BR": return { x: -dx, y: -dy };
+        case DIRECTION_8.Left:  return { x: viewBoxW, y: 0 };
+        case DIRECTION_8.Right: return { x: -viewBoxW, y: 0 };
+        case DIRECTION_8.Top:   return { x: 0, y: viewBoxH };
+        case DIRECTION_8.Bottom: return { x: 0, y: -viewBoxH };
+        case DIRECTION_8.TopLeft:     return { x: dx, y: dy };
+        case DIRECTION_8.TopRight:    return { x: -dx, y: dy };
+        case DIRECTION_8.BottomLeft:  return { x: dx, y: -dy };
+        case DIRECTION_8.BottomRight: return { x: -dx, y: -dy };
     }
 };
 
@@ -59,14 +59,14 @@ export const getExitOffset = (
     const dx = viewBoxW * DIAGONAL_RATIO
     const dy = viewBoxH * DIAGONAL_RATIO
     switch (direction) {
-        case "L":  return { x: -viewBoxW, y: 0 };
-        case "R":  return { x: viewBoxW, y: 0 };
-        case "T":  return { x: 0, y: -viewBoxH };
-        case "B":  return { x: 0, y: viewBoxH };
-        case "TL": return { x: -dx, y: -dy };
-        case "TR": return { x: dx, y: -dy };
-        case "BL": return { x: -dx, y: dy };
-        case "BR": return { x: dx, y: dy };
+        case DIRECTION_8.Left:  return { x: -viewBoxW, y: 0 };
+        case DIRECTION_8.Right: return { x: viewBoxW, y: 0 };
+        case DIRECTION_8.Top:   return { x: 0, y: -viewBoxH };
+        case DIRECTION_8.Bottom: return { x: 0, y: viewBoxH };
+        case DIRECTION_8.TopLeft:     return { x: -dx, y: -dy };
+        case DIRECTION_8.TopRight:    return { x: dx, y: -dy };
+        case DIRECTION_8.BottomLeft:  return { x: -dx, y: dy };
+        case DIRECTION_8.BottomRight: return { x: dx, y: dy };
     }
 };
 
