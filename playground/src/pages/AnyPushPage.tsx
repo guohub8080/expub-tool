@@ -86,15 +86,15 @@ export default function AnyPushPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="纯对角线 — 每张不同方向 + 不同过渡时间">
+      <CopyDemo title="纯对角线 — 慢速 + 不同缓动曲线">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
           canvasBg="#1a1a2e"
           childItems={[
-            { url: getWechat300x300(1), direction: DIRECTION_8.TopLeft,     switchDuration: 0.8, stayDuration: 0.6 },
-            { url: getWechat300x300(2), direction: DIRECTION_8.TopRight,    switchDuration: 0.4, stayDuration: 0.3 },
-            { url: getWechat300x300(3), direction: DIRECTION_8.BottomRight, switchDuration: 0.6, stayDuration: 0.4 },
-            { url: getWechat300x300(4), direction: DIRECTION_8.BottomLeft,  switchDuration: 0.3, stayDuration: 0.2 },
+            { url: getWechat300x300(1), direction: DIRECTION_8.TopLeft,     switchDuration: 1.2, stayDuration: 1.0, keySplines: "0.42 0 1 1" },
+            { url: getWechat300x300(2), direction: DIRECTION_8.TopRight,    switchDuration: 1.0, stayDuration: 0.8, keySplines: "0 0 0.58 1" },
+            { url: getWechat300x300(3), direction: DIRECTION_8.BottomRight, switchDuration: 1.4, stayDuration: 0.6, keySplines: "0.42 0 0.58 1" },
+            { url: getWechat300x300(4), direction: DIRECTION_8.BottomLeft,  switchDuration: 0.8, stayDuration: 1.2, keySplines: "0.68 -0.55 0.27 1.55" },
           ]}
         />
       </CopyDemo>
