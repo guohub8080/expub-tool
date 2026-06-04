@@ -41,7 +41,7 @@ import {
   getSineBezier,
   getExpoBezier,
   genSvgKeySplines,
-  compileTimeline,
+  buildTimeline,
 } from 'expub-tool/smil'
 
 const box: React.CSSProperties = {
@@ -287,10 +287,10 @@ export default function SmilPage() {
         </p>
       </Section>
 
-      {/* compileTimeline */}
-      <Section title="compileTimeline">
+      {/* buildTimeline */}
+      <Section title="buildTimeline">
         <p style={{ fontSize: 13, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
-          {JSON.stringify(compileTimeline(
+          {JSON.stringify(buildTimeline(
             [
               { to: 1, durationSeconds: 0.3 },
               { to: 0.5, durationSeconds: 0.5 },
