@@ -227,10 +227,10 @@ const renderContent = (item: I_FooChildItem) => {
 }
 ```
 
-**outOfView 计算**：不硬编码 `135135`，用 `max(宽, 高) * 100`：
+**outOfView 计算**：不硬编码 `135135`，用 `max([宽, 高]) * 100`（lodash/max，不用 Math.max）：
 
 ```ts
-const outOfView = max([W, H]) * 100
+const outOfView = max([W, H]) * 100  // lodash/max
 ```
 
 ---
@@ -282,3 +282,18 @@ README 只需包含：
 - `src/svg/display/CoverFlowX/` — 横向轮播，参考了硬编码的 slot + scale + translate 动画
 - `src/svg/display/CoverFlowY/` — 纵向变体，复用 CoverFlowX 的类型和 normalizer
 - `src/svg/click/ClickCascade/` — 点击逐层渐显，递归嵌套 + childItems 规范
+
+### lodash 优先
+
+数学函数优先用 lodash 单包导入，不用原生 Math：
+
+```ts
+// ✅ 正确
+import max from 'lodash/max'
+import min from 'lodash/min'
+
+const outOfView = max([W, H]) * 100
+
+// ❌ 避免
+const outOfView = Math.max(W, H) * 100
+```
