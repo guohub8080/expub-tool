@@ -86,10 +86,26 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 						</g>
 					</g>
 
-					{/* 点击触发区域：SVG 底层，pointer-events:visible 覆盖 SVG 的 pointer-events:none */}
+					{/* 点击触发区域：上下两个不重叠热区，dummy animate 注册 SMIL 事件目标 */}
 					<g>
-						<rect x={0} y={0} width={W} height={H} fill="transparent" opacity={0}
-							style={{ pointerEvents: 'visible' }} />
+						<rect x={0} y={0} width={W} height={halfH} fill="transparent" opacity={0}
+							style={{ pointerEvents: 'visible' }}>
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mousedown" />
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mouseup" />
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="click" />
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchstart" />
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchmove" />
+						</rect>
+					</g>
+					<g>
+						<rect x={0} y={halfH} width={W} height={halfH} fill="transparent" opacity={0}
+							style={{ pointerEvents: 'visible' }}>
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mousedown" />
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mouseup" />
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="click" />
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchstart" />
+							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchmove" />
+						</rect>
 					</g>
 				</SvgEx>
 			</section>
