@@ -20,7 +20,7 @@ export type { I_SkewConfig, I_RotationConfig, I_EntryScaleConfig, I_EntryConfig,
  * AnyLoopDisplay — 多图循环展示组件
  *
  * 效果演示：
- *   图片从不同方向（左/右/上/下）推入画布中心，支持 skew 斜切和 rotate 旋转，
+ *   图片从不同方向（左/右/上/下/对角线）推入画布，支持 skew / scale / rotate 变换，
  *   多张图片交替执行形成无限循环。
  *
  * 渲染结构：
@@ -28,17 +28,22 @@ export type { I_SkewConfig, I_RotationConfig, I_EntryScaleConfig, I_EntryConfig,
  *   └─ section（overflow 裁剪，隐藏屏幕外的图片）
  *      └─ SvgEx（SVG 画布，viewBox 由 canvasSize 决定）
  *         └─ <g visibility="hidden">（初始隐藏，0.01s 后变 visible，避免 SMIL 初始闪烁）
- *            └─ <g>（坐标系平移到画布中心）
- *               ├─ CycleItem × N（每张图独立渲染 + 动画）
- *               └─ GhostLayer（图1副本，解决 z-order 遮挡问题）
+ *            └─ <g>（坐标系平移到 childCanvas 左上角）
+ *               └─ <g>（坐标系平移到 childCanvas 中心）
+ *                  ├─ CycleItem × N（每张图独立渲染 + 动画）
+ *                  └─ GhostLayer（图1副本，解决 z-order 遮挡问题）
  */
 const AnyLoopDisplay = (props: {
   /** 画布尺寸 { w, h } */
   canvasSize: { w: number; h: number }
-  /** 子项配置数组，每项包含 url 或 jsx + direction / skew / rotation / duration */
+  /** 子项配置数组，每项包含 url 或 jsx + direction / skew / scale / rotation / duration */
   childItems: I_AnyLoopDisplayChildItem[]
-  /** 子项内容区域尺寸 { w, h }，不传则等于 canvasSize（撑满画布） */
-  childItemSize?: { w: number; h: number }
+  /**
+   * 子项画布区域 { x, y, w, h }，定义子内容在主画布中的位置和尺寸。
+   * x/y 为左上角坐标，w/h 为内容区域大小。
+   * 不传则默认 { x: 0, y: 0, w: canvasSize.w, h: canvasSize.h }（撑满画布）。
+   */
+  childCanvas?: { x: number; y: number; w: number; h: number }
   /** 画布背景：颜色字符串（如 "#fff"）或图片 URL */
   canvasBg?: string
   /** 外间距配置 */
@@ -50,10 +55,8 @@ const AnyLoopDisplay = (props: {
   }
 
   const { w, h } = props.canvasSize
-  const contentW = props.childItemSize ? props.childItemSize.w : w
-  const contentH = props.childItemSize ? props.childItemSize.h : h
-  const offsetX = (w - contentW) / 2
-  const offsetY = (h - contentH) / 2
+  const canvas = props.childCanvas ?? { x: 0, y: 0, w, h }
+  const { x: canvasX, y: canvasY, w: contentW, h: contentH } = canvas
   const items = normalizeChildItems(props.childItems)
   const { totalDuration, itemTimelines, ghostTimeline } = buildCyclicTimelines(items)
   const isDev = ExPubGoConfig().mode === 'development'
@@ -81,9 +84,9 @@ const AnyLoopDisplay = (props: {
             目的：SMIL 引擎在第一个 paint 之前尚未初始化，若不隐藏，
             各图的 <g> 会在动画接管前短暂停在原点（全屏中心），造成初始闪烁。
           */}
-          <g transform={`translate(${offsetX}, ${offsetY})`} visibility="hidden">
+          <g transform={`translate(${canvasX}, ${canvasY})`} visibility="hidden">
             {setVisibility({ to: "visible", begin: "0.01s", isFreeze: true })}
-            {/* 坐标系平移到画布中心，所有图的 translate 动画以中心为原点计算 */}
+            {/* 坐标系平移到 childCanvas 中心，所有图的 translate 动画以中心为原点计算 */}
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => (
                 <CycleItem key={i}

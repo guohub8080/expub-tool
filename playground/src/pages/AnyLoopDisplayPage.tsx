@@ -7,10 +7,10 @@ export default function AnyLoopDisplayPage() {
       <h2>AnyLoopDisplay — 任意循环展示</h2>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>8 方向全展示 — 每图不同方向，childItemSize + canvasBg</h3>
+        <h3 style={{ margin: '0 0 8px' }}>8 方向全展示 — 每图不同方向，childCanvas 居中 + canvasBg</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
-          childItemSize={{ w: 240, h: 240 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#f3f4f6"
           childItems={[
             { url: getWechat300x300(1), entry: { direction: 'T' },  stayDuration: 1 },
@@ -29,7 +29,7 @@ export default function AnyLoopDisplayPage() {
         <h3 style={{ margin: '0 0 8px' }}>2 图 — 对角线 TL↔BR，skewY 30° + entry/exit skew</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
-          childItemSize={{ w: 240, h: 240 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#fef3c7"
           childItems={[
             { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'Y', angle: 30 } }, exit: { skew: { type: 'Y', angle: -30 } }, stayDuration: 1.5 },
@@ -68,7 +68,7 @@ export default function AnyLoopDisplayPage() {
         <h3 style={{ margin: '0 0 8px' }}>2 图 — scale + skew + rotation 组合</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
-          childItemSize={{ w: 240, h: 240 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#ede9fe"
           childItems={[
             { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 30 }, scale: { origin: 'BottomRight', scale: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
