@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { DIRECTION_8 } from 'expub-tool/svg'
 import { AnyPush } from 'expub-tool/svg'
+import { getEaseBezier, getSineBezier, getCircleBezier, getExpoBezier } from 'expub-tool/smil'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
@@ -91,10 +92,10 @@ export default function AnyPushPage() {
           canvasSize={{ w: 300, h: 300 }}
           canvasBg="#1a1a2e"
           childItems={[
-            { url: getWechat300x300(1), direction: DIRECTION_8.TopLeft,     switchDuration: 1.2, stayDuration: 1.0, keySplines: "0.42 0 1 1" },
-            { url: getWechat300x300(2), direction: DIRECTION_8.TopRight,    switchDuration: 1.0, stayDuration: 0.8, keySplines: "0 0 0.58 1" },
-            { url: getWechat300x300(3), direction: DIRECTION_8.BottomRight, switchDuration: 1.4, stayDuration: 0.6, keySplines: "0.42 0 0.58 1" },
-            { url: getWechat300x300(4), direction: DIRECTION_8.BottomLeft,  switchDuration: 0.8, stayDuration: 1.2, keySplines: "0.68 -0.55 0.27 1.55" },
+            { url: getWechat300x300(1), direction: DIRECTION_8.TopLeft,     switchDuration: 1.2, stayDuration: 1.0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+            { url: getWechat300x300(2), direction: DIRECTION_8.TopRight,    switchDuration: 1.0, stayDuration: 0.8, keySplines: getSineBezier({ isIn: false, isOut: true }) },
+            { url: getWechat300x300(3), direction: DIRECTION_8.BottomRight, switchDuration: 1.4, stayDuration: 0.6, keySplines: getCircleBezier({ isIn: true, isOut: true }) },
+            { url: getWechat300x300(4), direction: DIRECTION_8.BottomLeft,  switchDuration: 0.8, stayDuration: 1.2, keySplines: getExpoBezier({ isIn: false, isOut: true }) },
           ]}
         />
       </CopyDemo>
