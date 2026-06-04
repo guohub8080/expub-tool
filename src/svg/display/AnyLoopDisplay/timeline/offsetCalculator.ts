@@ -28,10 +28,10 @@ export const getOffscreenTranslate = ({
   /** 距离倍数，默认 1。当内容有缩放时，应传入 max(scale, 1) 以确保放大后的内容完全离屏 */
   bufferMultiplier?: number
 }): { x: number; y: number } => {
-  // canvasSize × (bufferMultiplier + 0.5) + 1
-  // +0.5 覆盖非 Center origin 导致的最大偏移（origin 在边缘时 content 从该边扩展 scale 倍）
-  const offscreenDistanceX = canvasWidth * (bufferMultiplier + 0.5) + 1
-  const offscreenDistanceY = canvasHeight * (bufferMultiplier + 0.5) + 1
+  // canvasSize × bufferMultiplier + 10
+  // +10 覆盖非 Center origin 导致的内容不对称扩展（anti-aliasing 余量）
+  const offscreenDistanceX = canvasWidth * bufferMultiplier + 10
+  const offscreenDistanceY = canvasHeight * bufferMultiplier + 10
   const xMap: Record<string, number> = {
     L: offscreenDistanceX, R: -offscreenDistanceX,
     TL: offscreenDistanceX, TR: -offscreenDistanceX,
