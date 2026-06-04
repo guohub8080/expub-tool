@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
 import { ClickCascade } from 'expub-tool/svg'
 import { animateSoftBlink, transformBreathe, transformFloat } from 'expub-tool/behaviors'
-import { transformRotate } from 'expub-tool/smil'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
@@ -86,7 +85,13 @@ export default function ClickCascadePage() {
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
 									<rect width={300} height={300} fill="#10b981" />
 									<g transform="translate(150 150)">
-										{transformRotate({ initValue: 0, begin: '0s', dur: 6, loopCount: -1, origin: [0, 0] })}
+										<animateTransform
+											attributeName="transform"
+											type="rotate"
+											from="0" to="360"
+											dur="6s"
+											repeatCount="indefinite"
+										/>
 										<rect x={-40} y={-40} width={80} height={80} rx={12} fill="#34d399" />
 									</g>
 								</svg>
