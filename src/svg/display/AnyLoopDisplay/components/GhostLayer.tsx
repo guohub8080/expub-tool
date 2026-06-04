@@ -109,6 +109,21 @@ const GhostLayer = (props: {
     })
   })()
 
+  // 从最内层往外逐层包裹，只有存在对应动画时才加 <g>
+  let ghostContent: React.ReactNode = renderChildItemContent({ item: firstItem, contentWidth, contentHeight })
+
+  if (ghostRotateAnim) {
+    ghostContent = <g>{ghostRotateAnim}{ghostContent}</g>
+  }
+
+  if (ghostScaleAnim) {
+    ghostContent = <g>{ghostScaleAnim}{ghostContent}</g>
+  }
+
+  if (ghostSkewAnim) {
+    ghostContent = <g>{ghostSkewAnim}{ghostContent}</g>
+  }
+
   return (
     <g key="ghost" visibility="hidden">
       {/* visibility 切换：在图1进入段瞬间变 visible，进入完成后瞬间 hidden */}
@@ -134,16 +149,7 @@ const GhostLayer = (props: {
         isAdditive: false,
         isRelativeMove: false,
       })}
-      <g>
-        {ghostSkewAnim}
-        <g>
-          {ghostScaleAnim}
-          <g>
-            {ghostRotateAnim}
-            {renderChildItemContent({ item: firstItem, contentWidth, contentHeight })}
-          </g>
-        </g>
-      </g>
+      {ghostContent}
     </g>
   )
 }

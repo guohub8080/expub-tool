@@ -60,6 +60,51 @@ const CycleItem = (props: {
     { durationSeconds: holdDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
   ]
 
+  const hasSkew = !isNil(item.entry.skew) || !isNil(item.exit.skew)
+  const hasScale = !isNil(item.entry.scale) || !isNil(item.exit.scale)
+  const hasRotation = !isNil(item.entry.rotation) || !isNil(item.exit.rotation)
+
+  // 内容节点：从最内层往外逐层包裹，只有存在对应动画时才加 <g>
+  let content: React.ReactNode = renderChildItemContent({ item, contentWidth, contentHeight })
+
+  if (hasRotation) {
+    content = (
+      <g>
+        {renderRotateAnim({
+          entryRotation: item.entry.rotation, exitRotation: item.exit.rotation,
+          contentWidth, contentHeight,
+          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+        })}
+        {content}
+      </g>
+    )
+  }
+
+  if (hasScale) {
+    content = (
+      <g>
+        {renderScaleAnim({
+          entryScale: item.entry.scale, exitScale: item.exit.scale,
+          contentWidth, contentHeight,
+          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+        })}
+        {content}
+      </g>
+    )
+  }
+
+  if (hasSkew) {
+    content = (
+      <g>
+        {renderSkewAnim({
+          entrySkew: item.entry.skew, exitSkew: item.exit.skew,
+          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+        })}
+        {content}
+      </g>
+    )
+  }
+
   return (
     <g>
       {/* 外层 translate：控制图片的进入/退出位移 */}
@@ -72,27 +117,7 @@ const CycleItem = (props: {
         isAdditive: false,
         isRelativeMove: false,
       })}
-      <g>
-        {renderSkewAnim({
-          entrySkew: item.entry.skew, exitSkew: item.exit.skew,
-          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
-        })}
-        <g>
-          {renderScaleAnim({
-            entryScale: item.entry.scale, exitScale: item.exit.scale,
-            contentWidth, contentHeight,
-            stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
-          })}
-          <g>
-            {renderRotateAnim({
-              entryRotation: item.entry.rotation, exitRotation: item.exit.rotation,
-              contentWidth, contentHeight,
-              stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
-            })}
-            {renderChildItemContent({ item, contentWidth, contentHeight })}
-          </g>
-        </g>
-      </g>
+      {content}
     </g>
   )
 }
