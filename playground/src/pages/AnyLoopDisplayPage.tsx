@@ -43,23 +43,23 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', scale: { origin: 'Center', scale: 0 } }, exit: { scale: { origin: 'Center', scale: 0 } }, stayDuration: 1 },
-            { url: getWechat300x300(2), entry: { direction: 'R', scale: { origin: 'Center', scale: 0 } }, exit: { scale: { origin: 'Center', scale: 0 } }, stayDuration: 1 },
-            { url: getWechat300x300(3), entry: { direction: 'B', scale: { origin: 'Center', scale: 0 } }, exit: { scale: { origin: 'Center', scale: 0 } }, stayDuration: 1 },
-            { url: getWechat300x300(4), entry: { direction: 'L', scale: { origin: 'Center', scale: 0 } }, exit: { scale: { origin: 'Center', scale: 0 } }, stayDuration: 1 },
+            { url: getWechat300x300(1), entry: { direction: 'T', scale: { origin: 'Center', scale: 0 } }, exit: { scale: { origin: 'Center', scale: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'R', scale: { origin: 'Center', scale: 0 } }, exit: { scale: { origin: 'Center', scale: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { direction: 'B', scale: { origin: 'Center', scale: 0 } }, exit: { scale: { origin: 'Center', scale: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { direction: 'L', scale: { origin: 'Center', scale: 0 } }, exit: { scale: { origin: 'Center', scale: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — scale 0.3→1 入场，1→2 放大退场，origin TopLeft</h3>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — scale 0.1→1 入场，1→3 放大退场，origin TopLeft</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', scale: { origin: 'TopLeft', scale: 0.3 } }, exit: { scale: { origin: 'TopLeft', scale: 2 } }, stayDuration: 1 },
-            { url: getWechat300x300(2), entry: { direction: 'B', scale: { origin: 'TopLeft', scale: 0.3 } }, exit: { scale: { origin: 'TopLeft', scale: 2 } }, stayDuration: 1 },
-            { url: getWechat300x300(3), entry: { direction: 'T', scale: { origin: 'TopLeft', scale: 0.3 } }, exit: { scale: { origin: 'TopLeft', scale: 2 } }, stayDuration: 1 },
-            { url: getWechat300x300(4), entry: { direction: 'B', scale: { origin: 'TopLeft', scale: 0.3 } }, exit: { scale: { origin: 'TopLeft', scale: 2 } }, stayDuration: 1 },
+            { url: getWechat300x300(1), entry: { direction: 'T', scale: { origin: 'TopLeft', scale: 0.1 } }, exit: { scale: { origin: 'TopLeft', scale: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'B', scale: { origin: 'TopLeft', scale: 0.1 } }, exit: { scale: { origin: 'TopLeft', scale: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { direction: 'T', scale: { origin: 'TopLeft', scale: 0.1 } }, exit: { scale: { origin: 'TopLeft', scale: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { direction: 'B', scale: { origin: 'TopLeft', scale: 0.1 } }, exit: { scale: { origin: 'TopLeft', scale: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -71,8 +71,8 @@ export default function AnyLoopDisplayPage() {
           childItemSize={{ w: 240, h: 240 }}
           canvasBg="#ede9fe"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 20 }, scale: { origin: 'BottomRight', scale: 0.3 }, rotation: { angle: 90 } }, stayDuration: 1.5 },
-            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -20 }, scale: { origin: 'TopLeft', scale: 0.3 }, rotation: { angle: -90 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 30 }, scale: { origin: 'BottomRight', scale: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -30 }, scale: { origin: 'TopLeft', scale: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
           ]}
         />
       </div>
