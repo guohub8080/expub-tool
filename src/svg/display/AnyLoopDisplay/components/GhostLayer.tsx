@@ -87,7 +87,7 @@ const GhostLayer = (props: {
   })()
 
   // Ghost scale：使用 transformScaleRaw + 嵌套 <g>，与 CycleItem 保持一致
-  const ghostScaleConfig = !isNil(firstItem.entry.scale) && (() => {
+  const ghostScaleAnimConfig = !isNil(firstItem.entry.scale) && (() => {
     const scaleOrigin = getRotationOrigin({
       origin: firstItem.entry.scale!.childCanvasOrigin,
       contentWidth,
@@ -96,8 +96,8 @@ const GhostLayer = (props: {
     const ease = defaultTo(firstItem.entry.scale!.keySplines, DEFAULT_EASE)
 
     return {
-      cx: scaleOrigin[0],
-      cy: scaleOrigin[1],
+      originX: scaleOrigin[0],
+      originY: scaleOrigin[1],
       scaleAnim: transformScaleRaw({
         initValue: firstItem.entry.scale!.scale,
         timeline: [
@@ -119,13 +119,13 @@ const GhostLayer = (props: {
     ghostContent = <g>{ghostRotateAnim}{ghostContent}</g>
   }
 
-  if (ghostScaleConfig) {
+  if (ghostScaleAnimConfig) {
     // 嵌套 <g> 隔离 translate→scale→translate-back，与 CycleItem 一致
     ghostContent = (
-      <g transform={`translate(${ghostScaleConfig.cx}, ${ghostScaleConfig.cy})`}>
+      <g transform={`translate(${ghostScaleAnimConfig.originX}, ${ghostScaleAnimConfig.originY})`}>
         <g>
-          {ghostScaleConfig.scaleAnim}
-          <g transform={`translate(${-ghostScaleConfig.cx}, ${-ghostScaleConfig.cy})`}>
+          {ghostScaleAnimConfig.scaleAnim}
+          <g transform={`translate(${-ghostScaleAnimConfig.originX}, ${-ghostScaleAnimConfig.originY})`}>
             {ghostContent}
           </g>
         </g>

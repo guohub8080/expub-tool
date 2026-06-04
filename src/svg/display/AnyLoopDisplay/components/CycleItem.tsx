@@ -102,19 +102,19 @@ const CycleItem = (props: {
   }
 
   if (hasScale) {
-    const scaleConfig = buildScaleConfig({
+    const scaleAnimConfig = buildScaleAnimConfig({
       entryScale: item.entry.scale, exitScale: item.exit.scale,
       contentWidth, contentHeight,
       stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
     })
-    if (scaleConfig) {
+    if (scaleAnimConfig) {
       // 用嵌套 <g> 隔离 translate→scale→translate-back，
       // 而不是在同一个 <g> 上用 additive="sum"（微信 WebView 对非 Center origin 叠加不准）
       content = (
-        <g transform={`translate(${scaleConfig.cx}, ${scaleConfig.cy})`}>
+        <g transform={`translate(${scaleAnimConfig.originX}, ${scaleAnimConfig.originY})`}>
           <g>
-            {scaleConfig.scaleAnim}
-            <g transform={`translate(${-scaleConfig.cx}, ${-scaleConfig.cy})`}>
+            {scaleAnimConfig.scaleAnim}
+            <g transform={`translate(${-scaleAnimConfig.originX}, ${-scaleAnimConfig.originY})`}>
               {content}
             </g>
           </g>
@@ -245,7 +245,7 @@ const renderRotateAnim = ({
  * 改为在嵌套 <g> 上用静态 transform 做 translate，中间层只放一个 scale animateTransform。
  * 这样避免 additive="sum" 在微信 WebView 中对非 Center origin 的叠加偏差问题。
  */
-const buildScaleConfig = ({
+const buildScaleAnimConfig = ({
   entryScale, exitScale, contentWidth, contentHeight,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
@@ -258,7 +258,7 @@ const buildScaleConfig = ({
   nextSwitchDuration: number
   holdDuration: number
   begin: number
-}): { cx: number; cy: number; scaleAnim: React.ReactNode } | null => {
+}): { originX: number; originY: number; scaleAnim: React.ReactNode } | null => {
   if (isNil(entryScale) && isNil(exitScale)) return null
 
   const entryScaleValue = defaultTo(entryScale?.scale, 1)
@@ -270,7 +270,7 @@ const buildScaleConfig = ({
     contentHeight,
   })
 
-  const [cx, cy] = scaleOrigin
+  const [originX, originY] = scaleOrigin
   const ease = entryScale?.keySplines ?? exitScale?.keySplines ?? DEFAULT_EASE
 
   const segs = [
@@ -281,8 +281,8 @@ const buildScaleConfig = ({
   ]
 
   return {
-    cx,
-    cy,
+    originX,
+    originY,
     scaleAnim: transformScaleRaw({
       initValue: entryScaleValue,
       timeline: segs,
