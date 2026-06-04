@@ -9,6 +9,9 @@ import type { T_Direction8, T_Origin } from "@svg/types"
  *
  * bufferMultiplier 用于放大 offscreen 距离，确保缩放后的内容也完全离开可见区域。
  * 例如 exit scale=3 时，内容可能放大到 3 倍，需要 translate 距离也相应放大。
+ *
+ * 额外加上 canvasSize × 0.5 的余量，覆盖非 Center origin（如 TopLeft）导致的
+ * 内容不对称扩展——此时内容从 origin 向一侧扩展，距离中心比 Center origin 更远。
  */
 export const getOffscreenTranslate = ({
   direction,
@@ -25,8 +28,10 @@ export const getOffscreenTranslate = ({
   /** 距离倍数，默认 1。当内容有缩放时，应传入 max(scale, 1) 以确保放大后的内容完全离屏 */
   bufferMultiplier?: number
 }): { x: number; y: number } => {
-  const bw = canvasWidth * bufferMultiplier + 1
-  const bh = canvasHeight * bufferMultiplier + 1
+  // canvasSize × (bufferMultiplier + 0.5) + 1
+  // +0.5 覆盖非 Center origin 导致的最大偏移（origin 在边缘时 content 从该边扩展 scale 倍）
+  const bw = canvasWidth * (bufferMultiplier + 0.5) + 1
+  const bh = canvasHeight * (bufferMultiplier + 0.5) + 1
   const xMap: Record<string, number> = {
     L: bw, R: -bw,
     TL: bw, TR: -bw,
