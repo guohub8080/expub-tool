@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { DIRECTION_8 } from 'expub-tool/svg'
 import { AnyPush } from 'expub-tool/svg'
 import { transformBreathe } from 'expub-tool/behaviors'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
@@ -79,9 +80,9 @@ export default function AnyPushPage() {
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
-            { url: getWechat300x500(3), direction: "R" },
-            { url: getWechat300x500(4), direction: "T" },
-            { url: getWechat300x500(5), direction: "L" },
+            { url: getWechat300x500(3), direction: DIRECTION_8.Right },
+            { url: getWechat300x500(4), direction: DIRECTION_8.Top },
+            { url: getWechat300x500(5), direction: DIRECTION_8.Left },
           ]}
         />
       </CopyDemo>
@@ -101,8 +102,8 @@ export default function AnyPushPage() {
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
-            { url: getWechat300x500(1), direction: "R", switchDuration: 0.8, stayDuration: 0, keySplines: "0 0 1 1" },
-            { url: getWechat300x500(2), direction: "R", switchDuration: 0.8, stayDuration: 0, keySplines: "0 0 1 1" },
+            { url: getWechat300x500(1), direction: DIRECTION_8.Right, switchDuration: 0.8, stayDuration: 0, keySplines: "0 0 1 1" },
+            { url: getWechat300x500(2), direction: DIRECTION_8.Right, switchDuration: 0.8, stayDuration: 0, keySplines: "0 0 1 1" },
           ]}
         />
       </CopyDemo>
@@ -111,9 +112,9 @@ export default function AnyPushPage() {
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
-            { url: getWechat300x500(3), direction: "R", switchDuration: 0.6, stayDuration: 0.4 },
-            { url: getWechat300x500(4), direction: "R", switchDuration: 0.6, stayDuration: 0.4 },
-            { url: getWechat300x500(5), direction: "R", switchDuration: 0.6, stayDuration: 0.4 },
+            { url: getWechat300x500(3), direction: DIRECTION_8.Right, switchDuration: 0.6, stayDuration: 0.4 },
+            { url: getWechat300x500(4), direction: DIRECTION_8.Right, switchDuration: 0.6, stayDuration: 0.4 },
+            { url: getWechat300x500(5), direction: DIRECTION_8.Right, switchDuration: 0.6, stayDuration: 0.4 },
           ]}
         />
       </CopyDemo>
@@ -122,8 +123,8 @@ export default function AnyPushPage() {
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
-            { url: getWechat300x500(6), direction: "T" },
-            { url: getWechat300x500(7), direction: "B" },
+            { url: getWechat300x500(6), direction: DIRECTION_8.Top },
+            { url: getWechat300x500(7), direction: DIRECTION_8.Bottom },
           ]}
         />
       </CopyDemo>
@@ -132,9 +133,9 @@ export default function AnyPushPage() {
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
-            { item: <BreatheCircleItem />, direction: "R" },
-            { item: <ColorBlockItem color="#7c3aed" label="Purple" />, direction: "L" },
-            { item: <ColorBlockItem color="#059669" label="Green" />, direction: "T" },
+            { item: <BreatheCircleItem />, direction: DIRECTION_8.Right },
+            { item: <ColorBlockItem color="#7c3aed" label="Purple" />, direction: DIRECTION_8.Left },
+            { item: <ColorBlockItem color="#059669" label="Green" />, direction: DIRECTION_8.Top },
           ]}
         />
       </CopyDemo>
@@ -143,9 +144,9 @@ export default function AnyPushPage() {
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
-            { url: getWechat300x500(1), direction: "R" },
-            { item: <ColorBlockItem color="#dc2626" label="Red" />, direction: "L" },
-            { url: getWechat300x500(3), direction: "T" },
+            { url: getWechat300x500(1), direction: DIRECTION_8.Right },
+            { item: <ColorBlockItem color="#dc2626" label="Red" />, direction: DIRECTION_8.Left },
+            { url: getWechat300x500(3), direction: DIRECTION_8.Top },
           ]}
         />
       </CopyDemo>

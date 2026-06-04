@@ -11,6 +11,7 @@ import { transformSkewX } from "@smil/animateTransform/skewX"
 import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import svgURL from "@utils/svg/svgURL"
+import { DIRECTION_8 } from "@svg/types"
 import max from "lodash/max"
 import min from "lodash/min"
 import type { T_Direction8 } from "@svg/types"
@@ -75,7 +76,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const bgColor = props.canvasBg
   const isDev = ExPubGoConfig().mode === "development"
 
-  const items = normalizeItems({ items: props.childItems, defaultExitDirection: "R" })
+  const items = normalizeItems({ items: props.childItems, defaultExitDirection: DIRECTION_8.Right })
   const itemCount = items.length
   const totalSlots = itemCount + 3
 

@@ -1,11 +1,12 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
+import { DIRECTION_4 } from "@svg/types"
 import type { T_Direction4, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
 import type { I_AnySkewPushChildItem } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
 export const DEFAULT_SWITCH_DURATION = 2
-export const DEFAULT_DIRECTION: T_Direction4 = 'T'
+export const DEFAULT_DIRECTION: T_Direction4 = DIRECTION_4.Top
 export const DEFAULT_ROTATION_ORIGIN: T_Origin = 'Center'
 
 /** 标准化后的旋转配置（origin 和 angle 已填充默认值） */

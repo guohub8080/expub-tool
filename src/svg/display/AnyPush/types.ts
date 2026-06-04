@@ -14,10 +14,11 @@
 
 import type { ReactNode } from "react"
 import type { T_Direction8 } from "@svg/types"
+import { DIRECTION_8 } from "@svg/types"
 export type { T_Direction8 } from "@svg/types"
 
 /** 默认方向：从左侧滑入 */
-export const DEFAULT_DIRECTION: T_Direction8 = "L";
+export const DEFAULT_DIRECTION: T_Direction8 = DIRECTION_8.Left;
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 0.5;
 /** 默认停留时长（秒） */

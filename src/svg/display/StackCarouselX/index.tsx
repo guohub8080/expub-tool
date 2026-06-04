@@ -1,5 +1,6 @@
 import React from "react"
 import SectionEx from "@html/basicEx/SectionEx"
+import { DIRECTION_8 } from '@svg/types'
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
 import max from "lodash/max"
@@ -78,7 +79,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const bgColor = props.canvasBg
   const isDev = ExPubGoConfig().mode === "development"
 
-  const items = normalizeItems({ items: props.childItems, defaultExitDirection: "L" })
+  const items = normalizeItems({ items: props.childItems, defaultExitDirection: DIRECTION_8.Left })
   const itemCount = items.length
   const totalSlots = itemCount + 3
 

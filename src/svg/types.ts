@@ -10,6 +10,26 @@ export type T_Direction4 = "L" | "R" | "T" | "B"
 /** 八方向：水平/垂直 + 对角线（对角线遵循 CSS 习惯：垂直在前 TL/TR/BL/BR） */
 export type T_Direction8 = "L" | "R" | "T" | "B" | "TL" | "TR" | "BL" | "BR"
 
+/** T_Direction4 常量，避免硬编码字符串 */
+export const DIRECTION_4 = {
+  Left: "L",
+  Right: "R",
+  Top: "T",
+  Bottom: "B",
+} as const
+
+/** T_Direction8 常量，避免硬编码字符串 */
+export const DIRECTION_8 = {
+  Left: "L",
+  Right: "R",
+  Top: "T",
+  Bottom: "B",
+  TopLeft: "TL",
+  TopRight: "TR",
+  BottomLeft: "BL",
+  BottomRight: "BR",
+} as const
+
 export type T_DirectionX = "L" | "R"
 
 /** 九宫格预设位置 或 自定义坐标 */
