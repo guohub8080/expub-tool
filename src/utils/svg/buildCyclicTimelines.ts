@@ -102,9 +102,9 @@
  *
  * ── 用途 ──
  *
- * 此函数的输出可以直接喂给 compileTimeline：
+ * 此函数的输出可以直接喂给 buildTimeline：
  *   1. 构建 segments 数组 = [entry段, stay段(可选), exit段, hold段]
- *   2. 用 compileTimeline 编译出 values / keyTimes / keySplines
+ *   2. 用 buildTimeline 编译出 values / keyTimes / keySplines
  *   3. 设置 SMIL 属性：dur = `${totalDuration}s`, begin = `${timeline.begin}s`
  */
 
