@@ -19,8 +19,23 @@ import { DIRECTION_8 } from "@svg/types";
  */
 
 
-/** 对角方向分量系数 */
-const DIAGONAL_RATIO = 0.7
+/**
+ * 方向位移计算器
+ *
+ * 根据滑入/滑出方向和 viewBox 尺寸，计算 foreignObject 需要的位移坐标。
+ * 所有坐标以 viewBox 左上角为原点。
+ *
+ * 坐标系：
+ *   → x 正方向（右）
+ *   ↓ y 正方向（下）
+ *
+ *   DIRECTION_8.Right（从右侧进入）= foreignObject 初始在左边界外 (x = -viewBoxW)
+ *   DIRECTION_8.Left（从左侧进入）= foreignObject 初始在右边界外 (x = +viewBoxW)
+ *   DIRECTION_8.Bottom（从下方进入）= foreignObject 初始在上边界外 (y = -viewBoxH)
+ *   DIRECTION_8.Top（从上方进入）= foreignObject 初始在下边界外 (y = +viewBoxH)
+ *   对角方向：两轴全量位移，确保图片完全离开画布
+ */
+
 
 /**
  * 获取"进入"初始偏移 — foreignObject 的 x/y 初始坐标
@@ -31,17 +46,15 @@ export const getEntryOffset = (
     viewBoxW: number,
     viewBoxH: number
 ): I_Point => {
-    const dx = viewBoxW * DIAGONAL_RATIO
-    const dy = viewBoxH * DIAGONAL_RATIO
     switch (direction) {
         case DIRECTION_8.Left:  return { x: viewBoxW, y: 0 };
         case DIRECTION_8.Right: return { x: -viewBoxW, y: 0 };
         case DIRECTION_8.Top:   return { x: 0, y: viewBoxH };
         case DIRECTION_8.Bottom: return { x: 0, y: -viewBoxH };
-        case DIRECTION_8.TopLeft:     return { x: dx, y: dy };
-        case DIRECTION_8.TopRight:    return { x: -dx, y: dy };
-        case DIRECTION_8.BottomLeft:  return { x: dx, y: -dy };
-        case DIRECTION_8.BottomRight: return { x: -dx, y: -dy };
+        case DIRECTION_8.TopLeft:     return { x: viewBoxW, y: viewBoxH };
+        case DIRECTION_8.TopRight:    return { x: -viewBoxW, y: viewBoxH };
+        case DIRECTION_8.BottomLeft:  return { x: viewBoxW, y: -viewBoxH };
+        case DIRECTION_8.BottomRight: return { x: -viewBoxW, y: -viewBoxH };
     }
 };
 
@@ -56,17 +69,15 @@ export const getExitOffset = (
     viewBoxW: number,
     viewBoxH: number
 ): I_Point => {
-    const dx = viewBoxW * DIAGONAL_RATIO
-    const dy = viewBoxH * DIAGONAL_RATIO
     switch (direction) {
         case DIRECTION_8.Left:  return { x: -viewBoxW, y: 0 };
         case DIRECTION_8.Right: return { x: viewBoxW, y: 0 };
         case DIRECTION_8.Top:   return { x: 0, y: -viewBoxH };
         case DIRECTION_8.Bottom: return { x: 0, y: viewBoxH };
-        case DIRECTION_8.TopLeft:     return { x: -dx, y: -dy };
-        case DIRECTION_8.TopRight:    return { x: dx, y: -dy };
-        case DIRECTION_8.BottomLeft:  return { x: -dx, y: dy };
-        case DIRECTION_8.BottomRight: return { x: dx, y: dy };
+        case DIRECTION_8.TopLeft:     return { x: -viewBoxW, y: -viewBoxH };
+        case DIRECTION_8.TopRight:    return { x: viewBoxW, y: -viewBoxH };
+        case DIRECTION_8.BottomLeft:  return { x: -viewBoxW, y: viewBoxH };
+        case DIRECTION_8.BottomRight: return { x: viewBoxW, y: viewBoxH };
     }
 };
 

@@ -29,16 +29,15 @@ const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
 
 const getExitTranslate = (direction: T_Direction8, distance: number): Partial<I_TranslateValue> => {
   const d = distance
-  const dxy = d * 0.7
   switch (direction) {
     case DIRECTION_8.Left:  return { x: -d, y: 0 }
     case DIRECTION_8.Right: return { x: d, y: 0 }
     case DIRECTION_8.Top:   return { x: 0, y: -d }
     case DIRECTION_8.Bottom: return { x: 0, y: d }
-    case DIRECTION_8.TopLeft:     return { x: -dxy, y: -dxy }
-    case DIRECTION_8.TopRight:    return { x: dxy, y: -dxy }
-    case DIRECTION_8.BottomLeft:  return { x: -dxy, y: dxy }
-    case DIRECTION_8.BottomRight: return { x: dxy, y: dxy }
+    case DIRECTION_8.TopLeft:     return { x: -d, y: -d }
+    case DIRECTION_8.TopRight:    return { x: d, y: -d }
+    case DIRECTION_8.BottomLeft:  return { x: -d, y: d }
+    case DIRECTION_8.BottomRight: return { x: d, y: d }
   }
 }
 
