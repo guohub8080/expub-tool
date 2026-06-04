@@ -37,21 +37,6 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
   )
 }
 
-/** 带呼吸圆圈的自定义 SVG item */
-const BreatheCircleItem = () => (
-  <svg viewBox="0 0 300 500" style={{ width: '100%', display: 'block', backgroundColor: '#1e293b' }}>
-    <rect x="50" y="100" width="200" height="300" rx="16" fill="#334155" />
-    <g transform="translate(120, 430)">
-      <circle cx="30" cy="15" r="15" fill="#60a5fa" opacity="0.8">
-        {transformBreathe({ origin: [30, 15], fromScale: 1, toScale: 1.4 })}
-      </circle>
-    </g>
-    <text x="150" y="250" textAnchor="middle" fill="#f1f5f9" fontSize="24" fontFamily="system-ui">
-      Item 模式
-    </text>
-  </svg>
-)
-
 /** 色块 item */
 const ColorBlockItem = ({ color, label }: { color: string; label: string }) => (
   <svg viewBox="0 0 300 500" style={{ width: '100%', display: 'block', backgroundColor: color }}>
@@ -66,7 +51,7 @@ export default function AnyPushPage() {
     <div>
       <h2>AnyPush — 推入切换</h2>
 
-      <CopyDemo title="基础推入切换 — 2 张图，默认方向">
+      <CopyDemo title="基础推入切换 — 2 张图，默认方向 (Left)">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
@@ -76,13 +61,41 @@ export default function AnyPushPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="3 张图 — 混合方向">
+      <CopyDemo title="3 张图 — 四方向混合 (Right / Bottom / Left)">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
             { url: getWechat300x500(3), direction: DIRECTION_8.Right },
-            { url: getWechat300x500(4), direction: DIRECTION_8.Top },
+            { url: getWechat300x500(4), direction: DIRECTION_8.Bottom },
             { url: getWechat300x500(5), direction: DIRECTION_8.Left },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="对角线方向 — 4 图各占一角 (TopLeft / TopRight / BottomLeft / BottomRight)">
+        <AnyPush
+          canvasSize={{ w: 300, h: 500 }}
+          childItems={[
+            { url: getWechat300x500(1), direction: DIRECTION_8.TopLeft },
+            { url: getWechat300x500(2), direction: DIRECTION_8.TopRight },
+            { url: getWechat300x500(3), direction: DIRECTION_8.BottomLeft },
+            { url: getWechat300x500(4), direction: DIRECTION_8.BottomRight },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="8 方向轮播 — 每张图不同方向">
+        <AnyPush
+          canvasSize={{ w: 300, h: 500 }}
+          childItems={[
+            { url: getWechat300x500(1), direction: DIRECTION_8.Left, switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x500(2), direction: DIRECTION_8.TopRight, switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x500(3), direction: DIRECTION_8.Bottom, switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x500(4), direction: DIRECTION_8.TopLeft, switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x500(5), direction: DIRECTION_8.Right, switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x500(6), direction: DIRECTION_8.BottomRight, switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x500(7), direction: DIRECTION_8.Top, switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x500(8), direction: DIRECTION_8.BottomLeft, switchDuration: 0.4, stayDuration: 0.3 },
           ]}
         />
       </CopyDemo>
@@ -108,17 +121,6 @@ export default function AnyPushPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="单方向连续滚动 — 全部从右侧进入">
-        <AnyPush
-          canvasSize={{ w: 300, h: 500 }}
-          childItems={[
-            { url: getWechat300x500(3), direction: DIRECTION_8.Right, switchDuration: 0.6, stayDuration: 0.4 },
-            { url: getWechat300x500(4), direction: DIRECTION_8.Right, switchDuration: 0.6, stayDuration: 0.4 },
-            { url: getWechat300x500(5), direction: DIRECTION_8.Right, switchDuration: 0.6, stayDuration: 0.4 },
-          ]}
-        />
-      </CopyDemo>
-
       <CopyDemo title="上下交替">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
@@ -129,13 +131,38 @@ export default function AnyPushPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="背景色 canvasBg">
+        <div style={{ display: 'flex', gap: 16 }}>
+          <div style={{ flex: 1 }}>
+            <AnyPush
+              canvasSize={{ w: 300, h: 500 }}
+              canvasBg="#0f172a"
+              childItems={[
+                { url: getWechat300x500(1), direction: DIRECTION_8.Right },
+                { url: getWechat300x500(2), direction: DIRECTION_8.Left },
+              ]}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <AnyPush
+              canvasSize={{ w: 300, h: 500 }}
+              canvasBg="#fef3c7"
+              childItems={[
+                { url: getWechat300x500(3), direction: DIRECTION_8.Top },
+                { url: getWechat300x500(4), direction: DIRECTION_8.BottomLeft },
+              ]}
+            />
+          </div>
+        </div>
+      </CopyDemo>
+
       <CopyDemo title="Item 模式 — 自定义 SVG 内容">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
-            { item: <BreatheCircleItem />, direction: DIRECTION_8.Right },
-            { item: <ColorBlockItem color="#7c3aed" label="Purple" />, direction: DIRECTION_8.Left },
-            { item: <ColorBlockItem color="#059669" label="Green" />, direction: DIRECTION_8.Top },
+            { item: <ColorBlockItem color="#7c3aed" label="Purple" />, direction: DIRECTION_8.Right },
+            { item: <ColorBlockItem color="#059669" label="Green" />, direction: DIRECTION_8.TopLeft },
+            { item: <ColorBlockItem color="#dc2626" label="Red" />, direction: DIRECTION_8.BottomRight },
           ]}
         />
       </CopyDemo>
@@ -145,8 +172,8 @@ export default function AnyPushPage() {
           canvasSize={{ w: 300, h: 500 }}
           childItems={[
             { url: getWechat300x500(1), direction: DIRECTION_8.Right },
-            { item: <ColorBlockItem color="#dc2626" label="Red" />, direction: DIRECTION_8.Left },
-            { url: getWechat300x500(3), direction: DIRECTION_8.Top },
+            { item: <ColorBlockItem color="#dc2626" label="Red" />, direction: DIRECTION_8.TopLeft },
+            { url: getWechat300x500(3), direction: DIRECTION_8.Bottom },
           ]}
         />
       </CopyDemo>
