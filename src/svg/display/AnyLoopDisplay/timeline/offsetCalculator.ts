@@ -5,20 +5,16 @@ import type { T_Direction8, T_Origin } from "@svg/types"
  * 方向位移计算器
  *
  * 根据推入/推出方向和画布尺寸，计算屏幕外的 translate 坐标。
- * 坐标系以画布中心为原点：
- *   T  → y = +(canvasHeight+1)
- *   B  → y = -(canvasHeight+1)
- *   L  → x = +(canvasWidth+1)
- *   R  → x = -(canvasWidth+1)
- *   TL → x = +(canvasWidth+1), y = +(canvasHeight+1)
- *   TR → x = -(canvasWidth+1), y = +(canvasHeight+1)
- *   BL → x = +(canvasWidth+1), y = -(canvasHeight+1)
- *   BR → x = -(canvasWidth+1), y = -(canvasHeight+1)
+ * 坐标系以画布中心为原点。
+ *
+ * bufferMultiplier 用于放大 offscreen 距离，确保缩放后的内容也完全离开可见区域。
+ * 例如 exit scale=3 时，内容可能放大到 3 倍，需要 translate 距离也相应放大。
  */
 export const getOffscreenTranslate = ({
   direction,
   canvasWidth,
   canvasHeight,
+  bufferMultiplier = 1,
 }: {
   /** 推入/推出方向 */
   direction: T_Direction8
@@ -26,16 +22,20 @@ export const getOffscreenTranslate = ({
   canvasWidth: number
   /** 画布高度 */
   canvasHeight: number
+  /** 距离倍数，默认 1。当内容有缩放时，应传入 max(scale, 1) 以确保放大后的内容完全离屏 */
+  bufferMultiplier?: number
 }): { x: number; y: number } => {
+  const bw = canvasWidth * bufferMultiplier + 1
+  const bh = canvasHeight * bufferMultiplier + 1
   const xMap: Record<string, number> = {
-    L: canvasWidth + 1, R: -(canvasWidth + 1),
-    TL: canvasWidth + 1, TR: -(canvasWidth + 1),
-    BL: canvasWidth + 1, BR: -(canvasWidth + 1),
+    L: bw, R: -bw,
+    TL: bw, TR: -bw,
+    BL: bw, BR: -bw,
   }
   const yMap: Record<string, number> = {
-    T: canvasHeight + 1, B: -(canvasHeight + 1),
-    TL: canvasHeight + 1, TR: canvasHeight + 1,
-    BL: -(canvasHeight + 1), BR: -(canvasHeight + 1),
+    T: bh, B: -bh,
+    TL: bh, TR: bh,
+    BL: -bh, BR: -bh,
   }
   return { x: xMap[direction] ?? 0, y: yMap[direction] ?? 0 }
 }

@@ -1,5 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
+import max from "lodash/max"
 import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScale } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
@@ -48,8 +49,21 @@ const CycleItem = (props: {
 
   const { begin, entryDuration: switchDuration, stayDuration, exitDuration: nextSwitchDuration, holdDuration } = timeline
 
-  const enterOffscreenTranslate = getOffscreenTranslate({ direction: item.entry.direction, canvasWidth, canvasHeight })
-  const exitOffscreenTranslate = getOffscreenTranslate({ direction: item.exit.direction, canvasWidth, canvasHeight })
+  // 计算 offscreen 距离时考虑 scale 因子，确保放大后的内容也完全离屏
+  // 用户可通过 distance 手动覆盖自动计算的倍数
+  const autoEntryBuffer = max([1, defaultTo(item.entry.scale?.scale, 1)])
+  const autoExitBuffer = max([1, defaultTo(item.exit.scale?.scale, 1)])
+  const entryBuffer = defaultTo(item.distance, autoEntryBuffer)
+  const exitBuffer = defaultTo(item.distance, autoExitBuffer)
+
+  const enterOffscreenTranslate = getOffscreenTranslate({
+    direction: item.entry.direction, canvasWidth, canvasHeight,
+    bufferMultiplier: entryBuffer,
+  })
+  const exitOffscreenTranslate = getOffscreenTranslate({
+    direction: item.exit.direction, canvasWidth, canvasHeight,
+    bufferMultiplier: exitBuffer,
+  })
 
   // ── translate 时间线：进入 → stay → 退出 → hold ──
   // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）

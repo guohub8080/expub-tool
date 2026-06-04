@@ -44,4 +44,10 @@ export interface I_AnyLoopDisplayChildItem {
    * 因为下一张图进入时会覆盖当前图的退出，两者共享同一段时间。
    */
   switchDuration?: number
+  /**
+   * 自定义 offscreen 距离（像素倍数）。
+   * 不传则自动计算（基于画布尺寸 + scale 缓冲）。
+   * 传值后直接作为 getOffscreenTranslate 的 bufferMultiplier。
+   */
+  distance?: number
 }

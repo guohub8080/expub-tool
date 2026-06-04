@@ -72,6 +72,7 @@ export interface I_NormalizedChildItem {
   }
   stayDuration: number
   switchDuration: number
+  distance?: number
 }
 
 /** 填充单张图片配置的默认值并校验 */
@@ -99,6 +100,7 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
     },
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
+    distance: item.distance,
   }
 }
 

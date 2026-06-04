@@ -1,4 +1,5 @@
 import defaultTo from "lodash/defaultTo"
+import max from "lodash/max"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
@@ -102,6 +103,7 @@ const AnyLoopDisplay = (props: {
                   firstItem={items[0]}
                   enterOffscreenTranslate={getOffscreenTranslate({
                     direction: items[0].entry.direction, canvasWidth: w, canvasHeight: h,
+                    bufferMultiplier: defaultTo(items[0].distance, max([1, defaultTo(items[0].entry.scale?.scale, 1)])),
                   })}
                   ghostTimeline={ghostTimeline}
                   totalDuration={totalDuration}
