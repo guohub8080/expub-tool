@@ -21,8 +21,8 @@ const DEFAULT_EASE = "0.42 0 0.58 1"
  * 其余时间隐藏。这样视觉上图1始终能覆盖图N，实现"新图永远盖住旧图"的效果。
  *
  * 时序（begin = 0s，周期 = totalDuration）：
- * - [0, totalDuration-switchDuration)：停在屏幕外，visibility=hidden
- * - [totalDuration-switchDuration, totalDuration)：执行进入动画，visibility=visible
+ * - [0, totalDuration-entryDuration)：停在屏幕外，visibility=hidden
+ * - [totalDuration-entryDuration, totalDuration)：执行进入动画，visibility=visible
  * - totalDuration 时刻：瞬间 hidden，图1已到位，Ghost 完成使命
  */
 const GhostLayer = (props: {
@@ -40,11 +40,11 @@ const GhostLayer = (props: {
   contentHeight: number
 }) => {
   const { firstItem, enterOffscreenTranslate, ghostTimeline, totalDuration, contentWidth, contentHeight } = props
-  const T = totalDuration
-  const sw = ghostTimeline.entryDuration
+  const ghostEntryDuration = ghostTimeline.entryDuration
+  const ghostHoldDuration = totalDuration - ghostEntryDuration
 
   // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
-  const ghostShowKeyTime = ((T - sw) / T).toFixed(6)
+  const ghostShowKeyTime = (ghostHoldDuration / totalDuration).toFixed(6)
 
   // Ghost skew：仅在 entry.skew 存在时渲染
   // 前段保持 entryAngle（图1在屏幕外时的 skew 状态），后段随进入动画归零
@@ -56,8 +56,8 @@ const GhostLayer = (props: {
     return skewFn({
       initValue: firstItem.entry.skew!.angle,
       timeline: [
-        { durationSeconds: T - sw, to: firstItem.entry.skew!.angle, keySplines: skewEase },
-        { durationSeconds: sw,     to: 0,                           keySplines: skewEase },
+        { durationSeconds: ghostHoldDuration, to: firstItem.entry.skew!.angle, keySplines: skewEase },
+        { durationSeconds: ghostEntryDuration, to: 0,                           keySplines: skewEase },
       ],
       begin: "0s",
       loopCount: 0,
@@ -78,8 +78,8 @@ const GhostLayer = (props: {
     return transformRotate({
       initValue: firstItem.entry.rotation!.angle,
       timeline: [
-        { durationSeconds: T - sw, to: firstItem.entry.rotation!.angle, keySplines: ease },
-        { durationSeconds: sw,     to: 0,                                keySplines: ease },
+        { durationSeconds: ghostHoldDuration, to: firstItem.entry.rotation!.angle, keySplines: ease },
+        { durationSeconds: ghostEntryDuration, to: 0,                                keySplines: ease },
       ],
       origin: rotationOrigin,
       begin: "0s",
@@ -95,13 +95,13 @@ const GhostLayer = (props: {
       <animate attributeName="visibility"
         values="hidden; visible; hidden"
         keyTimes={`0; ${ghostShowKeyTime}; 1`}
-        dur={`${T}s`} calcMode="discrete"
+        dur={`${totalDuration}s`} calcMode="discrete"
         repeatCount="indefinite" begin="0s" fill="freeze" />
       {transformTranslate({
         initValue: enterOffscreenTranslate,
         timeline: [
-          { durationSeconds: T - sw, to: enterOffscreenTranslate, keySplines: DEFAULT_EASE },
-          { durationSeconds: sw,     to: { x: 0, y: 0 },          keySplines: DEFAULT_EASE },
+          { durationSeconds: ghostHoldDuration, to: enterOffscreenTranslate, keySplines: DEFAULT_EASE },
+          { durationSeconds: ghostEntryDuration, to: { x: 0, y: 0 },          keySplines: DEFAULT_EASE },
         ],
         begin: "0s",
         loopCount: 0,
