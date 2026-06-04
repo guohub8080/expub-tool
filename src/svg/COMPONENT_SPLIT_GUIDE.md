@@ -168,6 +168,43 @@ style={{ ...spacingResult }}
 
 其他 margin 值（`margin: 0 auto`、`margin-top: 0` 等）保持与参考代码一致，不替换。
 
+**Object 参数风格**：所有函数一律使用 Object 参数（不接受位置参数）：
+
+```ts
+// ✅ 正确
+const foo = (props: { w: number; h: number }) => {
+  const w = props.w
+  // ...
+}
+
+// ❌ 错误：位置参数
+const foo = (w: number, h: number) => { ... }
+```
+
+**目录结构与函数拆分**：每个组件必须按职责分明地拆分到独立文件和文件夹：
+
+```
+src/svg/<category>/<ComponentName>/
+├── index.tsx           # 主组件（读 props → 调用计算 → 组装 JSX）
+├── types.ts            # Props 类型、子项类型、内部类型
+├── README.md           # 原理 + Props 文档
+└── <subdir>/           # 按职责拆分的子目录
+    ├── utils/          # 标准化、校验、默认值填充
+    ├── timeline/       # 动画时间轴计算（纯函数）
+    ├── smil/           # SMIL 动画生成函数（JSX 片段）
+    │   ├── index.ts
+    │   ├── fooAnim.tsx
+    │   └── barAnim.tsx
+    └── components/     # 子渲染组件
+```
+
+判断标准：
+- 函数超过 **15 行**或被**多处调用** → 必须提取
+- 函数是**纯函数**（无 JSX）→ `utils/` 或 `timeline/`
+- 函数返回 **JSX 片段**（SMIL 动画）→ `smil/`
+- 函数是**独立渲染逻辑**（如 FaceContent）→ `components/`
+- 函数只在 `index.tsx` 里用一次且很短 → 留在 `index.tsx` 底部
+
 ---
 
 ## 第六步：确定 props 边界
