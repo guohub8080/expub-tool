@@ -30,17 +30,17 @@ export const getOffscreenTranslate = ({
 }): { x: number; y: number } => {
   // canvasSize × (bufferMultiplier + 0.5) + 1
   // +0.5 覆盖非 Center origin 导致的最大偏移（origin 在边缘时 content 从该边扩展 scale 倍）
-  const bw = canvasWidth * (bufferMultiplier + 0.5) + 1
-  const bh = canvasHeight * (bufferMultiplier + 0.5) + 1
+  const offscreenDistanceX = canvasWidth * (bufferMultiplier + 0.5) + 1
+  const offscreenDistanceY = canvasHeight * (bufferMultiplier + 0.5) + 1
   const xMap: Record<string, number> = {
-    L: bw, R: -bw,
-    TL: bw, TR: -bw,
-    BL: bw, BR: -bw,
+    L: offscreenDistanceX, R: -offscreenDistanceX,
+    TL: offscreenDistanceX, TR: -offscreenDistanceX,
+    BL: offscreenDistanceX, BR: -offscreenDistanceX,
   }
   const yMap: Record<string, number> = {
-    T: bh, B: -bh,
-    TL: bh, TR: bh,
-    BL: -bh, BR: -bh,
+    T: offscreenDistanceY, B: -offscreenDistanceY,
+    TL: offscreenDistanceY, TR: offscreenDistanceY,
+    BL: -offscreenDistanceY, BR: -offscreenDistanceY,
   }
   return { x: xMap[direction] ?? 0, y: yMap[direction] ?? 0 }
 }
