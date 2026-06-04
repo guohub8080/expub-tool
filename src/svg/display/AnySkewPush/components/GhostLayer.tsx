@@ -1,6 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
-import { compileTimeline } from "@smil/timeline/compile"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
@@ -28,8 +28,8 @@ const DEFAULT_EASE = "0.42 0 0.58 1"
 const GhostLayer = (props: {
   /** 图1的标准化配置 */
   firstItem: I_NormalizedChildItem
-  /** 图1的屏幕外进入坐标（由 getOffscreenTranslate 计算，如 "0 -300"） */
-  enterOffscreenTranslate: string
+  /** 图1的屏幕外进入坐标（由 getOffscreenTranslate 计算） */
+  enterOffscreenTranslate: { x: number; y: number }
   /** Ghost 层时间轴（由 buildCyclicTimelines 计算） */
   ghostTimeline: I_GhostTimeline
   /** 总动画周期（秒） */
@@ -46,32 +46,24 @@ const GhostLayer = (props: {
   // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
   const ghostShowKeyTime = ((T - sw) / T).toFixed(6)
 
-  // Ghost translate：前段停在屏幕外，后段执行进入动画（→ 0 0）
-  const ghostTranslate = compileTimeline(
-    [
-      { durationSeconds: T - sw, to: enterOffscreenTranslate, keySplines: DEFAULT_EASE },
-      { durationSeconds: sw,     to: '0 0',                   keySplines: DEFAULT_EASE },
-    ],
-    v => v,
-    enterOffscreenTranslate,
-  )
-
   // Ghost skew：仅在 entry.skew 存在时渲染
   // 前段保持 entryAngle（图1在屏幕外时的 skew 状态），后段随进入动画归零
   const ghostSkewAnim = firstItem.entry.skew && (() => {
-    const result = compileTimeline(
-      [
-        { durationSeconds: T - sw, to: firstItem.entry.skew!.angle, keySplines: defaultTo(firstItem.entry.skew!.keySplines, DEFAULT_EASE) },
-        { durationSeconds: sw,     to: 0,                           keySplines: defaultTo(firstItem.entry.skew!.keySplines, DEFAULT_EASE) },
+    const skewEase = defaultTo(firstItem.entry.skew!.keySplines, DEFAULT_EASE)
+    const isSkewY = firstItem.entry.skew!.type === 'Y'
+    const skewFn = isSkewY ? transformSkewY : transformSkewX
+
+    return skewFn({
+      initValue: firstItem.entry.skew!.angle,
+      timeline: [
+        { durationSeconds: T - sw, to: firstItem.entry.skew!.angle, keySplines: skewEase },
+        { durationSeconds: sw,     to: 0,                           keySplines: skewEase },
       ],
-      v => `${v}`,
-      firstItem.entry.skew!.angle,
-    )
-    return (
-      <animateTransform attributeName="transform" type={`skew${firstItem.entry.skew!.type}` as 'skewX' | 'skewY'}
-        values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
-        dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
-    )
+      begin: "0s",
+      loopCount: 0,
+      isFreeze: true,
+      isAdditive: false,
+    })
   })()
 
   // Ghost rotate：仅在 entry.rotation 存在时渲染，使用图1的 origin 和 keySplines
@@ -82,19 +74,19 @@ const GhostLayer = (props: {
       contentHeight,
     })
     const ease = defaultTo(firstItem.entry.rotation!.keySplines, DEFAULT_EASE)
-    const result = compileTimeline(
-      [
+
+    return transformRotate({
+      initValue: firstItem.entry.rotation!.angle,
+      timeline: [
         { durationSeconds: T - sw, to: firstItem.entry.rotation!.angle, keySplines: ease },
         { durationSeconds: sw,     to: 0,                                keySplines: ease },
       ],
-      v => `${v} ${rotationOrigin}`,
-      firstItem.entry.rotation!.angle,
-    )
-    return (
-      <animateTransform attributeName="transform" type="rotate"
-        values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
-        dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
-    )
+      origin: rotationOrigin,
+      begin: "0s",
+      loopCount: 0,
+      isFreeze: true,
+      isAdditive: false,
+    })
   })()
 
   return (
@@ -105,9 +97,18 @@ const GhostLayer = (props: {
         keyTimes={`0; ${ghostShowKeyTime}; 1`}
         dur={`${T}s`} calcMode="discrete"
         repeatCount="indefinite" begin="0s" fill="freeze" />
-      <animateTransform attributeName="transform" type="translate"
-        values={ghostTranslate.values} keyTimes={ghostTranslate.keyTimes} keySplines={ghostTranslate.keySplines}
-        dur={`${T}s`} calcMode="spline" repeatCount="indefinite" begin="0s" fill="freeze" />
+      {transformTranslate({
+        initValue: enterOffscreenTranslate,
+        timeline: [
+          { durationSeconds: T - sw, to: enterOffscreenTranslate, keySplines: DEFAULT_EASE },
+          { durationSeconds: sw,     to: { x: 0, y: 0 },          keySplines: DEFAULT_EASE },
+        ],
+        begin: "0s",
+        loopCount: 0,
+        isFreeze: true,
+        isAdditive: false,
+        isRelativeMove: false,
+      })}
       <g>
         {ghostSkewAnim}
         {ghostRotateAnim}

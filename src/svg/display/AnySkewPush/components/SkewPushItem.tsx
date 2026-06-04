@@ -1,6 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
-import { compileTimeline } from "@smil/timeline/compile"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
@@ -39,7 +39,7 @@ const SkewPushItem = (props: {
   /** 画布高度 */
   canvasHeight: number
 }) => {
-  const { item, timeline, totalDuration, contentWidth, contentHeight, canvasWidth, canvasHeight } = props
+  const { item, timeline, contentWidth, contentHeight, canvasWidth, canvasHeight } = props
 
   const { begin, entryDuration: switchDuration, stayDuration, exitDuration: nextSwitchDuration, holdDuration } = timeline
 
@@ -48,37 +48,35 @@ const SkewPushItem = (props: {
 
   // ── translate 时间线：进入 → stay → 退出 → hold ──
   // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）
-  const translateSegs = [
-    { durationSeconds: switchDuration, to: '0 0', keySplines: DEFAULT_EASE },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: '0 0', keySplines: DEFAULT_EASE }] : []),
+  const translateTimeline = [
+    { durationSeconds: switchDuration, to: { x: 0, y: 0 }, keySplines: DEFAULT_EASE },
+    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: { x: 0, y: 0 }, keySplines: DEFAULT_EASE }] : []),
     { durationSeconds: nextSwitchDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
     { durationSeconds: holdDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
   ]
-  const translateResult = compileTimeline(translateSegs, v => v, enterOffscreenTranslate)
-
-  // ── skew 时间线 ──
-  const skewAnim = renderSkewAnim({
-    entrySkew: item.entry.skew, exitSkew: item.exit.skew,
-    stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
-  })
-
-  // ── rotate 时间线（使用 item 自带的 origin 和 keySplines） ──
-  const rotateAnim = renderRotateAnim({
-    entryRotation: item.entry.rotation, exitRotation: item.exit.rotation,
-    contentWidth, contentHeight,
-    stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
-  })
 
   return (
     <g>
       {/* 外层 translate：控制图片的进入/退出位移 */}
-      <animateTransform attributeName="transform" type="translate"
-        values={translateResult.values} keyTimes={translateResult.keyTimes} keySplines={translateResult.keySplines}
-        dur={`${totalDuration}s`} calcMode="spline" repeatCount="indefinite"
-        begin={`${begin}s`} fill="freeze" />
+      {transformTranslate({
+        initValue: enterOffscreenTranslate,
+        timeline: translateTimeline,
+        begin: `${begin}s`,
+        loopCount: 0,
+        isFreeze: true,
+        isAdditive: false,
+        isRelativeMove: false,
+      })}
       <g>
-        {skewAnim}
-        {rotateAnim}
+        {renderSkewAnim({
+          entrySkew: item.entry.skew, exitSkew: item.exit.skew,
+          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+        })}
+        {renderRotateAnim({
+          entryRotation: item.entry.rotation, exitRotation: item.exit.rotation,
+          contentWidth, contentHeight,
+          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+        })}
         {renderChildItemContent({ item, contentWidth, contentHeight })}
       </g>
     </g>
@@ -89,7 +87,7 @@ const SkewPushItem = (props: {
 
 /** 生成 skew animateTransform（entrySkew 和 exitSkew 均不传时返回 null） */
 const renderSkewAnim = ({
-  entrySkew, exitSkew, stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
+  entrySkew, exitSkew, stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
   entrySkew?: I_NormalizedChildItem['entry']['skew']
   exitSkew?: I_NormalizedChildItem['exit']['skew']
@@ -98,13 +96,12 @@ const renderSkewAnim = ({
   nextSwitchDuration: number
   holdDuration: number
   begin: number
-  totalDuration: number
 }) => {
   if (isNil(entrySkew) && isNil(exitSkew)) return null
 
   const entryAngle = entrySkew?.angle ?? 0
   const exitAngle  = exitSkew?.angle  ?? 0
-  const skewType   = `skew${(entrySkew ?? exitSkew)!.type}` as 'skewX' | 'skewY'
+  const isSkewY    = (entrySkew ?? exitSkew)!.type === 'Y'
   const skewEase   = defaultTo(entrySkew?.keySplines, defaultTo(exitSkew?.keySplines, DEFAULT_EASE))
 
   const segs = [
@@ -113,20 +110,23 @@ const renderSkewAnim = ({
     { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: defaultTo(exitSkew?.keySplines, skewEase) },
     { durationSeconds: holdDuration,       to: exitAngle, keySplines: defaultTo(exitSkew?.keySplines, skewEase) },
   ]
-  const result = compileTimeline(segs, v => `${v}`, entryAngle)
 
-  return (
-    <animateTransform attributeName="transform" type={skewType}
-      values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
-      dur={`${totalDuration}s`} calcMode="spline" repeatCount="indefinite"
-      begin={`${begin}s`} fill="freeze" />
-  )
+  const skewConfig = {
+    initValue: entryAngle,
+    timeline: segs,
+    begin: `${begin}s`,
+    loopCount: 0,
+    isFreeze: true,
+    isAdditive: false,
+  }
+
+  return isSkewY ? transformSkewY(skewConfig) : transformSkewX(skewConfig)
 }
 
 /** 生成 rotate animateTransform（entryRotation 和 exitRotation 均不传时返回 null） */
 const renderRotateAnim = ({
   entryRotation, exitRotation, contentWidth, contentHeight,
-  stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin, totalDuration,
+  stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
   entryRotation?: I_NormalizedChildItem['entry']['rotation']
   exitRotation?: I_NormalizedChildItem['exit']['rotation']
@@ -137,14 +137,12 @@ const renderRotateAnim = ({
   nextSwitchDuration: number
   holdDuration: number
   begin: number
-  totalDuration: number
 }) => {
   if (isNil(entryRotation) && isNil(exitRotation)) return null
 
   const entryAngle = defaultTo(entryRotation?.angle, 0)
   const exitAngle  = defaultTo(exitRotation?.angle, 0)
 
-  // 进入和退出的 origin 可能不同，取 entryRotation 的 origin（主旋转中心）
   const rotationOrigin = getRotationOrigin({
     origin: defaultTo(entryRotation?.origin, exitRotation?.origin ?? 'Center'),
     contentWidth,
@@ -159,15 +157,16 @@ const renderRotateAnim = ({
     { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: ease },
     { durationSeconds: holdDuration,       to: exitAngle, keySplines: ease },
   ]
-  // rotate values 格式："angle cx cy"
-  const result = compileTimeline(segs, v => `${v} ${rotationOrigin}`, entryAngle)
 
-  return (
-    <animateTransform attributeName="transform" type="rotate"
-      values={result.values} keyTimes={result.keyTimes} keySplines={result.keySplines}
-      dur={`${totalDuration}s`} calcMode="spline" repeatCount="indefinite"
-      begin={`${begin}s`} fill="freeze" />
-  )
+  return transformRotate({
+    initValue: entryAngle,
+    timeline: segs,
+    origin: rotationOrigin,
+    begin: `${begin}s`,
+    loopCount: 0,
+    isFreeze: true,
+    isAdditive: false,
+  })
 }
 
 export default SkewPushItem

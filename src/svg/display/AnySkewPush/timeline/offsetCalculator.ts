@@ -1,12 +1,10 @@
 import isPlainObject from "lodash/isPlainObject"
-import isString from "lodash/isString"
 import type { T_Direction4, T_Origin } from "@svg/types"
 
 /**
  * 方向位移计算器
  *
- * 根据推入/推出方向和画布尺寸，计算屏幕外的 translate 坐标（"x y" 格式）。
- *
+ * 根据推入/推出方向和画布尺寸，计算屏幕外的 translate 坐标。
  * 坐标系以画布中心为原点：
  *   T（从上进入）→ 图片初始在下方边界外：y = +(canvasHeight+1)
  *   B（从下进入）→ 图片初始在上方边界外：y = -(canvasHeight+1)
@@ -24,17 +22,17 @@ export const getOffscreenTranslate = ({
   canvasWidth: number
   /** 画布高度 */
   canvasHeight: number
-}): string => {
+}): { x: number; y: number } => {
   switch (direction) {
-    case 'T': return `0 ${canvasHeight + 1}`
-    case 'B': return `0 ${-(canvasHeight + 1)}`
-    case 'L': return `${canvasWidth + 1} 0`
-    case 'R': return `${-(canvasWidth + 1)} 0`
+    case 'T': return { x: 0, y: canvasHeight + 1 }
+    case 'B': return { x: 0, y: -(canvasHeight + 1) }
+    case 'L': return { x: canvasWidth + 1, y: 0 }
+    case 'R': return { x: -(canvasWidth + 1), y: 0 }
   }
 }
 
 /**
- * 根据九宫格位置返回旋转中心的坐标（"cx cy" 格式）。
+ * 根据九宫格位置返回旋转中心的坐标。
  *
  * 坐标系以画布中心为原点，contentWidth/contentHeight 为内容区域尺寸：
  *
@@ -53,20 +51,20 @@ export const getRotationOrigin = ({
   contentWidth: number
   /** 内容区域高度 */
   contentHeight: number
-}): string => {
+}): [number, number] => {
   // 自定义坐标直接返回
   if (isPlainObject(origin)) {
     const { x, y } = origin as { x: number; y: number }
-    return `${x} ${y}`
+    return [x, y]
   }
 
   // 九宫格预设（origin 此时一定是 string）
   const hw = contentWidth / 2
   const hh = contentHeight / 2
-  const grid: Record<string, string> = {
-    TopLeft: `${-hw} ${-hh}`,    Top: `0 ${-hh}`,      TopRight: `${hw} ${-hh}`,
-    Left: `${-hw} 0`,            Center: `0 0`,         Right: `${hw} 0`,
-    BottomLeft: `${-hw} ${hh}`,  Bottom: `0 ${hh}`,     BottomRight: `${hw} ${hh}`,
+  const grid: Record<string, [number, number]> = {
+    TopLeft: [-hw, -hh],    Top: [0, -hh],      TopRight: [hw, -hh],
+    Left: [-hw, 0],         Center: [0, 0],      Right: [hw, 0],
+    BottomLeft: [-hw, hh],  Bottom: [0, hh],     BottomRight: [hw, hh],
   }
   return grid[origin as string]
 }
