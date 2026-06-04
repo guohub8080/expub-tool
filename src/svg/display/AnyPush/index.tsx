@@ -26,15 +26,15 @@ import { calculateTotalCycleDuration } from "./timeline/sequenceCalculator"
  *
  * @param props.canvasSize - 画布尺寸 { w, h }，url 模式可省略（自动从图片获取），item 模式必传
  * @param props.spacing - 外间距配置（mt/mb/ml/mr）
- * @param props.pics - 图片配置数组，每项包含 url 或 item + direction / switchDuration / stayDuration / keySplines
+ * @param props.childItems - 图片配置数组，每项包含 url 或 item + direction / switchDuration / stayDuration / keySplines
  */
 const AnyPush = (props: {
   canvasSize?: T_CanvasSize
   spacing?: T_SpacingProps
-  pics?: I_PicConfig[]
+  childItems?: I_PicConfig[]
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  const firstPic = props.pics?.[0]
+  const firstPic = props.childItems?.[0]
   const firstUrl = firstPic?.url
 
   // item 模式没有 url，必须传 canvasSize
@@ -49,7 +49,7 @@ const AnyPush = (props: {
   const h = resolvedSize.h
 
   // 标准化图片配置（填充默认值、校验 url/item、处理单图复制）
-  const pics = normalizePics(props.pics)
+  const pics = normalizePics(props.childItems)
   // 预计算总周期时长，传给每张 PushingImage 用于组装时间线
   const totalCycleDuration = calculateTotalCycleDuration(pics)
   const isDev = ExPubGoConfig().mode === 'development'

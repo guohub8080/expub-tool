@@ -34,7 +34,7 @@ interface I_StackCarouselXProps {
   /** 中心卡牌显示尺寸（viewBox 坐标），即用户看到的卡牌大小 */
   mainChildItemSize: { w: number; h: number }
   /** 图片/内容配置数组，至少 1 项 */
-  pics?: I_StackCarouselItem[]
+  childItems?: I_StackCarouselItem[]
   /** back/mid 缩放比例 [back, mid]，center 恒为 1.0，默认 [0.78, 0.89] */
   childItemScales?: [number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
@@ -64,7 +64,7 @@ const getExitTranslate = (direction: T_Direction8, distance: number, distanceXY?
 
 const StackCarouselX = (props: I_StackCarouselXProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  const firstPic = props.pics?.[0]
+  const firstPic = props.childItems?.[0]
   if (isNil(firstPic?.url) && isNil(firstPic?.jsx)) return null
 
   const viewBoxW = props.canvasSize.w
@@ -78,7 +78,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const bgColor = props.canvasBg
   const isDev = ExPubGoConfig().mode === "development"
 
-  const items = normalizeItems({ items: props.pics, defaultExitDirection: "L" })
+  const items = normalizeItems({ items: props.childItems, defaultExitDirection: "L" })
   const itemCount = items.length
   const totalSlots = itemCount + 3
 

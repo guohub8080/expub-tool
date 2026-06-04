@@ -68,7 +68,7 @@ export default function AnyPushPage() {
       <CopyDemo title="基础推入切换 — 2 张图，默认方向">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
           ]}
@@ -78,7 +78,7 @@ export default function AnyPushPage() {
       <CopyDemo title="3 张图 — 混合方向">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(3), direction: "R" },
             { url: getWechat300x500(4), direction: "T" },
             { url: getWechat300x500(5), direction: "L" },
@@ -89,7 +89,7 @@ export default function AnyPushPage() {
       <CopyDemo title="快速切换 — switchDuration=0.3, stayDuration=0.2">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(6), switchDuration: 0.3, stayDuration: 0.2 },
             { url: getWechat300x500(7), switchDuration: 0.3, stayDuration: 0.2 },
             { url: getWechat300x500(8), switchDuration: 0.3, stayDuration: 0.2 },
@@ -100,7 +100,7 @@ export default function AnyPushPage() {
       <CopyDemo title="跑马灯 — stayDuration=0, 线性匀速">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(1), direction: "R", switchDuration: 0.8, stayDuration: 0, keySplines: "0 0 1 1" },
             { url: getWechat300x500(2), direction: "R", switchDuration: 0.8, stayDuration: 0, keySplines: "0 0 1 1" },
           ]}
@@ -110,7 +110,7 @@ export default function AnyPushPage() {
       <CopyDemo title="单方向连续滚动 — 全部从右侧进入">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(3), direction: "R", switchDuration: 0.6, stayDuration: 0.4 },
             { url: getWechat300x500(4), direction: "R", switchDuration: 0.6, stayDuration: 0.4 },
             { url: getWechat300x500(5), direction: "R", switchDuration: 0.6, stayDuration: 0.4 },
@@ -121,7 +121,7 @@ export default function AnyPushPage() {
       <CopyDemo title="上下交替">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(6), direction: "T" },
             { url: getWechat300x500(7), direction: "B" },
           ]}
@@ -131,7 +131,7 @@ export default function AnyPushPage() {
       <CopyDemo title="Item 模式 — 自定义 SVG 内容">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { item: <BreatheCircleItem />, direction: "R" },
             { item: <ColorBlockItem color="#7c3aed" label="Purple" />, direction: "L" },
             { item: <ColorBlockItem color="#059669" label="Green" />, direction: "T" },
@@ -142,7 +142,7 @@ export default function AnyPushPage() {
       <CopyDemo title="混合模式 — url + item 混用">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(1), direction: "R" },
             { item: <ColorBlockItem color="#dc2626" label="Red" />, direction: "L" },
             { url: getWechat300x500(3), direction: "T" },
@@ -153,7 +153,7 @@ export default function AnyPushPage() {
       <CopyDemo title="单图自动复制">
         <AnyPush
           canvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(9) },
           ]}
         />

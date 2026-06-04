@@ -23,7 +23,7 @@ const DEFAULT_ITEM_SCALE = 1.4
 const CoverFlowX = (props: {
   canvasSize: { w: number; h: number }
   spacing?: T_SpacingProps
-  pics?: I_CoverFlowItemConfig[]
+  childItems?: I_CoverFlowItemConfig[]
   itemCanvasSize: { w: number; h: number }
   itemGap?: number
   itemScale?: number
@@ -31,7 +31,7 @@ const CoverFlowX = (props: {
   isReversed?: boolean
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  const firstPic = props.pics?.[0]
+  const firstPic = props.childItems?.[0]
   if (!firstPic?.url && !firstPic?.item) return null
 
   const viewBoxW = props.canvasSize.w
@@ -41,7 +41,7 @@ const CoverFlowX = (props: {
   const gap = defaultTo(props.itemGap, DEFAULT_ITEM_GAP)
   const fullScale = defaultTo(props.itemScale, DEFAULT_ITEM_SCALE)
 
-  const items = normalizeItems(props.pics)
+  const items = normalizeItems(props.childItems)
   const N = items.length
   const reverse = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === 'development'

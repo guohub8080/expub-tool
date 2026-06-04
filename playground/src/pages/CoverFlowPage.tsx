@@ -56,7 +56,7 @@ export default function CoverFlowPage() {
         <CoverFlowX
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 400, h: 600 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
             { url: getWechat300x500(3) },
@@ -70,7 +70,7 @@ export default function CoverFlowPage() {
           itemCanvasSize={{ w: 300, h: 500 }}
           itemScale={1.4}
           itemGap={100}
-          pics={[
+          childItems={[
             { url: getWechat300x500(3), keySplines: power3 },
             { url: getWechat300x500(4), keySplines: power3 },
             { url: getWechat300x500(5), keySplines: power3 },
@@ -85,7 +85,7 @@ export default function CoverFlowPage() {
           itemScale={1.4}
           itemGap={100}
           isReversed
-          pics={[
+          childItems={[
             { url: getWechat300x500(3), keySplines: power3 },
             { url: getWechat300x500(4), keySplines: power3 },
             { url: getWechat300x500(5), keySplines: power3 },
@@ -97,7 +97,7 @@ export default function CoverFlowPage() {
         <CoverFlowX
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 300, h: 500 }}
-          pics={[
+          childItems={[
             { url: getWechat300x500(3), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(4), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(5), switchDuration: 0.3, stayDuration: 0.5 },
@@ -110,7 +110,7 @@ export default function CoverFlowPage() {
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           itemAlign="top"
-          pics={[
+          childItems={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
             { url: getWechat300x500(3) },
@@ -123,7 +123,7 @@ export default function CoverFlowPage() {
           canvasSize={{ w: 1000, h: 800 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           itemAlign="bottom"
-          pics={[
+          childItems={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
             { url: getWechat300x500(3) },
@@ -137,7 +137,7 @@ export default function CoverFlowPage() {
           itemCanvasSize={{ w: 300, h: 500 }}
           itemGap={80}
           itemScale={1.3}
-          pics={[
+          childItems={[
             { item: <ColorBlockItem color="#dc2626" label="Red" /> },
             { item: <ColorBlockItem color="#2563eb" label="Blue" /> },
             { item: <ColorBlockItem color="#059669" label="Green" /> },
@@ -151,7 +151,7 @@ export default function CoverFlowPage() {
         <CoverFlowY
           canvasSize={{ w: 600, h: 1000 }}
           itemCanvasSize={{ w: 300, h: 300 }}
-          pics={[
+          childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
             { url: getWechat300x300(3) },
@@ -164,7 +164,7 @@ export default function CoverFlowPage() {
           canvasSize={{ w: 600, h: 1000 }}
           itemCanvasSize={{ w: 300, h: 300 }}
           isReversed
-          pics={[
+          childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
             { url: getWechat300x300(3) },
@@ -177,7 +177,7 @@ export default function CoverFlowPage() {
           canvasSize={{ w: 600, h: 1000 }}
           itemCanvasSize={{ w: 300, h: 300 }}
           itemAlign="left"
-          pics={[
+          childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
             { url: getWechat300x300(3) },
@@ -190,7 +190,7 @@ export default function CoverFlowPage() {
           canvasSize={{ w: 600, h: 1000 }}
           itemCanvasSize={{ w: 300, h: 300 }}
           itemAlign="right"
-          pics={[
+          childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
             { url: getWechat300x300(3) },
