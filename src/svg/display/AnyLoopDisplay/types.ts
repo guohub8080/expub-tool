@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
-import type { T_Direction8, I_SkewConfig, I_RotationConfig } from "@svg/types"
+import type { T_Direction8, I_SkewConfig, I_RotationConfig, I_EntryScaleConfig } from "@svg/types"
 
-export type { I_SkewConfig, I_RotationConfig } from "@svg/types"
+export type { I_SkewConfig, I_RotationConfig, I_EntryScaleConfig } from "@svg/types"
 
 /** 进入配置 */
 export interface I_EntryConfig {
@@ -11,6 +11,8 @@ export interface I_EntryConfig {
   skew?: I_SkewConfig
   /** 进入时的旋转配置，不传则进入无旋转 */
   rotation?: I_RotationConfig
+  /** 进入时的缩放配置，不传则进入无缩放 */
+  scale?: I_EntryScaleConfig
 }
 
 /** 退出配置 */
@@ -21,6 +23,8 @@ export interface I_ExitConfig {
   skew?: I_SkewConfig
   /** 退出时的旋转配置，不传则退出无旋转 */
   rotation?: I_RotationConfig
+  /** 退出时的缩放配置，不传则退出无缩放 */
+  scale?: I_EntryScaleConfig
 }
 
 export interface I_AnyLoopDisplayChildItem {

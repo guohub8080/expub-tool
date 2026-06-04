@@ -65,3 +65,13 @@ export interface I_RotationConfig {
   /** 缓动曲线，默认 ease-in-out */
   keySplines?: string
 }
+
+/** 缩放配置（用于 entry/exit 动画） */
+export interface I_EntryScaleConfig {
+  /** 缩放中心，默认 Center */
+  origin?: T_Origin
+  /** 缩放比例，默认 1（不缩放） */
+  scale?: number
+  /** 缓动曲线，默认 ease-in-out */
+  keySplines?: string
+}

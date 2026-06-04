@@ -1,13 +1,13 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { DIRECTION_8 } from "@svg/types"
-import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
+import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig, I_EntryScaleConfig } from "@svg/types"
 import type { I_AnyLoopDisplayChildItem } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
 export const DEFAULT_SWITCH_DURATION = 2
 const DEFAULT_DIRECTION: T_Direction8 = DIRECTION_8.Top
-export const DEFAULT_ROTATION_ORIGIN: T_Origin = 'Center'
+export const DEFAULT_TRANSFORM_ORIGIN: T_Origin = 'Center'
 
 /** 标准化后的旋转配置（origin 和 angle 已填充默认值） */
 export interface I_NormalizedRotationConfig {
@@ -16,13 +16,30 @@ export interface I_NormalizedRotationConfig {
   keySplines?: string
 }
 
+/** 标准化后的缩放配置（origin 和 scale 已填充默认值） */
+export interface I_NormalizedScaleConfig {
+  origin: T_Origin
+  scale: number
+  keySplines?: string
+}
+
 /** 标准化单个旋转配置：填充默认 origin 和 angle */
 const normalizeRotation = (rotation: I_RotationConfig | undefined): I_NormalizedRotationConfig | undefined => {
   if (isNil(rotation)) return undefined
   return {
-    origin: defaultTo(rotation.origin, DEFAULT_ROTATION_ORIGIN),
+    origin: defaultTo(rotation.origin, DEFAULT_TRANSFORM_ORIGIN),
     angle: defaultTo(rotation.angle, 0),
     keySplines: rotation.keySplines,
+  }
+}
+
+/** 标准化单个缩放配置：填充默认 origin 和 scale */
+const normalizeScale = (scale: I_EntryScaleConfig | undefined): I_NormalizedScaleConfig | undefined => {
+  if (isNil(scale)) return undefined
+  return {
+    origin: defaultTo(scale.origin, DEFAULT_TRANSFORM_ORIGIN),
+    scale: defaultTo(scale.scale, 1),
+    keySplines: scale.keySplines,
   }
 }
 
@@ -45,11 +62,13 @@ export interface I_NormalizedChildItem {
     direction: T_Direction8
     skew?: I_SkewConfig
     rotation?: I_NormalizedRotationConfig
+    scale?: I_NormalizedScaleConfig
   }
   exit: {
     direction: T_Direction8
     skew?: I_SkewConfig
     rotation?: I_NormalizedRotationConfig
+    scale?: I_NormalizedScaleConfig
   }
   stayDuration: number
   switchDuration: number
@@ -70,11 +89,13 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
       direction: entryDirection,
       skew: item.entry?.skew,
       rotation: normalizeRotation(item.entry?.rotation),
+      scale: normalizeScale(item.entry?.scale),
     },
     exit: {
       direction: defaultTo(item.exit?.direction, oppositeDirection(entryDirection)),
       skew: item.exit?.skew,
       rotation: normalizeRotation(item.exit?.rotation),
+      scale: normalizeScale(item.exit?.scale),
     },
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),

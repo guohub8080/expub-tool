@@ -1,6 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
-import { transformTranslate, transformSkewX, transformSkewY, transformRotate, animateVisibility } from "@smil/index"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScale, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
@@ -86,6 +86,29 @@ const GhostLayer = (props: {
     })
   })()
 
+  // Ghost scale：仅在 entry.scale 存在时渲染
+  const ghostScaleAnim = !isNil(firstItem.entry.scale) && (() => {
+    const scaleOrigin = getRotationOrigin({
+      origin: firstItem.entry.scale!.origin,
+      contentWidth,
+      contentHeight,
+    })
+    const ease = defaultTo(firstItem.entry.scale!.keySplines, DEFAULT_EASE)
+
+    return transformScale({
+      initValue: firstItem.entry.scale!.scale,
+      timeline: [
+        { durationSeconds: ghostHoldDuration, to: firstItem.entry.scale!.scale, keySplines: ease },
+        { durationSeconds: ghostEntryDuration, to: 1,                             keySplines: ease },
+      ],
+      origin: scaleOrigin,
+      begin: "0s",
+      loopCount: 0,
+      isFreeze: true,
+      isAdditive: false,
+    })
+  })()
+
   return (
     <g key="ghost" visibility="hidden">
       {/* visibility 切换：在图1进入段瞬间变 visible，进入完成后瞬间 hidden */}
@@ -113,8 +136,13 @@ const GhostLayer = (props: {
       })}
       <g>
         {ghostSkewAnim}
-        {ghostRotateAnim}
-        {renderChildItemContent({ item: firstItem, contentWidth, contentHeight })}
+        <g>
+          {ghostScaleAnim}
+          <g>
+            {ghostRotateAnim}
+            {renderChildItemContent({ item: firstItem, contentWidth, contentHeight })}
+          </g>
+        </g>
       </g>
     </g>
   )

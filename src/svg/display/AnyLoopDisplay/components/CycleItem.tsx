@@ -1,6 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
-import { transformTranslate, transformSkewX, transformSkewY, transformRotate } from "@smil/index"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScale } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
@@ -10,20 +10,25 @@ import { renderChildItemContent } from "./ChildItemContent"
 const DEFAULT_EASE = "0.42 0 0.58 1"
 
 /**
- * SkewPushItem — 单张斜切推入子项组件
+ * CycleItem — 单张循环展示子项组件
  *
- * 每个实例渲染一张图片及其 translate/skew/rotate 动画，结构为：
+ * 每个实例渲染一张图片及其 translate/skew/scale/rotate 动画，结构为：
  *
  *   <g>                              ← 外层 translate（控制进入/退出位移）
- *     <animateTransform translate/>  ← 4段时间线：进入 → stay → 退出 → hold
+ *     <animateTransform translate/>
  *     <g>
  *       <animateTransform skew/>     ← 可选，skew 斜切动画
- *       <animateTransform rotate/>   ← 可选，旋转动画
- *       <ChildItemContent/>          ← 图片内容（url 或 jsx）
+ *       <g>
+ *         <animateTransform scale/>  ← 可选，缩放动画（translate+scale+translate 三元素）
+ *         <g>
+ *           <animateTransform rotate/> ← 可选，旋转动画
+ *           <ChildItemContent/>       ← 图片内容（url 或 jsx）
+ *         </g>
+ *       </g>
  *     </g>
  *   </g>
  */
-const SkewPushItem = (props: {
+const CycleItem = (props: {
   /** 当前子项的标准化配置 */
   item: I_NormalizedChildItem
   /** 当前子项的时间轴信息（由 buildCyclicTimelines 计算） */
@@ -72,12 +77,21 @@ const SkewPushItem = (props: {
           entrySkew: item.entry.skew, exitSkew: item.exit.skew,
           stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
         })}
-        {renderRotateAnim({
-          entryRotation: item.entry.rotation, exitRotation: item.exit.rotation,
-          contentWidth, contentHeight,
-          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
-        })}
-        {renderChildItemContent({ item, contentWidth, contentHeight })}
+        <g>
+          {renderScaleAnim({
+            entryScale: item.entry.scale, exitScale: item.exit.scale,
+            contentWidth, contentHeight,
+            stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+          })}
+          <g>
+            {renderRotateAnim({
+              entryRotation: item.entry.rotation, exitRotation: item.exit.rotation,
+              contentWidth, contentHeight,
+              stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+            })}
+            {renderChildItemContent({ item, contentWidth, contentHeight })}
+          </g>
+        </g>
       </g>
     </g>
   )
@@ -169,4 +183,50 @@ const renderRotateAnim = ({
   })
 }
 
-export default SkewPushItem
+/** 生成 scale animateTransform（entryScale 和 exitScale 均不传时返回 null） */
+const renderScaleAnim = ({
+  entryScale, exitScale, contentWidth, contentHeight,
+  stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+}: {
+  entryScale?: I_NormalizedChildItem['entry']['scale']
+  exitScale?: I_NormalizedChildItem['exit']['scale']
+  contentWidth: number
+  contentHeight: number
+  stayDuration: number
+  switchDuration: number
+  nextSwitchDuration: number
+  holdDuration: number
+  begin: number
+}) => {
+  if (isNil(entryScale) && isNil(exitScale)) return null
+
+  const entryScaleValue = defaultTo(entryScale?.scale, 1)
+  const exitScaleValue  = defaultTo(exitScale?.scale, 1)
+
+  const scaleOrigin = getRotationOrigin({
+    origin: defaultTo(entryScale?.origin, exitScale?.origin ?? 'Center'),
+    contentWidth,
+    contentHeight,
+  })
+
+  const ease = entryScale?.keySplines ?? exitScale?.keySplines ?? DEFAULT_EASE
+
+  const segs = [
+    { durationSeconds: switchDuration,    to: 1,              keySplines: ease },
+    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 1, keySplines: ease }] : []),
+    { durationSeconds: nextSwitchDuration, to: exitScaleValue, keySplines: ease },
+    { durationSeconds: holdDuration,       to: exitScaleValue, keySplines: ease },
+  ]
+
+  return transformScale({
+    initValue: entryScaleValue,
+    timeline: segs,
+    origin: scaleOrigin,
+    begin: `${begin}s`,
+    loopCount: 0,
+    isFreeze: true,
+    isAdditive: false,
+  })
+}
+
+export default CycleItem
