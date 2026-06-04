@@ -2,7 +2,7 @@ import React from 'react'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import isNil from 'lodash/isNil'
 import defaultTo from 'lodash/defaultTo'
-import { compileTimeline } from '@smil/timeline/compile'
+import { buildTimeline } from '@smil/timeline/compile'
 import type { I_TimelineKeyframe } from '@smil/timeline/types'
 import type { T_NativeAnimate } from '@smil/types'
 
@@ -47,7 +47,7 @@ export function animateAttribute<T extends number | string>(
   }))
 
   const serializer = (v: T) => String(v)
-  const result = compileTimeline(fullKeyframes, serializer, initValue)
+  const result = buildTimeline({ initValue, timeline: fullKeyframes, serializer })
 
   const hasKeySplines = timeline.some(seg => seg.keySplines)
   const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')

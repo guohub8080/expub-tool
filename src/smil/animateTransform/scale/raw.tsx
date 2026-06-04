@@ -2,7 +2,7 @@ import React from 'react'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
-import { compileTimeline } from '@smil/timeline/compile'
+import { buildTimeline } from '@smil/timeline/compile'
 import type { T_ValueSerializer } from '@smil/timeline/types'
 import type { I_ScaleRawConfig } from './types'
 
@@ -36,7 +36,7 @@ export function transformScaleRaw(config: I_ScaleRawConfig) {
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 
-  const result = compileTimeline(fullKeyframes, serializeScale, initValue)
+  const result = buildTimeline({ initValue, timeline: fullKeyframes, serializer: serializeScale })
 
   const hasKeySplines = timeline.some(seg => seg.keySplines)
   const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')

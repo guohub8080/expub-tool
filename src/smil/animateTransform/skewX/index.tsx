@@ -2,7 +2,7 @@ import React from 'react'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
-import { compileTimeline } from '@smil/timeline/compile'
+import { buildTimeline } from '@smil/timeline/compile'
 import type { I_SkewXConfig } from './types'
 
 export type { I_SkewXConfig } from './types'
@@ -36,7 +36,7 @@ export function transformSkewX(config: I_SkewXConfig) {
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 
-  const result = compileTimeline(fullKeyframes, String, initValue)
+  const result = buildTimeline({ initValue, timeline: fullKeyframes })
 
   // 3. 公共属性
   const hasKeySplines = timeline.some(seg => seg.keySplines)

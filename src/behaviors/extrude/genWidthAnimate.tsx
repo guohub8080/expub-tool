@@ -1,6 +1,6 @@
 import { isNil, defaultTo, isEmpty } from 'lodash';
-import { genSvgKeySplines } from '@smil/genSvgKeySplines';
-import type { SvgTimelineSegment } from '@smil/genSvgKeySplines';
+import { buildTimeline } from '@smil/timeline/compile';
+import type { I_TimelineKeyframe } from '@smil/timeline/types';
 import { getEaseBezier } from "@smil/bezier/getEaseBezier";
 import type { CSSProperties } from "react";
 
@@ -30,13 +30,13 @@ export const genWidthAnimate = (options: extrudeOptions): React.ReactElement => 
     throw new Error('timeline 必须是非空数组');
   }
 
-  const widthTimeline: SvgTimelineSegment[] = options.timeline.map((segment) => ({
+  const widthTimeline: I_TimelineKeyframe<string>[] = options.timeline.map((segment) => ({
     keySplines: defaultTo(segment.keySplines, getEaseBezier({ isOut: true })),
-    toValue: `${100 * (segment.toHeight / options.initHeight)}%`,
+    to: `${100 * (segment.toHeight / options.initHeight)}%`,
     durationSeconds: segment.durationSeconds,
   }));
 
-  const widthParams = genSvgKeySplines({
+  const widthParams = buildTimeline({
     initValue: `100%`,
     timeline: widthTimeline,
   });

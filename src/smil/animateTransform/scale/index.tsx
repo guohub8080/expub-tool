@@ -2,7 +2,7 @@ import React from 'react'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
-import { compileTimeline } from '@smil/timeline/compile'
+import { buildTimeline } from '@smil/timeline/compile'
 import type { I_ScaleConfig } from './types'
 
 export type { I_ScaleConfig, I_ScaleRawConfig } from './types'
@@ -40,7 +40,7 @@ export function transformScale(config: I_ScaleConfig) {
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 
-  const result = compileTimeline(fullKeyframes, String, initValue)
+  const result = buildTimeline({ initValue, timeline: fullKeyframes })
 
   // 3. 构建三个元素的 values
   const scaleValuesStr = scaleValues.map(s => `${s} ${s}`).join(';')

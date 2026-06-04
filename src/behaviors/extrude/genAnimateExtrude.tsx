@@ -1,6 +1,6 @@
 import { defaultTo, isNil } from 'lodash';
-import { genSvgKeySplines } from '@smil/genSvgKeySplines';
-import type { SvgTimelineSegment } from '@smil/genSvgKeySplines';
+import { buildTimeline } from '@smil/timeline/compile';
+import type { I_TimelineKeyframe } from '@smil/timeline/types';
 import { getEaseBezier } from "@smil/bezier/getEaseBezier";
 import { animateHeight } from '@smil/animate/height';
 import type { extrudeOptions } from './genWidthAnimate';
@@ -9,13 +9,13 @@ export const genAnimateExtrude = (options: extrudeOptions): {
   widthAnimate: React.ReactElement;
   rectAnimate: React.ReactElement;
 } => {
-  const widthTimeline: SvgTimelineSegment[] = options.timeline.map((segment) => ({
+  const widthTimeline: I_TimelineKeyframe<string>[] = options.timeline.map((segment) => ({
     keySplines: defaultTo(segment.keySplines, getEaseBezier({ isOut: true })),
-    toValue: `${100 * (segment.toHeight / options.initHeight)}%`,
+    to: `${100 * (segment.toHeight / options.initHeight)}%`,
     durationSeconds: segment.durationSeconds,
   }));
 
-  const widthParams = genSvgKeySplines({
+  const widthParams = buildTimeline({
     initValue: `100%`,
     timeline: widthTimeline,
   });

@@ -3,26 +3,34 @@ import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import isNil from 'lodash/isNil'
 import type { I_TimelineKeyframe, I_TimelineResult, T_ValueSerializer } from './types'
 
+export interface I_BuildTimelineConfig<T> {
+  /** 初始值（values 的第一个点，必填） */
+  initValue: T
+  /** 时间线段数组（至少 1 段） */
+  timeline: I_TimelineKeyframe<T>[]
+  /** 值序列化函数，默认 String。translate 等复杂类型需自定义 */
+  serializer?: T_ValueSerializer<T>
+}
+
 /**
- * 通用时间线编译器
+ * buildTimeline — 时间轴编译器
  *
- * 将关键帧数组编译为 SMIL 动画所需的 values / keyTimes / keySplines / totalDuration。
+ * 将语义化的时间线段编译为 SMIL 动画所需的 values / keyTimes / keySplines / totalDuration。
  * 与 SVG/React 完全解耦，纯函数，零副作用。
  *
  * SMIL 规范约束：
- * - values、keyTimes 点数必须相等（均为 keyframes.length + 1）
- * - keySplines 点数 = values 点数 - 1（= keyframes.length）
+ * - values、keyTimes 点数必须相等（均为 timeline.length + 1）
+ * - keySplines 点数 = values 点数 - 1（= timeline.length）
  * - keyTimes 必须从 0 到 1 单调递增
  *
  * 因此 initValue 必填——它是 values 的第一个点，缺少它会导致数组长度不匹配。
  */
-export function compileTimeline<T>(
-  keyframes: I_TimelineKeyframe<T>[],
-  serializer: T_ValueSerializer<T>,
-  initValue: T,
-): I_TimelineResult {
+export function buildTimeline<T>(config: I_BuildTimelineConfig<T>): I_TimelineResult {
+  const { initValue, timeline, serializer = String as unknown as T_ValueSerializer<T> } = config
+  const keyframes = timeline
+
   if (keyframes.length === 0) {
-    throw new Error('`keyframes` must not be empty.')
+    throw new Error('`timeline` must not be empty.')
   }
 
   if (isNil(initValue)) {

@@ -1,5 +1,5 @@
 /**
- * compileTimeline 类型定义
+ * buildTimeline 类型定义
  */
 
 export interface I_TimelineKeyframe<T> {

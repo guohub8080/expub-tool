@@ -2,7 +2,7 @@ import React from 'react'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
-import { compileTimeline } from '@smil/timeline/compile'
+import { buildTimeline } from '@smil/timeline/compile'
 import type { I_RotateConfig } from './types'
 
 export type { I_RotateConfig } from './types'
@@ -48,7 +48,7 @@ export function transformRotate(config: I_RotateConfig) {
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 
-  const result = compileTimeline(fullKeyframes, String, initValue)
+  const result = buildTimeline({ initValue, timeline: fullKeyframes })
 
   // 3. 组装 values："angle cx cy" 格式
   const angleValues = result.values.split(';')

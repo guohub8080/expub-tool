@@ -2,7 +2,7 @@ import React from 'react'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
-import { compileTimeline } from '@smil/timeline/compile'
+import { buildTimeline } from '@smil/timeline/compile'
 import type { T_ValueSerializer } from '@smil/timeline/types'
 import type { I_TranslateConfig, I_TranslateValue } from './types'
 
@@ -67,7 +67,7 @@ export function transformTranslate(config: I_TranslateConfig) {
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 
-  const result = compileTimeline(fullKeyframes, serializeTranslate, { x: initX, y: initY })
+  const result = buildTimeline({ initValue: { x: initX, y: initY }, timeline: fullKeyframes, serializer: serializeTranslate })
 
   const hasKeySplines = timeline.some(seg => seg.keySplines)
   const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')

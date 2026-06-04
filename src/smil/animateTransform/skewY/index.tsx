@@ -2,7 +2,7 @@ import React from 'react'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
-import { compileTimeline } from '@smil/timeline/compile'
+import { buildTimeline } from '@smil/timeline/compile'
 import type { I_SkewYConfig } from './types'
 
 export type { I_SkewYConfig } from './types'
@@ -34,7 +34,7 @@ export function transformSkewY(config: I_SkewYConfig) {
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 
-  const result = compileTimeline(fullKeyframes, String, initValue)
+  const result = buildTimeline({ initValue, timeline: fullKeyframes })
 
   const hasKeySplines = timeline.some(seg => seg.keySplines)
   const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')

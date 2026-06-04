@@ -10,11 +10,9 @@ export { getBounceBezier0_1 } from "./bezier/getBounceBezier"
 export { getBackBezier0_1 } from "./bezier/getBackBezier"
 
 // KeySplines generator
-export { genSvgKeySplines } from "./genSvgKeySplines"
-export type { SvgTimelineSegment, SvgTimeline, SvgKeysResult } from "./genSvgKeySplines"
 
 // Timeline compiler
-export { compileTimeline } from "./timeline/compile"
+export { buildTimeline } from "./timeline/compile"
 export type { I_TimelineKeyframe, I_TimelineResult, T_ValueSerializer } from "./timeline/types"
 
 // animateTransform
