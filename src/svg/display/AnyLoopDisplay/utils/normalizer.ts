@@ -1,12 +1,12 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
-import { DIRECTION_4 } from "@svg/types"
-import type { T_Direction4, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
+import { DIRECTION_8 } from "@svg/types"
+import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
 import type { I_AnyLoopDisplayChildItem } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
 export const DEFAULT_SWITCH_DURATION = 2
-export const DEFAULT_DIRECTION: T_Direction4 = DIRECTION_4.Top
+const DEFAULT_DIRECTION: T_Direction8 = DIRECTION_8.Top
 export const DEFAULT_ROTATION_ORIGIN: T_Origin = 'Center'
 
 /** 标准化后的旋转配置（origin 和 angle 已填充默认值） */
@@ -26,9 +26,11 @@ const normalizeRotation = (rotation: I_RotationConfig | undefined): I_Normalized
   }
 }
 
-/** 进入方向取反，作为默认退出方向（T↔B，L↔R） */
-export const oppositeDirection = (direction: T_Direction4): T_Direction4 =>
-  direction === 'T' ? 'B' : direction === 'B' ? 'T' : direction === 'L' ? 'R' : 'L'
+/** 进入方向取反，作为默认退出方向（T↔B，L↔R，TL↔BR，TR↔BL） */
+export const oppositeDirection = (direction: T_Direction8): T_Direction8 => {
+  const map: Record<T_Direction8, T_Direction8> = { T: 'B', B: 'T', L: 'R', R: 'L', TL: 'BR', TR: 'BL', BL: 'TR', BR: 'TL' }
+  return map[direction]
+}
 
 /**
  * 标准化子项配置
@@ -40,12 +42,12 @@ export interface I_NormalizedChildItem {
   url?: string
   jsx?: React.ReactNode
   entry: {
-    direction: T_Direction4
+    direction: T_Direction8
     skew?: I_SkewConfig
     rotation?: I_NormalizedRotationConfig
   }
   exit: {
-    direction: T_Direction4
+    direction: T_Direction8
     skew?: I_SkewConfig
     rotation?: I_NormalizedRotationConfig
   }

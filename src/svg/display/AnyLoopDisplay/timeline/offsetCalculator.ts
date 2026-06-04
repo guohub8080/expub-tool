@@ -1,15 +1,19 @@
 import isPlainObject from "lodash/isPlainObject"
-import type { T_Direction4, T_Origin } from "@svg/types"
+import type { T_Direction8, T_Origin } from "@svg/types"
 
 /**
  * 方向位移计算器
  *
  * 根据推入/推出方向和画布尺寸，计算屏幕外的 translate 坐标。
  * 坐标系以画布中心为原点：
- *   T（从上进入）→ 图片初始在下方边界外：y = +(canvasHeight+1)
- *   B（从下进入）→ 图片初始在上方边界外：y = -(canvasHeight+1)
- *   L（从左进入）→ 图片初始在右方边界外：x = +(canvasWidth+1)
- *   R（从右进入）→ 图片初始在左方边界外：x = -(canvasWidth+1)
+ *   T  → y = +(canvasHeight+1)
+ *   B  → y = -(canvasHeight+1)
+ *   L  → x = +(canvasWidth+1)
+ *   R  → x = -(canvasWidth+1)
+ *   TL → x = +(canvasWidth+1), y = +(canvasHeight+1)
+ *   TR → x = -(canvasWidth+1), y = +(canvasHeight+1)
+ *   BL → x = +(canvasWidth+1), y = -(canvasHeight+1)
+ *   BR → x = -(canvasWidth+1), y = -(canvasHeight+1)
  */
 export const getOffscreenTranslate = ({
   direction,
@@ -17,18 +21,23 @@ export const getOffscreenTranslate = ({
   canvasHeight,
 }: {
   /** 推入/推出方向 */
-  direction: T_Direction4
+  direction: T_Direction8
   /** 画布宽度 */
   canvasWidth: number
   /** 画布高度 */
   canvasHeight: number
 }): { x: number; y: number } => {
-  switch (direction) {
-    case 'T': return { x: 0, y: canvasHeight + 1 }
-    case 'B': return { x: 0, y: -(canvasHeight + 1) }
-    case 'L': return { x: canvasWidth + 1, y: 0 }
-    case 'R': return { x: -(canvasWidth + 1), y: 0 }
+  const xMap: Record<string, number> = {
+    L: canvasWidth + 1, R: -(canvasWidth + 1),
+    TL: canvasWidth + 1, TR: -(canvasWidth + 1),
+    BL: canvasWidth + 1, BR: -(canvasWidth + 1),
   }
+  const yMap: Record<string, number> = {
+    T: canvasHeight + 1, B: -(canvasHeight + 1),
+    TL: canvasHeight + 1, TR: canvasHeight + 1,
+    BL: -(canvasHeight + 1), BR: -(canvasHeight + 1),
+  }
+  return { x: xMap[direction] ?? 0, y: yMap[direction] ?? 0 }
 }
 
 /**
