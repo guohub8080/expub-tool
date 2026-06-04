@@ -63,49 +63,52 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 						userSelect: 'none',
 					}}
 				>
-					{/* 底层背景内容 */}
+					{/* 共用交互组：热区与弹窗动画在同一 DOM 子树内，确保事件冒泡可达 */}
 					<g>
-						<foreignObject x={0} y={0} width={W} height={H}>
-							<FaceContent content={props.cover} width={W} height={H} />
-						</foreignObject>
-					</g>
+						{/* 底层背景内容 */}
+						<g>
+							<foreignObject x={0} y={0} width={W} height={H}>
+								<FaceContent content={props.cover} width={W} height={H} />
+							</foreignObject>
+						</g>
 
-					{/* 弹窗层：opacity=0 隐藏，SMIL begin="mouseup/click" 为文档级事件，不受 opacity 限制 */}
-					<g opacity={0}>
-						{popupOpacityAnims()}
+						{/* 弹窗层：opacity=0 隐藏，mouseup/click 的 <set> 覆盖为 1 */}
+						<g opacity={0}>
+							{popupOpacityAnims()}
 
-						<g transform={`translate(${halfW} ${halfH})`}>
-							<g>
-								{popupBounceAnims({ bounceDur, holdRatio })}
-								<g transform={`translate(${-halfW} ${-halfH})`}>
-									<foreignObject x={0} y={0} width={W} height={H}>
-										<FaceContent content={props.popup} width={W} height={H} />
-									</foreignObject>
+							<g transform={`translate(${halfW} ${halfH})`}>
+								<g>
+									{popupBounceAnims({ bounceDur, holdRatio })}
+									<g transform={`translate(${-halfW} ${-halfH})`}>
+										<foreignObject x={0} y={0} width={W} height={H}>
+											<FaceContent content={props.popup} width={W} height={H} />
+										</foreignObject>
+									</g>
 								</g>
 							</g>
 						</g>
-					</g>
 
-					{/* 点击触发区域：上下两个不重叠热区，dummy animate 注册 SMIL 事件目标 */}
-					<g>
-						<rect x={0} y={0} width={W} height={halfH} fill="transparent" opacity={0}
-							style={{ pointerEvents: 'visible' }}>
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mousedown" />
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mouseup" />
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="click" />
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchstart" />
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchmove" />
-						</rect>
-					</g>
-					<g>
-						<rect x={0} y={halfH} width={W} height={halfH} fill="transparent" opacity={0}
-							style={{ pointerEvents: 'visible' }}>
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mousedown" />
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mouseup" />
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="click" />
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchstart" />
-							<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchmove" />
-						</rect>
+						{/* 点击触发区域：在共用 <g> 内，事件冒泡路径经过弹窗动画 */}
+						<g>
+							<rect x={0} y={0} width={W} height={halfH} fill="#000" opacity={0}
+								style={{ pointerEvents: 'all' }}>
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mousedown" />
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mouseup" />
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="click" />
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchstart" />
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchmove" />
+							</rect>
+						</g>
+						<g>
+							<rect x={0} y={halfH} width={W} height={halfH} fill="#000" opacity={0}
+								style={{ pointerEvents: 'all' }}>
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mousedown" />
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mouseup" />
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="click" />
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchstart" />
+								<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="touchmove" />
+							</rect>
+						</g>
 					</g>
 				</SvgEx>
 			</section>
