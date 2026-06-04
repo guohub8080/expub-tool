@@ -11,7 +11,7 @@ import SpinZoomCarouselPage from './pages/SpinZoomCarouselPage'
 import SkewSlideCarouselPage from './pages/SkewSlideCarouselPage'
 import SkewSlideCarouselYPage from './pages/SkewSlideCarouselYPage'
 import SkewPushYPage from './pages/SkewPushYPage'
-import AnySkewPushPage from './pages/AnySkewPushPage'
+import AnyLoopDisplayPage from './pages/AnyLoopDisplayPage'
 import StackCarouselPage from './pages/StackCarouselPage'
 import ClickFlipCardPage from './pages/ClickFlipCardPage'
 import ClickPopupPage from './pages/ClickPopupPage'
@@ -27,7 +27,7 @@ const links = [
   { to: '/skew-slide', label: 'SkewSlide' },
   { to: '/skew-slide-y', label: 'SkewSlideY' },
   { to: '/skew-push-y', label: 'SkewPushY' },
-  { to: '/any-skew-push', label: 'AnySkewPush' },
+  { to: '/any-loop-display', label: 'AnyLoopDisplay' },
   { to: '/stack-carousel', label: 'StackCarousel' },
   { to: '/click-flip', label: 'ClickFlip' },
   { to: '/click-popup', label: 'ClickPopup' },
@@ -81,7 +81,7 @@ export default function App() {
           <Route path="/skew-slide" element={<SkewSlideCarouselPage />} />
           <Route path="/skew-slide-y" element={<SkewSlideCarouselYPage />} />
           <Route path="/skew-push-y" element={<SkewPushYPage />} />
-          <Route path="/any-skew-push" element={<AnySkewPushPage />} />
+          <Route path="/any-loop-display" element={<AnyLoopDisplayPage />} />
           <Route path="/stack-carousel" element={<StackCarouselPage />} />
           <Route path="/click-flip" element={<ClickFlipCardPage />} />
           <Route path="/click-popup" element={<ClickPopupPage />} />

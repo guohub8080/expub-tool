@@ -23,7 +23,7 @@ export interface I_ExitConfig {
   rotation?: I_RotationConfig
 }
 
-export interface I_AnySkewPushChildItem {
+export interface I_AnyLoopDisplayChildItem {
   /** 图片地址（与 jsx 二选一） */
   url?: string
   /** 自定义 React 内容（与 url 二选一） */

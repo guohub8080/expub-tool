@@ -40,8 +40,8 @@ export { default as SkewSlideCarouselY } from "./display/SkewSlideCarouselY"
 export { default as SkewPushY } from "./display/SkewPushY"
 export type { I_SkewPushChildItem } from "./display/SkewPushY"
 
-export { default as AnySkewPush } from "./display/AnySkewPush"
-export type { I_AnySkewPushChildItem } from "./display/AnySkewPush"
+export { default as AnyLoopDisplay } from "./display/AnyLoopDisplay"
+export type { I_AnyLoopDisplayChildItem } from "./display/AnyLoopDisplay"
 
 export { default as StackCarouselX } from "./display/StackCarouselX"
 export type { I_StackCarouselItem } from "./display/StackCarouselX"

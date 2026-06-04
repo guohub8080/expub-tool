@@ -2,7 +2,7 @@ import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { DIRECTION_4 } from "@svg/types"
 import type { T_Direction4, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
-import type { I_AnySkewPushChildItem } from "../types"
+import type { I_AnyLoopDisplayChildItem } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
 export const DEFAULT_SWITCH_DURATION = 2
@@ -33,7 +33,7 @@ export const oppositeDirection = (direction: T_Direction4): T_Direction4 =>
 /**
  * 标准化子项配置
  *
- * 将用户传入的 I_AnySkewPushChildItem[] 转换为内部使用的 I_NormalizedChildItem[]。
+ * 将用户传入的 I_AnyLoopDisplayChildItem[] 转换为内部使用的 I_NormalizedChildItem[]。
  * 所有可选字段在此填充默认值，后续计算逻辑无需再处理空值。
  */
 export interface I_NormalizedChildItem {
@@ -54,7 +54,7 @@ export interface I_NormalizedChildItem {
 }
 
 /** 填充单张图片配置的默认值并校验 */
-const fillDefaults = (item: I_AnySkewPushChildItem): I_NormalizedChildItem => {
+const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem => {
   if (!item.url && !item.jsx) {
     throw new Error("Each childItem must have either `url` or `jsx`. Both cannot be empty.")
   }
@@ -86,7 +86,7 @@ const fillDefaults = (item: I_AnySkewPushChildItem): I_NormalizedChildItem => {
  * 2. 仅 1 张图 → 自动复制一份（推入效果需要 ≥2 张）
  * 3. 多张图 → 逐个填充默认值
  */
-export const normalizeChildItems = (items: I_AnySkewPushChildItem[]): I_NormalizedChildItem[] => {
+export const normalizeChildItems = (items: I_AnyLoopDisplayChildItem[]): I_NormalizedChildItem[] => {
   if (!items || items.length === 0) {
     throw new Error("`childItems` must not be empty.")
   }

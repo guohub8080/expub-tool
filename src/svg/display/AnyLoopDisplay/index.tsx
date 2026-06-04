@@ -11,14 +11,14 @@ import { normalizeChildItems } from "./utils/normalizer"
 import { validateJsxViewBox } from "./utils/validateJsx"
 import { buildCyclicTimelines } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate } from "./timeline/offsetCalculator"
-import SkewPushItem from "./components/SkewPushItem"
+import CycleItem from "./components/CycleItem"
 import GhostLayer from "./components/GhostLayer"
-import type { I_AnySkewPushChildItem } from "./types"
+import type { I_AnyLoopDisplayChildItem } from "./types"
 
-export type { I_SkewConfig, I_RotationConfig, I_EntryConfig, I_ExitConfig, I_AnySkewPushChildItem } from "./types"
+export type { I_SkewConfig, I_RotationConfig, I_EntryConfig, I_ExitConfig, I_AnyLoopDisplayChildItem } from "./types"
 
 /**
- * AnySkewPush — 多图循环"斜切推入"切换组件
+ * AnyLoopDisplay — 多图循环展示组件
  *
  * 效果演示：
  *   图片从不同方向（左/右/上/下）推入画布中心，支持 skew 斜切和 rotate 旋转，
@@ -28,16 +28,16 @@ export type { I_SkewConfig, I_RotationConfig, I_EntryConfig, I_ExitConfig, I_Any
  *   SectionEx（根容器 + dev label）
  *   └─ section（overflow 裁剪，隐藏屏幕外的图片）
  *      └─ SvgEx（SVG 画布，viewBox 由 canvasSize 决定）
- *         └─ <g visibility="hidden">（初始隐藏，0.05s 后变 visible，避免 SMIL 初始闪烁）
+ *         └─ <g visibility="hidden">（初始隐藏，0.01s 后变 visible，避免 SMIL 初始闪烁）
  *            └─ <g>（坐标系平移到画布中心）
- *               ├─ SkewPushItem × N（每张图独立渲染 + 动画）
+ *               ├─ CycleItem × N（每张图独立渲染 + 动画）
  *               └─ GhostLayer（图1副本，解决 z-order 遮挡问题）
  */
-const AnySkewPush = (props: {
+const AnyLoopDisplay = (props: {
   /** 画布尺寸 { w, h } */
   canvasSize: { w: number; h: number }
   /** 子项配置数组，每项包含 url 或 jsx + direction / skew / rotation / duration */
-  childItems: I_AnySkewPushChildItem[]
+  childItems: I_AnyLoopDisplayChildItem[]
   /** 内容与画布边缘间距（像素），默认 0 */
   itemGap?: number
   /** 画布背景：颜色字符串（如 "#fff"）或图片 URL */
@@ -67,7 +67,7 @@ const AnySkewPush = (props: {
 
   return (
     <SectionEx
-      {...(isDev ? { 'expubgo-label': 'any-skew-push' } : {})}
+      {...(isDev ? { 'expubgo-label': 'any-loop-display' } : {})}
       style={{
         WebkitTouchCallout: "none", userSelect: "none", overflow: "hidden", width: "100%", maxWidth: "100%",
         textAlign: "center", lineHeight: 0, ...spacingResult
@@ -86,7 +86,7 @@ const AnySkewPush = (props: {
             {/* 坐标系平移到画布中心，所有图的 translate 动画以中心为原点计算 */}
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => (
-                <SkewPushItem key={i}
+                <CycleItem key={i}
                   item={item} timeline={itemTimelines[i]}
                   totalDuration={totalDuration}
                   contentWidth={contentW} contentHeight={contentH}
@@ -114,4 +114,4 @@ const AnySkewPush = (props: {
   )
 }
 
-export default AnySkewPush
+export default AnyLoopDisplay

@@ -62,7 +62,7 @@
  *    t=0 时每一项都处于正确的视觉位置：
  *      - 图1：刚好完成 entry，处于 stay 起始（完整可见）
  *      - 其他图：处于 hold 状态（在屏幕外等待）
- *    适用于 visibility="hidden" 初始隐藏策略（如 AnySkewPush），
+ *    适用于 visibility="hidden" 初始隐藏策略（如 AnyLoopDisplay），
  *    因为 t=0 时所有动画必须已在运行，否则 hidden→visible 时元素会闪在原点。
  *
  * 2. isNegativeBegin = false — 非首项 begin 为正数（自然开始时刻）
@@ -124,7 +124,7 @@ export interface I_CyclicTimelineOptions {
    * 是否对非首项的 begin 应用 -totalDuration 偏移。
    *
    * - true（默认）：所有 begin 都为负数，t=0 时所有动画已在运行。
-   *   适用于 visibility="hidden" 初始隐藏策略（AnySkewPush 风格）。
+   *   适用于 visibility="hidden" 初始隐藏策略（AnyLoopDisplay 风格）。
    * - false：非首项 begin 为正数（自然开始时刻）。
    *   适用于元素初始位置已在屏幕外的场景（AnyPush 风格）。
    *
@@ -199,7 +199,7 @@ export interface I_CyclicTimelines {
  * @throws items 为空、switchDuration <= 0、stayDuration < 0 时抛错
  *
  * @example
- * // isNegativeBegin = true（默认，AnySkewPush 风格）
+ * // isNegativeBegin = true（默认，AnyLoopDisplay 风格）
  * const result = buildCyclicTimelines([
  *   { switchDuration: 2, stayDuration: 1 },
  *   { switchDuration: 2, stayDuration: 0 },
