@@ -54,4 +54,4 @@ export { ClickPopup } from "./click"
 export type { I_ClickPopupProps } from "./click"
 
 export { ClickCascade } from "./click"
-export type { I_ClickCascadeProps, I_CascadeLayer } from "./click"
+export type { I_ClickCascadeProps, I_CascadeChildItem } from "./click"
