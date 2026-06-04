@@ -52,7 +52,7 @@ export default function ClickCascadePage() {
 				/>
 			</CopyDemo>
 
-			<CopyDemo title="3 图 JSX — 纯渐变文字">
+			<CopyDemo title="3 图 JSX — 纯色">
 				<ClickCascade
 					canvasSize={{ w: 300, h: 300 }}
 					fadeDuration={0.6}
@@ -61,23 +61,13 @@ export default function ClickCascadePage() {
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
 									<rect width={300} height={300} fill="#6366f1" />
-									<text x={150} y={140} textAnchor="middle" fill="#fff" fontSize={36} fontWeight="bold" fontFamily="sans-serif">第 1 层</text>
-									<text x={150} y={180} textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize={14} fontFamily="sans-serif">click to reveal</text>
 								</svg>
 							),
 						},
 						{
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
-									<defs>
-										<linearGradient id="cg1" x1="0%" y1="0%" x2="100%" y2="100%">
-											<stop offset="0%" stopColor="#6366f1" />
-											<stop offset="100%" stopColor="#ec4899" />
-										</linearGradient>
-									</defs>
-									<rect width={300} height={300} fill="url(#cg1)" />
-									<text x={150} y={140} textAnchor="middle" fill="#fff" fontSize={36} fontWeight="bold" fontFamily="sans-serif">第 2 层</text>
-									<text x={150} y={180} textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize={14} fontFamily="sans-serif">click to reveal</text>
+									<rect width={300} height={300} fill="#ec4899" />
 								</svg>
 							),
 						},
@@ -85,8 +75,6 @@ export default function ClickCascadePage() {
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
 									<rect width={300} height={300} fill="#10b981" />
-									<text x={150} y={140} textAnchor="middle" fill="#fff" fontSize={36} fontWeight="bold" fontFamily="sans-serif">第 3 层</text>
-									<text x={150} y={180} textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize={14} fontFamily="sans-serif">final layer 🎉</text>
 								</svg>
 							),
 						},
@@ -104,14 +92,7 @@ export default function ClickCascadePage() {
 						{
 							jsx: (
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
-									<defs>
-										<linearGradient id="cg2" x1="0%" y1="0%" x2="100%" y2="100%">
-											<stop offset="0%" stopColor="#f59e0b" />
-											<stop offset="100%" stopColor="#ef4444" />
-										</linearGradient>
-									</defs>
-									<rect width={300} height={300} fill="url(#cg2)" />
-									<text x={150} y={150} textAnchor="middle" fill="#fff" fontSize={28} fontWeight="bold" fontFamily="sans-serif">JSX 插层</text>
+									<rect width={300} height={300} fill="#f59e0b" />
 								</svg>
 							),
 						},
