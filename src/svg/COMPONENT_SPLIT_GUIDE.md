@@ -297,3 +297,18 @@ const outOfView = max([W, H]) * 100
 // ❌ 避免
 const outOfView = Math.max(W, H) * 100
 ```
+
+### lodash vs Math 函数对照
+
+| 原生 Math | lodash 单包 | 说明 |
+|---|---|---|
+| `Math.max(a, b)` | `max([a, b])` from `lodash/max` | |
+| `Math.min(a, b)` | `min([a, b])` from `lodash/min` | |
+| `Math.max(MIN, Math.min(MAX, v))` | `clamp(v, MIN, MAX)` from `lodash/clamp` | |
+| `Math.floor(n)` | `floor(n)` from `lodash/floor` | |
+| `Math.round(n)` | `round(n)` from `lodash/round` | |
+| `Math.ceil(n)` | `ceil(n)` from `lodash/ceil` | |
+| `Math.sqrt(n)` | — | 无 lodash 等价物，保留 `Math.sqrt` |
+| `Math.atan(n)` | — | 无 lodash 等价物，保留 `Math.atan` |
+| `Math.tan(n)` | — | 无 lodash 等价物，保留 `Math.tan` |
+| `Math.PI` | — | 无 lodash 等价物，保留 `Math.PI` |
