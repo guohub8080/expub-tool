@@ -28,6 +28,7 @@ const SkewSlideCarouselY = (props: {
   stepDuration?: number
   itemGap?: number
   spacing?: T_SpacingProps
+  canvasBg?: string
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   if (!props.items?.length) return null
@@ -64,7 +65,7 @@ const SkewSlideCarouselY = (props: {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`}
-          style={{ display: "block", margin: "0 auto" }} width="100%">
+          style={{ display: "block", margin: "0 auto", backgroundColor: props.canvasBg }} width="100%">
           <g transform={`translate(${itemGap}, ${itemGap})`}>
             <g transform={`translate(${contentW / 2}, 0)`}>
               {items.map((item, i) => {

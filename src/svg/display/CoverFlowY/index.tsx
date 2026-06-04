@@ -20,6 +20,7 @@ const CoverFlowY = (props: {
   canvasSize: { w: number; h: number }
   spacing?: T_SpacingProps
   childItems?: I_CoverFlowItemConfig[]
+  canvasBg?: string
   itemCanvasSize: { w: number; h: number }
   itemGap?: number
   itemScale?: number
@@ -81,7 +82,7 @@ const CoverFlowY = (props: {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}
-          style={{ display: "block", margin: "0 auto" }}
+          style={{ display: "block", margin: "0 auto", backgroundColor: props.canvasBg }}
           width="100%">
           <g>
             {slots.map((slot, si) => {
