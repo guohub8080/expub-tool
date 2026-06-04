@@ -181,6 +181,58 @@ style={{ ...spacingResult }}
 | `switchDuration`、`stayDuration` | `step = imageW + gap`（推导值） |
 | `itemAlign`、`isReversed` | `centerX`、`centerY`（推导值） |
 
+### childItems 相关规范
+
+每个组件都必须有：
+
+```ts
+interface I_FooProps {
+  canvasSize: { w: number; h: number }
+  canvasBg?: string               // 不传则透明
+  childItems: I_FooChildItem[]    // 子项数组
+  spacing?: T_SpacingProps
+}
+```
+
+**childItem 字段规范**：
+
+- `url` 和 `jsx` 二选一，都为空则报错
+- 每个 childItem 自带全部可配属性（`fadeDuration`、`keySplines` 等），**不要在组件 props 上设全局兜底**
+- 不传则使用组件内部的 `DEFAULT_` 常量
+
+```ts
+interface I_FooChildItem {
+  url?: string                    // 图片地址（与 jsx 二选一）
+  jsx?: ReactNode                 // 自定义内容（优先级高于 url）
+  // 其他 item 级别的属性，各自带默认值...
+}
+
+// 校验
+if (isNil(item.url) && isNil(item.jsx)) {
+  throw new Error('Each childItem must have either `url` or `jsx`.')
+}
+```
+
+**统一渲染路径**：不要根据 JSX/URL 走不同的渲染逻辑分支（如 `background-image` vs `foreignObject`），统一用 `renderContent()` 函数：
+
+```tsx
+const renderContent = (item: I_FooChildItem) => {
+  if (!isNil(item.jsx)) return item.jsx
+  if (isNil(item.url)) return null
+  return (
+    <foreignObject ...>
+      <SvgEx style={{ backgroundImage: svgURL(item.url) }} />
+    </foreignObject>
+  )
+}
+```
+
+**outOfView 计算**：不硬编码 `135135`，用 `max(宽, 高) * 100`：
+
+```ts
+const outOfView = max([W, H]) * 100
+```
+
 ---
 
 ## 第七步：判断是否需要拆分为多个组件
@@ -229,3 +281,4 @@ README 只需包含：
 
 - `src/svg/display/CoverFlowX/` — 横向轮播，参考了硬编码的 slot + scale + translate 动画
 - `src/svg/display/CoverFlowY/` — 纵向变体，复用 CoverFlowX 的类型和 normalizer
+- `src/svg/click/ClickCascade/` — 点击逐层渐显，递归嵌套 + childItems 规范
