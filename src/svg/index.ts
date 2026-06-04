@@ -3,11 +3,11 @@ export type { T_ZeroHeightMode } from "./containers/ZeroHeightContainer"
 
 export { default as Container180 } from "./containers/Container180"
 
-export { default as SlideViewXContainer } from "./containers/SlideViewXContainer"
-export { default as SnapSlideViewXContainer } from "./containers/SnapSlideViewXContainer"
+export { default as SwipeViewXContainer } from "./containers/SwipeViewXContainer"
+export { default as SnapSwipeViewXContainer } from "./containers/SnapSwipeViewXContainer"
 export type { T_SnapAlign, T_CanvasSize, T_Direction4, T_Direction8, T_DirectionX, T_HotArea } from "./types"
 
-export { default as LongImgSlideX } from "./containers/LongImgSlideX"
+export { default as LongImgSwipeX } from "./containers/LongImgSwipeX"
 
 export { default as OverlayContainer } from "./containers/OverlayContainer"
 
@@ -30,8 +30,8 @@ export type { I_CoverFlowItemConfig } from "./display/CoverFlowX/types"
 
 export { default as CoverFlowY } from "./display/CoverFlowY"
 
-export { default as SlideViewYContainer } from "./containers/SlideViewYContainer"
-export { default as SnapSlideViewYContainer } from "./containers/SnapSlideViewYContainer"
+export { default as SwipeViewYContainer } from "./containers/SwipeViewYContainer"
+export { default as SnapSwipeViewYContainer } from "./containers/SnapSwipeViewYContainer"
 
 export { default as SpinZoomCarousel } from "./display/SpinZoomCarousel"
 export { default as SkewSlideCarousel } from "./display/SkewSlideCarousel"

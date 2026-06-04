@@ -26,7 +26,7 @@ import type { T_CanvasSize } from '@svg/types'
  * @param canvasSize       - 图片尺寸 {w, h}，不传则自动获取
  * @param spacing         - 外边距配置
  */
-const LongImgSlideX = (props: {
+const LongImgSwipeX = (props: {
   url?: string
   exposedPercent?: number
   isReverse?: boolean
@@ -54,7 +54,7 @@ const LongImgSlideX = (props: {
 
   return (
     <SectionEx
-      {...(isDev ? { 'expubgo-label': 'long-img-slide-x' } : {})}
+      {...(isDev ? { 'expubgo-label': 'long-img-swipe-x' } : {})}
       style={{
         WebkitTouchCallout: 'none',
         userSelect: 'text',
@@ -126,4 +126,4 @@ const LongImgSlideX = (props: {
   )
 }
 
-export default LongImgSlideX
+export default LongImgSwipeX

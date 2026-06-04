@@ -16,7 +16,7 @@ import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
  * @param isReverse       - 是否反向排列（rtl）
  * @param spacing         - 外边距配置
  */
-const SlideViewXContainer = (props: {
+const SwipeViewXContainer = (props: {
   items?: ReactNode[]
   exposedPercent?: number
   isReverse?: boolean
@@ -40,7 +40,7 @@ const SlideViewXContainer = (props: {
 
   return (
     <SectionEx
-      {...(isDev ? { 'expubgo-label': 'slide-view-x-container' } : {})}
+      {...(isDev ? { 'expubgo-label': 'swipe-view-x-container' } : {})}
       style={{
         WebkitTouchCallout: 'none',
         userSelect: 'text',
@@ -79,4 +79,4 @@ const SlideViewXContainer = (props: {
   )
 }
 
-export default SlideViewXContainer
+export default SwipeViewXContainer

@@ -8,7 +8,7 @@ import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 /**
  * 横向吸附滑动视口容器
  *
- * 在 SlideViewXContainer 基础上增加 scroll snap 吸附效果，
+ * 在 SwipeViewXContainer 基础上增加 scroll snap 吸附效果，
  * 滑动时子组件会自动对齐到指定位置（start / center / end）。
  *
  * @param items           - 子组件数组
@@ -19,7 +19,7 @@ import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
  */
 import type { T_SnapAlign } from '@svg/types'
 
-const SnapSlideViewXContainer = (props: {
+const SnapSwipeViewXContainer = (props: {
   items?: ReactNode[]
   exposedPercent?: number
   isReverse?: boolean
@@ -41,7 +41,7 @@ const SnapSlideViewXContainer = (props: {
 
   return (
     <SectionEx
-      {...(isDev ? { 'expubgo-label': 'snap-slide-view-x-container' } : {})}
+      {...(isDev ? { 'expubgo-label': 'snap-swipe-view-x-container' } : {})}
       style={{
         WebkitTouchCallout: 'none',
         userSelect: 'text',
@@ -84,4 +84,4 @@ const SnapSlideViewXContainer = (props: {
   )
 }
 
-export default SnapSlideViewXContainer
+export default SnapSwipeViewXContainer

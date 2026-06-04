@@ -4,32 +4,29 @@ import defaultTo from 'lodash/defaultTo'
 import { spacing, SPACING_ZERO } from '@css-fn/spacing'
 import type { T_SpacingProps } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
-import type { T_SnapAlign, T_CanvasSize } from '@svg/types'
+import type { T_CanvasSize } from '@svg/types'
 
 /**
- * 纵向吸附滑动视口容器（抖音效果）
+ * 纵向滑动视口容器
  *
- * 在 SlideViewYContainer 基础上增加 scroll snap 吸附效果，
- * 滑动松手后自动对齐到最近的一页。
+ * 将多个子组件纵向排列，每页占满容器高度，用户可上下滑动浏览。
+ * 通过 aspect-ratio 根据宽高比自动计算容器高度。
  *
  * @param items       - 子组件数组
  * @param canvasSize - 画布尺寸 {w, h}
  * @param isReverse   - 是否反向排列
  * @param isBottomUp  - 是否底部向上滑动（180° 翻转）
- * @param snapAlign   - 吸附对齐方式，默认 'start'
  * @param spacing     - 外边距配置
  */
-const SnapSlideViewYContainer = (props: {
+const SwipeViewYContainer = (props: {
   items?: ReactNode[]
   canvasSize: Required<T_CanvasSize>
   isReverse?: boolean
   isBottomUp?: boolean
-  snapAlign?: T_SnapAlign
   spacing?: T_SpacingProps
 }) => {
   const isReverse = defaultTo(props.isReverse, false)
   const isBottomUp = defaultTo(props.isBottomUp, false)
-  const snapAlign: T_SnapAlign = defaultTo(props.snapAlign, 'start')
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const items = defaultTo(props.items, [])
   if (items.length === 0) return null
@@ -39,13 +36,11 @@ const SnapSlideViewYContainer = (props: {
 
   return (
     <SectionEx
-      {...(isDev ? { 'expubgo-label': 'snap-slide-view-y-container' } : {})}
+      {...(isDev ? { 'expubgo-label': 'swipe-view-y-container' } : {})}
       style={{
         WebkitTouchCallout: 'none',
         userSelect: 'text',
         overflow: 'hidden scroll',
-        scrollSnapType: 'y mandatory',
-        scrollBehavior: 'smooth',
         textAlign: 'center',
         lineHeight: 0,
         aspectRatio,
@@ -66,7 +61,6 @@ const SnapSlideViewYContainer = (props: {
             verticalAlign: 'top',
             lineHeight: 0,
             overflow: 'hidden',
-            scrollSnapAlign: snapAlign,
             transform: isBottomUp ? 'rotate(180deg)' : undefined,
           }}>
             {item}
@@ -77,4 +71,4 @@ const SnapSlideViewYContainer = (props: {
   )
 }
 
-export default SnapSlideViewYContainer
+export default SwipeViewYContainer
