@@ -150,7 +150,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
 
               const rotationOrigin = !isNil(item.exit.rotation)
                 ? resolveRotationOrigin({
-                    origin: defaultTo(item.exit.rotation.origin, "Center"),
+                    origin: defaultTo(item.exit.rotation.childCanvasOrigin, "Center"),
                     cardWidth: cardW,
                     cardHeight: cardH,
                   })

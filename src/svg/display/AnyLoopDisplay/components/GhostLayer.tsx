@@ -63,10 +63,10 @@ const GhostLayer = (props: {
     })
   })()
 
-  // Ghost rotate：仅在 entry.rotation 存在时渲染，使用图1的 origin 和 keySplines
+  // Ghost rotate：仅在 entry.rotation 存在时渲染，使用图1的 childCanvasOrigin 和 keySplines
   const ghostRotateAnim = !isNil(firstItem.entry.rotation) && (() => {
     const rotationOrigin = getRotationOrigin({
-      origin: firstItem.entry.rotation!.origin,
+      origin: firstItem.entry.rotation!.childCanvasOrigin,
       contentWidth,
       contentHeight,
     })
@@ -89,7 +89,7 @@ const GhostLayer = (props: {
   // Ghost scale：仅在 entry.scale 存在时渲染
   const ghostScaleAnim = !isNil(firstItem.entry.scale) && (() => {
     const scaleOrigin = getRotationOrigin({
-      origin: firstItem.entry.scale!.origin,
+      origin: firstItem.entry.scale!.childCanvasOrigin,
       contentWidth,
       contentHeight,
     })

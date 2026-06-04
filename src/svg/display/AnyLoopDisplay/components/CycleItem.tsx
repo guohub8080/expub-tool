@@ -158,7 +158,7 @@ const renderRotateAnim = ({
   const exitAngle  = defaultTo(exitRotation?.angle, 0)
 
   const rotationOrigin = getRotationOrigin({
-    origin: defaultTo(entryRotation?.origin, exitRotation?.origin ?? 'Center'),
+    origin: defaultTo(entryRotation?.childCanvasOrigin, exitRotation?.childCanvasOrigin ?? 'Center'),
     contentWidth,
     contentHeight,
   })
@@ -204,7 +204,7 @@ const renderScaleAnim = ({
   const exitScaleValue  = defaultTo(exitScale?.scale, 1)
 
   const scaleOrigin = getRotationOrigin({
-    origin: defaultTo(entryScale?.origin, exitScale?.origin ?? 'Center'),
+    origin: defaultTo(entryScale?.childCanvasOrigin, exitScale?.childCanvasOrigin ?? 'Center'),
     contentWidth,
     contentHeight,
   })

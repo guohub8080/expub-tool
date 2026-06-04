@@ -58,8 +58,8 @@ export interface I_SkewConfig {
 
 /** 旋转配置 */
 export interface I_RotationConfig {
-  /** 旋转中心，默认 Center */
-  origin?: T_Origin
+  /** 旋转中心（相对于 childCanvas），默认 Center */
+  childCanvasOrigin?: T_Origin
   /** 旋转角度（度），正值=顺时针，默认 0 */
   angle?: number
   /** 缓动曲线，默认 ease-in-out */
@@ -68,8 +68,8 @@ export interface I_RotationConfig {
 
 /** 缩放配置（用于 entry/exit 动画） */
 export interface I_EntryScaleConfig {
-  /** 缩放中心，默认 Center */
-  origin?: T_Origin
+  /** 缩放中心（相对于 childCanvas），默认 Center */
+  childCanvasOrigin?: T_Origin
   /** 缩放比例，默认 1（不缩放） */
   scale?: number
   /** 缓动曲线，默认 ease-in-out */

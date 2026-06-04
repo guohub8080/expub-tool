@@ -9,35 +9,35 @@ export const DEFAULT_SWITCH_DURATION = 2
 const DEFAULT_DIRECTION: T_Direction8 = DIRECTION_8.Top
 export const DEFAULT_TRANSFORM_ORIGIN: T_Origin = 'Center'
 
-/** 标准化后的旋转配置（origin 和 angle 已填充默认值） */
+/** 标准化后的旋转配置（childCanvasOrigin 和 angle 已填充默认值） */
 export interface I_NormalizedRotationConfig {
-  origin: T_Origin
+  childCanvasOrigin: T_Origin
   angle: number
   keySplines?: string
 }
 
-/** 标准化后的缩放配置（origin 和 scale 已填充默认值） */
+/** 标准化后的缩放配置（childCanvasOrigin 和 scale 已填充默认值） */
 export interface I_NormalizedScaleConfig {
-  origin: T_Origin
+  childCanvasOrigin: T_Origin
   scale: number
   keySplines?: string
 }
 
-/** 标准化单个旋转配置：填充默认 origin 和 angle */
+/** 标准化单个旋转配置：填充默认 childCanvasOrigin 和 angle */
 const normalizeRotation = (rotation: I_RotationConfig | undefined): I_NormalizedRotationConfig | undefined => {
   if (isNil(rotation)) return undefined
   return {
-    origin: defaultTo(rotation.origin, DEFAULT_TRANSFORM_ORIGIN),
+    childCanvasOrigin: defaultTo(rotation.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
     angle: defaultTo(rotation.angle, 0),
     keySplines: rotation.keySplines,
   }
 }
 
-/** 标准化单个缩放配置：填充默认 origin 和 scale */
+/** 标准化单个缩放配置：填充默认 childCanvasOrigin 和 scale */
 const normalizeScale = (scale: I_EntryScaleConfig | undefined): I_NormalizedScaleConfig | undefined => {
   if (isNil(scale)) return undefined
   return {
-    origin: defaultTo(scale.origin, DEFAULT_TRANSFORM_ORIGIN),
+    childCanvasOrigin: defaultTo(scale.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
     scale: defaultTo(scale.scale, 1),
     keySplines: scale.keySplines,
   }
