@@ -13,11 +13,11 @@
  */
 
 import type { ReactNode } from "react"
-import type { T_Direction4 } from "@svg/types"
-export type { T_Direction4 } from "@svg/types"
+import type { T_Direction8 } from "@svg/types"
+export type { T_Direction8 } from "@svg/types"
 
 /** 默认方向：从左侧滑入 */
-export const DEFAULT_DIRECTION: T_Direction4 = "L";
+export const DEFAULT_DIRECTION: T_Direction8 = "L";
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 0.5;
 /** 默认停留时长（秒） */
@@ -38,8 +38,8 @@ export interface I_PicConfig {
     url?: string;
     /** 自定义 SVG 内容（与 url 二选一，优先级高于 url） */
     item?: ReactNode;
-    /** 滑入方向，默认 "R" */
-    direction?: T_Direction4;
+    /** 滑入方向，默认 "L" */
+    direction?: T_Direction8;
     /** 从屏幕外滑入到中心的时长（秒），默认 0.5 */
     switchDuration?: number;
     /** 在中心停留的时长（秒），默认 0.5 */
@@ -53,7 +53,7 @@ export interface I_PicConfig {
  * 由 normalizer.ts 的 normalizePic() 生成
  */
 export interface I_NormalizedPicConfig extends I_PicConfig {
-    direction: T_Direction4;
+    direction: T_Direction8;
     switchDuration: number;
     stayDuration: number;
     keySplines: string;

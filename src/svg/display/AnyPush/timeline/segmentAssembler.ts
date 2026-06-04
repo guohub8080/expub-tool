@@ -1,4 +1,4 @@
-import type { T_Direction4, I_TimelineSegment, I_NormalizedPicConfig } from "../types";
+import type { T_Direction8, I_TimelineSegment, I_NormalizedPicConfig } from "../types";
 import { getEntryOffset, getExitOffset } from "./offsetCalculator";
 import { calculateDelayTime, calculateHoldTime } from "./sequenceCalculator";
 

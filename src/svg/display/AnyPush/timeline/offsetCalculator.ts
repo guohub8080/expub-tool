@@ -1,4 +1,6 @@
-import type { T_Direction4, I_Point } from "../types";
+import type { T_Direction8, I_Point } from "../types";
+import defaultTo from "lodash/defaultTo";
+import max from "lodash/max";
 
 /**
  * 方向位移计算器
@@ -14,22 +16,32 @@ import type { T_Direction4, I_Point } from "../types";
  *   "L"（从左侧进入）= foreignObject 初始在右边界外 (x = +viewBoxW)
  *   "B"（从下方进入）= foreignObject 初始在上边界外 (y = -viewBoxH)
  *   "T"（从上方进入）= foreignObject 初始在下边界外 (y = +viewBoxH)
+ *   对角方向：两轴分量的叠加
  */
+
+/** 对角方向分量系数 */
+const DIAGONAL_RATIO = 0.7
 
 /**
  * 获取"进入"初始偏移 — foreignObject 的 x/y 初始坐标
  * 图片从这个位置开始，通过 translate 动画滑到中心 (0,0)
  */
 export const getEntryOffset = (
-    direction: T_Direction4,
+    direction: T_Direction8,
     viewBoxW: number,
     viewBoxH: number
 ): I_Point => {
+    const dx = viewBoxW * DIAGONAL_RATIO
+    const dy = viewBoxH * DIAGONAL_RATIO
     switch (direction) {
-        case "L": return { x: viewBoxW, y: 0 };
-        case "R": return { x: -viewBoxW, y: 0 };
-        case "T": return { x: 0, y: viewBoxH };
-        case "B": return { x: 0, y: -viewBoxH };
+        case "L":  return { x: viewBoxW, y: 0 };
+        case "R":  return { x: -viewBoxW, y: 0 };
+        case "T":  return { x: 0, y: viewBoxH };
+        case "B":  return { x: 0, y: -viewBoxH };
+        case "TL": return { x: dx, y: dy };
+        case "TR": return { x: -dx, y: dy };
+        case "BL": return { x: dx, y: -dy };
+        case "BR": return { x: -dx, y: -dy };
     }
 };
 
@@ -40,21 +52,27 @@ export const getEntryOffset = (
  * 所以在 assembleTimeline 中，进入段的 to 值使用 exitOffset。
  */
 export const getExitOffset = (
-    direction: T_Direction4,
+    direction: T_Direction8,
     viewBoxW: number,
     viewBoxH: number
 ): I_Point => {
+    const dx = viewBoxW * DIAGONAL_RATIO
+    const dy = viewBoxH * DIAGONAL_RATIO
     switch (direction) {
-        case "L": return { x: -viewBoxW, y: 0 };
-        case "R": return { x: viewBoxW, y: 0 };
-        case "T": return { x: 0, y: -viewBoxH };
-        case "B": return { x: 0, y: viewBoxH };
+        case "L":  return { x: -viewBoxW, y: 0 };
+        case "R":  return { x: viewBoxW, y: 0 };
+        case "T":  return { x: 0, y: -viewBoxH };
+        case "B":  return { x: 0, y: viewBoxH };
+        case "TL": return { x: -dx, y: -dy };
+        case "TR": return { x: dx, y: -dy };
+        case "BL": return { x: -dx, y: dy };
+        case "BR": return { x: dx, y: dy };
     }
 };
 
 /** 初始位置 = 进入偏移（供 foreignObject 的 x/y 属性使用） */
 export const getInitialPosition = (
-    direction: T_Direction4,
+    direction: T_Direction8,
     viewBoxW: number,
     viewBoxH: number
 ): I_Point => {
