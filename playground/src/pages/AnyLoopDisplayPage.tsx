@@ -26,14 +26,14 @@ export default function AnyLoopDisplayPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>2 图 — 对角线 TL↔BR，skewX 20° + rotation 180°</h3>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — 对角线 TL↔BR，skewY 30° + entry/exit skew</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItemSize={{ w: 240, h: 240 }}
           canvasBg="#fef3c7"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 20 }, rotation: { angle: 180 } }, stayDuration: 1.5 },
-            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -20 }, rotation: { angle: -180 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'Y', angle: 30 } }, exit: { skew: { type: 'Y', angle: -30 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'Y', angle: -30 } }, exit: { skew: { type: 'Y', angle: 30 } }, stayDuration: 1.5 },
           ]}
         />
       </div>
