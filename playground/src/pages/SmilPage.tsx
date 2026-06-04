@@ -40,7 +40,6 @@ import {
   getLinearBezier,
   getSineBezier,
   getExpoBezier,
-  genSvgKeySplines,
   buildTimeline,
 } from 'expub-tool/smil'
 
@@ -274,31 +273,17 @@ export default function SmilPage() {
         </p>
       </Section>
 
-      {/* genSvgKeySplines */}
-      <Section title="genSvgKeySplines">
-        <p style={{ fontSize: 13, fontFamily: 'monospace' }}>
-          {JSON.stringify(genSvgKeySplines({
-            initValue: 0,
-            timeline: [
-              { keySplines: '0.42 0 0.58 1', toValue: 1, durationSeconds: 0.5 },
-              { keySplines: '0 0 0.58 1', toValue: 0, durationSeconds: 0.5 },
-            ],
-          }))}
-        </p>
-      </Section>
-
       {/* buildTimeline */}
       <Section title="buildTimeline">
         <p style={{ fontSize: 13, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
-          {JSON.stringify(buildTimeline(
-            [
-              { to: 1, durationSeconds: 0.3 },
+          {JSON.stringify(buildTimeline({
+            initValue: 0,
+            timeline: [
+              { to: 1, durationSeconds: 0.3, keySplines: '0.42 0 0.58 1' },
               { to: 0.5, durationSeconds: 0.5 },
               { to: 0, durationSeconds: 0.2 },
             ],
-            String,
-            0,
-          ), null, 2)}
+          }), null, 2)}
         </p>
       </Section>
 
