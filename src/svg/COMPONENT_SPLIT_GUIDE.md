@@ -349,3 +349,42 @@ const outOfView = Math.max(W, H) * 100
 | `Math.atan(n)` | — | 无 lodash 等价物，保留 `Math.atan` |
 | `Math.tan(n)` | — | 无 lodash 等价物，保留 `Math.tan` |
 | `Math.PI` | — | 无 lodash 等价物，保留 `Math.PI` |
+
+### 方向常量
+
+方向字符串一律使用 `DIRECTION_8` / `DIRECTION_4` 常量，禁止硬编码：
+
+```ts
+import { DIRECTION_8 } from '@svg/types'
+
+// ✅ 正确：使用常量
+case DIRECTION_8.Left: ...
+case DIRECTION_8.TopRight: ...
+const defaultDir = DIRECTION_8.Left
+
+// ❌ 错误：硬编码字符串
+case "L": ...
+case "TR": ...
+```
+
+switch/case 中不解构、不写裸标识符，直接用 `case DIRECTION_8.Xxx:`。
+
+### 变量命名规范
+
+变量名必须可读、自解释，禁止无意义缩写：
+
+```ts
+// ✅ 正确：意图清晰
+const exitDistance = defaultTo(item.exit.distance, defaultExitDistance)
+const diagonalDistance = defaultTo(item.exit.diagonalDistance, exitDistance)
+const viewBoxW = props.canvasSize.w
+const totalCycleDuration = calculateTotalCycleDuration(items)
+
+// ❌ 错误：缩写无意义
+const d = distance
+const dxy = d * 0.7
+const w = props.canvasSize.w
+const tot = calc(items)
+```
+
+例外：循环中简短的索引变量可以用 `i`、`idx`。常量可在函数顶部用短名赋值一次（如 `const dd = diagonalDistance`），但参数名和接口字段必须全称。
