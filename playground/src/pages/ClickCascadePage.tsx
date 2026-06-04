@@ -9,7 +9,7 @@ export default function ClickCascadePage() {
 			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
 				<h3 style={{ margin: '0 0 8px' }}>3 图 — 基础全屏点击</h3>
 				<ClickCascade
-					canvasSize={{ w: 300, h: 400 }}
+					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#1a1a2e"
 					layers={[
 						{ url: getWechat300x300(1) },
@@ -22,7 +22,7 @@ export default function ClickCascadePage() {
 			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
 				<h3 style={{ margin: '0 0 8px' }}>4 图 — 慢速淡入 (1.5s)</h3>
 				<ClickCascade
-					canvasSize={{ w: 300, h: 400 }}
+					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#0f0f23"
 					fadeDuration={1.5}
 					layers={[
@@ -87,7 +87,7 @@ export default function ClickCascadePage() {
 					只有右下角 1/4 区域可点击，模拟引导式交互
 				</p>
 				<ClickCascade
-					canvasSize={{ w: 300, h: 400 }}
+					canvasSize={{ w: 300, h: 300 }}
 					canvasBg="#18181b"
 					fadeDuration={0.8}
 					layers={[
