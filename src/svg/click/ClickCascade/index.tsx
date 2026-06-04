@@ -35,6 +35,8 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 		throw new Error('The first layer must have either `url` or `jsx`.')
 	}
 
+	const firstIsJsx = !isNil(first.jsx)
+
 	/** 移出视野的距离：取宽高较大值的 100 倍 */
 	const outOfView = defaultTo(max([W, H]), W) * 100
 
@@ -42,100 +44,13 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 	const holdKeyTime = fadeDur / (fadeDur + HOLD_DURATION)
 
 	/**
-	 * 递归渲染单个图层
-	 * @param layer 当前图层配置
-	 * @param isFirstLayer 是否为嵌套的第一层（紧贴 SVG background 的那层）
-	 */
-	const renderLayer = (layer: I_CascadeLayer, isFirstLayer: boolean): React.ReactNode => {
-		const useItem = !isNil(layer.jsx)
-		if (isNil(layer.url) && isNil(layer.jsx)) return null
-
-		// 热区：默认全屏
-		const hx = defaultTo(layer.hotArea?.x, 0)
-		const hy = defaultTo(layer.hotArea?.y, 0)
-		const hw = defaultTo(layer.hotArea?.w, W)
-		const hh = defaultTo(layer.hotArea?.h, H)
-
-		return (
-			<g opacity={0}>
-				{/* 点击后淡入 */}
-				<animate
-					attributeName="opacity"
-					begin="click+0s"
-					calcMode="spline"
-					dur={`${fadeDur + HOLD_DURATION}s`}
-					fill="freeze"
-					keySplines={`${splines}; ${splines}`}
-					keyTimes={`0; ${holdKeyTime.toFixed(6)}; 1`}
-					restart="never"
-					values="0; 1; 1"
-				/>
-				{/* 点击后 additive 平移，与子元素 translate(-outOfView) 抵消，内容回到原位 */}
-				<animateTransform
-					additive="sum"
-					attributeName="transform"
-					begin="click"
-					dur={`${fadeDur + HOLD_DURATION}s`}
-					fill="freeze"
-					restart="never"
-					type="translate"
-					values={`${outOfView} 0`}
-				/>
-				{/* 热区 rect：点击后 visibility hidden，把点击权交给下一层 */}
-				<rect
-					x={hx} y={hy} width={hw} height={hh}
-					opacity={0} fill="transparent"
-					style={{ pointerEvents: 'visible' }}
-				>
-					<set
-						attributeName="visibility"
-						from="visible"
-						to="hidden"
-						begin="click+0s"
-						dur="1ms"
-						fill="freeze"
-						restart="never"
-					/>
-				</rect>
-				{/* 内容：静态偏移到屏幕外，等 animateTransform 抵消回来 */}
-				<g transform={`translate(-${outOfView} 0)`}>
-					{useItem ? (
-						layer.jsx
-					) : (
-						<foreignObject x={0} y={0} width={W} height={H}>
-							<SvgEx
-								viewBox={`0 0 ${W} ${H}`}
-								style={{
-									backgroundImage: svgURL(layer.url!),
-									backgroundSize: '100% auto',
-									backgroundRepeat: 'no-repeat',
-									backgroundPosition: '50% 0',
-									display: 'inline-block',
-									pointerEvents: 'none',
-									userSelect: 'none',
-									verticalAlign: 'top',
-									width: '100%',
-								}}
-							/>
-						</foreignObject>
-					)}
-					{/* 递归：下一层 */}
-					{!isFirstLayer && renderLayer(layers[layers.indexOf(layer) + 1], false)}
-				</g>
-			</g>
-		)
-	}
-
-	/**
 	 * 构建递归嵌套层
-	 * 第 1 张图 = SVG background，第 2 张开始递归
+	 * 第 1 张图 = SVG background 或 foreignObject（JSX），第 2 张开始递归
 	 */
 	const buildNestedLayers = (): React.ReactNode => {
-		// 从第 2 层开始递归（第 1 层是 background）
 		const remaining = layers.slice(1)
 		if (remaining.length === 0) return null
 
-		// 递归链：remaining[0] → remaining[1] → ... → 最后一层（无动画）
 		const buildChain = (index: number): React.ReactNode => {
 			if (index >= remaining.length) return null
 			const layer = remaining[index]
@@ -150,30 +65,32 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 			const hw = defaultTo(layer.hotArea?.w, W)
 			const hh = defaultTo(layer.hotArea?.h, H)
 
+			const renderContent = () => useItem
+				? layer.jsx
+				: (
+					<foreignObject x={0} y={0} width={W} height={H}>
+						<SvgEx
+							viewBox={`0 0 ${W} ${H}`}
+							style={{
+								backgroundImage: svgURL(layer.url!),
+								backgroundSize: '100% auto',
+								backgroundRepeat: 'no-repeat',
+								backgroundPosition: '50% 0',
+								display: 'inline-block',
+								pointerEvents: 'none',
+								userSelect: 'none',
+								verticalAlign: 'top',
+								width: '100%',
+							}}
+						/>
+					</foreignObject>
+				)
+
 			// 最后一层：静态内容，无动画
 			if (isLast) {
 				return (
 					<g transform={`translate(-${outOfView} 0)`}>
-						{useItem ? (
-							layer.jsx
-						) : (
-							<foreignObject x={0} y={0} width={W} height={H}>
-								<SvgEx
-									viewBox={`0 0 ${W} ${H}`}
-									style={{
-										backgroundImage: svgURL(layer.url!),
-										backgroundSize: '100% auto',
-										backgroundRepeat: 'no-repeat',
-										backgroundPosition: '50% 0',
-										display: 'inline-block',
-										pointerEvents: 'none',
-										userSelect: 'none',
-										verticalAlign: 'top',
-										width: '100%',
-									}}
-								/>
-							</foreignObject>
-						)}
+						{renderContent()}
 					</g>
 				)
 			}
@@ -221,26 +138,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 					</rect>
 					{/* 内容 + 下一层递归 */}
 					<g transform={`translate(-${outOfView} 0)`}>
-						{useItem ? (
-							layer.jsx
-						) : (
-							<foreignObject x={0} y={0} width={W} height={H}>
-								<SvgEx
-									viewBox={`0 0 ${W} ${H}`}
-									style={{
-										backgroundImage: svgURL(layer.url!),
-										backgroundSize: '100% auto',
-										backgroundRepeat: 'no-repeat',
-										backgroundPosition: '50% 0',
-										display: 'inline-block',
-										pointerEvents: 'none',
-										userSelect: 'none',
-										verticalAlign: 'top',
-										width: '100%',
-									}}
-								/>
-							</foreignObject>
-						)}
+						{renderContent()}
 						{buildChain(index + 1)}
 					</g>
 				</g>
@@ -250,8 +148,8 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 		return buildChain(0)
 	}
 
-	// 第 1 张图用 background-image 显示
-	const firstBg = !isNil(first.jsx) ? undefined : svgURL(first.url!)
+	// 第 1 张图：URL → background-image；JSX → foreignObject 直接渲染
+	const firstBg = firstIsJsx ? undefined : svgURL(first.url!)
 
 	return (
 		<SectionEx
@@ -283,6 +181,12 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 						width: '100%',
 					}}
 				>
+					{/* 第一层是 JSX 时，直接渲染内容（不用 background） */}
+					{firstIsJsx && (
+						<foreignObject x={0} y={0} width={W} height={H}>
+							{first.jsx}
+						</foreignObject>
+					)}
 					{buildNestedLayers()}
 				</SvgEx>
 			</section>
