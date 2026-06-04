@@ -105,7 +105,7 @@ const GhostLayer = (props: {
       begin: "0s",
       loopCount: 0,
       isFreeze: true,
-      isAdditive: false,
+      isAdditive: true,
     })
   })()
 

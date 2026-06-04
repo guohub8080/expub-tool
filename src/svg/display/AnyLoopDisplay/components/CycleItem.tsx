@@ -225,7 +225,7 @@ const renderScaleAnim = ({
     begin: `${begin}s`,
     loopCount: 0,
     isFreeze: true,
-    isAdditive: false,
+    isAdditive: true,
   })
 }
 
