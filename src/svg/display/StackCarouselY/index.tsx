@@ -11,6 +11,8 @@ import { transformSkewX } from "@smil/animateTransform/skewX"
 import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import svgURL from "@utils/svg/svgURL"
+import max from "lodash/max"
+import min from "lodash/min"
 import type { T_Direction8 } from "@svg/types"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "../StackCarouselX/types"
 import { normalizeItems } from "../StackCarouselX/utils/normalizer"
@@ -70,7 +72,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
-  const bgColor = defaultTo(props.canvasBg, "#FFFFFF")
+  const bgColor = props.canvasBg
   const isDev = ExPubGoConfig().mode === "development"
 
   const items = normalizeItems({ items: props.pics, defaultExitDirection: "R" })

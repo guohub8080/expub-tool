@@ -1,5 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
+import max from "lodash/max"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 import type { I_SkewConfig, I_RotationConfig } from "@svg/types"
@@ -41,7 +42,7 @@ function getPosition({ slotIndex, itemCount, boundary }: {
   itemCount: number
   boundary: number
 }): number {
-  const startPos = Math.max(0, slotIndex - itemCount)
+  const startPos = max([0, slotIndex - itemCount])
   for (let pos = 3; pos >= startPos; pos--) {
     const enterPos = (pos === startPos) ? 0 : 2 * (itemCount + pos - slotIndex)
     if (boundary >= enterPos) return pos
@@ -72,7 +73,7 @@ export function buildSlotTimelines({
   /** 本 slot 的退场配置 */
   exitConfig: I_SlotExitConfig
 }) {
-  const startPos = Math.max(0, slotIndex - itemCount)
+  const startPos = max([0, slotIndex - itemCount])
   const totalSegs = itemCount * 2
 
   const initTranslate = posConfig.translateValues[startPos]

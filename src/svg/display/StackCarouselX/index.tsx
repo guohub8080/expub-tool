@@ -2,6 +2,8 @@ import React from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
+import max from "lodash/max"
+import min from "lodash/min"
 import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
@@ -73,7 +75,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
-  const bgColor = defaultTo(props.canvasBg, "#FFFFFF")
+  const bgColor = props.canvasBg
   const isDev = ExPubGoConfig().mode === "development"
 
   const items = normalizeItems({ items: props.pics, defaultExitDirection: "L" })

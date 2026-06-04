@@ -1,5 +1,9 @@
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
+import max from "lodash/max"
+import min from "lodash/min"
+import floor from "lodash/floor"
+import round from "lodash/round"
 import defaultTo from "lodash/defaultTo"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
@@ -34,16 +38,16 @@ const SkewSlideCarouselY = (props: {
   const itemGap = defaultTo(props.itemGap, 0)
 
   const rawAngle = defaultTo(props.skewAngle, DEFAULT_SKEW_ANGLE)
-  const contentW = Math.max(1, w - itemGap * 2)
-  const contentH = Math.max(1, h - itemGap * 2)
-  const maxAngle = Math.max(1, Math.floor(Math.atan(contentW / contentH) * 180 / Math.PI))
-  const skewAngle = Math.min(Math.max(rawAngle, 1), maxAngle)
+  const contentW = max([1, w - itemGap * 2])
+  const contentH = max([1, h - itemGap * 2])
+  const maxAngle = max([1, floor(Math.atan(contentW / contentH) * 180 / Math.PI)])
+  const skewAngle = min([max([rawAngle, 1]), maxAngle])
 
   const step = defaultTo(props.stepDuration, DEFAULT_STEP)
   const dur = N * step
   const isDev = ExPubGoConfig().mode === 'development'
 
-  const offset = Math.round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
+  const offset = round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
 
   const keySplines = `${EASE}; ${EASE}; ${EASE}`
   const k1 = (step / dur).toFixed(6)

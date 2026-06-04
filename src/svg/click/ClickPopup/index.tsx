@@ -2,6 +2,7 @@ import React from 'react'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
+import clamp from 'lodash/clamp'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import { popupBounceAnims, popupOpacityAnims } from './smil'
@@ -19,9 +20,9 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 
 	const W = props.canvasSize.w
 	const H = props.canvasSize.h
-	const bgColor = defaultTo(props.canvasBg, '#FFFFFF')
+	const bgColor = props.canvasBg
 	const rawDur = defaultTo(props.bounceDuration, DEFAULT_BOUNCE_DURATION)
-	const bounceDur = Math.max(MIN_BOUNCE_DURATION, Math.min(MAX_BOUNCE_DURATION, rawDur))
+	const bounceDur = clamp(rawDur, MIN_BOUNCE_DURATION, MAX_BOUNCE_DURATION)
 	const holdRatio = HOLD_RATIO
 	const halfW = W / 2
 	const halfH = H / 2

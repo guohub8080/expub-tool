@@ -1,5 +1,6 @@
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
+import floor from "lodash/floor"
 import defaultTo from "lodash/defaultTo"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
@@ -167,7 +168,7 @@ function buildSlotScale(
   const totalSegs = N * 2
 
   for (let seg = 0; seg < totalSegs; seg++) {
-    const itemIdx = Math.floor(seg / 2)
+    const itemIdx = floor(seg / 2)
     const item = items[itemIdx % N]
     const isSwitch = seg % 2 === 0
     const dur = isSwitch ? item.switchDuration : item.stayDuration
@@ -203,7 +204,7 @@ function buildSlotTranslate(
   const totalSegs = N * 2
 
   for (let seg = 0; seg < totalSegs; seg++) {
-    const itemIdx = Math.floor(seg / 2)
+    const itemIdx = floor(seg / 2)
     const item = items[itemIdx % N]
     const isSwitch = seg % 2 === 0
     const dur = isSwitch ? item.switchDuration : item.stayDuration

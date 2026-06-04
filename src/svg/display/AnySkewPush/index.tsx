@@ -1,5 +1,6 @@
 import defaultTo from "lodash/defaultTo"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
+import max from "lodash/max"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import SectionEx from "@html/basicEx/SectionEx"
@@ -52,8 +53,8 @@ const AnySkewPush = (props: {
   const items = normalizeChildItems(props.childItems)
   const { totalDuration, itemTimelines, ghostTimeline } = buildCyclicTimelines(items)
   const itemGap = defaultTo(props.itemGap, 0)
-  const contentW = Math.max(1, w - itemGap * 2)
-  const contentH = Math.max(1, h - itemGap * 2)
+  const contentW = max([1, w - itemGap * 2])
+  const contentH = max([1, h - itemGap * 2])
   const isDev = ExPubGoConfig().mode === 'development'
 
   // 校验 jsx 模式下最外层 SVG 的 viewBox 是否跟内容区域尺寸一致
