@@ -1,7 +1,7 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
 import max from "lodash/max"
-import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScale } from "@smil/index"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
@@ -20,10 +20,17 @@ const DEFAULT_EASE = "0.42 0 0.58 1"
  *     <g>
  *       <animateTransform skew/>     ← 可选，skew 斜切动画
  *       <g>
- *         <animateTransform scale/>  ← 可选，缩放动画（translate+scale+translate 三元素）
+ *         <g transform="translate(cx,cy)">   ← 可选，scale 缩放动画（嵌套 <g> 隔离）
+ *           <g>
+ *             <animateTransform scale/>
+ *             <g transform="translate(-cx,-cy)">
+ *               content
+ *             </g>
+ *           </g>
+ *         </g>
  *         <g>
  *           <animateTransform rotate/> ← 可选，旋转动画
- *           <ChildItemContent/>       ← 图片内容（url 或 jsx）
+ *           content
  *         </g>
  *       </g>
  *     </g>
@@ -95,16 +102,25 @@ const CycleItem = (props: {
   }
 
   if (hasScale) {
-    content = (
-      <g>
-        {renderScaleAnim({
-          entryScale: item.entry.scale, exitScale: item.exit.scale,
-          contentWidth, contentHeight,
-          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
-        })}
-        {content}
-      </g>
-    )
+    const scaleConfig = buildScaleConfig({
+      entryScale: item.entry.scale, exitScale: item.exit.scale,
+      contentWidth, contentHeight,
+      stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+    })
+    if (scaleConfig) {
+      // 用嵌套 <g> 隔离 translate→scale→translate-back，
+      // 而不是在同一个 <g> 上用 additive="sum"（微信 WebView 对非 Center origin 叠加不准）
+      content = (
+        <g transform={`translate(${scaleConfig.cx}, ${scaleConfig.cy})`}>
+          <g>
+            {scaleConfig.scaleAnim}
+            <g transform={`translate(${-scaleConfig.cx}, ${-scaleConfig.cy})`}>
+              {content}
+            </g>
+          </g>
+        </g>
+      )
+    }
   }
 
   if (hasSkew) {
@@ -222,8 +238,14 @@ const renderRotateAnim = ({
   })
 }
 
-/** 生成 scale animateTransform（entryScale 和 exitScale 均不传时返回 null） */
-const renderScaleAnim = ({
+/**
+ * 构建 scale 动画配置（使用 transformScaleRaw + 嵌套 <g>）
+ *
+ * 不再使用 transformScale（三个 animateTransform 放同一个 <g> + additive="sum"），
+ * 改为在嵌套 <g> 上用静态 transform 做 translate，中间层只放一个 scale animateTransform。
+ * 这样避免 additive="sum" 在微信 WebView 中对非 Center origin 的叠加偏差问题。
+ */
+const buildScaleConfig = ({
   entryScale, exitScale, contentWidth, contentHeight,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
@@ -236,7 +258,7 @@ const renderScaleAnim = ({
   nextSwitchDuration: number
   holdDuration: number
   begin: number
-}) => {
+}): { cx: number; cy: number; scaleAnim: React.ReactNode } | null => {
   if (isNil(entryScale) && isNil(exitScale)) return null
 
   const entryScaleValue = defaultTo(entryScale?.scale, 1)
@@ -248,6 +270,7 @@ const renderScaleAnim = ({
     contentHeight,
   })
 
+  const [cx, cy] = scaleOrigin
   const ease = entryScale?.keySplines ?? exitScale?.keySplines ?? DEFAULT_EASE
 
   const segs = [
@@ -257,15 +280,18 @@ const renderScaleAnim = ({
     { durationSeconds: holdDuration,       to: exitScaleValue, keySplines: ease },
   ]
 
-  return transformScale({
-    initValue: entryScaleValue,
-    timeline: segs,
-    origin: scaleOrigin,
-    begin: `${begin}s`,
-    loopCount: 0,
-    isFreeze: true,
-    isAdditive: true,
-  })
+  return {
+    cx,
+    cy,
+    scaleAnim: transformScaleRaw({
+      initValue: entryScaleValue,
+      timeline: segs,
+      begin: `${begin}s`,
+      loopCount: 0,
+      isFreeze: true,
+      isAdditive: false,
+    }),
+  }
 }
 
 export default CycleItem

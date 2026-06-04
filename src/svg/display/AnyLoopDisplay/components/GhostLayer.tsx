@@ -1,6 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
-import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScale, animateVisibility } from "@smil/index"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
@@ -86,8 +86,8 @@ const GhostLayer = (props: {
     })
   })()
 
-  // Ghost scale：仅在 entry.scale 存在时渲染
-  const ghostScaleAnim = !isNil(firstItem.entry.scale) && (() => {
+  // Ghost scale：使用 transformScaleRaw + 嵌套 <g>，与 CycleItem 保持一致
+  const ghostScaleConfig = !isNil(firstItem.entry.scale) && (() => {
     const scaleOrigin = getRotationOrigin({
       origin: firstItem.entry.scale!.childCanvasOrigin,
       contentWidth,
@@ -95,18 +95,21 @@ const GhostLayer = (props: {
     })
     const ease = defaultTo(firstItem.entry.scale!.keySplines, DEFAULT_EASE)
 
-    return transformScale({
-      initValue: firstItem.entry.scale!.scale,
-      timeline: [
-        { durationSeconds: ghostHoldDuration, to: firstItem.entry.scale!.scale, keySplines: ease },
-        { durationSeconds: ghostEntryDuration, to: 1,                             keySplines: ease },
-      ],
-      origin: scaleOrigin,
-      begin: "0s",
-      loopCount: 0,
-      isFreeze: true,
-      isAdditive: true,
-    })
+    return {
+      cx: scaleOrigin[0],
+      cy: scaleOrigin[1],
+      scaleAnim: transformScaleRaw({
+        initValue: firstItem.entry.scale!.scale,
+        timeline: [
+          { durationSeconds: ghostHoldDuration, to: firstItem.entry.scale!.scale, keySplines: ease },
+          { durationSeconds: ghostEntryDuration, to: 1,                             keySplines: ease },
+        ],
+        begin: "0s",
+        loopCount: 0,
+        isFreeze: true,
+        isAdditive: false,
+      }),
+    }
   })()
 
   // 从最内层往外逐层包裹，只有存在对应动画时才加 <g>
@@ -116,8 +119,18 @@ const GhostLayer = (props: {
     ghostContent = <g>{ghostRotateAnim}{ghostContent}</g>
   }
 
-  if (ghostScaleAnim) {
-    ghostContent = <g>{ghostScaleAnim}{ghostContent}</g>
+  if (ghostScaleConfig) {
+    // 嵌套 <g> 隔离 translate→scale→translate-back，与 CycleItem 一致
+    ghostContent = (
+      <g transform={`translate(${ghostScaleConfig.cx}, ${ghostScaleConfig.cy})`}>
+        <g>
+          {ghostScaleConfig.scaleAnim}
+          <g transform={`translate(${-ghostScaleConfig.cx}, ${-ghostScaleConfig.cy})`}>
+            {ghostContent}
+          </g>
+        </g>
+      </g>
+    )
   }
 
   if (ghostSkewAnim) {
