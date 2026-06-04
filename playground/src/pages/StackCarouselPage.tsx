@@ -53,6 +53,23 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="8 图 — 八方向退场 (L/R/T/B/LT/RT/LB/RB)">
+        <StackCarouselX
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
+          pics={[
+            { url: getWechat300x300(1), switchDuration: 0.6, stayDuration: 1, exit: { direction: "L" } },
+            { url: getWechat300x300(2), switchDuration: 0.6, stayDuration: 1, exit: { direction: "R" } },
+            { url: getWechat300x300(3), switchDuration: 0.6, stayDuration: 1, exit: { direction: "T" } },
+            { url: getWechat300x300(4), switchDuration: 0.6, stayDuration: 1, exit: { direction: "B" } },
+            { url: getWechat300x300(5), switchDuration: 0.6, stayDuration: 1, exit: { direction: "LT" } },
+            { url: getWechat300x300(6), switchDuration: 0.6, stayDuration: 1, exit: { direction: "RT" } },
+            { url: getWechat300x300(7), switchDuration: 0.6, stayDuration: 1, exit: { direction: "LB" } },
+            { url: getWechat300x300(8), switchDuration: 0.6, stayDuration: 1, exit: { direction: "RB" } },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="5 图 — 四面八方退场 + 长短不一的停留">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}

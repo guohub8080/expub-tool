@@ -11,6 +11,7 @@ import { transformSkewX } from "@smil/animateTransform/skewX"
 import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import svgURL from "@utils/svg/svgURL"
+import type { T_Direction8 } from "@svg/types"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "../StackCarouselX/types"
 import { normalizeItems } from "../StackCarouselX/utils/normalizer"
 import { buildSlotTimelines } from "../StackCarouselX/timeline/slotTimeline"
@@ -21,6 +22,21 @@ import type { I_TranslateValue } from "@smil/animateTransform/translate"
 const DEFAULT_BACK_OFFSET = 162
 /** back/mid 默认缩放比例（叠层深度效果，center 恒为 1.0） */
 const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
+
+const getExitTranslate = (direction: T_Direction8, distance: number): Partial<I_TranslateValue> => {
+  const d = distance
+  const dxy = d * 0.7
+  switch (direction) {
+    case "L":  return { x: -d, y: 0 }
+    case "R":  return { x: d, y: 0 }
+    case "T":  return { x: 0, y: -d }
+    case "B":  return { x: 0, y: d }
+    case "LT": return { x: -dxy, y: -dxy }
+    case "RT": return { x: dxy, y: -dxy }
+    case "LB": return { x: -dxy, y: dxy }
+    case "RB": return { x: dxy, y: dxy }
+  }
+}
 
 interface I_StackCarouselYProps {
   /** SVG 画布尺寸（viewBox） */
@@ -68,16 +84,6 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
 
   const defaultExitDistance = Math.sqrt(cardW * cardW + cardH * cardH) * 1.2
 
-  const getExitTranslate = (direction: "L" | "R" | "T" | "B", distance?: number): Partial<I_TranslateValue> => {
-    const d = defaultTo(distance, defaultExitDistance)
-    switch (direction) {
-      case "L": return { x: -d, y: 0 }
-      case "R": return { x: d, y: 0 }
-      case "T": return { x: 0, y: -d }
-      case "B": return { x: 0, y: d }
-    }
-  }
-
   const posConfig: I_PositionConfig = {
     translateValues: [
       { x: 0, y: sign * -backOffset },   // back
@@ -119,7 +125,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
             {Array.from({ length: totalSlots }, (_, slotIndex) => {
               const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
-              const exitTranslate = getExitTranslate(item.exit.direction, item.exit.distance)
+              const exitTranslate = getExitTranslate(item.exit.direction, defaultTo(item.exit.distance, defaultExitDistance))
               const slotExitConfig: I_SlotExitConfig = {
                 translate: exitTranslate,
                 skew: item.exit.skew,

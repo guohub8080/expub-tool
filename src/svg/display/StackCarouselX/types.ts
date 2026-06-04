@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { T_Direction4, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
+import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
 
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 1
@@ -9,7 +9,7 @@ export const DEFAULT_STAY_DURATION = 1
 /** 退场配置 */
 export interface I_ExitConfig {
   /** 退场方向，X 默认 "L"，Y 默认 "R" */
-  direction?: T_Direction4
+  direction?: T_Direction8
   /** 退场移动距离，默认 viewBoxW/viewBoxH（有 skew/rotation 时可能需要加大） */
   distance?: number
   /** 退场斜切，不传则退出无斜切 */
@@ -42,7 +42,7 @@ export interface I_StackCarouselItem {
 
 /** 标准化后的退场配置 */
 export interface I_NormalizedExitConfig {
-  direction: T_Direction4
+  direction: T_Direction8
   distance?: number
   skew?: I_SkewConfig
   rotation?: I_RotationConfig

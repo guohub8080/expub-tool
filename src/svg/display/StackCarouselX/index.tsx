@@ -11,6 +11,7 @@ import { transformSkewX } from "@smil/animateTransform/skewX"
 import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import svgURL from "@utils/svg/svgURL"
+import type { T_Direction8 } from "@svg/types"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "./types"
 import { normalizeItems } from "./utils/normalizer"
 import { buildSlotTimelines } from "./timeline/slotTimeline"
@@ -23,7 +24,7 @@ const DEFAULT_BACK_OFFSET = 162
 const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
 
 export type { I_StackCarouselItem, I_ExitConfig } from "./types"
-export type { I_SkewConfig, I_RotationConfig } from "@svg/types"
+export type { I_SkewConfig, I_RotationConfig, T_Direction8 } from "@svg/types"
 
 interface I_StackCarouselXProps {
   /** SVG 画布尺寸（viewBox） */
@@ -42,6 +43,21 @@ interface I_StackCarouselXProps {
   isReversed?: boolean
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
+}
+
+const getExitTranslate = (direction: T_Direction8, distance: number, distanceXY?: number): Partial<I_TranslateValue> => {
+  const d = distance
+  const dxy = defaultTo(distanceXY, d * 0.7)
+  switch (direction) {
+    case "L":  return { x: -d, y: 0 }
+    case "R":  return { x: d, y: 0 }
+    case "T":  return { x: 0, y: -d }
+    case "B":  return { x: 0, y: d }
+    case "LT": return { x: -dxy, y: -dxy }
+    case "RT": return { x: dxy, y: -dxy }
+    case "LB": return { x: -dxy, y: dxy }
+    case "RB": return { x: dxy, y: dxy }
+  }
 }
 
 const StackCarouselX = (props: I_StackCarouselXProps) => {
@@ -69,16 +85,6 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
   const sign = reversed ? -1 : 1
 
   const defaultExitDistance = Math.sqrt(cardW * cardW + cardH * cardH) * 1.2
-
-  const getExitTranslate = (direction: "L" | "R" | "T" | "B", distance?: number): Partial<I_TranslateValue> => {
-    const d = defaultTo(distance, defaultExitDistance)
-    switch (direction) {
-      case "L": return { x: -d, y: 0 }
-      case "R": return { x: d, y: 0 }
-      case "T": return { x: 0, y: -d }
-      case "B": return { x: 0, y: d }
-    }
-  }
 
   const posConfig: I_PositionConfig = {
     translateValues: [
@@ -124,7 +130,7 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
               // center slot (slotIndex=itemCount+2) 显示 items[0]，向前依次排列
               const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
-              const exitTranslate = getExitTranslate(item.exit.direction, item.exit.distance)
+              const exitTranslate = getExitTranslate(item.exit.direction, defaultTo(item.exit.distance, defaultExitDistance))
               const slotExitConfig: I_SlotExitConfig = {
                 translate: exitTranslate,
                 skew: item.exit.skew,

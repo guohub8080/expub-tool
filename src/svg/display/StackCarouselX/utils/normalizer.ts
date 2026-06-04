@@ -1,13 +1,13 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { getEaseBezier } from "@smil/bezier"
-import type { T_Direction4 } from "@svg/types"
+import type { T_Direction8 } from "@svg/types"
 import type { I_StackCarouselItem, I_NormalizedStackItem, I_NormalizedExitConfig } from "../types"
 import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types"
 
 const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true })
 
-const normalizeExit = (item: I_StackCarouselItem, defaultDirection: T_Direction4): I_NormalizedExitConfig => {
+const normalizeExit = (item: I_StackCarouselItem, defaultDirection: T_Direction8): I_NormalizedExitConfig => {
   const exit = item.exit
   return {
     direction: defaultTo(exit?.direction, defaultDirection),
@@ -18,7 +18,7 @@ const normalizeExit = (item: I_StackCarouselItem, defaultDirection: T_Direction4
   }
 }
 
-const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Direction4): I_NormalizedStackItem => {
+const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Direction8): I_NormalizedStackItem => {
   const useItem = !isNil(item.jsx)
   if (isNil(item.url) && isNil(item.jsx)) {
     throw new Error("Each item must have either `url` or `jsx`.")
@@ -45,7 +45,7 @@ const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Directi
  */
 export const normalizeItems = ({ items, defaultExitDirection }: {
   items?: I_StackCarouselItem[]
-  defaultExitDirection: T_Direction4
+  defaultExitDirection: T_Direction8
 }): I_NormalizedStackItem[] => {
   if (!items || items.length === 0) {
     throw new Error("`pics` must not be empty. StackCarousel requires at least 1 item.")

@@ -7,6 +7,8 @@ export type T_CanvasSize = {
 
 export type T_Direction4 = "L" | "R" | "T" | "B"
 
+export type T_Direction8 = "L" | "R" | "T" | "B" | "LT" | "RT" | "LB" | "RB"
+
 export type T_DirectionX = "L" | "R"
 
 /** 九宫格预设位置 或 自定义坐标 */
