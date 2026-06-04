@@ -4,19 +4,36 @@ import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 export default function AnyLoopDisplayPage() {
   return (
     <div>
-      <h2>AnyLoopDisplay — 四方向斜切推入</h2>
+      <h2>AnyLoopDisplay — 任意循环展示</h2>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — T→B→T→B（上下交替，无 skew）</h3>
+        <h3 style={{ margin: '0 0 8px' }}>8 方向全展示 — 每图不同方向，childItemSize + canvasBg</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItemSize={{ w: 240, h: 240 }}
           canvasBg="#f3f4f6"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T' }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B' }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T' }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B' }, stayDuration: 0 },
+            { url: getWechat300x300(1), entry: { direction: 'T' },  stayDuration: 1 },
+            { url: getWechat300x300(2), entry: { direction: 'TR' }, stayDuration: 1 },
+            { url: getWechat300x300(3), entry: { direction: 'R' },  stayDuration: 1 },
+            { url: getWechat300x300(4), entry: { direction: 'BR' }, stayDuration: 1 },
+            { url: getWechat300x300(5), entry: { direction: 'B' },  stayDuration: 1 },
+            { url: getWechat300x300(6), entry: { direction: 'BL' }, stayDuration: 1 },
+            { url: getWechat300x300(7), entry: { direction: 'L' },  stayDuration: 1 },
+            { url: getWechat300x300(8), entry: { direction: 'TL' }, stayDuration: 1 },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — 对角线 TL↔BR，skewX 20° + rotation 180°</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childItemSize={{ w: 240, h: 240 }}
+          canvasBg="#fef3c7"
+          childItems={[
+            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 20 }, rotation: { angle: 180 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -20 }, rotation: { angle: -180 } }, stayDuration: 1.5 },
           ]}
         />
       </div>
