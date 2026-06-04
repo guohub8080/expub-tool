@@ -54,21 +54,82 @@
 
 **远端定位热区（控制点击触发时机）**
 
-有两种变体：
+微信 SVG 不支持 JS，只能靠 SMIL 动画 + 极端坐标模拟"点击开关"。
+看到 `-10000`、`4000`、`88888888`、`maxDimension * 50` 等极端值，不要当成布局数字，这是热区开关机制。
 
-1. **按住触发、松开停止**（`touchstart` / `touchmove` 开关）：
+共三种模式：
+
+### 模式一：点击后永久禁用热区（一次性点击）
+
+点击时把 `<rect>` 的 `x` 属性改成极端值（飞到屏幕外不可达），同时 `set visibility="hidden"` 兜底。
+
 ```xml
-<!-- 点击时把热区移到 -10000，动画触发；touchmove 时移回来，可再次触发 -->
-<animateTransform values="0 0;-10000 0;-10000 0" begin="touchstart" dur="1000s" restart="always" fill="freeze"/>
-<animateTransform values="0 0;0 0;0 0"           begin="touchmove"  dur="1000s" restart="always" fill="freeze"/>
+<rect opacity="0" style="pointer-events: painted">
+  <!-- 点击后热区飞走 -->
+  <animate attributeName="x" begin="click+0s" dur="1ms" values="13500" fill="freeze" />
+  <!-- 点击后隐藏热区 -->
+  <set attributeName="visibility" to="hidden" begin="click+0s" fill="freeze" restart="never" />
+</rect>
 ```
 
-2. **点击一次后永久禁用**（`set visibility="hidden" restart="never"`）：
+极端值计算：`outOfView = max([viewBoxW, viewBoxH]) * 50`（或更大）。
+
+使用场景：`HotArea`、`ClickSwitchLayer`、`ClickPopup` — 点击一次后热区消失，不可重复触发。
+
+### 模式二：按压状态机（按住翻转、松开翻回）
+
+用 `translate(±10000)` 或 `translate(4000)` 控制两组可点击区域的轮流可见性。
+按住时主热区移走、新热区出现；松开时反过来。
+
 ```xml
-<set attributeName="visibility" to="hidden" begin="click" fill="freeze" restart="never"/>
+<!-- 主热区：按住时从 -10000 移到 0（可见） -->
+<animateTransform type="translate" values="-10000 0;-10000 0;0 0;0 0"
+  begin="mousedown" calcMode="discrete" keyTimes="0;0.6;0.6;1" fill="freeze" />
+<animateTransform type="translate" values="-10000 0;-10000 0;0 0;0 0"
+  begin="touchstart" calcMode="discrete" keyTimes="0;0.6;0.6;1" fill="freeze" />
+
+<!-- 移动手指：保持 -10000（不触发翻转） -->
+<animateTransform type="translate" values="-10000 0;-10000 0;-10000 0;-10000 0"
+  begin="touchmove" calcMode="discrete" keyTimes="0;0.6;0.6;1" fill="freeze" />
+
+<!-- 松开：主热区从 0 移回 -10000（消失） -->
+<animateTransform type="translate" values="0 0;0 0;-10000 0;-10000 0"
+  begin="mouseup" calcMode="discrete" keyTimes="0;0.5;0.5;1" fill="freeze" />
+<animateTransform type="translate" values="0 0;0 0;-10000 0;-10000 0"
+  begin="click" calcMode="discrete" keyTimes="0;0.5;0.5;1" fill="freeze" />
 ```
 
-识别要点：看到 `-10000`、`9999` 这类极端坐标，或 `restart="never"` + `set visibility`，不要当成布局数字，这是热区开关机制。
+隐藏的复位触发器（初始在 `translate(10000, 0)` 离屏）：
+
+```xml
+<!-- 按住时保持在 10000（仍离屏） -->
+<animateTransform type="translate" values="10000 0;10000 0;10000 0"
+  begin="mousedown" fill="remove" />
+
+<!-- 移动手指时移到 0（进入视野，可被点击来复位） -->
+<animateTransform type="translate" values="0 0;0 0;0 0"
+  begin="touchmove" fill="remove" />
+```
+
+使用场景：`ClickFlipCard`、`InfinityFlipCard` — 按住翻转卡片，松开翻回。
+
+### 模式三：离屏暂存 + 点击触发入场
+
+内容初始放在 `translate(-outOfView)` 离屏位置，点击时用 `additive="sum"` 的 translate 动画平移回可见区。
+
+```xml
+<!-- 内容初始离屏 -->
+<g transform="translate(-13500 0)">
+  <!-- 点击后 additive 平移回可见区 -->
+  <animateTransform additive="sum" type="translate"
+    values="13500 0" begin="click" fill="freeze" restart="never" />
+  <!-- 内容 -->
+</g>
+```
+
+极端值计算：`outOfView = max([viewBoxW, viewBoxH]) * 100`。
+
+使用场景：`ClickCascade` — 点击逐层揭示内容，每次点击揭开一层。
 
 ---
 
