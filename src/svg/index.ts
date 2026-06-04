@@ -52,3 +52,6 @@ export type { I_ClickFlipProps, I_FaceContent } from "./click"
 
 export { ClickPopup } from "./click"
 export type { I_ClickPopupProps } from "./click"
+
+export { ClickCascade } from "./click"
+export type { I_ClickCascadeProps, I_CascadeLayer } from "./click"
