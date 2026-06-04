@@ -53,7 +53,7 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="8 图 — 八方向退场 (L/R/T/B/LT/RT/LB/RB)">
+      <CopyDemo title="8 图 — 八方向退场 (L/R/T/B/TL/TR/BL/BR)">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
           mainChildItemSize={{ w: 900, h: 900 }}
@@ -62,10 +62,10 @@ export default function StackCarouselPage() {
             { url: getWechat300x300(2), switchDuration: 0.6, stayDuration: 1, exit: { direction: "R" } },
             { url: getWechat300x300(3), switchDuration: 0.6, stayDuration: 1, exit: { direction: "T" } },
             { url: getWechat300x300(4), switchDuration: 0.6, stayDuration: 1, exit: { direction: "B" } },
-            { url: getWechat300x300(5), switchDuration: 0.6, stayDuration: 1, exit: { direction: "LT" } },
-            { url: getWechat300x300(6), switchDuration: 0.6, stayDuration: 1, exit: { direction: "RT" } },
-            { url: getWechat300x300(7), switchDuration: 0.6, stayDuration: 1, exit: { direction: "LB" } },
-            { url: getWechat300x300(8), switchDuration: 0.6, stayDuration: 1, exit: { direction: "RB" } },
+            { url: getWechat300x300(5), switchDuration: 0.6, stayDuration: 1, exit: { direction: "TL" } },
+            { url: getWechat300x300(6), switchDuration: 0.6, stayDuration: 1, exit: { direction: "TR" } },
+            { url: getWechat300x300(7), switchDuration: 0.6, stayDuration: 1, exit: { direction: "BL" } },
+            { url: getWechat300x300(8), switchDuration: 0.6, stayDuration: 1, exit: { direction: "BR" } },
           ]}
         />
       </CopyDemo>

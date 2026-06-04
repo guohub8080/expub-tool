@@ -7,7 +7,8 @@ export type T_CanvasSize = {
 
 export type T_Direction4 = "L" | "R" | "T" | "B"
 
-export type T_Direction8 = "L" | "R" | "T" | "B" | "LT" | "RT" | "LB" | "RB"
+/** 八方向：水平/垂直 + 对角线（对角线遵循 CSS 习惯：垂直在前 TL/TR/BL/BR） */
+export type T_Direction8 = "L" | "R" | "T" | "B" | "TL" | "TR" | "BL" | "BR"
 
 export type T_DirectionX = "L" | "R"
 

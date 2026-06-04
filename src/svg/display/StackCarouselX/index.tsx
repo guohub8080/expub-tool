@@ -53,10 +53,10 @@ const getExitTranslate = (direction: T_Direction8, distance: number, distanceXY?
     case "R":  return { x: d, y: 0 }
     case "T":  return { x: 0, y: -d }
     case "B":  return { x: 0, y: d }
-    case "LT": return { x: -dxy, y: -dxy }
-    case "RT": return { x: dxy, y: -dxy }
-    case "LB": return { x: -dxy, y: dxy }
-    case "RB": return { x: dxy, y: dxy }
+    case "TL": return { x: -dxy, y: -dxy }
+    case "TR": return { x: dxy, y: -dxy }
+    case "BL": return { x: -dxy, y: dxy }
+    case "BR": return { x: dxy, y: dxy }
   }
 }
 
