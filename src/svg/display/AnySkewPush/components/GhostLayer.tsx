@@ -1,6 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
-import { transformTranslate, transformSkewX, transformSkewY, transformRotate } from "@smil/index"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
@@ -42,9 +42,6 @@ const GhostLayer = (props: {
   const { firstItem, enterOffscreenTranslate, ghostTimeline, totalDuration, contentWidth, contentHeight } = props
   const ghostEntryDuration = ghostTimeline.entryDuration
   const ghostHoldDuration = totalDuration - ghostEntryDuration
-
-  // Ghost 在周期内的 keyTime：从这个时刻开始变 visible（= 图1进入开始）
-  const ghostShowKeyTime = (ghostHoldDuration / totalDuration).toFixed(6)
 
   // Ghost skew：仅在 entry.skew 存在时渲染
   // 前段保持 entryAngle（图1在屏幕外时的 skew 状态），后段随进入动画归零
@@ -92,11 +89,16 @@ const GhostLayer = (props: {
   return (
     <g key="ghost" visibility="hidden">
       {/* visibility 切换：在图1进入段瞬间变 visible，进入完成后瞬间 hidden */}
-      <animate attributeName="visibility"
-        values="hidden; visible; hidden"
-        keyTimes={`0; ${ghostShowKeyTime}; 1`}
-        dur={`${totalDuration}s`} calcMode="discrete"
-        repeatCount="indefinite" begin="0s" fill="freeze" />
+      {animateVisibility({
+        initValue: "hidden",
+        timeline: [
+          { durationSeconds: ghostHoldDuration, to: "visible" },
+          { durationSeconds: ghostEntryDuration, to: "hidden" },
+        ],
+        begin: "0s",
+        loopCount: 0,
+        isFreeze: true,
+      })}
       {transformTranslate({
         initValue: enterOffscreenTranslate,
         timeline: [
