@@ -6,6 +6,7 @@ import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { resolveCanvasBg } from "@utils/svg/resolveCanvasBg"
+import { setVisibility } from "@smil/index"
 import { normalizeChildItems } from "./utils/normalizer"
 import { validateJsxViewBox } from "./utils/validateJsx"
 import { buildCyclicTimelines } from "@utils/svg/buildCyclicTimelines"
@@ -81,7 +82,7 @@ const AnySkewPush = (props: {
             各图的 <g> 会在动画接管前短暂停在原点（全屏中心），造成初始闪烁。
           */}
           <g transform={`translate(${itemGap}, ${itemGap})`} visibility="hidden">
-            <set attributeName="visibility" to="visible" begin="0.01s" fill="freeze" />
+            {setVisibility({ to: "visible", begin: "0.01s", isFreeze: true })}
             {/* 坐标系平移到画布中心，所有图的 translate 动画以中心为原点计算 */}
             <g transform={`translate(${contentW / 2}, ${contentH / 2})`}>
               {items.map((item, i) => (
