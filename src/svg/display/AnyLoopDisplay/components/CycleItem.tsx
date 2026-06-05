@@ -1,6 +1,7 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
 import max from "lodash/max"
+import sum from "lodash/sum"
 import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
@@ -20,10 +21,10 @@ const DEFAULT_EASE = "0.42 0 0.58 1"
  *     <g>
  *       <animateTransform skew/>     ← 可选，skew 斜切动画
  *       <g>
- *         <g transform="translate(cx,cy)">   ← 可选，scale 缩放动画（嵌套 <g> 隔离）
+ *         <g transform="translate(ox,oy)">   ← 可选，scale 缩放动画（嵌套 <g> 隔离）
  *           <g>
  *             <animateTransform scale/>
- *             <g transform="translate(-cx,-cy)">
+ *             <g transform="translate(-ox,-oy)">
  *               content
  *             </g>
  *           </g>
@@ -58,10 +59,8 @@ const CycleItem = (props: {
 
   // 计算 offscreen 距离时考虑 scale 因子，确保放大后的内容也完全离屏
   // 用户可通过 distance 手动覆盖自动计算的倍数
-  const autoEntryBuffer = max([1, defaultTo(item.entry.scale?.scale, 1)])
-  const autoExitBuffer = max([1, defaultTo(item.exit.scale?.scale, 1)])
-  const entryBuffer = defaultTo(item.distance, autoEntryBuffer)
-  const exitBuffer = defaultTo(item.distance, autoExitBuffer)
+  const entryBuffer = defaultTo(item.distance, getEntryBuffer(item.entry.scale))
+  const exitBuffer = defaultTo(item.distance, getExitBuffer(item.exit.scale))
 
   const enterOffscreenTranslate = getOffscreenTranslate({
     direction: item.entry.direction, canvasWidth, canvasHeight,
@@ -154,6 +153,25 @@ const CycleItem = (props: {
 
 // ── 内部工具函数 ──
 
+/** 获取 entry 阶段的 buffer（entry 从小到大，最大值不超过 1，所以 buffer = 1） */
+const getEntryBuffer = (entryScale?: I_NormalizedChildItem['entry']['scale']): number => {
+  if (isNil(entryScale)) return 1
+  // entry 始终趋向 1，即使 initValue > 1，entry 阶段 buffer 不影响 offscreen 距离
+  return 1
+}
+
+/** 获取 exit 阶段的 buffer（取 scale 最大值确保放大内容完全离屏） */
+const getExitBuffer = (exitScale?: I_NormalizedChildItem['exit']['scale']): number => {
+  if (isNil(exitScale)) return 1
+  if (exitScale.timeline) {
+    // 高级模式：取 timeline 所有 to 值中的最大值
+    const timelineMax = max(exitScale.timeline.map(segment => segment.to)) ?? 1
+    return max([1, timelineMax]) ?? 1
+  }
+  // 简单模式：initValue 就是目标缩放值
+  return max([1, defaultTo(exitScale.initValue, 1)]) ?? 1
+}
+
 /** 生成 skew animateTransform（entrySkew 和 exitSkew 均不传时返回 null） */
 const renderSkewAnim = ({
   entrySkew, exitSkew, stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
@@ -241,9 +259,9 @@ const renderRotateAnim = ({
 /**
  * 构建 scale 动画配置（使用 transformScaleRaw + 嵌套 <g>）
  *
- * 不再使用 transformScale（三个 animateTransform 放同一个 <g> + additive="sum"），
- * 改为在嵌套 <g> 上用静态 transform 做 translate，中间层只放一个 scale animateTransform。
- * 这样避免 additive="sum" 在微信 WebView 中对非 Center origin 的叠加偏差问题。
+ * 支持：
+ * - 简单模式：entry from→1, exit 1→from
+ * - 高级模式：entry/exit 使用用户自定义 timeline
  */
 const buildScaleAnimConfig = ({
   entryScale, exitScale, contentWidth, contentHeight,
@@ -261,8 +279,8 @@ const buildScaleAnimConfig = ({
 }): { originX: number; originY: number; scaleAnim: React.ReactNode } | null => {
   if (isNil(entryScale) && isNil(exitScale)) return null
 
-  const entryScaleValue = defaultTo(entryScale?.scale, 1)
-  const exitScaleValue  = defaultTo(exitScale?.scale, 1)
+  // 动画初始值：entry 的起始 scale
+  const animInitValue = defaultTo(entryScale?.initValue, 1)
 
   const scaleOrigin = getRotationOrigin({
     origin: defaultTo(entryScale?.childCanvasOrigin, exitScale?.childCanvasOrigin ?? 'Center'),
@@ -273,18 +291,40 @@ const buildScaleAnimConfig = ({
   const [originX, originY] = scaleOrigin
   const ease = entryScale?.keySplines ?? exitScale?.keySplines ?? DEFAULT_EASE
 
-  const segs = [
-    { durationSeconds: switchDuration,    to: 1,              keySplines: ease },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 1, keySplines: ease }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitScaleValue, keySplines: ease },
-    { durationSeconds: holdDuration,       to: exitScaleValue, keySplines: ease },
-  ]
+  // ── 构建 entry 阶段 segments ──
+  const entrySegs = buildScalePhaseSegments({
+    scaleConfig: entryScale,
+    phaseDuration: switchDuration,
+    simpleTargetValue: 1,
+    defaultEase: ease,
+  })
+
+  // ── 构建 stay 阶段 segments（hold 在 entry 最后值）──
+  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
+  const staySegs = stayDuration > 0
+    ? [{ durationSeconds: stayDuration, to: lastEntryValue, keySplines: ease }]
+    : []
+
+  // ── 构建 exit 阶段 segments ──
+  const exitTargetValue = defaultTo(exitScale?.initValue, 1)
+  const exitSegs = buildScalePhaseSegments({
+    scaleConfig: exitScale,
+    phaseDuration: nextSwitchDuration,
+    simpleTargetValue: exitTargetValue,
+    defaultEase: ease,
+  })
+
+  // ── 构建 hold 阶段 segments（hold 在 exit 最后值）──
+  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].to : exitTargetValue
+  const holdSegs = [{ durationSeconds: holdDuration, to: lastExitValue, keySplines: ease }]
+
+  const segs = [...entrySegs, ...staySegs, ...exitSegs, ...holdSegs]
 
   return {
     originX,
     originY,
     scaleAnim: transformScaleRaw({
-      initValue: entryScaleValue,
+      initValue: animInitValue,
       timeline: segs,
       begin: `${begin}s`,
       loopCount: 0,
@@ -292,6 +332,44 @@ const buildScaleAnimConfig = ({
       isAdditive: false,
     }),
   }
+}
+
+/**
+ * 构建 scale 单阶段（entry 或 exit）的 timeline segments
+ *
+ * - 简单模式（无 timeline）：生成单段 initValue→simpleTargetValue
+ * - 高级模式（有 timeline）：使用用户自定义 timeline，不足 phaseDuration 时自动补 hold 段
+ */
+const buildScalePhaseSegments = ({
+  scaleConfig,
+  phaseDuration,
+  simpleTargetValue,
+  defaultEase,
+}: {
+  scaleConfig?: I_NormalizedChildItem['entry']['scale']
+  phaseDuration: number
+  /** 简单模式下的目标值（entry=1, exit=exitScale.initValue） */
+  simpleTargetValue: number
+  defaultEase: string
+}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+  if (!scaleConfig?.timeline) {
+    // 简单模式：单段动画到目标值
+    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
+  }
+
+  // 高级模式：使用用户 timeline
+  const timelineTotal = sum(scaleConfig.timeline.map(segment => segment.durationSeconds))
+  if (timelineTotal > phaseDuration) {
+    throw new Error(`Scale timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
+  }
+
+  const lastValue = scaleConfig.timeline[scaleConfig.timeline.length - 1].to
+  const padding = phaseDuration - timelineTotal
+
+  return [
+    ...scaleConfig.timeline,
+    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+  ]
 }
 
 export default CycleItem

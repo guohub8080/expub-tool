@@ -99,9 +99,9 @@ const GhostLayer = (props: {
       originX: scaleOrigin[0],
       originY: scaleOrigin[1],
       scaleAnim: transformScaleRaw({
-        initValue: firstItem.entry.scale!.scale,
+        initValue: firstItem.entry.scale!.initValue,
         timeline: [
-          { durationSeconds: ghostHoldDuration, to: firstItem.entry.scale!.scale, keySplines: ease },
+          { durationSeconds: ghostHoldDuration, to: firstItem.entry.scale!.initValue, keySplines: ease },
           { durationSeconds: ghostEntryDuration, to: 1,                             keySplines: ease },
         ],
         begin: "0s",

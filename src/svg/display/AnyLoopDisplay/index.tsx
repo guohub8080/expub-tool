@@ -103,7 +103,7 @@ const AnyLoopDisplay = (props: {
                   firstItem={items[0]}
                   enterOffscreenTranslate={getOffscreenTranslate({
                     direction: items[0].entry.direction, canvasWidth: w, canvasHeight: h,
-                    bufferMultiplier: defaultTo(items[0].distance, max([1, defaultTo(items[0].entry.scale?.scale, 1)])),
+                    bufferMultiplier: defaultTo(items[0].distance, max([1, defaultTo(items[0].entry.scale?.initValue, 1)])),
                   })}
                   ghostTimeline={ghostTimeline}
                   totalDuration={totalDuration}

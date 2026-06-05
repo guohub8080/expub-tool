@@ -43,10 +43,10 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: 'Center', scale: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', scale: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'R', scale: { childCanvasOrigin: 'Center', scale: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', scale: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(3), entry: { direction: 'B', scale: { childCanvasOrigin: 'Center', scale: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', scale: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(4), entry: { direction: 'L', scale: { childCanvasOrigin: 'Center', scale: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', scale: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: 'Center', from: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'R', scale: { childCanvasOrigin: 'Center', from: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { direction: 'B', scale: { childCanvasOrigin: 'Center', from: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { direction: 'L', scale: { childCanvasOrigin: 'Center', from: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -56,10 +56,10 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: 'TopLeft', scale: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', scale: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'B', scale: { childCanvasOrigin: 'TopLeft', scale: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', scale: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(3), entry: { direction: 'T', scale: { childCanvasOrigin: 'TopLeft', scale: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', scale: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(4), entry: { direction: 'B', scale: { childCanvasOrigin: 'TopLeft', scale: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', scale: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: 'TopLeft', from: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'B', scale: { childCanvasOrigin: 'TopLeft', from: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { direction: 'T', scale: { childCanvasOrigin: 'TopLeft', from: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { direction: 'B', scale: { childCanvasOrigin: 'TopLeft', from: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -71,8 +71,8 @@ export default function AnyLoopDisplayPage() {
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#ede9fe"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 30 }, scale: { childCanvasOrigin: 'BottomRight', scale: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -30 }, scale: { childCanvasOrigin: 'TopLeft', scale: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 30 }, scale: { childCanvasOrigin: 'BottomRight', from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -30 }, scale: { childCanvasOrigin: 'TopLeft', from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
           ]}
         />
       </div>

@@ -2,6 +2,7 @@ import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { DIRECTION_8 } from "@svg/types"
 import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig, I_EntryScaleConfig } from "@svg/types"
+import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_AnyLoopDisplayChildItem } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
@@ -16,11 +17,21 @@ export interface I_NormalizedRotationConfig {
   keySplines?: string
 }
 
-/** 标准化后的缩放配置（childCanvasOrigin 和 scale 已填充默认值） */
+/**
+ * 标准化后的缩放配置
+ *
+ * 两种模式：
+ * - 简单模式：只有 initValue + keySplines，CycleItem 自动生成单步动画
+ * - 高级模式：有 timeline，CycleItem 直接使用用户自定义的多段动画
+ */
 export interface I_NormalizedScaleConfig {
   childCanvasOrigin: T_Origin
-  scale: number
+  /** 起始缩放值，简单模式下来自 scale，高级模式下来自 initValue */
+  initValue: number
+  /** 缓动曲线，仅简单模式生效 */
   keySplines?: string
+  /** 自定义动画路径，存在时为高级模式 */
+  timeline?: I_TimelineKeyframe<number>[]
 }
 
 /** 标准化单个旋转配置：填充默认 childCanvasOrigin 和 angle */
@@ -33,13 +44,23 @@ const normalizeRotation = (rotation: I_RotationConfig | undefined): I_Normalized
   }
 }
 
-/** 标准化单个缩放配置：填充默认 childCanvasOrigin 和 scale */
+/**
+ * 标准化单个缩放配置
+ *
+ * 两种输入模式：
+ * - 简单模式：只传 scale（作为 initValue）
+ * - 高级模式：传 initValue + timeline
+ */
 const normalizeScale = (scale: I_EntryScaleConfig | undefined): I_NormalizedScaleConfig | undefined => {
   if (isNil(scale)) return undefined
+
+  const hasTimeline = !isNil(scale.timeline)
+
   return {
     childCanvasOrigin: defaultTo(scale.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
-    scale: defaultTo(scale.scale, 1),
-    keySplines: scale.keySplines,
+    initValue: hasTimeline ? defaultTo(scale.initValue, 1) : defaultTo(scale.from, 1),
+    keySplines: hasTimeline ? undefined : scale.keySplines,
+    timeline: hasTimeline ? scale.timeline : undefined,
   }
 }
 
