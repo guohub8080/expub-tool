@@ -76,3 +76,41 @@ export const buildScalePhaseSegments = ({
     ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
   ]
 }
+
+/**
+ * 构建 opacity 单阶段（entry 或 exit）的 timeline segments
+ *
+ * - 简单模式（无 timeline）：生成单段 initValue→simpleTargetValue
+ * - 高级模式（有 timeline）：使用用户自定义 timeline，不足 phaseDuration 时自动补 hold 段
+ */
+export const buildOpacityPhaseSegments = ({
+  opacityConfig,
+  phaseDuration,
+  simpleTargetValue,
+  defaultEase,
+}: {
+  opacityConfig?: I_NormalizedChildItem['entry']['opacity']
+  phaseDuration: number
+  /** 简单模式下的目标值（entry=1, exit=exitOpacity.initValue） */
+  simpleTargetValue: number
+  defaultEase: string
+}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+  if (!opacityConfig?.timeline) {
+    // 简单模式：单段动画到目标值
+    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
+  }
+
+  // 高级模式：使用用户 timeline
+  const timelineTotal = sum(opacityConfig.timeline.map(segment => segment.durationSeconds))
+  if (timelineTotal > phaseDuration) {
+    throw new Error(`Opacity timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
+  }
+
+  const lastValue = opacityConfig.timeline[opacityConfig.timeline.length - 1].to
+  const padding = phaseDuration - timelineTotal
+
+  return [
+    ...opacityConfig.timeline,
+    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+  ]
+}

@@ -2,7 +2,7 @@ import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import sum from "lodash/sum"
 import { DIRECTION_8 } from "@svg/types"
-import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig, I_EntryScaleConfig } from "@svg/types"
+import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig } from "@svg/types"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_AnyLoopDisplayChildItem } from "../types"
 
@@ -38,6 +38,22 @@ export interface I_NormalizedRotationConfig {
 export interface I_NormalizedScaleConfig {
   childCanvasOrigin: T_Origin
   /** 起始缩放值，简单模式下来自 from，高级模式下来自 initValue */
+  initValue: number
+  /** 缓动曲线，仅简单模式生效 */
+  keySplines?: string
+  /** 自定义动画路径，存在时为高级模式 */
+  timeline?: I_TimelineKeyframe<number>[]
+}
+
+/**
+ * 标准化后的透明度配置
+ *
+ * 两种模式：
+ * - 简单模式：只有 initValue + keySplines，CycleItem 自动生成单步动画
+ * - 高级模式：有 timeline，CycleItem 直接使用用户自定义的多段动画
+ */
+export interface I_NormalizedOpacityConfig {
+  /** 起始透明度，简单模式下来自 from，高级模式下来自 initValue */
   initValue: number
   /** 缓动曲线，仅简单模式生效 */
   keySplines?: string
@@ -85,6 +101,25 @@ const normalizeScale = (scale: I_EntryScaleConfig | undefined): I_NormalizedScal
   }
 }
 
+/**
+ * 标准化单个透明度配置
+ *
+ * 两种输入模式：
+ * - 简单模式：只传 from（作为 initValue）
+ * - 高级模式：传 initValue + timeline
+ */
+const normalizeOpacity = (opacity: I_EntryOpacityConfig | undefined): I_NormalizedOpacityConfig | undefined => {
+  if (isNil(opacity)) return undefined
+
+  const hasTimeline = !isNil(opacity.timeline)
+
+  return {
+    initValue: hasTimeline ? defaultTo(opacity.initValue, 1) : defaultTo(opacity.from, 1),
+    keySplines: hasTimeline ? undefined : opacity.keySplines,
+    timeline: hasTimeline ? opacity.timeline : undefined,
+  }
+}
+
 /** 进入方向取反，作为默认退出方向（T↔B，L↔R，TL↔BR，TR↔BL） */
 export const oppositeDirection = (direction: T_Direction8): T_Direction8 => {
   const map: Record<T_Direction8, T_Direction8> = { T: 'B', B: 'T', L: 'R', R: 'L', TL: 'BR', TR: 'BL', BL: 'TR', BR: 'TL' }
@@ -105,12 +140,14 @@ export interface I_NormalizedChildItem {
     skew?: I_SkewConfig
     rotation?: I_NormalizedRotationConfig
     scale?: I_NormalizedScaleConfig
+    opacity?: I_NormalizedOpacityConfig
   }
   exit: {
     direction: T_Direction8
     skew?: I_SkewConfig
     rotation?: I_NormalizedRotationConfig
     scale?: I_NormalizedScaleConfig
+    opacity?: I_NormalizedOpacityConfig
   }
   stayDuration: number
   switchDuration: number
@@ -133,12 +170,14 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
       skew: item.entry?.skew,
       rotation: normalizeRotation(item.entry?.rotation),
       scale: normalizeScale(item.entry?.scale),
+      opacity: normalizeOpacity(item.entry?.opacity),
     },
     exit: {
       direction: defaultTo(item.exit?.direction, oppositeDirection(entryDirection)),
       skew: item.exit?.skew,
       rotation: normalizeRotation(item.exit?.rotation),
       scale: normalizeScale(item.exit?.scale),
+      opacity: normalizeOpacity(item.exit?.opacity),
     },
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
@@ -189,6 +228,22 @@ const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
       const total = sum(item.exit.scale.timeline.map(s => s.durationSeconds))
       if (total > exitDuration) {
         throw new Error(`Item ${i + 1} exit scale timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
+      }
+    }
+
+    // Entry opacity
+    if (item.entry.opacity?.timeline) {
+      const total = sum(item.entry.opacity.timeline.map(s => s.durationSeconds))
+      if (total > entryDuration) {
+        throw new Error(`Item ${i + 1} entry opacity timeline total (${total}s) must not exceed entry duration (${entryDuration}s).`)
+      }
+    }
+
+    // Exit opacity
+    if (item.exit.opacity?.timeline) {
+      const total = sum(item.exit.opacity.timeline.map(s => s.durationSeconds))
+      if (total > exitDuration) {
+        throw new Error(`Item ${i + 1} exit opacity timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
       }
     }
   }

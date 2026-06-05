@@ -1,11 +1,11 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
 import max from "lodash/max"
-import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw } from "@smil/index"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateOpacity } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
-import { buildRotationPhaseSegments, buildScalePhaseSegments } from "../utils/phaseSegmentBuilders"
+import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -83,9 +83,22 @@ const CycleItem = (props: {
   const hasSkew = !isNil(item.entry.skew) || !isNil(item.exit.skew)
   const hasScale = !isNil(item.entry.scale) || !isNil(item.exit.scale)
   const hasRotation = !isNil(item.entry.rotation) || !isNil(item.exit.rotation)
+  const hasOpacity = !isNil(item.entry.opacity) || !isNil(item.exit.opacity)
 
   // 内容节点：从最内层往外逐层包裹，只有存在对应动画时才加 <g>
   let content: React.ReactNode = renderChildItemContent({ item, contentWidth, contentHeight })
+
+  if (hasOpacity) {
+    content = (
+      <g>
+        {renderOpacityAnim({
+          entryOpacity: item.entry.opacity, exitOpacity: item.exit.opacity,
+          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+        })}
+        {content}
+      </g>
+    )
+  }
 
   if (hasRotation) {
     content = (
@@ -353,6 +366,63 @@ const buildScaleAnimConfig = ({
       isAdditive: false,
     }),
   }
+}
+
+/** 生成 opacity animate（entryOpacity 和 exitOpacity 均不传时返回 null） */
+const renderOpacityAnim = ({
+  entryOpacity, exitOpacity,
+  stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+}: {
+  entryOpacity?: I_NormalizedChildItem['entry']['opacity']
+  exitOpacity?: I_NormalizedChildItem['exit']['opacity']
+  stayDuration: number
+  switchDuration: number
+  nextSwitchDuration: number
+  holdDuration: number
+  begin: number
+}) => {
+  if (isNil(entryOpacity) && isNil(exitOpacity)) return null
+
+  const animInitValue = defaultTo(entryOpacity?.initValue, 1)
+  const exitTargetValue = defaultTo(exitOpacity?.initValue, 1)
+
+  const ease = entryOpacity?.keySplines ?? exitOpacity?.keySplines ?? DEFAULT_EASE
+
+  // ── 构建 entry 阶段 segments（支持简单模式和 timeline 模式）──
+  const entrySegs = buildOpacityPhaseSegments({
+    opacityConfig: entryOpacity,
+    phaseDuration: switchDuration,
+    simpleTargetValue: 1,
+    defaultEase: ease,
+  })
+
+  // ── 构建 stay 阶段 segments（hold 在 entry 最后值）──
+  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
+  const staySegs = stayDuration > 0
+    ? [{ durationSeconds: stayDuration, to: lastEntryValue, keySplines: ease }]
+    : []
+
+  // ── 构建 exit 阶段 segments（支持简单模式和 timeline 模式）──
+  const exitSegs = buildOpacityPhaseSegments({
+    opacityConfig: exitOpacity,
+    phaseDuration: nextSwitchDuration,
+    simpleTargetValue: exitTargetValue,
+    defaultEase: defaultTo(exitOpacity?.keySplines, ease),
+  })
+
+  // ── 构建 hold 阶段 segments（hold 在 exit 最后值）──
+  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].to : exitTargetValue
+  const holdSegs = [{ durationSeconds: holdDuration, to: lastExitValue, keySplines: ease }]
+
+  const segs = [...entrySegs, ...staySegs, ...exitSegs, ...holdSegs]
+
+  return animateOpacity({
+    initValue: animInitValue,
+    timeline: segs,
+    begin: `${begin}s`,
+    loopCount: 0,
+    isFreeze: true,
+  })
 }
 
 export default CycleItem

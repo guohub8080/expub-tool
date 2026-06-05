@@ -1,10 +1,10 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
-import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateVisibility } from "@smil/index"
+import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateOpacity, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
-import { buildRotationPhaseSegments, buildScalePhaseSegments } from "../utils/phaseSegmentBuilders"
+import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -146,8 +146,40 @@ const GhostLayer = (props: {
     }
   })()
 
+  // Ghost opacity：与 CycleItem 一致，支持简单模式和高级 timeline 模式
+  // 同 rotate/scale，begin = ghostHoldDuration，entry 段从 keyTime 0 开始
+  const ghostOpacityAnim = !isNil(firstItem.entry.opacity) && (() => {
+    const entryOpacity = firstItem.entry.opacity!
+    const ease = defaultTo(entryOpacity.keySplines, DEFAULT_EASE)
+
+    const entrySegs = buildOpacityPhaseSegments({
+      opacityConfig: entryOpacity,
+      phaseDuration: ghostEntryDuration,
+      simpleTargetValue: 1,
+      defaultEase: ease,
+    })
+
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
+    const timeline = [
+      ...entrySegs,
+      { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
+    ]
+
+    return animateOpacity({
+      initValue: entryOpacity.initValue,
+      timeline,
+      begin: `${ghostHoldDuration}s`,
+      loopCount: 0,
+      isFreeze: true,
+    })
+  })()
+
   // 从最内层往外逐层包裹，只有存在对应动画时才加 <g>
   let ghostContent: React.ReactNode = renderChildItemContent({ item: firstItem, contentWidth, contentHeight })
+
+  if (ghostOpacityAnim) {
+    ghostContent = <g>{ghostOpacityAnim}{ghostContent}</g>
+  }
 
   if (ghostRotateAnim) {
     ghostContent = <g>{ghostRotateAnim}{ghostContent}</g>

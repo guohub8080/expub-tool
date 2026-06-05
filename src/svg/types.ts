@@ -136,3 +136,33 @@ export interface I_EntryScaleConfig {
   /** 自定义动画路径，每段指定 durationSeconds + to + 可选 keySplines。总时长必须 ≤ 对应 phase duration */
   timeline?: I_TimelineKeyframe<number>[]
 }
+
+/**
+ * 透明度配置（用于 entry/exit 动画）
+ *
+ * 支持两种模式：
+ *
+ * 1. 简单模式：只传 from，组件自动生成 from→1（entry）或 1→from（exit）的动画
+ *    { from: 0 }
+ *
+ * 2. 高级模式：传 initValue + timeline，完全自定义动画路径
+ *    { initValue: 0, timeline: [{ durationSeconds: 1, to: 0.8 }, { durationSeconds: 0.5, to: 1 }] }
+ *    timeline 总时长必须 ≤ 对应 entry/exit 的 duration，剩余时间 hold 在最后值
+ */
+export interface I_EntryOpacityConfig {
+  // ── 简单模式 ──
+  /**
+   * 透明度起始值（0-1），默认 1（不透明）。
+   * entry 时动画：from 此值 → 1
+   * exit 时动画：1 → from 此值
+   */
+  from?: number
+  /** 缓动曲线，仅简单模式生效，默认 ease-in-out */
+  keySplines?: string
+
+  // ── 高级模式 ──
+  /** 自定义起始值（0-1），高级模式必填 */
+  initValue?: number
+  /** 自定义动画路径，每段指定 durationSeconds + to + 可选 keySplines。总时长必须 ≤ 对应 phase duration */
+  timeline?: I_TimelineKeyframe<number>[]
+}
