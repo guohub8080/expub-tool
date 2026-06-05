@@ -1,5 +1,6 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
+import sum from "lodash/sum"
 import { DIRECTION_8 } from "@svg/types"
 import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig, I_EntryScaleConfig } from "@svg/types"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
@@ -146,21 +147,66 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
 }
 
 /**
- * 标准化子项数组
+ * 校验所有子项的 timeline 总时长不超过对应的 phase duration
  *
- * 1. 空数组 → 抛出错误
- * 2. 仅 1 张图 → 自动复制一份（推入效果需要 ≥2 张）
- * 3. 多张图 → 逐个填充默认值
+ * - entry timeline 总时长 ≤ item.switchDuration（entry duration）
+ * - exit timeline 总时长 ≤ nextItem.switchDuration（exit duration）
+ * - 在 normalizer 阶段尽早报错，避免到渲染时才发现
  */
+const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
+  const n = items.length
+  for (let i = 0; i < n; i++) {
+    const item = items[i]
+    const entryDuration = item.switchDuration
+    const exitDuration = items[(i + 1) % n].switchDuration
+
+    // Entry rotation
+    if (item.entry.rotation?.timeline) {
+      const total = sum(item.entry.rotation.timeline.map(s => s.durationSeconds))
+      if (total > entryDuration) {
+        throw new Error(`Item ${i + 1} entry rotation timeline total (${total}s) must not exceed entry duration (${entryDuration}s).`)
+      }
+    }
+
+    // Entry scale
+    if (item.entry.scale?.timeline) {
+      const total = sum(item.entry.scale.timeline.map(s => s.durationSeconds))
+      if (total > entryDuration) {
+        throw new Error(`Item ${i + 1} entry scale timeline total (${total}s) must not exceed entry duration (${entryDuration}s).`)
+      }
+    }
+
+    // Exit rotation
+    if (item.exit.rotation?.timeline) {
+      const total = sum(item.exit.rotation.timeline.map(s => s.durationSeconds))
+      if (total > exitDuration) {
+        throw new Error(`Item ${i + 1} exit rotation timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
+      }
+    }
+
+    // Exit scale
+    if (item.exit.scale?.timeline) {
+      const total = sum(item.exit.scale.timeline.map(s => s.durationSeconds))
+      if (total > exitDuration) {
+        throw new Error(`Item ${i + 1} exit scale timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
+      }
+    }
+  }
+}
+
 export const normalizeChildItems = (items: I_AnyLoopDisplayChildItem[]): I_NormalizedChildItem[] => {
   if (!items || items.length === 0) {
     throw new Error("`childItems` must not be empty.")
   }
 
+  let normalized: I_NormalizedChildItem[]
   if (items.length === 1) {
-    const normalized = fillDefaults(items[0])
-    return [normalized, normalized]
+    const single = fillDefaults(items[0])
+    normalized = [single, single]
+  } else {
+    normalized = items.map(fillDefaults)
   }
 
-  return items.map(fillDefaults)
+  validateTimelineDurations(normalized)
+  return normalized
 }

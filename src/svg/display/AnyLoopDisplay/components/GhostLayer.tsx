@@ -21,10 +21,14 @@ const DEFAULT_EASE = "0.42 0 0.58 1"
  * 只在图1进入的那段时间内可见（visibility: hidden → visible → hidden），
  * 其余时间隐藏。这样视觉上图1始终能覆盖图N，实现"新图永远盖住旧图"的效果。
  *
- * 时序（begin = 0s，周期 = totalDuration）：
- * - [0, totalDuration-entryDuration)：停在屏幕外，visibility=hidden
- * - [totalDuration-entryDuration, totalDuration)：执行进入动画，visibility=visible
- * - totalDuration 时刻：瞬间 hidden，图1已到位，Ghost 完成使命
+ * 时序：
+ * - visibility/translate：begin=0s
+ *   - [0, totalDuration-entryDuration)：停在屏幕外，visibility=hidden
+ *   - [totalDuration-entryDuration, totalDuration)：执行进入动画，visibility=visible
+ *   - totalDuration 时刻：瞬间 hidden，图1已到位，Ghost 完成使命
+ * - rotate/scale/skew：begin=totalDuration-entryDuration
+ *   - entry 段从 keyTime 0 开始，与 CycleItem 的 keyTimes 结构完全一致
+ *   - entry 完成后 hold 在最终值直到周期结束
  */
 const GhostLayer = (props: {
   /** 图1的标准化配置 */
@@ -45,7 +49,7 @@ const GhostLayer = (props: {
   const ghostHoldDuration = totalDuration - ghostEntryDuration
 
   // Ghost skew：仅在 entry.skew 存在时渲染
-  // 前段保持 entryAngle（图1在屏幕外时的 skew 状态），后段随进入动画归零
+  // 先执行 entry 阶段（angle→0），再 hold 在 0（Ghost 不可见）
   const ghostSkewAnim = firstItem.entry.skew && (() => {
     const skewEase = defaultTo(firstItem.entry.skew!.keySplines, DEFAULT_EASE)
     const isSkewY = firstItem.entry.skew!.type === 'Y'
@@ -54,10 +58,10 @@ const GhostLayer = (props: {
     return skewFn({
       initValue: firstItem.entry.skew!.angle,
       timeline: [
-        { durationSeconds: ghostHoldDuration, to: firstItem.entry.skew!.angle, keySplines: skewEase },
         { durationSeconds: ghostEntryDuration, to: 0,                           keySplines: skewEase },
+        { durationSeconds: ghostHoldDuration,  to: 0,                           keySplines: skewEase },
       ],
-      begin: "0s",
+      begin: `${ghostHoldDuration}s`,
       loopCount: 0,
       isFreeze: true,
       isAdditive: false,
@@ -65,6 +69,10 @@ const GhostLayer = (props: {
   })()
 
   // Ghost rotate：与 CycleItem 一致，支持简单模式和高级 timeline 模式
+  //
+  // 关键：begin = ghostHoldDuration（而非 "0s"）
+  // 这样 entry 段从 keyTime 0 开始，与 CycleItem 的 keyTimes 结构完全一致，
+  // 避免因 hold 段在前导致 entry 段落在 keyTimes 中间位置而产生微小 easing 差异。
   const ghostRotateAnim = !isNil(firstItem.entry.rotation) && (() => {
     const entryRotation = firstItem.entry.rotation!
     const rotationOrigin = getRotationOrigin({
@@ -75,24 +83,25 @@ const GhostLayer = (props: {
     const ease = defaultTo(entryRotation.keySplines, DEFAULT_EASE)
 
     // 构建 Ghost rotation timeline
-    // - hold 阶段：保持 initValue（在屏幕外）
-    // - entry 阶段：从 initValue → 0（简单模式），或播放用户 timeline（高级模式）
+    // - entry 阶段：从 initValue 播放用户 timeline（或简单模式单段到 0）
+    // - hold 阶段：保持 entry 最后值（Ghost 不可见，无视觉影响）
     const entrySegs = buildGhostRotationEntrySegs({
       rotationConfig: entryRotation,
       entryDuration: ghostEntryDuration,
       defaultEase: ease,
     })
 
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
     const timeline = [
-      { durationSeconds: ghostHoldDuration, to: entryRotation.initValue, keySplines: ease },
       ...entrySegs,
+      { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
     ]
 
     return transformRotate({
       initValue: entryRotation.initValue,
       timeline,
       origin: rotationOrigin,
-      begin: "0s",
+      begin: `${ghostHoldDuration}s`,
       loopCount: 0,
       isFreeze: true,
       isAdditive: false,
@@ -100,6 +109,7 @@ const GhostLayer = (props: {
   })()
 
   // Ghost scale：与 CycleItem 一致，支持简单模式和高级 timeline 模式
+  // 同 rotation，begin = ghostHoldDuration，entry 段从 keyTime 0 开始
   const ghostScaleAnimConfig = !isNil(firstItem.entry.scale) && (() => {
     const entryScale = firstItem.entry.scale!
     const scaleOrigin = getRotationOrigin({
@@ -110,17 +120,18 @@ const GhostLayer = (props: {
     const ease = defaultTo(entryScale.keySplines, DEFAULT_EASE)
 
     // 构建 Ghost scale timeline
-    // - hold 阶段：保持 initValue（在屏幕外）
-    // - entry 阶段：从 initValue → 1（简单模式），或播放用户 timeline（高级模式）
+    // - entry 阶段：从 initValue 播放用户 timeline（或简单模式单段到 1）
+    // - hold 阶段：保持 entry 最后值（Ghost 不可见，无视觉影响）
     const entrySegs = buildGhostScaleEntrySegs({
       scaleConfig: entryScale,
       entryDuration: ghostEntryDuration,
       defaultEase: ease,
     })
 
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
     const timeline = [
-      { durationSeconds: ghostHoldDuration, to: entryScale.initValue, keySplines: ease },
       ...entrySegs,
+      { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
     ]
 
     return {
@@ -129,7 +140,7 @@ const GhostLayer = (props: {
       scaleAnim: transformScaleRaw({
         initValue: entryScale.initValue,
         timeline,
-        begin: "0s",
+        begin: `${ghostHoldDuration}s`,
         loopCount: 0,
         isFreeze: true,
         isAdditive: false,
