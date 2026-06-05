@@ -33,8 +33,8 @@ export default function AnyLoopDisplayPage() {
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#fef3c7"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'Y', angle: 30 } }, exit: { skew: { type: 'Y', angle: -30 } }, stayDuration: 1.5 },
-            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'Y', angle: -30 } }, exit: { skew: { type: 'Y', angle: 30 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(1), entry: { direction: 'TL', skewY: { from: 30 } }, exit: { skewY: { from: -30 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(2), entry: { direction: 'BR', skewY: { from: -30 } }, exit: { skewY: { from: 30 } }, stayDuration: 1.5 },
           ]}
         />
       </div>
@@ -109,14 +109,14 @@ export default function AnyLoopDisplayPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>2 图 — scale + skew + rotation 组合</h3>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — scale + skewX + rotation 组合</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#ede9fe"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 30 }, scale: { childCanvasOrigin: ORIGIN.BottomRight, from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -30 }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { direction: 'TL', skewX: { from: 30 }, scale: { childCanvasOrigin: ORIGIN.BottomRight, from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'BR', skewX: { from: -30 }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -125,10 +125,10 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', skew: { type: 'X', angle: 15 } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B', skew: { type: 'X', angle: -15 } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T', skew: { type: 'X', angle: 15 } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B', skew: { type: 'X', angle: -15 } }, stayDuration: 0 },
+            { url: getWechat300x300(1), entry: { direction: 'T', skewX: { from: 15 } }, stayDuration: 0 },
+            { url: getWechat300x300(2), entry: { direction: 'B', skewX: { from: -15 } }, stayDuration: 0 },
+            { url: getWechat300x300(3), entry: { direction: 'T', skewX: { from: 15 } }, stayDuration: 0 },
+            { url: getWechat300x300(4), entry: { direction: 'B', skewX: { from: -15 } }, stayDuration: 0 },
           ]}
         />
       </div>
@@ -138,10 +138,10 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', skew: { type: 'X', angle: 15 } }, exit: { skew: { type: 'X', angle: -15 } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'R', skew: { type: 'Y', angle: 15 } }, exit: { skew: { type: 'Y', angle: -15 } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'B', skew: { type: 'X', angle: -15 } }, exit: { skew: { type: 'X', angle: 15 } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'L', skew: { type: 'Y', angle: -15 } }, exit: { skew: { type: 'Y', angle: 15 } }, stayDuration: 0 },
+            { url: getWechat300x300(1), entry: { direction: 'T', skewX: { from: 15 } }, exit: { skewX: { from: -15 } }, stayDuration: 0 },
+            { url: getWechat300x300(2), entry: { direction: 'R', skewY: { from: 15 } }, exit: { skewY: { from: -15 } }, stayDuration: 0 },
+            { url: getWechat300x300(3), entry: { direction: 'B', skewX: { from: -15 } }, exit: { skewX: { from: 15 } }, stayDuration: 0 },
+            { url: getWechat300x300(4), entry: { direction: 'L', skewY: { from: -15 } }, exit: { skewY: { from: 15 } }, stayDuration: 0 },
           ]}
         />
       </div>
@@ -246,10 +246,66 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'L', skew: { type: 'Y', angle: 30 } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'R', skew: { type: 'Y', angle: -30 } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'L', skew: { type: 'Y', angle: 30 } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'R', skew: { type: 'Y', angle: -30 } }, stayDuration: 0 },
+            { url: getWechat300x300(1), entry: { direction: 'L', skewY: { from: 30 } }, stayDuration: 0 },
+            { url: getWechat300x300(2), entry: { direction: 'R', skewY: { from: -30 } }, stayDuration: 0 },
+            { url: getWechat300x300(3), entry: { direction: 'L', skewY: { from: 30 } }, stayDuration: 0 },
+            { url: getWechat300x300(4), entry: { direction: 'R', skewY: { from: -30 } }, stayDuration: 0 },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — skewX + skewY 同时使用</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#fef3c7"
+          childItems={[
+            { url: getWechat300x300(1), entry: { direction: 'T', skewX: { from: 20 }, skewY: { from: 10 } }, exit: { skewX: { from: -20 }, skewY: { from: -10 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(2), entry: { direction: 'B', skewX: { from: -20 }, skewY: { from: -10 } }, exit: { skewX: { from: 20 }, skewY: { from: 10 } }, stayDuration: 1.5 },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — skewX 弹性斜切（高级 timeline）30°→-10°→0°</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#ecfdf5"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: {
+                direction: 'T',
+                skewX: {
+                  initValue: 30,
+                  timeline: [
+                    { durationSeconds: 1.5, to: -10, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 1, to: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+              },
+              exit: { skewX: { from: -20 } },
+              stayDuration: 1.5,
+              switchDuration: 2.5,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: {
+                direction: 'B',
+                skewX: {
+                  initValue: -30,
+                  timeline: [
+                    { durationSeconds: 1.5, to: 10, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 1, to: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+              },
+              exit: { skewX: { from: 20 } },
+              stayDuration: 1.5,
+              switchDuration: 2.5,
+            },
           ]}
         />
       </div>

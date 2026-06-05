@@ -5,7 +5,7 @@ import { transformTranslate, transformSkewX, transformSkewY, transformRotate, tr
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
-import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments } from "../utils/phaseSegmentBuilders"
+import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments, buildSkewPhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -80,7 +80,8 @@ const CycleItem = (props: {
     { durationSeconds: holdDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
   ]
 
-  const hasSkew = !isNil(item.entry.skew) || !isNil(item.exit.skew)
+  const hasSkewX = !isNil(item.entry.skewX) || !isNil(item.exit.skewX)
+  const hasSkewY = !isNil(item.entry.skewY) || !isNil(item.exit.skewY)
   const hasScale = !isNil(item.entry.scale) || !isNil(item.exit.scale)
   const hasRotation = !isNil(item.entry.rotation) || !isNil(item.exit.rotation)
   const hasOpacity = !isNil(item.entry.opacity) || !isNil(item.exit.opacity)
@@ -135,11 +136,25 @@ const CycleItem = (props: {
     }
   }
 
-  if (hasSkew) {
+  if (hasSkewY) {
     content = (
       <g>
-        {renderSkewAnim({
-          entrySkew: item.entry.skew, exitSkew: item.exit.skew,
+        {renderSkewAxisAnim({
+          axis: 'Y',
+          entrySkew: item.entry.skewY, exitSkew: item.exit.skewY,
+          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+        })}
+        {content}
+      </g>
+    )
+  }
+
+  if (hasSkewX) {
+    content = (
+      <g>
+        {renderSkewAxisAnim({
+          axis: 'X',
+          entrySkew: item.entry.skewX, exitSkew: item.exit.skewX,
           stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
         })}
         {content}
@@ -185,12 +200,15 @@ const getExitBuffer = (exitScale?: I_NormalizedChildItem['exit']['scale']): numb
   return max([1, defaultTo(exitScale.initValue, 1)]) ?? 1
 }
 
-/** 生成 skew animateTransform（entrySkew 和 exitSkew 均不传时返回 null） */
-const renderSkewAnim = ({
-  entrySkew, exitSkew, stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+/** 生成单轴 skew animateTransform（支持 timeline 模式） */
+const renderSkewAxisAnim = ({
+  axis,
+  entrySkew, exitSkew,
+  stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
-  entrySkew?: I_NormalizedChildItem['entry']['skew']
-  exitSkew?: I_NormalizedChildItem['exit']['skew']
+  axis: 'X' | 'Y'
+  entrySkew?: I_NormalizedChildItem['entry']['skewX']
+  exitSkew?: I_NormalizedChildItem['exit']['skewX']
   stayDuration: number
   switchDuration: number
   nextSwitchDuration: number
@@ -199,20 +217,41 @@ const renderSkewAnim = ({
 }) => {
   if (isNil(entrySkew) && isNil(exitSkew)) return null
 
-  const entryAngle = entrySkew?.angle ?? 0
-  const exitAngle  = exitSkew?.angle  ?? 0
-  const isSkewY    = (entrySkew ?? exitSkew)!.type === 'Y'
-  const skewEase   = defaultTo(entrySkew?.keySplines, defaultTo(exitSkew?.keySplines, DEFAULT_EASE))
+  const animInitValue = defaultTo(entrySkew?.initValue, 0)
+  const exitTargetValue = defaultTo(exitSkew?.initValue, 0)
 
-  const segs = [
-    { durationSeconds: switchDuration,    to: 0,         keySplines: skewEase },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: skewEase }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: defaultTo(exitSkew?.keySplines, skewEase) },
-    { durationSeconds: holdDuration,       to: exitAngle, keySplines: defaultTo(exitSkew?.keySplines, skewEase) },
-  ]
+  const ease = entrySkew?.keySplines ?? exitSkew?.keySplines ?? DEFAULT_EASE
+
+  // ── 构建 entry 阶段 segments（支持简单模式和 timeline 模式）──
+  const entrySegs = buildSkewPhaseSegments({
+    skewConfig: entrySkew,
+    phaseDuration: switchDuration,
+    simpleTargetValue: 0,
+    defaultEase: ease,
+  })
+
+  // ── 构建 stay 阶段 segments（hold 在 entry 最后值）──
+  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
+  const staySegs = stayDuration > 0
+    ? [{ durationSeconds: stayDuration, to: lastEntryValue, keySplines: ease }]
+    : []
+
+  // ── 构建 exit 阶段 segments（支持简单模式和 timeline 模式）──
+  const exitSegs = buildSkewPhaseSegments({
+    skewConfig: exitSkew,
+    phaseDuration: nextSwitchDuration,
+    simpleTargetValue: exitTargetValue,
+    defaultEase: defaultTo(exitSkew?.keySplines, ease),
+  })
+
+  // ── 构建 hold 阶段 segments（hold 在 exit 最后值）──
+  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].to : exitTargetValue
+  const holdSegs = [{ durationSeconds: holdDuration, to: lastExitValue, keySplines: ease }]
+
+  const segs = [...entrySegs, ...staySegs, ...exitSegs, ...holdSegs]
 
   const skewConfig = {
-    initValue: entryAngle,
+    initValue: animInitValue,
     timeline: segs,
     begin: `${begin}s`,
     loopCount: 0,
@@ -220,7 +259,7 @@ const renderSkewAnim = ({
     isAdditive: false,
   }
 
-  return isSkewY ? transformSkewY(skewConfig) : transformSkewX(skewConfig)
+  return axis === 'Y' ? transformSkewY(skewConfig) : transformSkewX(skewConfig)
 }
 
 /** 生成 rotate animateTransform（entryRotation 和 exitRotation 均不传时返回 null） */

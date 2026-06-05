@@ -1,14 +1,16 @@
 import type { ReactNode } from "react"
-import type { T_Direction8, I_SkewConfig, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig } from "@svg/types"
+import type { T_Direction8, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig } from "@svg/types"
 
-export type { I_SkewConfig, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig } from "@svg/types"
+export type { I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig } from "@svg/types"
 
 /** 进入配置 */
 export interface I_EntryConfig {
   /** 进入方向，默认 T（从上方进入） */
   direction?: T_Direction8
-  /** 进入时的 skew 变换配置，不传则进入无 skew */
-  skew?: I_SkewConfig
+  /** 进入时的 skewX 变换配置，不传则进入无 skewX */
+  skewX?: I_EntrySkewConfig
+  /** 进入时的 skewY 变换配置，不传则进入无 skewY */
+  skewY?: I_EntrySkewConfig
   /** 进入时的旋转配置，不传则进入无旋转 */
   rotation?: I_RotationConfig
   /** 进入时的缩放配置，不传则进入无缩放 */
@@ -21,8 +23,10 @@ export interface I_EntryConfig {
 export interface I_ExitConfig {
   /** 退出方向，默认与进入方向相反（T↔B，L↔R，TL↔BR，TR↔BL） */
   direction?: T_Direction8
-  /** 退出时的 skew 变换配置，不传则退出无 skew */
-  skew?: I_SkewConfig
+  /** 退出时的 skewX 变换配置，不传则退出无 skewX */
+  skewX?: I_EntrySkewConfig
+  /** 退出时的 skewY 变换配置，不传则退出无 skewY */
+  skewY?: I_EntrySkewConfig
   /** 退出时的旋转配置，不传则退出无旋转 */
   rotation?: I_RotationConfig
   /** 退出时的缩放配置，不传则退出无缩放 */

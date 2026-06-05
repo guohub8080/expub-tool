@@ -4,7 +4,7 @@ import { transformTranslate, transformSkewX, transformSkewY, transformRotate, tr
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
-import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments } from "../utils/phaseSegmentBuilders"
+import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments, buildSkewPhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -48,18 +48,53 @@ const GhostLayer = (props: {
   const ghostEntryDuration = ghostTimeline.entryDuration
   const ghostHoldDuration = totalDuration - ghostEntryDuration
 
-  // Ghost skew：仅在 entry.skew 存在时渲染
-  // 先执行 entry 阶段（angle→0），再 hold 在 0（Ghost 不可见）
-  const ghostSkewAnim = firstItem.entry.skew && (() => {
-    const skewEase = defaultTo(firstItem.entry.skew!.keySplines, DEFAULT_EASE)
-    const isSkewY = firstItem.entry.skew!.type === 'Y'
-    const skewFn = isSkewY ? transformSkewY : transformSkewX
+  // Ghost skewX：与 CycleItem 一致，支持简单模式和高级 timeline 模式
+  // begin = ghostHoldDuration，entry 段从 keyTime 0 开始
+  const ghostSkewXAnim = !isNil(firstItem.entry.skewX) && (() => {
+    const entrySkew = firstItem.entry.skewX!
+    const ease = defaultTo(entrySkew.keySplines, DEFAULT_EASE)
 
-    return skewFn({
-      initValue: firstItem.entry.skew!.angle,
+    const entrySegs = buildSkewPhaseSegments({
+      skewConfig: entrySkew,
+      phaseDuration: ghostEntryDuration,
+      simpleTargetValue: 0,
+      defaultEase: ease,
+    })
+
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
+
+    return transformSkewX({
+      initValue: entrySkew.initValue,
       timeline: [
-        { durationSeconds: ghostEntryDuration, to: 0,                           keySplines: skewEase },
-        { durationSeconds: ghostHoldDuration,  to: 0,                           keySplines: skewEase },
+        ...entrySegs,
+        { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
+      ],
+      begin: `${ghostHoldDuration}s`,
+      loopCount: 0,
+      isFreeze: true,
+      isAdditive: false,
+    })
+  })()
+
+  // Ghost skewY：与 skewX 结构相同，使用 transformSkewY
+  const ghostSkewYAnim = !isNil(firstItem.entry.skewY) && (() => {
+    const entrySkew = firstItem.entry.skewY!
+    const ease = defaultTo(entrySkew.keySplines, DEFAULT_EASE)
+
+    const entrySegs = buildSkewPhaseSegments({
+      skewConfig: entrySkew,
+      phaseDuration: ghostEntryDuration,
+      simpleTargetValue: 0,
+      defaultEase: ease,
+    })
+
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
+
+    return transformSkewY({
+      initValue: entrySkew.initValue,
+      timeline: [
+        ...entrySegs,
+        { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
       ],
       begin: `${ghostHoldDuration}s`,
       loopCount: 0,
@@ -199,8 +234,12 @@ const GhostLayer = (props: {
     )
   }
 
-  if (ghostSkewAnim) {
-    ghostContent = <g>{ghostSkewAnim}{ghostContent}</g>
+  if (ghostSkewYAnim) {
+    ghostContent = <g>{ghostSkewYAnim}{ghostContent}</g>
+  }
+
+  if (ghostSkewXAnim) {
+    ghostContent = <g>{ghostSkewXAnim}{ghostContent}</g>
   }
 
   return (

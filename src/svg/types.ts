@@ -61,7 +61,7 @@ export type T_HotArea = {
   h?: number
 }
 
-/** 斜切配置 */
+/** 斜切配置（StackCarouselX 使用） */
 export interface I_SkewConfig {
   /** skewX 或 skewY，决定斜切轴方向 */
   type: 'X' | 'Y'
@@ -69,6 +69,36 @@ export interface I_SkewConfig {
   angle: number
   /** 缓动曲线，默认 ease-in-out */
   keySplines?: string
+}
+
+/**
+ * 斜切配置（AnyLoopDisplay entry/exit 使用）
+ *
+ * 支持两种模式：
+ *
+ * 1. 简单模式：只传 from，组件自动生成 from→0（entry）或 0→from（exit）的动画
+ *    { from: 30 }
+ *
+ * 2. 高级模式：传 initValue + timeline，完全自定义动画路径
+ *    { initValue: 30, timeline: [{ durationSeconds: 1, to: -10 }, { durationSeconds: 0.5, to: 0 }] }
+ *    timeline 总时长必须 ≤ 对应 entry/exit 的 duration，剩余时间 hold 在最后值
+ */
+export interface I_EntrySkewConfig {
+  // ── 简单模式 ──
+  /**
+   * 斜切起始角度（度），默认 0。
+   * entry 时动画：from 此值 → 0
+   * exit 时动画：0 → from 此值
+   */
+  from?: number
+  /** 缓动曲线，仅简单模式生效，默认 ease-in-out */
+  keySplines?: string
+
+  // ── 高级模式 ──
+  /** 自定义起始值（度），高级模式必填 */
+  initValue?: number
+  /** 自定义动画路径，每段指定 durationSeconds + to + 可选 keySplines。总时长必须 ≤ 对应 phase duration */
+  timeline?: I_TimelineKeyframe<number>[]
 }
 
 /**
