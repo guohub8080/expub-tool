@@ -80,11 +80,11 @@ const CycleItem = (props: {
     { durationSeconds: holdDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
   ]
 
-  const hasSkewX = !isNil(item.entry.skewX) || !isNil(item.exit.skewX)
-  const hasSkewY = !isNil(item.entry.skewY) || !isNil(item.exit.skewY)
-  const hasScale = !isNil(item.entry.scale) || !isNil(item.exit.scale)
-  const hasRotation = !isNil(item.entry.rotation) || !isNil(item.exit.rotation)
-  const hasOpacity = !isNil(item.entry.opacity) || !isNil(item.exit.opacity)
+  const hasSkewX = !isNil(item.entry.skewX) || !isNil(item.exit.skewX) || !isNil(item.stay.skewX)
+  const hasSkewY = !isNil(item.entry.skewY) || !isNil(item.exit.skewY) || !isNil(item.stay.skewY)
+  const hasScale = !isNil(item.entry.scale) || !isNil(item.exit.scale) || !isNil(item.stay.scale)
+  const hasRotation = !isNil(item.entry.rotation) || !isNil(item.exit.rotation) || !isNil(item.stay.rotation)
+  const hasOpacity = !isNil(item.entry.opacity) || !isNil(item.exit.opacity) || !isNil(item.stay.opacity)
 
   // 内容节点：从最内层往外逐层包裹，只有存在对应动画时才加 <g>
   let content: React.ReactNode = renderChildItemContent({ item, contentWidth, contentHeight })
