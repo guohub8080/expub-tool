@@ -5,7 +5,7 @@ import { transformTranslate, transformSkewX, transformSkewY, transformRotate, tr
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
-import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments, buildSkewPhaseSegments } from "../utils/phaseSegmentBuilders"
+import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments, buildSkewPhaseSegments, buildStaySegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -94,6 +94,7 @@ const CycleItem = (props: {
       <g>
         {renderOpacityAnim({
           entryOpacity: item.entry.opacity, exitOpacity: item.exit.opacity,
+          stayOpacity: item.stay.opacity,
           stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
         })}
         {content}
@@ -106,6 +107,7 @@ const CycleItem = (props: {
       <g>
         {renderRotateAnim({
           entryRotation: item.entry.rotation, exitRotation: item.exit.rotation,
+          stayRotation: item.stay.rotation,
           contentWidth, contentHeight,
           stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
         })}
@@ -117,6 +119,7 @@ const CycleItem = (props: {
   if (hasScale) {
     const scaleAnimConfig = buildScaleAnimConfig({
       entryScale: item.entry.scale, exitScale: item.exit.scale,
+      stayScale: item.stay.scale,
       contentWidth, contentHeight,
       stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
     })
@@ -142,6 +145,7 @@ const CycleItem = (props: {
         {renderSkewAxisAnim({
           axis: 'Y',
           entrySkew: item.entry.skewY, exitSkew: item.exit.skewY,
+          staySkew: item.stay.skewY,
           stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
         })}
         {content}
@@ -155,6 +159,7 @@ const CycleItem = (props: {
         {renderSkewAxisAnim({
           axis: 'X',
           entrySkew: item.entry.skewX, exitSkew: item.exit.skewX,
+          staySkew: item.stay.skewX,
           stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
         })}
         {content}
@@ -200,29 +205,29 @@ const getExitBuffer = (exitScale?: I_NormalizedChildItem['exit']['scale']): numb
   return max([1, defaultTo(exitScale.initValue, 1)]) ?? 1
 }
 
-/** 生成单轴 skew animateTransform（支持 timeline 模式） */
+/** 生成单轴 skew animateTransform（支持 timeline 模式 + stay 配置） */
 const renderSkewAxisAnim = ({
   axis,
-  entrySkew, exitSkew,
+  entrySkew, exitSkew, staySkew,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
   axis: 'X' | 'Y'
   entrySkew?: I_NormalizedChildItem['entry']['skewX']
   exitSkew?: I_NormalizedChildItem['exit']['skewX']
+  staySkew?: I_NormalizedChildItem['stay']['skewX']
   stayDuration: number
   switchDuration: number
   nextSwitchDuration: number
   holdDuration: number
   begin: number
 }) => {
-  if (isNil(entrySkew) && isNil(exitSkew)) return null
+  if (isNil(entrySkew) && isNil(exitSkew) && isNil(staySkew)) return null
 
   const animInitValue = defaultTo(entrySkew?.initValue, 0)
   const exitTargetValue = defaultTo(exitSkew?.initValue, 0)
 
   const ease = entrySkew?.keySplines ?? exitSkew?.keySplines ?? DEFAULT_EASE
 
-  // ── 构建 entry 阶段 segments（支持简单模式和 timeline 模式）──
   const entrySegs = buildSkewPhaseSegments({
     skewConfig: entrySkew,
     phaseDuration: switchDuration,
@@ -230,11 +235,13 @@ const renderSkewAxisAnim = ({
     defaultEase: ease,
   })
 
-  // ── 构建 stay 阶段 segments（hold 在 entry 最后值）──
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
-  const staySegs = stayDuration > 0
-    ? [{ durationSeconds: stayDuration, to: lastEntryValue, keySplines: ease }]
-    : []
+  const staySegs = buildStaySegments({
+    stayConfig: staySkew,
+    stayDuration,
+    entryEndValue: lastEntryValue,
+    defaultEase: ease,
+  })
 
   // ── 构建 exit 阶段 segments（支持简单模式和 timeline 模式）──
   const exitSegs = buildSkewPhaseSegments({
@@ -264,11 +271,12 @@ const renderSkewAxisAnim = ({
 
 /** 生成 rotate animateTransform（entryRotation 和 exitRotation 均不传时返回 null） */
 const renderRotateAnim = ({
-  entryRotation, exitRotation, contentWidth, contentHeight,
+  entryRotation, exitRotation, stayRotation, contentWidth, contentHeight,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
   entryRotation?: I_NormalizedChildItem['entry']['rotation']
   exitRotation?: I_NormalizedChildItem['exit']['rotation']
+  stayRotation?: I_NormalizedChildItem['stay']['rotation']
   contentWidth: number
   contentHeight: number
   stayDuration: number
@@ -277,7 +285,7 @@ const renderRotateAnim = ({
   holdDuration: number
   begin: number
 }) => {
-  if (isNil(entryRotation) && isNil(exitRotation)) return null
+  if (isNil(entryRotation) && isNil(exitRotation) && isNil(stayRotation)) return null
 
   const animInitValue = defaultTo(entryRotation?.initValue, 0)
   const exitTargetValue = defaultTo(exitRotation?.initValue, 0)
@@ -290,7 +298,6 @@ const renderRotateAnim = ({
 
   const ease = entryRotation?.keySplines ?? exitRotation?.keySplines ?? DEFAULT_EASE
 
-  // ── 构建 entry 阶段 segments（支持简单模式和 timeline 模式）──
   const entrySegs = buildRotationPhaseSegments({
     rotationConfig: entryRotation,
     phaseDuration: switchDuration,
@@ -298,11 +305,13 @@ const renderRotateAnim = ({
     defaultEase: ease,
   })
 
-  // ── 构建 stay 阶段 segments（hold 在 entry 最后值）──
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
-  const staySegs = stayDuration > 0
-    ? [{ durationSeconds: stayDuration, to: lastEntryValue, keySplines: ease }]
-    : []
+  const staySegs = buildStaySegments({
+    stayConfig: stayRotation,
+    stayDuration,
+    entryEndValue: lastEntryValue,
+    defaultEase: ease,
+  })
 
   // ── 构建 exit 阶段 segments（支持简单模式和 timeline 模式）──
   const exitSegs = buildRotationPhaseSegments({
@@ -337,11 +346,12 @@ const renderRotateAnim = ({
  * - 高级模式：entry/exit 使用用户自定义 timeline
  */
 const buildScaleAnimConfig = ({
-  entryScale, exitScale, contentWidth, contentHeight,
+  entryScale, exitScale, stayScale, contentWidth, contentHeight,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
   entryScale?: I_NormalizedChildItem['entry']['scale']
   exitScale?: I_NormalizedChildItem['exit']['scale']
+  stayScale?: I_NormalizedChildItem['stay']['scale']
   contentWidth: number
   contentHeight: number
   stayDuration: number
@@ -350,9 +360,8 @@ const buildScaleAnimConfig = ({
   holdDuration: number
   begin: number
 }): { originX: number; originY: number; scaleAnim: React.ReactNode } | null => {
-  if (isNil(entryScale) && isNil(exitScale)) return null
+  if (isNil(entryScale) && isNil(exitScale) && isNil(stayScale)) return null
 
-  // 动画初始值：entry 的起始 scale
   const animInitValue = defaultTo(entryScale?.initValue, 1)
 
   const scaleOrigin = getRotationOrigin({
@@ -364,7 +373,6 @@ const buildScaleAnimConfig = ({
   const [originX, originY] = scaleOrigin
   const ease = entryScale?.keySplines ?? exitScale?.keySplines ?? DEFAULT_EASE
 
-  // ── 构建 entry 阶段 segments ──
   const entrySegs = buildScalePhaseSegments({
     scaleConfig: entryScale,
     phaseDuration: switchDuration,
@@ -372,11 +380,13 @@ const buildScaleAnimConfig = ({
     defaultEase: ease,
   })
 
-  // ── 构建 stay 阶段 segments（hold 在 entry 最后值）──
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
-  const staySegs = stayDuration > 0
-    ? [{ durationSeconds: stayDuration, to: lastEntryValue, keySplines: ease }]
-    : []
+  const staySegs = buildStaySegments({
+    stayConfig: stayScale,
+    stayDuration,
+    entryEndValue: lastEntryValue,
+    defaultEase: ease,
+  })
 
   // ── 构建 exit 阶段 segments ──
   const exitTargetValue = defaultTo(exitScale?.initValue, 1)
@@ -409,25 +419,25 @@ const buildScaleAnimConfig = ({
 
 /** 生成 opacity animate（entryOpacity 和 exitOpacity 均不传时返回 null） */
 const renderOpacityAnim = ({
-  entryOpacity, exitOpacity,
+  entryOpacity, exitOpacity, stayOpacity,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
   entryOpacity?: I_NormalizedChildItem['entry']['opacity']
   exitOpacity?: I_NormalizedChildItem['exit']['opacity']
+  stayOpacity?: I_NormalizedChildItem['stay']['opacity']
   stayDuration: number
   switchDuration: number
   nextSwitchDuration: number
   holdDuration: number
   begin: number
 }) => {
-  if (isNil(entryOpacity) && isNil(exitOpacity)) return null
+  if (isNil(entryOpacity) && isNil(exitOpacity) && isNil(stayOpacity)) return null
 
   const animInitValue = defaultTo(entryOpacity?.initValue, 1)
   const exitTargetValue = defaultTo(exitOpacity?.initValue, 1)
 
   const ease = entryOpacity?.keySplines ?? exitOpacity?.keySplines ?? DEFAULT_EASE
 
-  // ── 构建 entry 阶段 segments（支持简单模式和 timeline 模式）──
   const entrySegs = buildOpacityPhaseSegments({
     opacityConfig: entryOpacity,
     phaseDuration: switchDuration,
@@ -435,11 +445,13 @@ const renderOpacityAnim = ({
     defaultEase: ease,
   })
 
-  // ── 构建 stay 阶段 segments（hold 在 entry 最后值）──
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
-  const staySegs = stayDuration > 0
-    ? [{ durationSeconds: stayDuration, to: lastEntryValue, keySplines: ease }]
-    : []
+  const staySegs = buildStaySegments({
+    stayConfig: stayOpacity,
+    stayDuration,
+    entryEndValue: lastEntryValue,
+    defaultEase: ease,
+  })
 
   // ── 构建 exit 阶段 segments（支持简单模式和 timeline 模式）──
   const exitSegs = buildOpacityPhaseSegments({

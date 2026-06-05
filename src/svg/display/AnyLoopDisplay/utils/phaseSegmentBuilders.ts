@@ -152,3 +152,55 @@ export const buildSkewPhaseSegments = ({
     ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
   ]
 }
+
+/**
+ * 构建 stay 阶段的 segments
+ *
+ * 三种情况：
+ * - 无 stay 配置：hold 在 entry 最终值（与之前行为一致）
+ * - 固定值模式：动画到固定值
+ * - timeline 模式：使用用户自定义 timeline，不足 stayDuration 时自动补 hold 段
+ */
+export const buildStaySegments = ({
+  stayConfig,
+  stayDuration,
+  entryEndValue,
+  defaultEase,
+}: {
+  stayConfig?: I_NormalizedChildItem['stay']['rotation']
+  stayDuration: number
+  /** entry 阶段的最终值 */
+  entryEndValue: number
+  defaultEase: string
+}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+  if (stayDuration <= 0) return []
+
+  // 无配置：hold 在 entry 最终值
+  if (!stayConfig) {
+    return [{ durationSeconds: stayDuration, to: entryEndValue, keySplines: defaultEase }]
+  }
+
+  // 固定值模式
+  if (stayConfig.fixedValue !== undefined) {
+    return [{ durationSeconds: stayDuration, to: stayConfig.fixedValue, keySplines: defaultEase }]
+  }
+
+  // timeline 模式
+  if (stayConfig.timeline) {
+    const timelineTotal = sum(stayConfig.timeline.map(segment => segment.durationSeconds))
+    if (timelineTotal > stayDuration) {
+      throw new Error(`Stay timeline total duration (${timelineTotal}s) must not exceed stay duration (${stayDuration}s).`)
+    }
+
+    const lastValue = stayConfig.timeline[stayConfig.timeline.length - 1].to
+    const padding = stayDuration - timelineTotal
+
+    return [
+      ...stayConfig.timeline,
+      ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+    ]
+  }
+
+  // fallback: hold 在 entry 最终值
+  return [{ durationSeconds: stayDuration, to: entryEndValue, keySplines: defaultEase }]
+}

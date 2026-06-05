@@ -196,3 +196,17 @@ export interface I_EntryOpacityConfig {
   /** 自定义动画路径，每段指定 durationSeconds + to + 可选 keySplines。总时长必须 ≤ 对应 phase duration */
   timeline?: I_TimelineKeyframe<number>[]
 }
+
+/**
+ * stay 阶段动画配置
+ *
+ * 两种模式：
+ *
+ * 1. 固定值：传数字，stay 期间保持在该值
+ *    rotation: 45  → stay 期间 rotation 固定在 45°
+ *
+ * 2. 动画模式：传 { timeline }，stay 期间播放自定义动画
+ *    rotation: { timeline: [{ durationSeconds: 1, to: 10 }, { durationSeconds: 1, to: 0 }] }
+ *    timeline 总时长必须 ≤ stayDuration，剩余时间 hold 在最后值
+ */
+export type I_StayAnimConfig = number | { timeline: I_TimelineKeyframe<number>[] }

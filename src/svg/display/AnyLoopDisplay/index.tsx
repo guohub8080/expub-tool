@@ -15,7 +15,7 @@ import CycleItem from "./components/CycleItem"
 import GhostLayer from "./components/GhostLayer"
 import type { I_AnyLoopDisplayChildItem } from "./types"
 
-export type { I_EntrySkewConfig, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntryConfig, I_ExitConfig, I_AnyLoopDisplayChildItem } from "./types"
+export type { I_EntrySkewConfig, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_StayConfig, I_EntryConfig, I_ExitConfig, I_AnyLoopDisplayChildItem } from "./types"
 
 /**
  * AnyLoopDisplay — 多图循环展示组件

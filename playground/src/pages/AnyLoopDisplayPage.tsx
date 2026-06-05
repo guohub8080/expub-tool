@@ -388,6 +388,111 @@ export default function AnyLoopDisplayPage() {
           ]}
         />
       </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — stay 固定值：rotation 45° + scale 1.1</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#fef9c3"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: { direction: 'T', rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              stay: { rotation: 45, scale: 1.1 },
+              exit: { rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              stayDuration: 3, switchDuration: 2,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: { direction: 'B', rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              stay: { rotation: -45, scale: 1.1 },
+              exit: { rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              stayDuration: 3, switchDuration: 2,
+            },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — stay timeline：scale 呼吸动画 1↔1.15</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#ecfdf5"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: { direction: 'T' },
+              stay: {
+                scale: { timeline: [
+                  { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
+                  { durationSeconds: 1, to: 1, keySplines: getEaseBezier({ isIn: true }) },
+                  { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
+                ] },
+              },
+              stayDuration: 3, switchDuration: 2,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: { direction: 'B' },
+              stay: {
+                scale: { timeline: [
+                  { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
+                  { durationSeconds: 1, to: 1, keySplines: getEaseBezier({ isIn: true }) },
+                  { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
+                ] },
+              },
+              stayDuration: 3, switchDuration: 2,
+            },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — stay timeline：opacity 呼吸 + rotation 摇摆</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#fce7f3"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: { direction: 'T' },
+              stay: {
+                opacity: { timeline: [
+                  { durationSeconds: 1, to: 0.6 },
+                  { durationSeconds: 1, to: 1 },
+                ] },
+                rotation: { timeline: [
+                  { durationSeconds: 0.75, to: 5 },
+                  { durationSeconds: 0.75, to: -5 },
+                  { durationSeconds: 0.75, to: 5 },
+                  { durationSeconds: 0.75, to: 0 },
+                ] },
+              },
+              stayDuration: 3, switchDuration: 2,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: { direction: 'B' },
+              stay: {
+                opacity: { timeline: [
+                  { durationSeconds: 1, to: 0.6 },
+                  { durationSeconds: 1, to: 1 },
+                ] },
+                rotation: { timeline: [
+                  { durationSeconds: 0.75, to: -5 },
+                  { durationSeconds: 0.75, to: 5 },
+                  { durationSeconds: 0.75, to: -5 },
+                  { durationSeconds: 0.75, to: 0 },
+                ] },
+              },
+              stayDuration: 3, switchDuration: 2,
+            },
+          ]}
+        />
+      </div>
     </div>
   )
 }

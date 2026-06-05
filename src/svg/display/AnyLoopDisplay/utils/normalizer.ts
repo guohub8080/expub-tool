@@ -2,7 +2,7 @@ import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import sum from "lodash/sum"
 import { DIRECTION_8 } from "@svg/types"
-import type { T_Direction8, T_Origin, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig } from "@svg/types"
+import type { T_Direction8, T_Origin, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig } from "@svg/types"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_AnyLoopDisplayChildItem } from "../types"
 
@@ -74,6 +74,19 @@ export interface I_NormalizedSkewConfig {
   /** 缓动曲线，仅简单模式生效 */
   keySplines?: string
   /** 自定义动画路径，存在时为高级模式 */
+  timeline?: I_TimelineKeyframe<number>[]
+}
+
+/**
+ * 标准化后的 stay 阶段动画配置
+ *
+ * - fixedValue: stay 期间保持在该值
+ * - timeline: stay 期间播放自定义动画
+ */
+export interface I_NormalizedStayAnimConfig {
+  /** 固定值模式 */
+  fixedValue?: number
+  /** 自定义动画路径 */
   timeline?: I_TimelineKeyframe<number>[]
 }
 
@@ -155,6 +168,19 @@ const normalizeSkew = (skew: I_EntrySkewConfig | undefined): I_NormalizedSkewCon
   }
 }
 
+/**
+ * 标准化 stay 阶段动画配置
+ *
+ * - 数字 → fixedValue
+ * - { timeline } → timeline
+ */
+const normalizeStayAnim = (value: I_StayAnimConfig | undefined): I_NormalizedStayAnimConfig | undefined => {
+  if (isNil(value)) return undefined
+  if (typeof value === 'number') return { fixedValue: value }
+  if (value.timeline) return { timeline: value.timeline }
+  return undefined
+}
+
 /** 进入方向取反，作为默认退出方向（T↔B，L↔R，TL↔BR，TR↔BL） */
 export const oppositeDirection = (direction: T_Direction8): T_Direction8 => {
   const map: Record<T_Direction8, T_Direction8> = { T: 'B', B: 'T', L: 'R', R: 'L', TL: 'BR', TR: 'BL', BL: 'TR', BR: 'TL' }
@@ -177,6 +203,13 @@ export interface I_NormalizedChildItem {
     rotation?: I_NormalizedRotationConfig
     scale?: I_NormalizedScaleConfig
     opacity?: I_NormalizedOpacityConfig
+  }
+  stay: {
+    rotation?: I_NormalizedStayAnimConfig
+    scale?: I_NormalizedStayAnimConfig
+    opacity?: I_NormalizedStayAnimConfig
+    skewX?: I_NormalizedStayAnimConfig
+    skewY?: I_NormalizedStayAnimConfig
   }
   exit: {
     direction: T_Direction8
@@ -209,6 +242,13 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
       rotation: normalizeRotation(item.entry?.rotation),
       scale: normalizeScale(item.entry?.scale),
       opacity: normalizeOpacity(item.entry?.opacity),
+    },
+    stay: {
+      rotation: normalizeStayAnim(item.stay?.rotation),
+      scale: normalizeStayAnim(item.stay?.scale),
+      opacity: normalizeStayAnim(item.stay?.opacity),
+      skewX: normalizeStayAnim(item.stay?.skewX),
+      skewY: normalizeStayAnim(item.stay?.skewY),
     },
     exit: {
       direction: defaultTo(item.exit?.direction, oppositeDirection(entryDirection)),
@@ -315,6 +355,46 @@ const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
       const total = sum(item.exit.skewY.timeline.map(s => s.durationSeconds))
       if (total > exitDuration) {
         throw new Error(`Item ${i + 1} exit skewY timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
+      }
+    }
+
+    // Stay rotation
+    if (item.stay.rotation?.timeline) {
+      const total = sum(item.stay.rotation.timeline.map(s => s.durationSeconds))
+      if (total > item.stayDuration) {
+        throw new Error(`Item ${i + 1} stay rotation timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
+      }
+    }
+
+    // Stay scale
+    if (item.stay.scale?.timeline) {
+      const total = sum(item.stay.scale.timeline.map(s => s.durationSeconds))
+      if (total > item.stayDuration) {
+        throw new Error(`Item ${i + 1} stay scale timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
+      }
+    }
+
+    // Stay opacity
+    if (item.stay.opacity?.timeline) {
+      const total = sum(item.stay.opacity.timeline.map(s => s.durationSeconds))
+      if (total > item.stayDuration) {
+        throw new Error(`Item ${i + 1} stay opacity timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
+      }
+    }
+
+    // Stay skewX
+    if (item.stay.skewX?.timeline) {
+      const total = sum(item.stay.skewX.timeline.map(s => s.durationSeconds))
+      if (total > item.stayDuration) {
+        throw new Error(`Item ${i + 1} stay skewX timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
+      }
+    }
+
+    // Stay skewY
+    if (item.stay.skewY?.timeline) {
+      const total = sum(item.stay.skewY.timeline.map(s => s.durationSeconds))
+      if (total > item.stayDuration) {
+        throw new Error(`Item ${i + 1} stay skewY timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
       }
     }
   }

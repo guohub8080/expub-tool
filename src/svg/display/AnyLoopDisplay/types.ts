@@ -1,7 +1,21 @@
 import type { ReactNode } from "react"
-import type { T_Direction8, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig } from "@svg/types"
+import type { T_Direction8, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig } from "@svg/types"
 
 export type { I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig } from "@svg/types"
+
+/** stay 阶段动画配置（固定值或 timeline） */
+export interface I_StayConfig {
+  /** stay 期间的旋转（固定角度 或 timeline 动画） */
+  rotation?: I_StayAnimConfig
+  /** stay 期间的缩放（固定值 或 timeline 动画） */
+  scale?: I_StayAnimConfig
+  /** stay 期间的透明度（固定值 或 timeline 动画） */
+  opacity?: I_StayAnimConfig
+  /** stay 期间的 skewX（固定角度 或 timeline 动画） */
+  skewX?: I_StayAnimConfig
+  /** stay 期间的 skewY（固定角度 或 timeline 动画） */
+  skewY?: I_StayAnimConfig
+}
 
 /** 进入配置 */
 export interface I_EntryConfig {
@@ -42,6 +56,8 @@ export interface I_AnyLoopDisplayChildItem {
   jsx?: ReactNode
   /** 进入配置 */
   entry?: I_EntryConfig
+  /** 停留配置（固定值 或 timeline 动画） */
+  stay?: I_StayConfig
   /** 退出配置 */
   exit?: I_ExitConfig
   /** 停留时长（秒），图片全屏静止的持续时间，默认 2 */
