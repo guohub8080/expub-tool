@@ -160,6 +160,49 @@ export default function AnyLoopDisplayPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — rotation 弹性旋转入场（高级 timeline）720°→-180°→0°</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#fef9c3"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: {
+                direction: 'T',
+                rotation: {
+                  childCanvasOrigin: ORIGIN.Center,
+                  initValue: 720,
+                  timeline: [
+                    { durationSeconds: 1.5, to: -180, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 1, to: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+              },
+              stayDuration: 1.5,
+              switchDuration: 2.5,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: {
+                direction: 'B',
+                rotation: {
+                  childCanvasOrigin: ORIGIN.Center,
+                  initValue: -720,
+                  timeline: [
+                    { durationSeconds: 1.5, to: 180, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 1, to: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+              },
+              stayDuration: 1.5,
+              switchDuration: 2.5,
+            },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° TopLeft</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
