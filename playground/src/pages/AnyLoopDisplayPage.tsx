@@ -1,4 +1,5 @@
 import { AnyLoopDisplay } from 'expub-tool/svg'
+import { ORIGIN } from 'expub-tool/svg'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 export default function AnyLoopDisplayPage() {
@@ -43,10 +44,10 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: 'Center', from: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'R', scale: { childCanvasOrigin: 'Center', from: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(3), entry: { direction: 'B', scale: { childCanvasOrigin: 'Center', from: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(4), entry: { direction: 'L', scale: { childCanvasOrigin: 'Center', from: 0 } }, exit: { scale: { childCanvasOrigin: 'Center', from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'R', scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { direction: 'B', scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { direction: 'L', scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -56,10 +57,53 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: 'TopLeft', from: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'B', scale: { childCanvasOrigin: 'TopLeft', from: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(3), entry: { direction: 'T', scale: { childCanvasOrigin: 'TopLeft', from: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(4), entry: { direction: 'B', scale: { childCanvasOrigin: 'TopLeft', from: 0.1 } }, exit: { scale: { childCanvasOrigin: 'TopLeft', from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'B', scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { direction: 'T', scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { direction: 'B', scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — scale 弹跳入场（高级 timeline）0.1→1.3→1</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#ecfdf5"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: {
+                direction: 'T',
+                scale: {
+                  childCanvasOrigin: ORIGIN.Center,
+                  initValue: 0.1,
+                  timeline: [
+                    { durationSeconds: 1.8, to: 1.3, keySplines: '0.34 1.56 0.64 1' },
+                    { durationSeconds: 0.7, to: 1, keySplines: '0.42 0 0.58 1' },
+                  ],
+                },
+              },
+              stayDuration: 1.5,
+              switchDuration: 2.5,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: {
+                direction: 'B',
+                scale: {
+                  childCanvasOrigin: ORIGIN.Center,
+                  initValue: 0.1,
+                  timeline: [
+                    { durationSeconds: 1.8, to: 1.3, keySplines: '0.34 1.56 0.64 1' },
+                    { durationSeconds: 0.7, to: 1, keySplines: '0.42 0 0.58 1' },
+                  ],
+                },
+              },
+              stayDuration: 1.5,
+              switchDuration: 2.5,
+            },
           ]}
         />
       </div>
@@ -71,8 +115,8 @@ export default function AnyLoopDisplayPage() {
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#ede9fe"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 30 }, scale: { childCanvasOrigin: 'BottomRight', from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -30 }, scale: { childCanvasOrigin: 'TopLeft', from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { direction: 'TL', skew: { type: 'X', angle: 30 }, scale: { childCanvasOrigin: ORIGIN.BottomRight, from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { direction: 'BR', skew: { type: 'X', angle: -30 }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -120,10 +164,10 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: 'TopLeft' } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: 'TopLeft' } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: 'TopLeft' } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: 'TopLeft' } }, stayDuration: 0 },
+            { url: getWechat300x300(1), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: ORIGIN.TopLeft } }, stayDuration: 0 },
+            { url: getWechat300x300(2), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: ORIGIN.TopLeft } }, stayDuration: 0 },
+            { url: getWechat300x300(3), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: ORIGIN.TopLeft } }, stayDuration: 0 },
+            { url: getWechat300x300(4), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: ORIGIN.TopLeft } }, stayDuration: 0 },
           ]}
         />
       </div>
@@ -133,10 +177,10 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: 'BottomRight' } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: 'BottomRight' } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: 'BottomRight' } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: 'BottomRight' } }, stayDuration: 0 },
+            { url: getWechat300x300(1), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: ORIGIN.BottomRight } }, stayDuration: 0 },
+            { url: getWechat300x300(2), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: ORIGIN.BottomRight } }, stayDuration: 0 },
+            { url: getWechat300x300(3), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: ORIGIN.BottomRight } }, stayDuration: 0 },
+            { url: getWechat300x300(4), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: ORIGIN.BottomRight } }, stayDuration: 0 },
           ]}
         />
       </div>
