@@ -1,5 +1,6 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
+import sum from "lodash/sum"
 import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
@@ -86,24 +87,36 @@ const GhostLayer = (props: {
     })
   })()
 
-  // Ghost scale：使用 transformScaleRaw + 嵌套 <g>，与 CycleItem 保持一致
+  // Ghost scale：与 CycleItem 一致，支持简单模式和高级 timeline 模式
   const ghostScaleAnimConfig = !isNil(firstItem.entry.scale) && (() => {
+    const entryScale = firstItem.entry.scale!
     const scaleOrigin = getRotationOrigin({
-      origin: firstItem.entry.scale!.childCanvasOrigin,
+      origin: entryScale.childCanvasOrigin,
       contentWidth,
       contentHeight,
     })
-    const ease = defaultTo(firstItem.entry.scale!.keySplines, DEFAULT_EASE)
+    const ease = defaultTo(entryScale.keySplines, DEFAULT_EASE)
+
+    // 构建 Ghost scale timeline
+    // - hold 阶段：保持 initValue（在屏幕外）
+    // - entry 阶段：从 initValue → 1（简单模式），或播放用户 timeline（高级模式）
+    const entrySegs = buildGhostScaleEntrySegs({
+      scaleConfig: entryScale,
+      entryDuration: ghostEntryDuration,
+      defaultEase: ease,
+    })
+
+    const timeline = [
+      { durationSeconds: ghostHoldDuration, to: entryScale.initValue, keySplines: ease },
+      ...entrySegs,
+    ]
 
     return {
       originX: scaleOrigin[0],
       originY: scaleOrigin[1],
       scaleAnim: transformScaleRaw({
-        initValue: firstItem.entry.scale!.initValue,
-        timeline: [
-          { durationSeconds: ghostHoldDuration, to: firstItem.entry.scale!.initValue, keySplines: ease },
-          { durationSeconds: ghostEntryDuration, to: 1,                             keySplines: ease },
-        ],
+        initValue: entryScale.initValue,
+        timeline,
         begin: "0s",
         loopCount: 0,
         isFreeze: true,
@@ -165,6 +178,41 @@ const GhostLayer = (props: {
       {ghostContent}
     </g>
   )
+}
+
+/**
+ * 构建 Ghost scale entry 阶段的 segments
+ *
+ * - 简单模式：单段 initValue → 1
+ * - 高级模式：播放用户 timeline，不足 entryDuration 时自动补 hold 在最后值
+ */
+const buildGhostScaleEntrySegs = ({
+  scaleConfig,
+  entryDuration,
+  defaultEase,
+}: {
+  scaleConfig: I_NormalizedChildItem['entry']['scale']
+  entryDuration: number
+  defaultEase: string
+}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+  if (!scaleConfig?.timeline) {
+    // 简单模式：单段到 1
+    return [{ durationSeconds: entryDuration, to: 1, keySplines: defaultEase }]
+  }
+
+  // 高级模式：使用用户 timeline
+  const timelineTotal = sum(scaleConfig.timeline.map(segment => segment.durationSeconds))
+  if (timelineTotal > entryDuration) {
+    throw new Error(`Ghost scale timeline total duration (${timelineTotal}s) must not exceed entry duration (${entryDuration}s).`)
+  }
+
+  const lastValue = scaleConfig.timeline[scaleConfig.timeline.length - 1].to
+  const padding = entryDuration - timelineTotal
+
+  return [
+    ...scaleConfig.timeline,
+    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+  ]
 }
 
 export default GhostLayer
