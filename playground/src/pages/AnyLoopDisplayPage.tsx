@@ -1,5 +1,5 @@
 import { AnyLoopDisplay, ORIGIN } from 'expub-tool/svg'
-import { getBackBezier0_1, getEaseBezier } from 'expub-tool/smil'
+import { getEaseBezier } from 'expub-tool/smil'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 export default function AnyLoopDisplayPage() {
@@ -80,8 +80,8 @@ export default function AnyLoopDisplayPage() {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: 0.1,
                   timeline: [
-                    { durationSeconds: 1.8, to: 1.3, keySplines: getBackBezier0_1({}) },
-                    { durationSeconds: 0.7, to: 1, keySplines: getEaseBezier({}) },
+                    { durationSeconds: 1.8, to: 1.3, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.7, to: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -96,8 +96,8 @@ export default function AnyLoopDisplayPage() {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: 0.1,
                   timeline: [
-                    { durationSeconds: 1.8, to: 1.3, keySplines: getBackBezier0_1({}) },
-                    { durationSeconds: 0.7, to: 1, keySplines: getEaseBezier({}) },
+                    { durationSeconds: 1.8, to: 1.3, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.7, to: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
