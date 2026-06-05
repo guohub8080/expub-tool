@@ -1,11 +1,11 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
 import max from "lodash/max"
-import sum from "lodash/sum"
 import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate, getRotationOrigin } from "../timeline/offsetCalculator"
+import { buildRotationPhaseSegments, buildScalePhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -238,12 +238,33 @@ const renderRotateAnim = ({
 
   const ease = entryRotation?.keySplines ?? exitRotation?.keySplines ?? DEFAULT_EASE
 
-  const segs = [
-    { durationSeconds: switchDuration,    to: 0,         keySplines: ease },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: ease }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitTargetValue, keySplines: ease },
-    { durationSeconds: holdDuration,       to: exitTargetValue, keySplines: ease },
-  ]
+  // ── 构建 entry 阶段 segments（支持简单模式和 timeline 模式）──
+  const entrySegs = buildRotationPhaseSegments({
+    rotationConfig: entryRotation,
+    phaseDuration: switchDuration,
+    simpleTargetValue: 0,
+    defaultEase: ease,
+  })
+
+  // ── 构建 stay 阶段 segments（hold 在 entry 最后值）──
+  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
+  const staySegs = stayDuration > 0
+    ? [{ durationSeconds: stayDuration, to: lastEntryValue, keySplines: ease }]
+    : []
+
+  // ── 构建 exit 阶段 segments（支持简单模式和 timeline 模式）──
+  const exitSegs = buildRotationPhaseSegments({
+    rotationConfig: exitRotation,
+    phaseDuration: nextSwitchDuration,
+    simpleTargetValue: exitTargetValue,
+    defaultEase: defaultTo(exitRotation?.keySplines, ease),
+  })
+
+  // ── 构建 hold 阶段 segments（hold 在 exit 最后值）──
+  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].to : exitTargetValue
+  const holdSegs = [{ durationSeconds: holdDuration, to: lastExitValue, keySplines: ease }]
+
+  const segs = [...entrySegs, ...staySegs, ...exitSegs, ...holdSegs]
 
   return transformRotate({
     initValue: animInitValue,
@@ -332,82 +353,6 @@ const buildScaleAnimConfig = ({
       isAdditive: false,
     }),
   }
-}
-
-/**
- * 构建 scale 单阶段（entry 或 exit）的 timeline segments
- *
- * - 简单模式（无 timeline）：生成单段 initValue→simpleTargetValue
- * - 高级模式（有 timeline）：使用用户自定义 timeline，不足 phaseDuration 时自动补 hold 段
- */
-const buildScalePhaseSegments = ({
-  scaleConfig,
-  phaseDuration,
-  simpleTargetValue,
-  defaultEase,
-}: {
-  scaleConfig?: I_NormalizedChildItem['entry']['scale']
-  phaseDuration: number
-  /** 简单模式下的目标值（entry=1, exit=exitScale.initValue） */
-  simpleTargetValue: number
-  defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
-  if (!scaleConfig?.timeline) {
-    // 简单模式：单段动画到目标值
-    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
-  }
-
-  // 高级模式：使用用户 timeline
-  const timelineTotal = sum(scaleConfig.timeline.map(segment => segment.durationSeconds))
-  if (timelineTotal > phaseDuration) {
-    throw new Error(`Scale timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
-  }
-
-  const lastValue = scaleConfig.timeline[scaleConfig.timeline.length - 1].to
-  const padding = phaseDuration - timelineTotal
-
-  return [
-    ...scaleConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
-  ]
-}
-
-/**
- * 构建 rotation 单阶段（entry 或 exit）的 timeline segments
- *
- * - 简单模式（无 timeline）：生成单段 initValue→simpleTargetValue
- * - 高级模式（有 timeline）：使用用户自定义 timeline，不足 phaseDuration 时自动补 hold 段
- */
-const buildRotationPhaseSegments = ({
-  rotationConfig,
-  phaseDuration,
-  simpleTargetValue,
-  defaultEase,
-}: {
-  rotationConfig?: I_NormalizedChildItem['entry']['rotation']
-  phaseDuration: number
-  /** 简单模式下的目标值（entry=0, exit=exitRotation.initValue） */
-  simpleTargetValue: number
-  defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
-  if (!rotationConfig?.timeline) {
-    // 简单模式：单段动画到目标值
-    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
-  }
-
-  // 高级模式：使用用户 timeline
-  const timelineTotal = sum(rotationConfig.timeline.map(segment => segment.durationSeconds))
-  if (timelineTotal > phaseDuration) {
-    throw new Error(`Rotation timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
-  }
-
-  const lastValue = rotationConfig.timeline[rotationConfig.timeline.length - 1].to
-  const padding = phaseDuration - timelineTotal
-
-  return [
-    ...rotationConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
-  ]
 }
 
 export default CycleItem

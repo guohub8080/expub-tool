@@ -1,10 +1,10 @@
 import isNil from "lodash/isNil"
 import defaultTo from "lodash/defaultTo"
-import sum from "lodash/sum"
 import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
+import { buildRotationPhaseSegments, buildScalePhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -82,12 +82,11 @@ const GhostLayer = (props: {
     })
     const ease = defaultTo(entryRotation.keySplines, DEFAULT_EASE)
 
-    // 构建 Ghost rotation timeline
-    // - entry 阶段：从 initValue 播放用户 timeline（或简单模式单段到 0）
-    // - hold 阶段：保持 entry 最后值（Ghost 不可见，无视觉影响）
-    const entrySegs = buildGhostRotationEntrySegs({
+    // entry 阶段：与 CycleItem 使用完全相同的 buildRotationPhaseSegments
+    const entrySegs = buildRotationPhaseSegments({
       rotationConfig: entryRotation,
-      entryDuration: ghostEntryDuration,
+      phaseDuration: ghostEntryDuration,
+      simpleTargetValue: 0,
       defaultEase: ease,
     })
 
@@ -119,12 +118,11 @@ const GhostLayer = (props: {
     })
     const ease = defaultTo(entryScale.keySplines, DEFAULT_EASE)
 
-    // 构建 Ghost scale timeline
-    // - entry 阶段：从 initValue 播放用户 timeline（或简单模式单段到 1）
-    // - hold 阶段：保持 entry 最后值（Ghost 不可见，无视觉影响）
-    const entrySegs = buildGhostScaleEntrySegs({
+    // entry 阶段：与 CycleItem 使用完全相同的 buildScalePhaseSegments
+    const entrySegs = buildScalePhaseSegments({
       scaleConfig: entryScale,
-      entryDuration: ghostEntryDuration,
+      phaseDuration: ghostEntryDuration,
+      simpleTargetValue: 1,
       defaultEase: ease,
     })
 
@@ -201,76 +199,6 @@ const GhostLayer = (props: {
       {ghostContent}
     </g>
   )
-}
-
-/**
- * 构建 Ghost rotation entry 阶段的 segments
- *
- * - 简单模式：单段 initValue → 0
- * - 高级模式：播放用户 timeline，不足 entryDuration 时自动补 hold 在最后值
- */
-const buildGhostRotationEntrySegs = ({
-  rotationConfig,
-  entryDuration,
-  defaultEase,
-}: {
-  rotationConfig: I_NormalizedChildItem['entry']['rotation']
-  entryDuration: number
-  defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
-  if (!rotationConfig?.timeline) {
-    // 简单模式：单段到 0
-    return [{ durationSeconds: entryDuration, to: 0, keySplines: defaultEase }]
-  }
-
-  // 高级模式：使用用户 timeline
-  const timelineTotal = sum(rotationConfig.timeline.map(segment => segment.durationSeconds))
-  if (timelineTotal > entryDuration) {
-    throw new Error(`Ghost rotation timeline total duration (${timelineTotal}s) must not exceed entry duration (${entryDuration}s).`)
-  }
-
-  const lastValue = rotationConfig.timeline[rotationConfig.timeline.length - 1].to
-  const padding = entryDuration - timelineTotal
-
-  return [
-    ...rotationConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
-  ]
-}
-
-/**
- * 构建 Ghost scale entry 阶段的 segments
- *
- * - 简单模式：单段 initValue → 1
- * - 高级模式：播放用户 timeline，不足 entryDuration 时自动补 hold 在最后值
- */
-const buildGhostScaleEntrySegs = ({
-  scaleConfig,
-  entryDuration,
-  defaultEase,
-}: {
-  scaleConfig: I_NormalizedChildItem['entry']['scale']
-  entryDuration: number
-  defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
-  if (!scaleConfig?.timeline) {
-    // 简单模式：单段到 1
-    return [{ durationSeconds: entryDuration, to: 1, keySplines: defaultEase }]
-  }
-
-  // 高级模式：使用用户 timeline
-  const timelineTotal = sum(scaleConfig.timeline.map(segment => segment.durationSeconds))
-  if (timelineTotal > entryDuration) {
-    throw new Error(`Ghost scale timeline total duration (${timelineTotal}s) must not exceed entry duration (${entryDuration}s).`)
-  }
-
-  const lastValue = scaleConfig.timeline[scaleConfig.timeline.length - 1].to
-  const padding = entryDuration - timelineTotal
-
-  return [
-    ...scaleConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
-  ]
 }
 
 export default GhostLayer
