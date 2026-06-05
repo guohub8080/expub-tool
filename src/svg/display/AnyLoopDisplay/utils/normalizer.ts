@@ -10,11 +10,21 @@ export const DEFAULT_SWITCH_DURATION = 2
 const DEFAULT_DIRECTION: T_Direction8 = DIRECTION_8.Top
 export const DEFAULT_TRANSFORM_ORIGIN: T_Origin = 'Center'
 
-/** 标准化后的旋转配置（childCanvasOrigin 和 angle 已填充默认值） */
+/**
+ * 标准化后的旋转配置
+ *
+ * 两种模式：
+ * - 简单模式：只有 initValue + keySplines，CycleItem 自动生成单步动画
+ * - 高级模式：有 timeline，CycleItem 直接使用用户自定义的多段动画
+ */
 export interface I_NormalizedRotationConfig {
   childCanvasOrigin: T_Origin
-  angle: number
+  /** 起始旋转角度，简单模式下来自 angle，高级模式下来自 initValue */
+  initValue: number
+  /** 缓动曲线，仅简单模式生效 */
   keySplines?: string
+  /** 自定义动画路径，存在时为高级模式 */
+  timeline?: I_TimelineKeyframe<number>[]
 }
 
 /**
@@ -26,7 +36,7 @@ export interface I_NormalizedRotationConfig {
  */
 export interface I_NormalizedScaleConfig {
   childCanvasOrigin: T_Origin
-  /** 起始缩放值，简单模式下来自 scale，高级模式下来自 initValue */
+  /** 起始缩放值，简单模式下来自 from，高级模式下来自 initValue */
   initValue: number
   /** 缓动曲线，仅简单模式生效 */
   keySplines?: string
@@ -34,13 +44,23 @@ export interface I_NormalizedScaleConfig {
   timeline?: I_TimelineKeyframe<number>[]
 }
 
-/** 标准化单个旋转配置：填充默认 childCanvasOrigin 和 angle */
+/**
+ * 标准化单个旋转配置
+ *
+ * 两种输入模式：
+ * - 简单模式：只传 angle（作为 initValue）
+ * - 高级模式：传 initValue + timeline
+ */
 const normalizeRotation = (rotation: I_RotationConfig | undefined): I_NormalizedRotationConfig | undefined => {
   if (isNil(rotation)) return undefined
+
+  const hasTimeline = !isNil(rotation.timeline)
+
   return {
     childCanvasOrigin: defaultTo(rotation.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
-    angle: defaultTo(rotation.angle, 0),
-    keySplines: rotation.keySplines,
+    initValue: hasTimeline ? defaultTo(rotation.initValue, 0) : defaultTo(rotation.angle, 0),
+    keySplines: hasTimeline ? undefined : rotation.keySplines,
+    timeline: hasTimeline ? rotation.timeline : undefined,
   }
 }
 
@@ -48,7 +68,7 @@ const normalizeRotation = (rotation: I_RotationConfig | undefined): I_Normalized
  * 标准化单个缩放配置
  *
  * 两种输入模式：
- * - 简单模式：只传 scale（作为 initValue）
+ * - 简单模式：只传 from（作为 initValue）
  * - 高级模式：传 initValue + timeline
  */
 const normalizeScale = (scale: I_EntryScaleConfig | undefined): I_NormalizedScaleConfig | undefined => {

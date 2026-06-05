@@ -64,21 +64,33 @@ const GhostLayer = (props: {
     })
   })()
 
-  // Ghost rotate：仅在 entry.rotation 存在时渲染，使用图1的 childCanvasOrigin 和 keySplines
+  // Ghost rotate：与 CycleItem 一致，支持简单模式和高级 timeline 模式
   const ghostRotateAnim = !isNil(firstItem.entry.rotation) && (() => {
+    const entryRotation = firstItem.entry.rotation!
     const rotationOrigin = getRotationOrigin({
-      origin: firstItem.entry.rotation!.childCanvasOrigin,
+      origin: entryRotation.childCanvasOrigin,
       contentWidth,
       contentHeight,
     })
-    const ease = defaultTo(firstItem.entry.rotation!.keySplines, DEFAULT_EASE)
+    const ease = defaultTo(entryRotation.keySplines, DEFAULT_EASE)
+
+    // 构建 Ghost rotation timeline
+    // - hold 阶段：保持 initValue（在屏幕外）
+    // - entry 阶段：从 initValue → 0（简单模式），或播放用户 timeline（高级模式）
+    const entrySegs = buildGhostRotationEntrySegs({
+      rotationConfig: entryRotation,
+      entryDuration: ghostEntryDuration,
+      defaultEase: ease,
+    })
+
+    const timeline = [
+      { durationSeconds: ghostHoldDuration, to: entryRotation.initValue, keySplines: ease },
+      ...entrySegs,
+    ]
 
     return transformRotate({
-      initValue: firstItem.entry.rotation!.angle,
-      timeline: [
-        { durationSeconds: ghostHoldDuration, to: firstItem.entry.rotation!.angle, keySplines: ease },
-        { durationSeconds: ghostEntryDuration, to: 0,                                keySplines: ease },
-      ],
+      initValue: entryRotation.initValue,
+      timeline,
       origin: rotationOrigin,
       begin: "0s",
       loopCount: 0,
@@ -178,6 +190,41 @@ const GhostLayer = (props: {
       {ghostContent}
     </g>
   )
+}
+
+/**
+ * 构建 Ghost rotation entry 阶段的 segments
+ *
+ * - 简单模式：单段 initValue → 0
+ * - 高级模式：播放用户 timeline，不足 entryDuration 时自动补 hold 在最后值
+ */
+const buildGhostRotationEntrySegs = ({
+  rotationConfig,
+  entryDuration,
+  defaultEase,
+}: {
+  rotationConfig: I_NormalizedChildItem['entry']['rotation']
+  entryDuration: number
+  defaultEase: string
+}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+  if (!rotationConfig?.timeline) {
+    // 简单模式：单段到 0
+    return [{ durationSeconds: entryDuration, to: 0, keySplines: defaultEase }]
+  }
+
+  // 高级模式：使用用户 timeline
+  const timelineTotal = sum(rotationConfig.timeline.map(segment => segment.durationSeconds))
+  if (timelineTotal > entryDuration) {
+    throw new Error(`Ghost rotation timeline total duration (${timelineTotal}s) must not exceed entry duration (${entryDuration}s).`)
+  }
+
+  const lastValue = rotationConfig.timeline[rotationConfig.timeline.length - 1].to
+  const padding = entryDuration - timelineTotal
+
+  return [
+    ...rotationConfig.timeline,
+    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+  ]
 }
 
 /**

@@ -227,8 +227,8 @@ const renderRotateAnim = ({
 }) => {
   if (isNil(entryRotation) && isNil(exitRotation)) return null
 
-  const entryAngle = defaultTo(entryRotation?.angle, 0)
-  const exitAngle  = defaultTo(exitRotation?.angle, 0)
+  const animInitValue = defaultTo(entryRotation?.initValue, 0)
+  const exitTargetValue = defaultTo(exitRotation?.initValue, 0)
 
   const rotationOrigin = getRotationOrigin({
     origin: defaultTo(entryRotation?.childCanvasOrigin, exitRotation?.childCanvasOrigin ?? 'Center'),
@@ -241,12 +241,12 @@ const renderRotateAnim = ({
   const segs = [
     { durationSeconds: switchDuration,    to: 0,         keySplines: ease },
     ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: 0, keySplines: ease }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitAngle, keySplines: ease },
-    { durationSeconds: holdDuration,       to: exitAngle, keySplines: ease },
+    { durationSeconds: nextSwitchDuration, to: exitTargetValue, keySplines: ease },
+    { durationSeconds: holdDuration,       to: exitTargetValue, keySplines: ease },
   ]
 
   return transformRotate({
-    initValue: entryAngle,
+    initValue: animInitValue,
     timeline: segs,
     origin: rotationOrigin,
     begin: `${begin}s`,
@@ -368,6 +368,44 @@ const buildScalePhaseSegments = ({
 
   return [
     ...scaleConfig.timeline,
+    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+  ]
+}
+
+/**
+ * 构建 rotation 单阶段（entry 或 exit）的 timeline segments
+ *
+ * - 简单模式（无 timeline）：生成单段 initValue→simpleTargetValue
+ * - 高级模式（有 timeline）：使用用户自定义 timeline，不足 phaseDuration 时自动补 hold 段
+ */
+const buildRotationPhaseSegments = ({
+  rotationConfig,
+  phaseDuration,
+  simpleTargetValue,
+  defaultEase,
+}: {
+  rotationConfig?: I_NormalizedChildItem['entry']['rotation']
+  phaseDuration: number
+  /** 简单模式下的目标值（entry=0, exit=exitRotation.initValue） */
+  simpleTargetValue: number
+  defaultEase: string
+}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+  if (!rotationConfig?.timeline) {
+    // 简单模式：单段动画到目标值
+    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
+  }
+
+  // 高级模式：使用用户 timeline
+  const timelineTotal = sum(rotationConfig.timeline.map(segment => segment.durationSeconds))
+  if (timelineTotal > phaseDuration) {
+    throw new Error(`Rotation timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
+  }
+
+  const lastValue = rotationConfig.timeline[rotationConfig.timeline.length - 1].to
+  const padding = phaseDuration - timelineTotal
+
+  return [
+    ...rotationConfig.timeline,
     ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
   ]
 }

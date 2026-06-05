@@ -71,14 +71,37 @@ export interface I_SkewConfig {
   keySplines?: string
 }
 
-/** 旋转配置 */
+/**
+ * 旋转配置
+ *
+ * 支持两种模式：
+ *
+ * 1. 简单模式：只传 angle，组件自动生成 angle→0（entry）或 0→angle（exit）的动画
+ *    { angle: 360, childCanvasOrigin: ORIGIN.Center }
+ *
+ * 2. 高级模式：传 initValue + timeline，完全自定义动画路径
+ *    { initValue: 720, timeline: [{ durationSeconds: 1, to: 0 }, { durationSeconds: 1.5, to: -360 }] }
+ *    timeline 总时长必须 ≤ 对应 entry/exit 的 duration，剩余时间 hold 在最后值
+ */
 export interface I_RotationConfig {
   /** 旋转中心（相对于 childCanvas），默认 Center */
   childCanvasOrigin?: T_Origin
-  /** 旋转角度（度），正值=顺时针，默认 0 */
+
+  // ── 简单模式 ──
+  /**
+   * 旋转角度（度），正值=顺时针，默认 0。
+   * entry 时动画：angle → 0
+   * exit 时动画：0 → angle
+   */
   angle?: number
-  /** 缓动曲线，默认 ease-in-out */
+  /** 缓动曲线，仅简单模式生效，默认 ease-in-out */
   keySplines?: string
+
+  // ── 高级模式 ──
+  /** 自定义起始值（度），高级模式必填 */
+  initValue?: number
+  /** 自定义动画路径，每段指定 durationSeconds + to + 可选 keySplines。总时长必须 ≤ 对应 phase duration */
+  timeline?: I_TimelineKeyframe<number>[]
 }
 
 /**
