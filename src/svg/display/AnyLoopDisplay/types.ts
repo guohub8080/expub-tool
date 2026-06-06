@@ -19,8 +19,17 @@ export interface I_StayConfig {
 
 /** 进入配置 */
 export interface I_EntryConfig {
-  /** 进入方向，默认 T（从上方进入） */
-  direction?: T_Direction8
+  /** 进入位移配置 */
+  translate?: {
+    /** 进入方向，默认 T（从上方进入） */
+    direction?: T_Direction8
+    /**
+     * 自定义 offscreen 距离（像素倍数）。
+     * 不传则自动计算（基于画布尺寸 + scale 缓冲）。
+     * 传值后直接作为 getOffscreenTranslate 的 bufferMultiplier。
+     */
+    distance?: number
+  }
   /** 进入时的 skewX 变换配置，不传则进入无 skewX */
   skewX?: I_EntrySkewConfig
   /** 进入时的 skewY 变换配置，不传则进入无 skewY */
@@ -35,8 +44,17 @@ export interface I_EntryConfig {
 
 /** 退出配置 */
 export interface I_ExitConfig {
-  /** 退出方向，默认与进入方向相反（T↔B，L↔R，TL↔BR，TR↔BL） */
-  direction?: T_Direction8
+  /** 退出位移配置 */
+  translate?: {
+    /** 退出方向，默认与进入方向相反（T↔B，L↔R，TL↔BR，TR↔BL） */
+    direction?: T_Direction8
+    /**
+     * 自定义 offscreen 距离（像素倍数）。
+     * 不传则自动计算（基于画布尺寸 + scale 缓冲）。
+     * 传值后直接作为 getOffscreenTranslate 的 bufferMultiplier。
+     */
+    distance?: number
+  }
   /** 退出时的 skewX 变换配置，不传则退出无 skewX */
   skewX?: I_EntrySkewConfig
   /** 退出时的 skewY 变换配置，不传则退出无 skewY */
@@ -68,10 +86,4 @@ export interface I_AnyLoopDisplayChildItem {
    * 因为下一张图进入时会覆盖当前图的退出，两者共享同一段时间。
    */
   switchDuration?: number
-  /**
-   * 自定义 offscreen 距离（像素倍数）。
-   * 不传则自动计算（基于画布尺寸 + scale 缓冲）。
-   * 传值后直接作为 getOffscreenTranslate 的 bufferMultiplier。
-   */
-  distance?: number
 }

@@ -59,15 +59,15 @@ const CycleItem = (props: {
 
   // 计算 offscreen 距离时考虑 scale 因子，确保放大后的内容也完全离屏
   // 用户可通过 distance 手动覆盖自动计算的倍数
-  const entryBuffer = defaultTo(item.distance, getEntryBuffer(item.entry.scale))
-  const exitBuffer = defaultTo(item.distance, getExitBuffer(item.exit.scale))
+  const entryBuffer = defaultTo(item.entry.translate.distance, getEntryBuffer(item.entry.scale))
+  const exitBuffer = defaultTo(item.exit.translate.distance, getExitBuffer(item.exit.scale))
 
   const enterOffscreenTranslate = getOffscreenTranslate({
-    direction: item.entry.direction, canvasWidth, canvasHeight,
+    direction: item.entry.translate.direction, canvasWidth, canvasHeight,
     bufferMultiplier: entryBuffer,
   })
   const exitOffscreenTranslate = getOffscreenTranslate({
-    direction: item.exit.direction, canvasWidth, canvasHeight,
+    direction: item.exit.translate.direction, canvasWidth, canvasHeight,
     bufferMultiplier: exitBuffer,
   })
 

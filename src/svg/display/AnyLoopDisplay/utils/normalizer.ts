@@ -197,7 +197,10 @@ export interface I_NormalizedChildItem {
   url?: string
   jsx?: React.ReactNode
   entry: {
-    direction: T_Direction8
+    translate: {
+      direction: T_Direction8
+      distance?: number
+    }
     skewX?: I_NormalizedSkewConfig
     skewY?: I_NormalizedSkewConfig
     rotation?: I_NormalizedRotationConfig
@@ -212,7 +215,10 @@ export interface I_NormalizedChildItem {
     skewY?: I_NormalizedStayAnimConfig
   }
   exit: {
-    direction: T_Direction8
+    translate: {
+      direction: T_Direction8
+      distance?: number
+    }
     skewX?: I_NormalizedSkewConfig
     skewY?: I_NormalizedSkewConfig
     rotation?: I_NormalizedRotationConfig
@@ -221,7 +227,6 @@ export interface I_NormalizedChildItem {
   }
   stayDuration: number
   switchDuration: number
-  distance?: number
 }
 
 /** 填充单张图片配置的默认值并校验 */
@@ -230,13 +235,16 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
     throw new Error("Each childItem must have either `url` or `jsx`. Both cannot be empty.")
   }
 
-  const entryDirection = defaultTo(item.entry?.direction, DEFAULT_DIRECTION)
+  const entryDirection = defaultTo(item.entry?.translate?.direction, DEFAULT_DIRECTION)
 
   return {
     url: item.url,
     jsx: item.jsx,
     entry: {
-      direction: entryDirection,
+      translate: {
+        direction: entryDirection,
+        distance: item.entry?.translate?.distance,
+      },
       skewX: normalizeSkew(item.entry?.skewX),
       skewY: normalizeSkew(item.entry?.skewY),
       rotation: normalizeRotation(item.entry?.rotation),
@@ -251,7 +259,10 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
       skewY: normalizeStayAnim(item.stay?.skewY),
     },
     exit: {
-      direction: defaultTo(item.exit?.direction, oppositeDirection(entryDirection)),
+      translate: {
+        direction: defaultTo(item.exit?.translate?.direction, oppositeDirection(entryDirection)),
+        distance: item.exit?.translate?.distance,
+      },
       skewX: normalizeSkew(item.exit?.skewX),
       skewY: normalizeSkew(item.exit?.skewY),
       rotation: normalizeRotation(item.exit?.rotation),
@@ -260,7 +271,6 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
     },
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
-    distance: item.distance,
   }
 }
 
