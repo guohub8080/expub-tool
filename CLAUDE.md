@@ -2,6 +2,11 @@
 
 本文件为 Claude Code (claude.ai/code) 在本仓库中工作时提供指导。
 
+## 工作流程
+
+- 每次对话结束前，自动 commit 当前未提交的所有改动（`git add -A`），提交信息遵循 [Conventional Commits](https://www.conventionalcommits.org/) 规范
+- **绝对禁止执行 `git push` 或任何推送到远程仓库的命令**
+
 ## 项目概述
 
 `expub-tool` 是一个 TypeScript 库，用于微信公众号 HTML/SVG 内容生成。主要模块：
