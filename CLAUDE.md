@@ -143,6 +143,13 @@ src/behaviors/
 | `@css-fn/*` | `src/css/cssFunctions/*` |
 | `@css-presets/*` | `src/css/cssPresets/*` |
 
+## 开发文档 (devDocs/)
+
+开发时必须参考以下文档，它们是组件开发和 SMIL API 的权威指南：
+
+- **`devDocs/SMIL_API.md`** — SMIL 动画工具函数完整接口文档，包括 timeline 格式、animateTransform 系列、animate 系列、set 系列、bezier 缓动函数的用法和参数说明
+- **`devDocs/COMPONENT_SPLIT_GUIDE.md`** — 硬编码 SVG → React 组件逆向工程流程，包括结构分析、魔法数字提取、文件拆分规范、props 边界设计、编码规范（defaultTo、spacing、Object 参数、目录结构、lodash 优先、方向常量、变量命名）
+
 ## 编码规范
 
 - **类型命名**：`T_` 前缀表示类型别名，`I_` 前缀表示接口
