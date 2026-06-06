@@ -7,47 +7,340 @@ export default function AnyLoopDisplayPage() {
     <div>
       <h2>AnyLoopDisplay — 任意循环展示</h2>
 
+      {/* ── 基础方向 ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>8 方向全展示 — 每图不同方向，childCanvas 居中 + canvasBg</h3>
+        <h3 style={{ margin: '0 0 8px' }}>8 方向全展示 — childCanvas 居中 + canvasBg</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#f3f4f6"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T' },  stayDuration: 1 },
-            { url: getWechat300x300(2), entry: { direction: 'TR' }, stayDuration: 1 },
-            { url: getWechat300x300(3), entry: { direction: 'R' },  stayDuration: 1 },
-            { url: getWechat300x300(4), entry: { direction: 'BR' }, stayDuration: 1 },
-            { url: getWechat300x300(5), entry: { direction: 'B' },  stayDuration: 1 },
-            { url: getWechat300x300(6), entry: { direction: 'BL' }, stayDuration: 1 },
-            { url: getWechat300x300(7), entry: { direction: 'L' },  stayDuration: 1 },
-            { url: getWechat300x300(8), entry: { direction: 'TL' }, stayDuration: 1 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'T' } },  stayDuration: 1 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'TR' } }, stayDuration: 1 },
+            { url: getWechat300x300(3), entry: { translate: { direction: 'R' } },  stayDuration: 1 },
+            { url: getWechat300x300(4), entry: { translate: { direction: 'BR' } }, stayDuration: 1 },
+            { url: getWechat300x300(5), entry: { translate: { direction: 'B' } },  stayDuration: 1 },
+            { url: getWechat300x300(6), entry: { translate: { direction: 'BL' } }, stayDuration: 1 },
+            { url: getWechat300x300(7), entry: { translate: { direction: 'L' } },  stayDuration: 1 },
+            { url: getWechat300x300(8), entry: { translate: { direction: 'TL' } }, stayDuration: 1 },
           ]}
         />
       </div>
 
+      {/* ── translate timeline：entry 过冲回弹 ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>2 图 — 对角线 TL↔BR，skewY 30° + entry/exit skew</h3>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — translate 过冲回弹（entry timeline：左→过冲→回弹）</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#dbeafe"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: {
+                translate: {
+                  initValue: { x: -500, y: 0 },
+                  timeline: [
+                    { durationSeconds: 1.5, to: { x: 30, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+              },
+              exit: { translate: { direction: 'R' } },
+              stayDuration: 1.5, switchDuration: 2,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: {
+                translate: {
+                  initValue: { x: 500, y: 0 },
+                  timeline: [
+                    { durationSeconds: 1.5, to: { x: -30, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+              },
+              exit: { translate: { direction: 'L' } },
+              stayDuration: 1.5, switchDuration: 2,
+            },
+          ]}
+        />
+      </div>
+
+      {/* ── translate timeline：entry 弧线进入 ── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — translate 弧线进入（多段 timeline 模拟弧线）</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#fce7f3"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: {
+                translate: {
+                  initValue: { x: -500, y: -300 },
+                  timeline: [
+                    { durationSeconds: 1, to: { x: -100, y: 60 } },
+                    { durationSeconds: 0.5, to: { x: 20, y: -10 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                  ],
+                },
+              },
+              exit: { translate: { direction: 'R' } },
+              stayDuration: 1.5, switchDuration: 2,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: {
+                translate: {
+                  initValue: { x: 500, y: -300 },
+                  timeline: [
+                    { durationSeconds: 1, to: { x: 100, y: 60 } },
+                    { durationSeconds: 0.5, to: { x: -20, y: -10 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                  ],
+                },
+              },
+              exit: { translate: { direction: 'L' } },
+              stayDuration: 1.5, switchDuration: 2,
+            },
+          ]}
+        />
+      </div>
+
+      {/* ── translate timeline：entry + stay 浮动 ── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — entry 过冲 + stay 浮动（entry + stay translate timeline）</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#ecfdf5"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: {
+                translate: {
+                  direction: 'T',
+                  keySplines: getEaseBezier({ isOut: true }),
+                },
+              },
+              stay: {
+                translate: {
+                  timeline: [
+                    { durationSeconds: 0.5, to: { x: 0, y: -8 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: 8 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: -4 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                  ],
+                },
+              },
+              exit: { translate: { direction: 'B' } },
+              stayDuration: 2, switchDuration: 1.5,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: {
+                translate: {
+                  direction: 'B',
+                  keySplines: getEaseBezier({ isOut: true }),
+                },
+              },
+              stay: {
+                translate: {
+                  timeline: [
+                    { durationSeconds: 0.5, to: { x: 0, y: 8 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: -8 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: 4 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                  ],
+                },
+              },
+              exit: { translate: { direction: 'T' } },
+              stayDuration: 2, switchDuration: 1.5,
+            },
+          ]}
+        />
+      </div>
+
+      {/* ── translate timeline：entry + stay 横向漂移 ── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — entry L/R + stay 横向漂移 + exit R/L</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#fef9c3"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: { translate: { direction: 'L' } },
+              stay: {
+                translate: {
+                  timeline: [
+                    { durationSeconds: 0.75, to: { x: 15, y: 0 } },
+                    { durationSeconds: 0.75, to: { x: -15, y: 0 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                  ],
+                },
+              },
+              exit: { translate: { direction: 'R' } },
+              stayDuration: 2, switchDuration: 1.5,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: { translate: { direction: 'R' } },
+              stay: {
+                translate: {
+                  timeline: [
+                    { durationSeconds: 0.75, to: { x: -15, y: 0 } },
+                    { durationSeconds: 0.75, to: { x: 15, y: 0 } },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                  ],
+                },
+              },
+              exit: { translate: { direction: 'L' } },
+              stayDuration: 2, switchDuration: 1.5,
+            },
+          ]}
+        />
+      </div>
+
+      {/* ── translate timeline：entry + exit 都用 timeline ── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — entry + exit 都用 timeline（完全自定义路径）</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#ede9fe"
+          childItems={[
+            {
+              url: getWechat300x300(1),
+              entry: {
+                translate: {
+                  initValue: { x: 0, y: -500 },
+                  timeline: [
+                    { durationSeconds: 1.5, to: { x: 0, y: 20 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+              },
+              exit: {
+                translate: {
+                  initValue: { x: 0, y: 0 },
+                  timeline: [
+                    { durationSeconds: 0.5, to: { x: 0, y: 15 } },
+                    { durationSeconds: 1.5, to: { x: 0, y: -500 }, keySplines: getEaseBezier({ isIn: true }) },
+                  ],
+                },
+              },
+              stayDuration: 1.5, switchDuration: 2,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: {
+                translate: {
+                  initValue: { x: 0, y: 500 },
+                  timeline: [
+                    { durationSeconds: 1.5, to: { x: 0, y: -20 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.5, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+              },
+              exit: {
+                translate: {
+                  initValue: { x: 0, y: 0 },
+                  timeline: [
+                    { durationSeconds: 0.5, to: { x: 0, y: -15 } },
+                    { durationSeconds: 1.5, to: { x: 0, y: 500 }, keySplines: getEaseBezier({ isIn: true }) },
+                  ],
+                },
+              },
+              stayDuration: 1.5, switchDuration: 2,
+            },
+          ]}
+        />
+      </div>
+
+      {/* ── translate + rotation + scale 组合 ── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — translate timeline + rotation 360° + scale 0→1 组合</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#fef3c7"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'TL', skewY: { from: 30 } }, exit: { skewY: { from: -30 } }, stayDuration: 1.5 },
-            { url: getWechat300x300(2), entry: { direction: 'BR', skewY: { from: -30 } }, exit: { skewY: { from: 30 } }, stayDuration: 1.5 },
+            {
+              url: getWechat300x300(1),
+              entry: {
+                translate: {
+                  initValue: { x: -500, y: 0 },
+                  timeline: [
+                    { durationSeconds: 1.8, to: { x: 20, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.7, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+                rotation: { angle: 360 },
+                scale: { childCanvasOrigin: ORIGIN.Center, from: 0.3 },
+              },
+              exit: { translate: { direction: 'R' }, rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.3 } },
+              stayDuration: 1.5, switchDuration: 2.5,
+            },
+            {
+              url: getWechat300x300(2),
+              entry: {
+                translate: {
+                  initValue: { x: 500, y: 0 },
+                  timeline: [
+                    { durationSeconds: 1.8, to: { x: -20, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.7, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  ],
+                },
+                rotation: { angle: -360 },
+                scale: { childCanvasOrigin: ORIGIN.Center, from: 0.3 },
+              },
+              exit: { translate: { direction: 'L' }, rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.3 } },
+              stayDuration: 1.5, switchDuration: 2.5,
+            },
           ]}
         />
       </div>
 
+      {/* ── translate distance 自定义 ── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — translate distance 自定义（近距推入）</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { url: getWechat300x300(1), entry: { translate: { direction: 'L', distance: 0.5 } }, exit: { translate: { direction: 'R', distance: 0.5 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'R', distance: 0.5 } }, exit: { translate: { direction: 'L', distance: 0.5 } }, stayDuration: 1.5 },
+          ]}
+        />
+      </div>
+
+      {/* ── skewX ── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>2 图 — TL↔BR，skewY 30° + entry/exit skew</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
+          canvasBg="#fef3c7"
+          childItems={[
+            { url: getWechat300x300(1), entry: { translate: { direction: 'TL' }, skewY: { from: 30 } }, exit: { skewY: { from: -30 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'BR' }, skewY: { from: -30 } }, exit: { skewY: { from: 30 } }, stayDuration: 1.5 },
+          ]}
+        />
+      </div>
+
+      {/* ── scale ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>4 图 — scale 0→1 入场，1→0 出场，origin Center</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'R', scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(3), entry: { direction: 'B', scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(4), entry: { direction: 'L', scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'R' }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { translate: { direction: 'B' }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { translate: { direction: 'L' }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -57,10 +350,10 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'B', scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(3), entry: { direction: 'T', scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(4), entry: { direction: 'B', scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'B' }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { translate: { direction: 'T' }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { translate: { direction: 'B' }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -75,7 +368,7 @@ export default function AnyLoopDisplayPage() {
             {
               url: getWechat300x300(1),
               entry: {
-                direction: 'T',
+                translate: { direction: 'T' },
                 scale: {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: 0.1,
@@ -85,13 +378,12 @@ export default function AnyLoopDisplayPage() {
                   ],
                 },
               },
-              stayDuration: 1.5,
-              switchDuration: 2.5,
+              stayDuration: 1.5, switchDuration: 2.5,
             },
             {
               url: getWechat300x300(2),
               entry: {
-                direction: 'B',
+                translate: { direction: 'B' },
                 scale: {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: 0.1,
@@ -101,13 +393,13 @@ export default function AnyLoopDisplayPage() {
                   ],
                 },
               },
-              stayDuration: 1.5,
-              switchDuration: 2.5,
+              stayDuration: 1.5, switchDuration: 2.5,
             },
           ]}
         />
       </div>
 
+      {/* ── scale + skewX + rotation 组合 ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>2 图 — scale + skewX + rotation 组合</h3>
         <AnyLoopDisplay
@@ -115,46 +407,36 @@ export default function AnyLoopDisplayPage() {
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg="#ede9fe"
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'TL', skewX: { from: 30 }, scale: { childCanvasOrigin: ORIGIN.BottomRight, from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { direction: 'BR', skewX: { from: -30 }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'TL' }, skewX: { from: 30 }, scale: { childCanvasOrigin: ORIGIN.BottomRight, from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'BR' }, skewX: { from: -30 }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
           ]}
         />
       </div>
 
+      {/* ── stayDuration=0 快速切换 ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — stayDuration=0，skewX 快速切换</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', skewX: { from: 15 } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B', skewX: { from: -15 } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T', skewX: { from: 15 } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B', skewX: { from: -15 } }, stayDuration: 0 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, skewX: { from: 15 } }, stayDuration: 0 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'B' }, skewX: { from: -15 } }, stayDuration: 0 },
+            { url: getWechat300x300(3), entry: { translate: { direction: 'T' }, skewX: { from: 15 } }, stayDuration: 0 },
+            { url: getWechat300x300(4), entry: { translate: { direction: 'B' }, skewX: { from: -15 } }, stayDuration: 0 },
           ]}
         />
       </div>
 
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — 顺时针 T→R→B→L，entry + exit skew</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', skewX: { from: 15 } }, exit: { skewX: { from: -15 } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'R', skewY: { from: 15 } }, exit: { skewY: { from: -15 } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'B', skewX: { from: -15 } }, exit: { skewX: { from: 15 } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'L', skewY: { from: -15 } }, exit: { skewY: { from: 15 } }, stayDuration: 0 },
-          ]}
-        />
-      </div>
-
+      {/* ── rotation ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° Center</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', rotation: { angle: 360 } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B', rotation: { angle: -360 } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T', rotation: { angle: 360 } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B', rotation: { angle: -360 } }, stayDuration: 0 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, rotation: { angle: 360 } }, stayDuration: 0 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'B' }, rotation: { angle: -360 } }, stayDuration: 0 },
+            { url: getWechat300x300(3), entry: { translate: { direction: 'T' }, rotation: { angle: 360 } }, stayDuration: 0 },
+            { url: getWechat300x300(4), entry: { translate: { direction: 'B' }, rotation: { angle: -360 } }, stayDuration: 0 },
           ]}
         />
       </div>
@@ -169,7 +451,7 @@ export default function AnyLoopDisplayPage() {
             {
               url: getWechat300x300(1),
               entry: {
-                direction: 'T',
+                translate: { direction: 'T' },
                 rotation: {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: 720,
@@ -179,13 +461,12 @@ export default function AnyLoopDisplayPage() {
                   ],
                 },
               },
-              stayDuration: 1.5,
-              switchDuration: 2.5,
+              stayDuration: 1.5, switchDuration: 2.5,
             },
             {
               url: getWechat300x300(2),
               entry: {
-                direction: 'B',
+                translate: { direction: 'B' },
                 rotation: {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: -720,
@@ -195,200 +476,27 @@ export default function AnyLoopDisplayPage() {
                   ],
                 },
               },
-              stayDuration: 1.5,
-              switchDuration: 2.5,
+              stayDuration: 1.5, switchDuration: 2.5,
             },
           ]}
         />
       </div>
 
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° TopLeft</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: ORIGIN.TopLeft } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: ORIGIN.TopLeft } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: ORIGIN.TopLeft } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: ORIGIN.TopLeft } }, stayDuration: 0 },
-          ]}
-        />
-      </div>
-
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — rotation 360° BottomRight</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: ORIGIN.BottomRight } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: ORIGIN.BottomRight } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: ORIGIN.BottomRight } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: ORIGIN.BottomRight } }, stayDuration: 0 },
-          ]}
-        />
-      </div>
-
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>{'4 图 — rotation 360° 自定义坐标 { x: 50, y: -50 }'}</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: { x: 50, y: -50 } } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: { x: 50, y: -50 } } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'T', rotation: { angle: 360, childCanvasOrigin: { x: 50, y: -50 } } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'B', rotation: { angle: -360, childCanvasOrigin: { x: 50, y: -50 } } }, stayDuration: 0 },
-          ]}
-        />
-      </div>
-
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — L→R→L→R，skewY 30°</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'L', skewY: { from: 30 } }, stayDuration: 0 },
-            { url: getWechat300x300(2), entry: { direction: 'R', skewY: { from: -30 } }, stayDuration: 0 },
-            { url: getWechat300x300(3), entry: { direction: 'L', skewY: { from: 30 } }, stayDuration: 0 },
-            { url: getWechat300x300(4), entry: { direction: 'R', skewY: { from: -30 } }, stayDuration: 0 },
-          ]}
-        />
-      </div>
-
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>2 图 — skewX + skewY 同时使用</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fef3c7"
-          childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', skewX: { from: 20 }, skewY: { from: 10 } }, exit: { skewX: { from: -20 }, skewY: { from: -10 } }, stayDuration: 1.5 },
-            { url: getWechat300x300(2), entry: { direction: 'B', skewX: { from: -20 }, skewY: { from: -10 } }, exit: { skewX: { from: 20 }, skewY: { from: 10 } }, stayDuration: 1.5 },
-          ]}
-        />
-      </div>
-
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>2 图 — skewX 弹性斜切（高级 timeline）30°→-10°→0°</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#ecfdf5"
-          childItems={[
-            {
-              url: getWechat300x300(1),
-              entry: {
-                direction: 'T',
-                skewX: {
-                  initValue: 30,
-                  timeline: [
-                    { durationSeconds: 1.5, to: -10, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 1, to: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
-                  ],
-                },
-              },
-              exit: { skewX: { from: -20 } },
-              stayDuration: 1.5,
-              switchDuration: 2.5,
-            },
-            {
-              url: getWechat300x300(2),
-              entry: {
-                direction: 'B',
-                skewX: {
-                  initValue: -30,
-                  timeline: [
-                    { durationSeconds: 1.5, to: 10, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 1, to: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
-                  ],
-                },
-              },
-              exit: { skewX: { from: 20 } },
-              stayDuration: 1.5,
-              switchDuration: 2.5,
-            },
-          ]}
-        />
-      </div>
-
+      {/* ── opacity ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>4 图 — opacity 0→1 淡入，1→0 淡出</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { direction: 'T', opacity: { from: 0 } }, exit: { opacity: { from: 0 } }, stayDuration: 1.5 },
-            { url: getWechat300x300(2), entry: { direction: 'R', opacity: { from: 0 } }, exit: { opacity: { from: 0 } }, stayDuration: 1.5 },
-            { url: getWechat300x300(3), entry: { direction: 'B', opacity: { from: 0 } }, exit: { opacity: { from: 0 } }, stayDuration: 1.5 },
-            { url: getWechat300x300(4), entry: { direction: 'L', opacity: { from: 0 } }, exit: { opacity: { from: 0 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, opacity: { from: 0 } }, exit: { opacity: { from: 0 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'R' }, opacity: { from: 0 } }, exit: { opacity: { from: 0 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(3), entry: { translate: { direction: 'B' }, opacity: { from: 0 } }, exit: { opacity: { from: 0 } }, stayDuration: 1.5 },
+            { url: getWechat300x300(4), entry: { translate: { direction: 'L' }, opacity: { from: 0 } }, exit: { opacity: { from: 0 } }, stayDuration: 1.5 },
           ]}
         />
       </div>
 
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>2 图 — opacity 弹性淡入（高级 timeline）0→0.8→1</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fce7f3"
-          childItems={[
-            {
-              url: getWechat300x300(1),
-              entry: {
-                direction: 'T',
-                opacity: {
-                  initValue: 0,
-                  timeline: [
-                    { durationSeconds: 1.8, to: 0.8, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.7, to: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
-                  ],
-                },
-              },
-              exit: { opacity: { from: 0 } },
-              stayDuration: 1.5,
-              switchDuration: 2.5,
-            },
-            {
-              url: getWechat300x300(2),
-              entry: {
-                direction: 'B',
-                opacity: {
-                  initValue: 0,
-                  timeline: [
-                    { durationSeconds: 1.8, to: 0.8, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.7, to: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
-                  ],
-                },
-              },
-              exit: { opacity: { from: 0 } },
-              stayDuration: 1.5,
-              switchDuration: 2.5,
-            },
-          ]}
-        />
-      </div>
-
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>2 图 — opacity + rotation 组合</h3>
-        <AnyLoopDisplay
-          canvasSize={{ w: 300, h: 300 }}
-          childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#ecfdf5"
-          childItems={[
-            {
-              url: getWechat300x300(1),
-              entry: { direction: 'T', rotation: { angle: 360 }, opacity: { from: 0 } },
-              exit: { rotation: { angle: -360 }, opacity: { from: 0 } },
-              stayDuration: 1.5, switchDuration: 2.5,
-            },
-            {
-              url: getWechat300x300(2),
-              entry: { direction: 'B', rotation: { angle: -360 }, opacity: { from: 0 } },
-              exit: { rotation: { angle: 360 }, opacity: { from: 0 } },
-              stayDuration: 1.5, switchDuration: 2.5,
-            },
-          ]}
-        />
-      </div>
-
+      {/* ── stay 固定值 + timeline ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>2 图 — stay 固定值：rotation 45° + scale 1.1</h3>
         <AnyLoopDisplay
@@ -398,14 +506,14 @@ export default function AnyLoopDisplayPage() {
           childItems={[
             {
               url: getWechat300x300(1),
-              entry: { direction: 'T', rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              entry: { translate: { direction: 'T' }, rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
               stay: { rotation: 45, scale: 1.1 },
               exit: { rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
               stayDuration: 3, switchDuration: 2,
             },
             {
               url: getWechat300x300(2),
-              entry: { direction: 'B', rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              entry: { translate: { direction: 'B' }, rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
               stay: { rotation: -45, scale: 1.1 },
               exit: { rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
               stayDuration: 3, switchDuration: 2,
@@ -423,7 +531,7 @@ export default function AnyLoopDisplayPage() {
           childItems={[
             {
               url: getWechat300x300(1),
-              entry: { direction: 'T' },
+              entry: { translate: { direction: 'T' } },
               stay: {
                 scale: { timeline: [
                   { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
@@ -435,7 +543,7 @@ export default function AnyLoopDisplayPage() {
             },
             {
               url: getWechat300x300(2),
-              entry: { direction: 'B' },
+              entry: { translate: { direction: 'B' } },
               stay: {
                 scale: { timeline: [
                   { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
@@ -458,7 +566,7 @@ export default function AnyLoopDisplayPage() {
           childItems={[
             {
               url: getWechat300x300(1),
-              entry: { direction: 'T' },
+              entry: { translate: { direction: 'T' } },
               stay: {
                 opacity: { timeline: [
                   { durationSeconds: 1, to: 0.6 },
@@ -475,7 +583,7 @@ export default function AnyLoopDisplayPage() {
             },
             {
               url: getWechat300x300(2),
-              entry: { direction: 'B' },
+              entry: { translate: { direction: 'B' } },
               stay: {
                 opacity: { timeline: [
                   { durationSeconds: 1, to: 0.6 },
@@ -491,6 +599,37 @@ export default function AnyLoopDisplayPage() {
               stayDuration: 3, switchDuration: 2,
             },
           ]}
+        />
+      </div>
+      {/* ── 底部推入 + scale 过冲 + stay 缩小 + exit 不退出 ── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — 底部推入 + scale 过冲 + stay 缩小 + exit 不退出（被下一张覆盖）</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          canvasBg="#f0fdf4"
+          childItems={[1, 2, 3, 4].map(n => ({
+            url: getWechat300x300(n),
+            entry: {
+              translate: { direction: 'B' },
+              scale: {
+                childCanvasOrigin: ORIGIN.Center,
+                initValue: 0.3,
+                timeline: [
+                  { durationSeconds: 1.2, to: 1.2, keySplines: getEaseBezier({ isOut: true }) },
+                  { durationSeconds: 0.8, to: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                ],
+              },
+            },
+            stay: { scale: 0.8 },
+            exit: {
+              translate: {
+                initValue: { x: 0, y: 0 },
+                timeline: [{ durationSeconds: 2, to: { x: 0, y: 0 } }],
+              },
+            },
+            stayDuration: 2,
+            switchDuration: 2,
+          }))}
         />
       </div>
     </div>
