@@ -198,6 +198,50 @@ export interface I_EntryOpacityConfig {
 }
 
 /**
+ * translate entry/exit 配置
+ *
+ * 支持两种模式：
+ *
+ * 1. 简单模式：只传 direction，组件自动计算 offscreen 位置
+ *    { direction: 'L' }
+ *
+ * 2. 高级模式：传 initValue + timeline，完全自定义位移路径
+ *    { initValue: { x: -500, y: 0 }, timeline: [{ durationSeconds: 1, to: { x: 20, y: 0 } }, { durationSeconds: 0.5, to: { x: 0, y: 0 } }] }
+ *    timeline 总时长必须 ≤ 对应 entry/exit 的 duration，剩余时间 hold 在最后值
+ */
+export interface I_EntryTranslateConfig {
+  // ── 简单模式 ──
+  /** 进入/退出方向，默认 T。简单模式下组件根据方向自动计算 offscreen 位置 */
+  direction?: T_Direction8
+  /** 自定义 offscreen 距离（像素倍数），不传则自动计算 */
+  distance?: number
+  /** 缓动曲线，仅简单模式生效，默认 ease-in-out */
+  keySplines?: string
+
+  // ── 高级模式 ──
+  /** 自定义起始坐标，高级模式必填 */
+  initValue?: { x: number; y: number }
+  /** 自定义动画路径，每段指定 durationSeconds + to + 可选 keySplines。总时长必须 ≤ 对应 phase duration */
+  timeline?: I_TimelineKeyframe<{ x: number; y: number }>[]
+}
+
+/**
+ * stay 阶段 translate 配置
+ *
+ * 两种模式：
+ *
+ * 1. 固定位置：传 { x, y }，stay 期间保持在该位置
+ *    translate: { x: 0, y: -10 }
+ *
+ * 2. 动画模式：传 { timeline }，stay 期间播放自定义位移动画
+ *    translate: { timeline: [{ durationSeconds: 0.5, to: { x: 0, y: -8 } }, { durationSeconds: 0.5, to: { x: 0, y: 8 } }] }
+ *    timeline 总时长必须 ≤ stayDuration，剩余时间 hold 在最后值
+ */
+export type I_StayTranslateConfig =
+  | { x: number; y: number }
+  | { timeline: I_TimelineKeyframe<{ x: number; y: number }>[] }
+
+/**
  * stay 阶段动画配置
  *
  * 两种模式：

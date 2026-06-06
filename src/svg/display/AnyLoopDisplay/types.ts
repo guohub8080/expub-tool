@@ -1,10 +1,12 @@
 import type { ReactNode } from "react"
-import type { T_Direction8, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig } from "@svg/types"
+import type { T_Direction8, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_EntryTranslateConfig, I_StayTranslateConfig, I_StayAnimConfig } from "@svg/types"
 
-export type { I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig } from "@svg/types"
+export type { I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_EntryTranslateConfig, I_StayTranslateConfig } from "@svg/types"
 
 /** stay 阶段动画配置（固定值或 timeline） */
 export interface I_StayConfig {
+  /** stay 期间的位移（固定位置 或 timeline 动画） */
+  translate?: I_StayTranslateConfig
   /** stay 期间的旋转（固定角度 或 timeline 动画） */
   rotation?: I_StayAnimConfig
   /** stay 期间的缩放（固定值 或 timeline 动画） */
@@ -19,17 +21,8 @@ export interface I_StayConfig {
 
 /** 进入配置 */
 export interface I_EntryConfig {
-  /** 进入位移配置 */
-  translate?: {
-    /** 进入方向，默认 T（从上方进入） */
-    direction?: T_Direction8
-    /**
-     * 自定义 offscreen 距离（像素倍数）。
-     * 不传则自动计算（基于画布尺寸 + scale 缓冲）。
-     * 传值后直接作为 getOffscreenTranslate 的 bufferMultiplier。
-     */
-    distance?: number
-  }
+  /** 进入位移配置（简单模式用 direction，高级模式用 timeline） */
+  translate?: I_EntryTranslateConfig
   /** 进入时的 skewX 变换配置，不传则进入无 skewX */
   skewX?: I_EntrySkewConfig
   /** 进入时的 skewY 变换配置，不传则进入无 skewY */
@@ -44,17 +37,8 @@ export interface I_EntryConfig {
 
 /** 退出配置 */
 export interface I_ExitConfig {
-  /** 退出位移配置 */
-  translate?: {
-    /** 退出方向，默认与进入方向相反（T↔B，L↔R，TL↔BR，TR↔BL） */
-    direction?: T_Direction8
-    /**
-     * 自定义 offscreen 距离（像素倍数）。
-     * 不传则自动计算（基于画布尺寸 + scale 缓冲）。
-     * 传值后直接作为 getOffscreenTranslate 的 bufferMultiplier。
-     */
-    distance?: number
-  }
+  /** 退出位移配置（简单模式用 direction，高级模式用 timeline） */
+  translate?: I_EntryTranslateConfig
   /** 退出时的 skewX 变换配置，不传则退出无 skewX */
   skewX?: I_EntrySkewConfig
   /** 退出时的 skewY 变换配置，不传则退出无 skewY */

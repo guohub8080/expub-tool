@@ -101,10 +101,15 @@ const AnyLoopDisplay = (props: {
               {ghostTimeline && (
                 <GhostLayer
                   firstItem={items[0]}
-                  enterOffscreenTranslate={getOffscreenTranslate({
-                    direction: items[0].entry.translate.direction, canvasWidth: w, canvasHeight: h,
-                    bufferMultiplier: defaultTo(items[0].entry.translate.distance, max([1, defaultTo(items[0].entry.scale?.initValue, 1)])),
-                  })}
+                  enterOffscreenTranslate={
+                    // 高级模式取 initValue，简单模式由 direction 计算 offscreen
+                    items[0].entry.translate.timeline
+                      ? (items[0].entry.translate.initValue ?? { x: 0, y: 0 })
+                      : getOffscreenTranslate({
+                          direction: items[0].entry.translate.direction, canvasWidth: w, canvasHeight: h,
+                          bufferMultiplier: defaultTo(items[0].entry.translate.distance, max([1, defaultTo(items[0].entry.scale?.initValue, 1)])),
+                        })
+                  }
                   ghostTimeline={ghostTimeline}
                   totalDuration={totalDuration}
                   contentWidth={contentW}

@@ -1,5 +1,5 @@
 import sum from "lodash/sum"
-import type { I_NormalizedChildItem } from "./normalizer"
+import type { I_NormalizedChildItem, I_NormalizedTranslateConfig, I_NormalizedStayTranslateConfig } from "./normalizer"
 
 /**
  * 构建 rotation 单阶段（entry 或 exit）的 timeline segments
@@ -190,6 +190,94 @@ export const buildStaySegments = ({
     const timelineTotal = sum(stayConfig.timeline.map(segment => segment.durationSeconds))
     if (timelineTotal > stayDuration) {
       throw new Error(`Stay timeline total duration (${timelineTotal}s) must not exceed stay duration (${stayDuration}s).`)
+    }
+
+    const lastValue = stayConfig.timeline[stayConfig.timeline.length - 1].to
+    const padding = stayDuration - timelineTotal
+
+    return [
+      ...stayConfig.timeline,
+      ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+    ]
+  }
+
+  // fallback: hold 在 entry 最终值
+  return [{ durationSeconds: stayDuration, to: entryEndValue, keySplines: defaultEase }]
+}
+
+/**
+ * 构建 translate 单阶段（entry 或 exit）的 timeline segments
+ *
+ * - 简单模式（无 timeline）：生成单段 initValue→simpleTargetValue
+ * - 高级模式（有 timeline）：使用用户自定义 timeline，不足 phaseDuration 时自动补 hold 段
+ */
+export const buildTranslatePhaseSegments = ({
+  translateConfig,
+  phaseDuration,
+  simpleTargetValue,
+  defaultEase,
+}: {
+  translateConfig: I_NormalizedTranslateConfig
+  phaseDuration: number
+  /** 简单模式下的目标值（entry={x:0,y:0}, exit=offscreen） */
+  simpleTargetValue: { x: number; y: number }
+  defaultEase: string
+}): { durationSeconds: number; to: { x: number; y: number }; keySplines?: string }[] => {
+  if (!translateConfig.timeline) {
+    // 简单模式：单段动画到目标值
+    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: translateConfig.keySplines ?? defaultEase }]
+  }
+
+  // 高级模式：使用用户 timeline
+  const timelineTotal = sum(translateConfig.timeline.map(segment => segment.durationSeconds))
+  if (timelineTotal > phaseDuration) {
+    throw new Error(`Translate timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
+  }
+
+  const lastValue = translateConfig.timeline[translateConfig.timeline.length - 1].to
+  const padding = phaseDuration - timelineTotal
+
+  return [
+    ...translateConfig.timeline,
+    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+  ]
+}
+
+/**
+ * 构建 stay 阶段 translate 的 segments
+ *
+ * - 无 stay 配置：hold 在 entry 最终值
+ * - 固定值模式：动画到固定位置
+ * - timeline 模式：使用用户自定义 timeline，不足 stayDuration 时自动补 hold 段
+ */
+export const buildStayTranslateSegments = ({
+  stayConfig,
+  stayDuration,
+  entryEndValue,
+  defaultEase,
+}: {
+  stayConfig?: I_NormalizedStayTranslateConfig
+  stayDuration: number
+  entryEndValue: { x: number; y: number }
+  defaultEase: string
+}): { durationSeconds: number; to: { x: number; y: number }; keySplines?: string }[] => {
+  if (stayDuration <= 0) return []
+
+  // 无配置：hold 在 entry 最终值
+  if (!stayConfig) {
+    return [{ durationSeconds: stayDuration, to: entryEndValue, keySplines: defaultEase }]
+  }
+
+  // 固定位置模式
+  if (stayConfig.fixedValue !== undefined) {
+    return [{ durationSeconds: stayDuration, to: stayConfig.fixedValue, keySplines: defaultEase }]
+  }
+
+  // timeline 模式
+  if (stayConfig.timeline) {
+    const timelineTotal = sum(stayConfig.timeline.map(segment => segment.durationSeconds))
+    if (timelineTotal > stayDuration) {
+      throw new Error(`Stay translate timeline total (${timelineTotal}s) must not exceed stay duration (${stayDuration}s).`)
     }
 
     const lastValue = stayConfig.timeline[stayConfig.timeline.length - 1].to

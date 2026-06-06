@@ -5,12 +5,13 @@ import { transformTranslate } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_ItemTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getOffscreenTranslate } from "../timeline/offsetCalculator"
+import { buildTranslatePhaseSegments, buildStayTranslateSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 import { renderSkewAxisAnim } from "./renderSkewAnim"
 import { renderRotateAnim } from "./renderRotateAnim"
 import { buildScaleAnimConfig } from "./renderScaleAnim"
 import { renderOpacityAnim } from "./renderOpacityAnim"
-import { DEFAULT_EASE } from "./buildFullSegments"
+import { DEFAULT_EASE, combinePhaseSegments } from "./buildFullSegments"
 
 /**
  * CycleItem — 单张循环展示子项组件
@@ -58,28 +59,58 @@ const CycleItem = (props: {
 
   const { begin, entryDuration: switchDuration, stayDuration, exitDuration: nextSwitchDuration, holdDuration } = timeline
 
-  // 计算 offscreen 距离时考虑 scale 因子，确保放大后的内容也完全离屏
-  // 用户可通过 distance 手动覆盖自动计算的倍数
-  const entryBuffer = defaultTo(item.entry.translate.distance, getEntryBuffer(item.entry.scale))
-  const exitBuffer = defaultTo(item.exit.translate.distance, getExitBuffer(item.exit.scale))
+  const entryTranslate = item.entry.translate
+  const exitTranslate = item.exit.translate
 
-  const enterOffscreenTranslate = getOffscreenTranslate({
-    direction: item.entry.translate.direction, canvasWidth, canvasHeight,
-    bufferMultiplier: entryBuffer,
-  })
-  const exitOffscreenTranslate = getOffscreenTranslate({
-    direction: item.exit.translate.direction, canvasWidth, canvasHeight,
-    bufferMultiplier: exitBuffer,
+  // ── 计算 translate initValue ──
+  // 简单模式：由 direction + distance 自动计算 offscreen 坐标
+  // 高级模式：用户自定义 initValue
+  const translateInitValue = entryTranslate.timeline
+    ? (entryTranslate.initValue ?? { x: 0, y: 0 })
+    : getOffscreenTranslate({
+        direction: entryTranslate.direction, canvasWidth, canvasHeight,
+        bufferMultiplier: defaultTo(entryTranslate.distance, getEntryBuffer(item.entry.scale)),
+      })
+
+  // ── 计算 exit simpleTarget（仅简单模式使用） ──
+  const exitOffscreen = exitTranslate.timeline
+    ? undefined
+    : getOffscreenTranslate({
+        direction: exitTranslate.direction, canvasWidth, canvasHeight,
+        bufferMultiplier: defaultTo(exitTranslate.distance, getExitBuffer(item.exit.scale)),
+      })
+
+  // ── 分阶段构建 translate timeline ──
+  const ease = entryTranslate.keySplines ?? exitTranslate.keySplines ?? DEFAULT_EASE
+
+  const entrySegs = buildTranslatePhaseSegments({
+    translateConfig: entryTranslate,
+    phaseDuration: switchDuration,
+    simpleTargetValue: { x: 0, y: 0 },
+    defaultEase: ease,
   })
 
-  // ── translate 时间线：进入 → stay → 退出 → hold ──
-  // stay=0 时跳过 stay 段，避免 keyTimes 相邻相等（calcMode=spline 下非法）
-  const translateTimeline = [
-    { durationSeconds: switchDuration, to: { x: 0, y: 0 }, keySplines: DEFAULT_EASE },
-    ...(stayDuration > 0 ? [{ durationSeconds: stayDuration, to: { x: 0, y: 0 }, keySplines: DEFAULT_EASE }] : []),
-    { durationSeconds: nextSwitchDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
-    { durationSeconds: holdDuration, to: exitOffscreenTranslate, keySplines: DEFAULT_EASE },
-  ]
+  const lastEntryValue = entrySegs[entrySegs.length - 1].to
+  const staySegs = buildStayTranslateSegments({
+    stayConfig: item.stay.translate,
+    stayDuration,
+    entryEndValue: lastEntryValue,
+    defaultEase: DEFAULT_EASE,
+  })
+
+  const exitSegs = buildTranslatePhaseSegments({
+    translateConfig: exitTranslate,
+    phaseDuration: nextSwitchDuration,
+    simpleTargetValue: exitOffscreen ?? { x: 0, y: 0 },
+    defaultEase: defaultTo(exitTranslate.keySplines, ease),
+  })
+
+  const translateTimeline = combinePhaseSegments(
+    entrySegs, staySegs, exitSegs,
+    exitOffscreen ?? { x: 0, y: 0 },
+    holdDuration,
+    DEFAULT_EASE,
+  )
 
   const hasSkewX = !isNil(item.entry.skewX) || !isNil(item.exit.skewX) || !isNil(item.stay.skewX)
   const hasSkewY = !isNil(item.entry.skewY) || !isNil(item.exit.skewY) || !isNil(item.stay.skewY)
@@ -172,7 +203,7 @@ const CycleItem = (props: {
     <g>
       {/* 外层 translate：控制图片的进入/退出位移 */}
       {transformTranslate({
-        initValue: enterOffscreenTranslate,
+        initValue: translateInitValue,
         timeline: translateTimeline,
         begin: `${begin}s`,
         loopCount: 0,
@@ -190,7 +221,6 @@ const CycleItem = (props: {
 /** 获取 entry 阶段的 buffer（entry 从小到大，最大值不超过 1，所以 buffer = 1） */
 const getEntryBuffer = (entryScale?: I_NormalizedChildItem['entry']['scale']): number => {
   if (isNil(entryScale)) return 1
-  // entry 始终趋向 1，即使 initValue > 1，entry 阶段 buffer 不影响 offscreen 距离
   return 1
 }
 
@@ -198,11 +228,9 @@ const getEntryBuffer = (entryScale?: I_NormalizedChildItem['entry']['scale']): n
 const getExitBuffer = (exitScale?: I_NormalizedChildItem['exit']['scale']): number => {
   if (isNil(exitScale)) return 1
   if (exitScale.timeline) {
-    // 高级模式：取 timeline 所有 to 值中的最大值
     const timelineMax = max(exitScale.timeline.map(segment => segment.to)) ?? 1
     return max([1, timelineMax]) ?? 1
   }
-  // 简单模式：initValue 就是目标缩放值
   return max([1, defaultTo(exitScale.initValue, 1)]) ?? 1
 }
 

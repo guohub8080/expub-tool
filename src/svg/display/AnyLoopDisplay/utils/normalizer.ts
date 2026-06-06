@@ -2,7 +2,7 @@ import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import sum from "lodash/sum"
 import { DIRECTION_8 } from "@svg/types"
-import type { T_Direction8, T_Origin, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig } from "@svg/types"
+import type { T_Direction8, T_Origin, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig, I_EntryTranslateConfig, I_StayTranslateConfig } from "@svg/types"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_AnyLoopDisplayChildItem } from "../types"
 
@@ -88,6 +88,31 @@ export interface I_NormalizedStayAnimConfig {
   fixedValue?: number
   /** 自定义动画路径 */
   timeline?: I_TimelineKeyframe<number>[]
+}
+
+/**
+ * 标准化后的 entry/exit translate 配置
+ *
+ * - 简单模式：direction + distance，CycleItem 自动计算 offscreen 位置
+ * - 高级模式：initValue + timeline，用户自定义位移路径
+ */
+export interface I_NormalizedTranslateConfig {
+  direction: T_Direction8
+  distance?: number
+  keySplines?: string
+  initValue?: { x: number; y: number }
+  timeline?: I_TimelineKeyframe<{ x: number; y: number }>[]
+}
+
+/**
+ * 标准化后的 stay translate 配置
+ *
+ * - fixedValue: stay 期间保持在该位置
+ * - timeline: stay 期间播放自定义位移动画
+ */
+export interface I_NormalizedStayTranslateConfig {
+  fixedValue?: { x: number; y: number }
+  timeline?: I_TimelineKeyframe<{ x: number; y: number }>[]
 }
 
 /**
@@ -181,6 +206,18 @@ const normalizeStayAnim = (value: I_StayAnimConfig | undefined): I_NormalizedSta
   return undefined
 }
 
+/**
+ * 标准化 stay 阶段 translate 配置
+ *
+ * - { x, y } → fixedValue
+ * - { timeline } → timeline
+ */
+const normalizeStayTranslate = (value: I_StayTranslateConfig | undefined): I_NormalizedStayTranslateConfig | undefined => {
+  if (isNil(value)) return undefined
+  if ('timeline' in value) return { timeline: value.timeline }
+  return { fixedValue: { x: value.x, y: value.y } }
+}
+
 /** 进入方向取反，作为默认退出方向（T↔B，L↔R，TL↔BR，TR↔BL） */
 export const oppositeDirection = (direction: T_Direction8): T_Direction8 => {
   const map: Record<T_Direction8, T_Direction8> = { T: 'B', B: 'T', L: 'R', R: 'L', TL: 'BR', TR: 'BL', BL: 'TR', BR: 'TL' }
@@ -197,10 +234,7 @@ export interface I_NormalizedChildItem {
   url?: string
   jsx?: React.ReactNode
   entry: {
-    translate: {
-      direction: T_Direction8
-      distance?: number
-    }
+    translate: I_NormalizedTranslateConfig
     skewX?: I_NormalizedSkewConfig
     skewY?: I_NormalizedSkewConfig
     rotation?: I_NormalizedRotationConfig
@@ -208,6 +242,7 @@ export interface I_NormalizedChildItem {
     opacity?: I_NormalizedOpacityConfig
   }
   stay: {
+    translate?: I_NormalizedStayTranslateConfig
     rotation?: I_NormalizedStayAnimConfig
     scale?: I_NormalizedStayAnimConfig
     opacity?: I_NormalizedStayAnimConfig
@@ -215,10 +250,7 @@ export interface I_NormalizedChildItem {
     skewY?: I_NormalizedStayAnimConfig
   }
   exit: {
-    translate: {
-      direction: T_Direction8
-      distance?: number
-    }
+    translate: I_NormalizedTranslateConfig
     skewX?: I_NormalizedSkewConfig
     skewY?: I_NormalizedSkewConfig
     rotation?: I_NormalizedRotationConfig
@@ -244,6 +276,9 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
       translate: {
         direction: entryDirection,
         distance: item.entry?.translate?.distance,
+        keySplines: item.entry?.translate?.keySplines,
+        initValue: item.entry?.translate?.initValue,
+        timeline: item.entry?.translate?.timeline,
       },
       skewX: normalizeSkew(item.entry?.skewX),
       skewY: normalizeSkew(item.entry?.skewY),
@@ -252,6 +287,7 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
       opacity: normalizeOpacity(item.entry?.opacity),
     },
     stay: {
+      translate: normalizeStayTranslate(item.stay?.translate),
       rotation: normalizeStayAnim(item.stay?.rotation),
       scale: normalizeStayAnim(item.stay?.scale),
       opacity: normalizeStayAnim(item.stay?.opacity),
@@ -262,6 +298,9 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
       translate: {
         direction: defaultTo(item.exit?.translate?.direction, oppositeDirection(entryDirection)),
         distance: item.exit?.translate?.distance,
+        keySplines: item.exit?.translate?.keySplines,
+        initValue: item.exit?.translate?.initValue,
+        timeline: item.exit?.translate?.timeline,
       },
       skewX: normalizeSkew(item.exit?.skewX),
       skewY: normalizeSkew(item.exit?.skewY),
@@ -287,20 +326,23 @@ const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
     const entryDuration = item.switchDuration
     const exitDuration = items[(i + 1) % n].switchDuration
 
-    const checks: { timeline: I_TimelineKeyframe<number>[] | undefined; max: number; label: string }[] = [
+    const checks: { timeline: readonly { durationSeconds: number }[] | undefined; max: number; label: string }[] = [
       // Entry
+      { timeline: item.entry.translate.timeline, max: entryDuration, label: 'entry translate' },
       { timeline: item.entry.rotation?.timeline, max: entryDuration, label: 'entry rotation' },
       { timeline: item.entry.scale?.timeline, max: entryDuration, label: 'entry scale' },
       { timeline: item.entry.opacity?.timeline, max: entryDuration, label: 'entry opacity' },
       { timeline: item.entry.skewX?.timeline, max: entryDuration, label: 'entry skewX' },
       { timeline: item.entry.skewY?.timeline, max: entryDuration, label: 'entry skewY' },
       // Exit
+      { timeline: item.exit.translate.timeline, max: exitDuration, label: 'exit translate' },
       { timeline: item.exit.rotation?.timeline, max: exitDuration, label: 'exit rotation' },
       { timeline: item.exit.scale?.timeline, max: exitDuration, label: 'exit scale' },
       { timeline: item.exit.opacity?.timeline, max: exitDuration, label: 'exit opacity' },
       { timeline: item.exit.skewX?.timeline, max: exitDuration, label: 'exit skewX' },
       { timeline: item.exit.skewY?.timeline, max: exitDuration, label: 'exit skewY' },
       // Stay
+      { timeline: item.stay.translate?.timeline, max: item.stayDuration, label: 'stay translate' },
       { timeline: item.stay.rotation?.timeline, max: item.stayDuration, label: 'stay rotation' },
       { timeline: item.stay.scale?.timeline, max: item.stayDuration, label: 'stay scale' },
       { timeline: item.stay.opacity?.timeline, max: item.stayDuration, label: 'stay opacity' },
