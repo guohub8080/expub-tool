@@ -277,9 +277,8 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
 /**
  * 校验所有子项的 timeline 总时长不超过对应的 phase duration
  *
- * - entry timeline 总时长 ≤ item.switchDuration（entry duration）
- * - exit timeline 总时长 ≤ nextItem.switchDuration（exit duration）
- * - 在 normalizer 阶段尽早报错，避免到渲染时才发现
+ * 数据驱动：将所有需要校验的 timeline 汇总为 checks 数组，统一循环校验。
+ * 新增属性时只需在 checks 数组中加一行即可。
  */
 const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
   const n = items.length
@@ -288,123 +287,33 @@ const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
     const entryDuration = item.switchDuration
     const exitDuration = items[(i + 1) % n].switchDuration
 
-    // Entry rotation
-    if (item.entry.rotation?.timeline) {
-      const total = sum(item.entry.rotation.timeline.map(s => s.durationSeconds))
-      if (total > entryDuration) {
-        throw new Error(`Item ${i + 1} entry rotation timeline total (${total}s) must not exceed entry duration (${entryDuration}s).`)
-      }
-    }
+    const checks: { timeline: I_TimelineKeyframe<number>[] | undefined; max: number; label: string }[] = [
+      // Entry
+      { timeline: item.entry.rotation?.timeline, max: entryDuration, label: 'entry rotation' },
+      { timeline: item.entry.scale?.timeline, max: entryDuration, label: 'entry scale' },
+      { timeline: item.entry.opacity?.timeline, max: entryDuration, label: 'entry opacity' },
+      { timeline: item.entry.skewX?.timeline, max: entryDuration, label: 'entry skewX' },
+      { timeline: item.entry.skewY?.timeline, max: entryDuration, label: 'entry skewY' },
+      // Exit
+      { timeline: item.exit.rotation?.timeline, max: exitDuration, label: 'exit rotation' },
+      { timeline: item.exit.scale?.timeline, max: exitDuration, label: 'exit scale' },
+      { timeline: item.exit.opacity?.timeline, max: exitDuration, label: 'exit opacity' },
+      { timeline: item.exit.skewX?.timeline, max: exitDuration, label: 'exit skewX' },
+      { timeline: item.exit.skewY?.timeline, max: exitDuration, label: 'exit skewY' },
+      // Stay
+      { timeline: item.stay.rotation?.timeline, max: item.stayDuration, label: 'stay rotation' },
+      { timeline: item.stay.scale?.timeline, max: item.stayDuration, label: 'stay scale' },
+      { timeline: item.stay.opacity?.timeline, max: item.stayDuration, label: 'stay opacity' },
+      { timeline: item.stay.skewX?.timeline, max: item.stayDuration, label: 'stay skewX' },
+      { timeline: item.stay.skewY?.timeline, max: item.stayDuration, label: 'stay skewY' },
+    ]
 
-    // Entry scale
-    if (item.entry.scale?.timeline) {
-      const total = sum(item.entry.scale.timeline.map(s => s.durationSeconds))
-      if (total > entryDuration) {
-        throw new Error(`Item ${i + 1} entry scale timeline total (${total}s) must not exceed entry duration (${entryDuration}s).`)
-      }
-    }
-
-    // Exit rotation
-    if (item.exit.rotation?.timeline) {
-      const total = sum(item.exit.rotation.timeline.map(s => s.durationSeconds))
-      if (total > exitDuration) {
-        throw new Error(`Item ${i + 1} exit rotation timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
-      }
-    }
-
-    // Exit scale
-    if (item.exit.scale?.timeline) {
-      const total = sum(item.exit.scale.timeline.map(s => s.durationSeconds))
-      if (total > exitDuration) {
-        throw new Error(`Item ${i + 1} exit scale timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
-      }
-    }
-
-    // Entry opacity
-    if (item.entry.opacity?.timeline) {
-      const total = sum(item.entry.opacity.timeline.map(s => s.durationSeconds))
-      if (total > entryDuration) {
-        throw new Error(`Item ${i + 1} entry opacity timeline total (${total}s) must not exceed entry duration (${entryDuration}s).`)
-      }
-    }
-
-    // Exit opacity
-    if (item.exit.opacity?.timeline) {
-      const total = sum(item.exit.opacity.timeline.map(s => s.durationSeconds))
-      if (total > exitDuration) {
-        throw new Error(`Item ${i + 1} exit opacity timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
-      }
-    }
-
-    // Entry skewX
-    if (item.entry.skewX?.timeline) {
-      const total = sum(item.entry.skewX.timeline.map(s => s.durationSeconds))
-      if (total > entryDuration) {
-        throw new Error(`Item ${i + 1} entry skewX timeline total (${total}s) must not exceed entry duration (${entryDuration}s).`)
-      }
-    }
-
-    // Exit skewX
-    if (item.exit.skewX?.timeline) {
-      const total = sum(item.exit.skewX.timeline.map(s => s.durationSeconds))
-      if (total > exitDuration) {
-        throw new Error(`Item ${i + 1} exit skewX timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
-      }
-    }
-
-    // Entry skewY
-    if (item.entry.skewY?.timeline) {
-      const total = sum(item.entry.skewY.timeline.map(s => s.durationSeconds))
-      if (total > entryDuration) {
-        throw new Error(`Item ${i + 1} entry skewY timeline total (${total}s) must not exceed entry duration (${entryDuration}s).`)
-      }
-    }
-
-    // Exit skewY
-    if (item.exit.skewY?.timeline) {
-      const total = sum(item.exit.skewY.timeline.map(s => s.durationSeconds))
-      if (total > exitDuration) {
-        throw new Error(`Item ${i + 1} exit skewY timeline total (${total}s) must not exceed exit duration (${exitDuration}s).`)
-      }
-    }
-
-    // Stay rotation
-    if (item.stay.rotation?.timeline) {
-      const total = sum(item.stay.rotation.timeline.map(s => s.durationSeconds))
-      if (total > item.stayDuration) {
-        throw new Error(`Item ${i + 1} stay rotation timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
-      }
-    }
-
-    // Stay scale
-    if (item.stay.scale?.timeline) {
-      const total = sum(item.stay.scale.timeline.map(s => s.durationSeconds))
-      if (total > item.stayDuration) {
-        throw new Error(`Item ${i + 1} stay scale timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
-      }
-    }
-
-    // Stay opacity
-    if (item.stay.opacity?.timeline) {
-      const total = sum(item.stay.opacity.timeline.map(s => s.durationSeconds))
-      if (total > item.stayDuration) {
-        throw new Error(`Item ${i + 1} stay opacity timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
-      }
-    }
-
-    // Stay skewX
-    if (item.stay.skewX?.timeline) {
-      const total = sum(item.stay.skewX.timeline.map(s => s.durationSeconds))
-      if (total > item.stayDuration) {
-        throw new Error(`Item ${i + 1} stay skewX timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
-      }
-    }
-
-    // Stay skewY
-    if (item.stay.skewY?.timeline) {
-      const total = sum(item.stay.skewY.timeline.map(s => s.durationSeconds))
-      if (total > item.stayDuration) {
-        throw new Error(`Item ${i + 1} stay skewY timeline total (${total}s) must not exceed stay duration (${item.stayDuration}s).`)
+    for (const { timeline, max, label } of checks) {
+      if (timeline) {
+        const total = sum(timeline.map(s => s.durationSeconds))
+        if (total > max) {
+          throw new Error(`Item ${i + 1} ${label} timeline total (${total}s) must not exceed ${max}s.`)
+        }
       }
     }
   }
