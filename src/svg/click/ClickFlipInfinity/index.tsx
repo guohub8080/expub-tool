@@ -15,7 +15,7 @@ import {
 	hiddenResetTranslateAnims,
 } from './smil'
 import { FaceContent } from './FaceContent'
-import type { I_ClickFlipProps } from './types'
+import type { I_ClickFlipInfinityProps } from './types'
 
 const DEFAULT_FLIP_DURATION = 1
 const MIN_FLIP_DURATION = 0.3
@@ -27,7 +27,7 @@ const EASE_IN_OUT = getEaseBezier({ isIn: true, isOut: true })
 /** interactive SVG 需要 max-width: none !important 以支持 width 200% 动画 */
 const SVG_IMPORTANT: [string, string][] = [['max-width', 'none']]
 
-const ClickFlipCard = (props: I_ClickFlipProps) => {
+const ClickFlipInfinity = (props: I_ClickFlipInfinityProps) => {
 	const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
 	const isDev = ExPubGoConfig().mode === 'development'
 
@@ -159,4 +159,4 @@ const ClickFlipCard = (props: I_ClickFlipProps) => {
 	)
 }
 
-export default ClickFlipCard
+export default ClickFlipInfinity

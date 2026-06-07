@@ -48,11 +48,11 @@ export type { I_StackCarouselItem } from "./display/StackCarouselX"
 
 export { default as StackCarouselY } from "./display/StackCarouselY"
 
-export { ClickFlipCard } from "./click"
-export type { I_ClickFlipProps, I_FaceContent } from "./click"
+export { ClickFlipInfinity } from "./click"
+export type { I_ClickFlipInfinityProps, I_FaceContent } from "./click"
 
 export { ClickFlipOnce } from "./click"
-export type { I_ClickFlipOnceProps } from "./click"
+export type { I_ClickFlipOnceProps, I_HotArea } from "./click"
 
 export { ClickPopup } from "./click"
 export type { I_ClickPopupProps } from "./click"

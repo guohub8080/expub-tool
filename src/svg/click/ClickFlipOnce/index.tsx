@@ -9,7 +9,7 @@ import svgURL from '@utils/svg/svgURL'
 import { getEaseBezier } from '@smil/bezier'
 import type { I_ClickFlipOnceProps, I_FaceContent } from './types'
 
-export type { I_ClickFlipOnceProps, I_FaceContent } from './types'
+export type { I_ClickFlipOnceProps, I_FaceContent, I_HotArea } from './types'
 
 const DEFAULT_FLIP_DURATION = 1
 const MIN_FLIP_DURATION = 0.3
@@ -47,28 +47,6 @@ function FaceContent({ content, width, height }: {
  * ClickFlipOnce — 点击翻转卡片（仅一次）
  *
  * 从 ClickFlipCard 简化而来：去掉按压状态机，只保留 click → flip 一次。
- *
- * DOM 结构：
- *
- *   <svg viewBox="0 0 W H">
- *     <g transform="translate(halfW, 0)">        ← 翻转轴心：水平中心
- *       <g>
- *         <animateTransform scale 1→-1 click>     ← 翻转动画（spline 缓动）
- *         <g transform="translate(-halfW, 0)">
- *           <g transform="translate(W, 0) scale(-1, 1)">  ← 反面（预镜像，翻转后双重镜像=正常）
- *             <foreignObject> 反面内容
- *           </g>
- *           <g>                                             ← 正面
- *             <animate opacity 1→0 click>                    ← 翻转过半后正面消失
- *             <foreignObject> 正面内容
- *             <rect>                                        ← 点击热区
- *               <set visibility hidden click>                ← 点击后热区消失
- *             </rect>
- *           </g>
- *         </g>
- *       </g>
- *     </g>
- *   </svg>
  */
 const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -80,6 +58,12 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
   const rawDur = defaultTo(props.flipDuration, DEFAULT_FLIP_DURATION)
   const flipDur = clamp(rawDur, MIN_FLIP_DURATION, MAX_FLIP_DURATION)
   const dur = `${flipDur}s`
+
+  const hotArea = props.hotArea
+  const hotX = defaultTo(hotArea?.x, 0)
+  const hotY = defaultTo(hotArea?.y, 0)
+  const hotW = defaultTo(hotArea?.w, W)
+  const hotH = defaultTo(hotArea?.h, H)
 
   return (
     <SectionEx
@@ -158,9 +142,9 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
                     <FaceContent content={props.frontSide} width={W} height={H} />
                   </foreignObject>
 
-                  {/* 点击热区：点击后立即消失，防止重复触发 */}
+                  {/* 点击热区：hotArea 或全卡，点击后立即消失 */}
                   <rect
-                    x={0} y={0} width={W} height={H}
+                    x={hotX} y={hotY} width={hotW} height={hotH}
                     fill="#000" opacity={0}
                     style={{ pointerEvents: 'visible' }}
                   >

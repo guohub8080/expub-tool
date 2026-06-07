@@ -7,7 +7,7 @@ export interface I_FaceContent {
 	jsx?: ReactNode
 }
 
-export interface I_ClickFlipProps {
+export interface I_ClickFlipInfinityProps {
 	/** SVG viewBox 尺寸 */
 	canvasSize: { w: number; h: number }
 	/** 画布背景色，默认 #FFFFFF */

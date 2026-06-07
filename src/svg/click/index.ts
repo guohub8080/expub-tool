@@ -1,8 +1,8 @@
-export { default as ClickFlipCard } from './ClickFlipCard'
-export type { I_ClickFlipProps, I_FaceContent } from './ClickFlipCard/types'
+export { default as ClickFlipInfinity } from './ClickFlipInfinity'
+export type { I_ClickFlipInfinityProps, I_FaceContent } from './ClickFlipInfinity/types'
 
 export { default as ClickFlipOnce } from './ClickFlipOnce'
-export type { I_ClickFlipOnceProps, I_FaceContent as I_FaceContentOnce } from './ClickFlipOnce'
+export type { I_ClickFlipOnceProps, I_HotArea } from './ClickFlipOnce/types'
 
 export { default as ClickPopup } from './ClickPopup'
 export type { I_ClickPopupProps } from './ClickPopup/types'

@@ -6,7 +6,7 @@ import clamp from 'lodash/clamp'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import { popupBounceAnims, popupOpacityAnims } from './smil'
-import { FaceContent } from '../ClickFlipCard/FaceContent'
+import { FaceContent } from '../ClickFlipInfinity/FaceContent'
 import type { I_ClickPopupProps } from './types'
 
 const DEFAULT_BOUNCE_DURATION = 0.6
