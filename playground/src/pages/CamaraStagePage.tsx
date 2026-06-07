@@ -73,7 +73,7 @@ export default function CamaraStagePage() {
               world: { x: 0, y: 0, z: 300 },
               kind: "world",
               objects: [
-                { id: "objA1", local: {}, url: getWechat300x500(1) },
+                { id: "objA1", local: { x: 200 }, url: getWechat300x500(1) },
               ],
             },
             {
@@ -81,7 +81,7 @@ export default function CamaraStagePage() {
               world: { x: 0, y: 0, z: -300 },
               kind: "passThrough",
               objects: [
-                { id: "objB1", local: {}, url: getWechat300x500(2) },
+                { id: "objB1", local: { x: -200 }, url: getWechat300x500(2) },
               ],
             },
           ]}
