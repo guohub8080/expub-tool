@@ -14,8 +14,6 @@ const DEFAULT_FLIP_DURATION = 1
 const MIN_FLIP_DURATION = 0.3
 const MAX_FLIP_DURATION = 3
 
-// ──────────────────────────── 内容渲染 ────────────────────────────
-
 /** 渲染卡牌单面内容（url 或 jsx） */
 function FaceContent({ content, width, height }: {
   content: I_FaceContent
@@ -43,42 +41,35 @@ function FaceContent({ content, width, height }: {
   )
 }
 
-// ──────────────────────────── 主组件 ────────────────────────────
-
 /**
  * ClickFlipOnce — 点击翻转卡片（仅一次）
  *
- * 原理：
- *   1. 外层 translate(centerX, centerY) 将坐标原点移到画布中心
- *   2. animateTransform scale(1→-1, 1) 在点击后做水平翻转
- *   3. 内层 translate(-centerX, -centerY) 移回左上角
- *   4. 在翻转到一半时（scale X 过 0），瞬间切换：
- *      - 正面 opacity → 0
- *      - 反面通过 translate(0, 2*H) + 预置的 scale(-1,1) translate(-W, -2*H) 校正到正确位置
- *   5. restart="never" + 点击后隐藏热区 → 确保只能触发一次
+ * DOM 结构（严格对标 reference/reference.html）：
  *
- * DOM 结构（对标 reference/无限点击翻转卡片/reference.html）：
- *
- *   <g transform="translate(cx, cy)">           ← 中心定位
- *     <g>                                        ← 翻转层
- *       <animateTransform scale 1→-1 click>      ← 翻转动画
- *       <g transform="translate(-cx, -cy)">      ← 回到左上角
- *         <g>                                    ← 反面
- *           <animateTransform translate click+半程> ← 位置校正
- *           <g transform="scale(-1,1) translate(-W,-2H)"> ← 预镜像
- *             <foreignObject> 反面内容
+ *   <g transform="translate(cx, cy)">       ← 中心定位（scale 围绕中心翻转）
+ *     <g>                                    ← 翻转层
+ *       <animateTransform scale 1→-1 click>  ← 翻转动画
+ *       <g transform="translate(-cx, -cy)">  ← 回到左上角
+ *         <g>                                ← 公共包装层（click 冒泡路径上的祖先）
+ *           <animateTransform translate click+半程> ← 反面位置校正
+ *           <g transform="scale(-1,1) translate(-W,-2H)"> ← 反面预镜像
+ *             <foreignObject> 反面
  *           </g>
- *         </g>
- *         <g>                                    ← 正面
- *           <animate opacity 1→0 click+半程>      ← 隐藏正面
- *           <foreignObject> 正面内容
- *           <rect>                               ← 点击热区
- *             <set visibility hidden click>       ← 点击后消失
+ *         </g>                               ← 反面组结束
+ *         <g>                                ← 正面组
+ *           <animate opacity 1→0 click+半程>  ← 正面消失
+ *           <foreignObject> 正面
+ *           <rect>                           ← 点击热区
+ *             <set visibility hidden click>   ← 点击后消失
  *           </rect>
  *         </g>
  *       </g>
  *     </g>
  *   </g>
+ *
+ * 关键：反面 translate 动画放在公共祖先上（click 冒泡路径内），
+ * 而不是反面自身的 <g>（不在冒泡路径内）。
+ * 正面 opacity→0 后 translate 对正面无视觉影响。
  */
 const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -138,9 +129,10 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
               />
 
               <g transform={`translate(${-cx} ${-cy})`}>
-                {/* ── 反面 ── */}
+
+                {/* ── 反面组 ── */}
+                {/* translate 动画挂在此 <g>（公共祖先，click 冒泡路径内） */}
                 <g>
-                  {/* 翻转到一半时，将反面移到正确位置 */}
                   <animateTransform
                     attributeName="transform"
                     type="translate"
@@ -151,7 +143,7 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
                     fill="freeze"
                     restart="never"
                   />
-                  {/* 预镜像：双重镜像 = 正常显示 */}
+                  {/* 预镜像：父 scale(-1,1) × 此 scale(-1,1) = 正常显示 */}
                   <g transform={`scale(-1,1) translate(${-W} ${-doubleH})`}>
                     <foreignObject x={0} y={0} width={W} height={H}>
                       <FaceContent content={props.backSide} width={W} height={H} />
@@ -159,7 +151,7 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
                   </g>
                 </g>
 
-                {/* ── 正面 ── */}
+                {/* ── 正面组 ── */}
                 <g>
                   {/* 翻转到一半时隐藏正面 */}
                   <animate
@@ -187,6 +179,7 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
                     />
                   </rect>
                 </g>
+
               </g>
             </g>
           </g>
