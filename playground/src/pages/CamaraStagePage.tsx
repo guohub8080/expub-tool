@@ -13,7 +13,7 @@ export default function CamaraStagePage() {
         校验案例：镜头后撤穿越
       </h3>
       <p style={{ fontSize: 12, color: '#6b7280' }}>
-        sceneA (z=300, world) + sceneB (z=-300, passThrough)，camera z: 0 → -600
+        sceneA (z=300, world) + sceneB (z=-300, passThrough)，camera z: 0 → -600，hold 3s
       </p>
       <div style={{ width: 300, margin: '0 auto' }}>
         <CamaraStage
@@ -23,6 +23,7 @@ export default function CamaraStagePage() {
             initial: { x: 0, y: 0, z: 0 },
             timeline: [
               { durationSeconds: 1.5, toAbs: { z: -600 } },
+              { durationSeconds: 3, toAbs: { z: -600 } },
             ],
           }}
           scenes={[
