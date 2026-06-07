@@ -20,6 +20,8 @@
 
 import type { ReactNode } from "react"
 import { transformTranslate, transformScaleRaw, animateOpacity } from "@smil/index"
+import SvgEx from "@html/basicEx/SvgEx"
+import svgURL from "@utils/svg/svgURL"
 import type { I_CompiledSceneTrack } from "../types"
 import type { I_NormalizedScene, I_NormalizedObject } from "../utils/normalizer"
 
@@ -43,7 +45,7 @@ const SceneGroup = (props: I_SceneGroupProps) => {
   const content: ReactNode = (
     <>
       {scene.objects.map(obj => (
-        <ObjectGroup key={obj.id} object={obj} />
+        <ObjectGroup key={obj.id} object={obj} width={viewportWidth} height={viewportHeight} />
       ))}
     </>
   )
@@ -93,19 +95,40 @@ const SceneGroup = (props: I_SceneGroupProps) => {
 
 interface I_ObjectGroupProps {
   object: I_NormalizedObject
+  /** viewport 宽度（像素），用于 foreignObject 尺寸 */
+  width: number
+  /** viewport 高度（像素），用于 foreignObject 尺寸 */
+  height: number
 }
 
+/**
+ * ObjectGroup — 渲染单个 object
+ *
+ * 坐标系以 viewport 中心为原点，通过 translate 平移回左上角，
+ * 使 foreignObject 内的内容正确对齐。
+ */
 const ObjectGroup = (props: I_ObjectGroupProps) => {
-  const { object } = props
+  const { object, width, height } = props
+  // 坐标系平移到左上角（viewport 中心为原点）
+  const tx = -width / 2
+  const ty = -height / 2
 
-  // 第一版：直接渲染图片
   if (object.url) {
     return (
-      <g data-object={object.id}>
-        <foreignObject x={0} y={0} width="100%" height="100%">
-          <div style={{ width: '100%', height: '100%', backgroundSize: 'cover' }}>
-            <img src={object.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </div>
+      <g data-object={object.id} transform={`translate(${tx}, ${ty})`}>
+        <foreignObject x={0} y={0} width={width + 1} height={height + 1}>
+          <SvgEx
+            viewBox={`0 0 ${width + 1} ${height + 1}`}
+            style={{
+              backgroundImage: svgURL(object.url),
+              backgroundSize: "cover",
+              backgroundPosition: "50% 50%",
+              backgroundRepeat: "no-repeat",
+              width: "100%",
+              display: "block",
+              boxSizing: "border-box",
+            }}
+          />
         </foreignObject>
       </g>
     )
@@ -113,8 +136,10 @@ const ObjectGroup = (props: I_ObjectGroupProps) => {
 
   if (object.jsx) {
     return (
-      <g data-object={object.id}>
-        {object.jsx}
+      <g data-object={object.id} transform={`translate(${tx}, ${ty})`}>
+        <foreignObject x={0} y={0} width={width + 1} height={height + 1}>
+          {object.jsx}
+        </foreignObject>
       </g>
     )
   }
