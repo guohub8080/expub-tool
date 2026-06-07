@@ -24,18 +24,19 @@ function FaceContent({ content, width, height }: {
   if (!content.url) return null
 
   return (
-    <SvgEx
+    <svg
       viewBox={`0 0 ${width} ${height}`}
       style={{
-        display: 'block',
+        display: 'inline-block',
         width: '100%',
         margin: 0,
-        backgroundImage: svgURL(content.url),
-        backgroundSize: '100% 100%',
-        backgroundPosition: '0px 0px',
-        backgroundRepeat: 'no-repeat',
-        pointerEvents: 'none',
+        background: `${svgURL(content.url)} 0 0/100% 100% no-repeat`,
+        boxSizing: 'border-box',
+        outline: 'none',
         userSelect: 'none',
+        verticalAlign: 'top',
+        WebkitUserSelect: 'none',
+        pointerEvents: 'none',
       }}
     />
   )
@@ -44,32 +45,7 @@ function FaceContent({ content, width, height }: {
 /**
  * ClickFlipOnce — 点击翻转卡片（仅一次）
  *
- * DOM 结构（严格对标 reference/reference.html）：
- *
- *   <g transform="translate(cx, cy)">       ← 中心定位（scale 围绕中心翻转）
- *     <g>                                    ← 翻转层
- *       <animateTransform scale 1→-1 click>  ← 翻转动画
- *       <g transform="translate(-cx, -cy)">  ← 回到左上角
- *         <g>                                ← 公共包装层（click 冒泡路径上的祖先）
- *           <animateTransform translate click+半程> ← 反面位置校正
- *           <g transform="scale(-1,1) translate(-W,-2H)"> ← 反面预镜像
- *             <foreignObject> 反面
- *           </g>
- *         </g>                               ← 反面组结束
- *         <g>                                ← 正面组
- *           <animate opacity 1→0 click+半程>  ← 正面消失
- *           <foreignObject> 正面
- *           <rect>                           ← 点击热区
- *             <set visibility hidden click>   ← 点击后消失
- *           </rect>
- *         </g>
- *       </g>
- *     </g>
- *   </g>
- *
- * 关键：反面 translate 动画放在公共祖先上（click 冒泡路径内），
- * 而不是反面自身的 <g>（不在冒泡路径内）。
- * 正面 opacity→0 后 translate 对正面无视觉影响。
+ * 严格对标 reference/无限点击翻转卡片/reference.html
  */
 const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -111,7 +87,6 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
           }}
           width="100%"
         >
-          {/* 坐标原点移到画布中心（scale 围绕中心翻转） */}
           <g transform={`translate(${cx} ${cy})`}>
             <g>
               {/* 翻转动画：scale X 从 1 到 -1 */}
@@ -130,8 +105,7 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
 
               <g transform={`translate(${-cx} ${-cy})`}>
 
-                {/* ── 反面组 ── */}
-                {/* translate 动画挂在此 <g>（公共祖先，click 冒泡路径内） */}
+                {/* ── 反面 ── */}
                 <g>
                   <animateTransform
                     attributeName="transform"
@@ -143,17 +117,15 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
                     fill="freeze"
                     restart="never"
                   />
-                  {/* 预镜像：父 scale(-1,1) × 此 scale(-1,1) = 正常显示 */}
                   <g transform={`scale(-1,1) translate(${-W} ${-doubleH})`}>
-                    <foreignObject x={0} y={0} width={W} height={H}>
+                    <foreignObject x="0" y="0" width={W} height={H}>
                       <FaceContent content={props.backSide} width={W} height={H} />
                     </foreignObject>
                   </g>
                 </g>
 
-                {/* ── 正面组 ── */}
+                {/* ── 正面 ── */}
                 <g>
-                  {/* 翻转到一半时隐藏正面 */}
                   <animate
                     attributeName="opacity"
                     values="1; 0"
@@ -162,13 +134,13 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
                     dur="1ms"
                     fill="freeze"
                   />
-                  <foreignObject x={0} y={0} width={W} height={H}>
+                  <foreignObject x="0" y="0" width={W} height={H}>
                     <FaceContent content={props.frontSide} width={W} height={H} />
                   </foreignObject>
-                  {/* 点击热区：点击后立即消失，防止重复触发 */}
                   <rect
-                    x={0} y={0} width={W} height={H}
-                    fill="#000" opacity={0}
+                    width={W}
+                    height={H}
+                    opacity="0"
                     style={{ pointerEvents: 'visible' }}
                   >
                     <set
