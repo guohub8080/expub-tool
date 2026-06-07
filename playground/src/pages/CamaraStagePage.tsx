@@ -70,18 +70,18 @@ export default function CamaraStagePage() {
           scenes={[
             {
               id: "sceneA",
-              world: { x: 0, y: 0, z: 300 },
+              world: { x: 0, y: 0, z: 0 },
               kind: "world",
               objects: [
-                { id: "objA1", local: { x: 200 }, url: getWechat300x500(1) },
+                { id: "objA1", local: { x: 200, y: 0, z: 0 }, url: getWechat300x500(1) },
               ],
             },
             {
               id: "sceneB",
-              world: { x: 0, y: 0, z: -300 },
+              world: { x: 0, y: 0, z: 0 },
               kind: "passThrough",
               objects: [
-                { id: "objB1", local: { x: -200 }, url: getWechat300x500(2) },
+                { id: "objB1", local: { x: -100, y: 0, z: -200 }, url: getWechat300x500(2) },
               ],
             },
           ]}
