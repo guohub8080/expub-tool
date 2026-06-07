@@ -34,10 +34,10 @@ interface I_SceneGroupProps {
 const SceneGroup = (props: I_SceneGroupProps) => {
   const { scene, track, viewportWidth, viewportHeight, totalDuration } = props
 
-  // 首帧作为 initValue
-  const initTranslate = track.translate[0]?.toAbs ?? { x: 0, y: 0 }
-  const initScale = track.scale[0]?.toAbs ?? 1
-  const initOpacity = track.opacity[0]?.toAbs ?? 1
+  // initValue 来自编译结果的首帧
+  const initTranslate = track.initTranslate
+  const initScale = track.initScale
+  const initOpacity = track.initOpacity
 
   // content: object 列表
   const content: ReactNode = (

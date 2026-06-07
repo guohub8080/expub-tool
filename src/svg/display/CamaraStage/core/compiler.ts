@@ -104,6 +104,9 @@ const compileScene = (input: I_CompileSceneInput): I_CompiledSceneTrack => {
 
   return {
     sceneId: scene.id,
+    initTranslate: { x: frames[0].screenX, y: frames[0].screenY },
+    initScale: frames[0].scale,
+    initOpacity: frames[0].opacity,
     translate,
     scale,
     opacity,

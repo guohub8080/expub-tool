@@ -151,11 +151,17 @@ export interface I_ProjectionFrame {
 /** 场景级编译结果：一个 scene 在全局 timeline 上每一帧的 SMIL 关键帧 */
 export interface I_CompiledSceneTrack {
   sceneId: string
-  /** translate 关键帧（screenX, screenY） */
+  /** 初始 translate（首帧的 screenX, screenY，用作 SMIL initValue） */
+  initTranslate: Partial<{ x: number; y: number }>
+  /** 初始 scale（首帧的投影缩放比，用作 SMIL initValue） */
+  initScale: number
+  /** 初始 opacity（首帧的透明度，用作 SMIL initValue） */
+  initOpacity: number
+  /** translate 关键帧（从第 2 帧开始，首帧数据在 initTranslate） */
   translate: I_TimelineKeyframe<Partial<{ x: number; y: number }>>[]
-  /** scale 关键帧 */
+  /** scale 关键帧（从第 2 帧开始，首帧数据在 initScale） */
   scale: I_TimelineKeyframe<number>[]
-  /** opacity 关键帧 */
+  /** opacity 关键帧（从第 2 帧开始，首帧数据在 initOpacity） */
   opacity: I_TimelineKeyframe<number>[]
   /** 该 scene 的穿越事件列表（调试用） */
   crossings: I_CrossingEvent[]
