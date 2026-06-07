@@ -1,16 +1,19 @@
 /**
  * projector — 空间投影器
  *
- * 将 world space 坐标投影到 screen space，
- * 处理透视缩放、穿越 opacity、near-window 限幅。
+ * 将 world space 坐标投影为相对 viewport 中心的偏移量 + scale + opacity。
  *
  * 公式：
- *   rz = ez - cz          （relative depth）
- *   scale = f / rz         （透视缩放，rz > 0 时有效）
- *   screenX = centerX + rx * scale
- *   screenY = centerY - ry * scale
+ *   rz = ez - cz              （relative depth）
+ *   scale = f / rz             （透视缩放，rz > 0 时有效）
+ *   offsetX = rx * scale       （相对 viewport 中心的水平偏移）
+ *   offsetY = -ry * scale      （相对 viewport 中心的垂直偏移，y 轴翻转）
  *
  * 空间链路：objectLocal → sceneWorld → cameraRelative → screen2D
+ *
+ * 重要：返回的 offsetX/offsetY 是**相对 viewport 中心的偏移**，
+ * 不是绝对 SVG 坐标。因为外层 <g> 已经 translate 到 viewport 中心，
+ * 这里的 translate 值直接用 offset 即可。
  */
 
 import type { I_Vec3, I_ProjectionFrame, T_CrossDirection } from "../types"
@@ -42,53 +45,58 @@ export interface I_ProjectOptions {
 }
 
 /**
- * 将 world space 坐标投影为 screen space 结果
+ * 将 world space 坐标投影为相对 viewport 中心的偏移 + scale + opacity
+ *
+ * 返回值语义：
+ *   - offsetX / offsetY：相对 viewport 中心的像素偏移
+ *     直接用作 <g> 上 translate 动画的值（外层已 translate 到中心）
+ *   - scale：透视缩放比，直接用作 scale 动画的值
+ *   - opacity：导演式透明度，用于穿越时控制可见性
  *
  * 处理逻辑：
  *   1. 计算 relative space：rx, ry, rz
- *   2. rz > 0（前方）：正常透视投影
- *   3. rz ≈ 0（穿越窗口）：scale 限幅 + opacity 平滑过渡
- *   4. rz < 0（后方）：passThrough 类型在接近穿越时半透明，远离时不可见
+ *   2. rz > crossingWindow（前方）：正常透视投影
+ *   3. 0 ≤ rz ≤ crossingWindow（穿越窗口）：scale 限幅 + opacity 平滑过渡
+ *   4. rz < 0（后方）：passThrough 在接近穿越时半透明，远离时不可见
  */
 export const projectToScreen = (options: I_ProjectOptions): I_ProjectionFrame => {
   const { viewport, cameraPosition, worldPos, kind } = options
-  const { centerX, centerY, f } = viewport
+  const { f } = viewport
 
   // ── 1. relative space ──
   const rx = worldPos.x - cameraPosition.x
   const ry = worldPos.y - cameraPosition.y
   const rz = worldPos.z - cameraPosition.z
 
-  // ── 2. 前方 (rz > 0) ──
+  // ── 2. 前方 (rz > crossingWindow) ──
   if (rz > CROSSING_WINDOW) {
+    const scale = f / rz
     return {
-      screenX: centerX + rx * (f / rz),
-      screenY: centerY - ry * (f / rz),
-      scale: f / rz,
+      screenX: rx * scale,
+      screenY: -ry * scale,
+      scale,
       opacity: 1,
     }
   }
 
-  // ── 3. 穿越窗口内 (|rz| ≤ crossingWindow) ──
+  // ── 3. 穿越窗口内 (0 ≤ rz ≤ crossingWindow) ──
   if (rz >= 0) {
-    // rz 在 [0, crossingWindow] 之间
-    // 从 crossingWindow 处的 scale=1 平滑过渡到 rz=0 处的 scale=MAX_NEAR_SCALE
+    // rz 从 crossingWindow → 0，scale 从 f/crossingWindow → MAX_NEAR_SCALE
     const t = rz / CROSSING_WINDOW // 1 → 0
     const safeScale = 1 + (MAX_NEAR_SCALE - 1) * (1 - t)
     return {
-      screenX: centerX + rx * safeScale,
-      screenY: centerY - ry * safeScale,
+      screenX: rx * safeScale,
+      screenY: -ry * safeScale,
       scale: safeScale,
-      opacity: kind === "passThrough" ? t : 1, // passThrough 在穿越窗口中逐步显现
+      opacity: kind === "passThrough" ? t : 1,
     }
   }
 
   // ── 4. 后方 (rz < 0) ──
   if (kind === "world") {
-    // world 类型：后方直接不可见
     return {
-      screenX: centerX,
-      screenY: centerY,
+      screenX: 0,
+      screenY: 0,
       scale: 0,
       opacity: 0,
     }
@@ -97,21 +105,20 @@ export const projectToScreen = (options: I_ProjectOptions): I_ProjectionFrame =>
   // passThrough 在后方接近穿越时逐步显现
   const absRz = Math.abs(rz)
   if (absRz < CROSSING_WINDOW) {
-    // rz 在 [-crossingWindow, 0) 之间，接近穿越
     const t = absRz / CROSSING_WINDOW // 0 → 1
     const safeScale = 1 + (MAX_NEAR_SCALE - 1) * t
     return {
-      screenX: centerX + rx * safeScale,
-      screenY: centerY - ry * safeScale,
+      screenX: rx * safeScale,
+      screenY: -ry * safeScale,
       scale: safeScale,
-      opacity: 1 - t, // 逐步显现
+      opacity: 1 - t,
     }
   }
 
   // 远离穿越窗口，完全不可见
   return {
-    screenX: centerX,
-    screenY: centerY,
+    screenX: 0,
+    screenY: 0,
     scale: 0,
     opacity: 0,
   }
