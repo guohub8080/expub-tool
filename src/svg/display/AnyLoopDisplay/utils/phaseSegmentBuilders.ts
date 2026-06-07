@@ -18,10 +18,10 @@ export const buildRotationPhaseSegments = ({
   /** 简单模式下的目标值（entry=0, exit=exitRotation.initValue） */
   simpleTargetValue: number
   defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+}): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
   if (!rotationConfig?.timeline) {
     // 简单模式：单段动画到目标值
-    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
+    return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultEase }]
   }
 
   // 高级模式：使用用户 timeline
@@ -30,12 +30,12 @@ export const buildRotationPhaseSegments = ({
     throw new Error(`Rotation timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
   }
 
-  const lastValue = rotationConfig.timeline[rotationConfig.timeline.length - 1].to
+  const lastValue = rotationConfig.timeline[rotationConfig.timeline.length - 1].toAbs
   const padding = phaseDuration - timelineTotal
 
   return [
     ...rotationConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+    ...(padding > 0 ? [{ durationSeconds: padding, toAbs: lastValue, keySplines: defaultEase }] : []),
   ]
 }
 
@@ -56,10 +56,10 @@ export const buildScalePhaseSegments = ({
   /** 简单模式下的目标值（entry=1, exit=exitScale.initValue） */
   simpleTargetValue: number
   defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+}): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
   if (!scaleConfig?.timeline) {
     // 简单模式：单段动画到目标值
-    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
+    return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultEase }]
   }
 
   // 高级模式：使用用户 timeline
@@ -68,12 +68,12 @@ export const buildScalePhaseSegments = ({
     throw new Error(`Scale timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
   }
 
-  const lastValue = scaleConfig.timeline[scaleConfig.timeline.length - 1].to
+  const lastValue = scaleConfig.timeline[scaleConfig.timeline.length - 1].toAbs
   const padding = phaseDuration - timelineTotal
 
   return [
     ...scaleConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+    ...(padding > 0 ? [{ durationSeconds: padding, toAbs: lastValue, keySplines: defaultEase }] : []),
   ]
 }
 
@@ -94,10 +94,10 @@ export const buildOpacityPhaseSegments = ({
   /** 简单模式下的目标值（entry=1, exit=exitOpacity.initValue） */
   simpleTargetValue: number
   defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+}): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
   if (!opacityConfig?.timeline) {
     // 简单模式：单段动画到目标值
-    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
+    return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultEase }]
   }
 
   // 高级模式：使用用户 timeline
@@ -106,12 +106,12 @@ export const buildOpacityPhaseSegments = ({
     throw new Error(`Opacity timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
   }
 
-  const lastValue = opacityConfig.timeline[opacityConfig.timeline.length - 1].to
+  const lastValue = opacityConfig.timeline[opacityConfig.timeline.length - 1].toAbs
   const padding = phaseDuration - timelineTotal
 
   return [
     ...opacityConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+    ...(padding > 0 ? [{ durationSeconds: padding, toAbs: lastValue, keySplines: defaultEase }] : []),
   ]
 }
 
@@ -132,10 +132,10 @@ export const buildSkewPhaseSegments = ({
   /** 简单模式下的目标值（entry=0, exit=exitSkew.initValue） */
   simpleTargetValue: number
   defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+}): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
   if (!skewConfig?.timeline) {
     // 简单模式：单段动画到目标值
-    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: defaultEase }]
+    return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultEase }]
   }
 
   // 高级模式：使用用户 timeline
@@ -144,12 +144,12 @@ export const buildSkewPhaseSegments = ({
     throw new Error(`Skew timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
   }
 
-  const lastValue = skewConfig.timeline[skewConfig.timeline.length - 1].to
+  const lastValue = skewConfig.timeline[skewConfig.timeline.length - 1].toAbs
   const padding = phaseDuration - timelineTotal
 
   return [
     ...skewConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+    ...(padding > 0 ? [{ durationSeconds: padding, toAbs: lastValue, keySplines: defaultEase }] : []),
   ]
 }
 
@@ -172,17 +172,17 @@ export const buildStaySegments = ({
   /** entry 阶段的最终值 */
   entryEndValue: number
   defaultEase: string
-}): { durationSeconds: number; to: number; keySplines?: string }[] => {
+}): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
   if (stayDuration <= 0) return []
 
   // 无配置：hold 在 entry 最终值
   if (!stayConfig) {
-    return [{ durationSeconds: stayDuration, to: entryEndValue, keySplines: defaultEase }]
+    return [{ durationSeconds: stayDuration, toAbs: entryEndValue, keySplines: defaultEase }]
   }
 
   // 固定值模式
   if (stayConfig.fixedValue !== undefined) {
-    return [{ durationSeconds: stayDuration, to: stayConfig.fixedValue, keySplines: defaultEase }]
+    return [{ durationSeconds: stayDuration, toAbs: stayConfig.fixedValue, keySplines: defaultEase }]
   }
 
   // timeline 模式
@@ -192,17 +192,17 @@ export const buildStaySegments = ({
       throw new Error(`Stay timeline total duration (${timelineTotal}s) must not exceed stay duration (${stayDuration}s).`)
     }
 
-    const lastValue = stayConfig.timeline[stayConfig.timeline.length - 1].to
+    const lastValue = stayConfig.timeline[stayConfig.timeline.length - 1].toAbs
     const padding = stayDuration - timelineTotal
 
     return [
       ...stayConfig.timeline,
-      ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+      ...(padding > 0 ? [{ durationSeconds: padding, toAbs: lastValue, keySplines: defaultEase }] : []),
     ]
   }
 
   // fallback: hold 在 entry 最终值
-  return [{ durationSeconds: stayDuration, to: entryEndValue, keySplines: defaultEase }]
+  return [{ durationSeconds: stayDuration, toAbs: entryEndValue, keySplines: defaultEase }]
 }
 
 /**
@@ -222,10 +222,10 @@ export const buildTranslatePhaseSegments = ({
   /** 简单模式下的目标值（entry={x:0,y:0}, exit=offscreen） */
   simpleTargetValue: { x: number; y: number }
   defaultEase: string
-}): { durationSeconds: number; to: { x: number; y: number }; keySplines?: string }[] => {
+}): { durationSeconds: number; toAbs: { x: number; y: number }; keySplines?: string }[] => {
   if (!translateConfig.timeline) {
     // 简单模式：单段动画到目标值
-    return [{ durationSeconds: phaseDuration, to: simpleTargetValue, keySplines: translateConfig.keySplines ?? defaultEase }]
+    return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: translateConfig.keySplines ?? defaultEase }]
   }
 
   // 高级模式：使用用户 timeline
@@ -234,12 +234,12 @@ export const buildTranslatePhaseSegments = ({
     throw new Error(`Translate timeline total duration (${timelineTotal}s) must not exceed phase duration (${phaseDuration}s).`)
   }
 
-  const lastValue = translateConfig.timeline[translateConfig.timeline.length - 1].to
+  const lastValue = translateConfig.timeline[translateConfig.timeline.length - 1].toAbs
   const padding = phaseDuration - timelineTotal
 
   return [
     ...translateConfig.timeline,
-    ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+    ...(padding > 0 ? [{ durationSeconds: padding, toAbs: lastValue, keySplines: defaultEase }] : []),
   ]
 }
 
@@ -260,17 +260,17 @@ export const buildStayTranslateSegments = ({
   stayDuration: number
   entryEndValue: { x: number; y: number }
   defaultEase: string
-}): { durationSeconds: number; to: { x: number; y: number }; keySplines?: string }[] => {
+}): { durationSeconds: number; toAbs: { x: number; y: number }; keySplines?: string }[] => {
   if (stayDuration <= 0) return []
 
   // 无配置：hold 在 entry 最终值
   if (!stayConfig) {
-    return [{ durationSeconds: stayDuration, to: entryEndValue, keySplines: defaultEase }]
+    return [{ durationSeconds: stayDuration, toAbs: entryEndValue, keySplines: defaultEase }]
   }
 
   // 固定位置模式
   if (stayConfig.fixedValue !== undefined) {
-    return [{ durationSeconds: stayDuration, to: stayConfig.fixedValue, keySplines: defaultEase }]
+    return [{ durationSeconds: stayDuration, toAbs: stayConfig.fixedValue, keySplines: defaultEase }]
   }
 
   // timeline 模式
@@ -280,15 +280,15 @@ export const buildStayTranslateSegments = ({
       throw new Error(`Stay translate timeline total (${timelineTotal}s) must not exceed stay duration (${stayDuration}s).`)
     }
 
-    const lastValue = stayConfig.timeline[stayConfig.timeline.length - 1].to
+    const lastValue = stayConfig.timeline[stayConfig.timeline.length - 1].toAbs
     const padding = stayDuration - timelineTotal
 
     return [
       ...stayConfig.timeline,
-      ...(padding > 0 ? [{ durationSeconds: padding, to: lastValue, keySplines: defaultEase }] : []),
+      ...(padding > 0 ? [{ durationSeconds: padding, toAbs: lastValue, keySplines: defaultEase }] : []),
     ]
   }
 
   // fallback: hold 在 entry 最终值
-  return [{ durationSeconds: stayDuration, to: entryEndValue, keySplines: defaultEase }]
+  return [{ durationSeconds: stayDuration, toAbs: entryEndValue, keySplines: defaultEase }]
 }

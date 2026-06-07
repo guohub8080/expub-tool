@@ -23,8 +23,8 @@ export function animateSoftBlink(config?: I_SoftBlinkConfig) {
   return animateOpacity({
     initValue: maxOpacity,
     timeline: [
-      { to: minOpacity, durationSeconds: half, keySplines },
-      { to: maxOpacity, durationSeconds: half, keySplines },
+      { toAbs: minOpacity, durationSeconds: half, keySplines },
+      { toAbs: maxOpacity, durationSeconds: half, keySplines },
     ],
     begin: config?.begin,
     loopCount,

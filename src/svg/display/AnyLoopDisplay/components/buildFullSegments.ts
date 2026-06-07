@@ -1,7 +1,7 @@
 /** ease-in-out cubic-bezier，用于所有进入/退出动画 */
 export const DEFAULT_EASE = "0.42 0 0.58 1"
 
-export type Segment<T> = { durationSeconds: number; to: T; keySplines?: string }
+export type Segment<T> = { durationSeconds: number; toAbs: T; keySplines?: string }
 /** 标量 segment（rotation/scale/opacity/skew 使用） */
 export type ScalarSegment = Segment<number>
 
@@ -24,6 +24,6 @@ export const combinePhaseSegments = <T>(
   if (holdSegs && holdSegs.length > 0) {
     return [...entrySegs, ...staySegs, ...exitSegs, ...holdSegs]
   }
-  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].to : fallbackExitValue
-  return [...entrySegs, ...staySegs, ...exitSegs, { durationSeconds: holdDuration, to: lastExitValue, keySplines: defaultEase }]
+  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].toAbs : fallbackExitValue
+  return [...entrySegs, ...staySegs, ...exitSegs, { durationSeconds: holdDuration, toAbs: lastExitValue, keySplines: defaultEase }]
 }

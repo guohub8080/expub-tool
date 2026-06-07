@@ -22,12 +22,11 @@ export function transformFloat(config?: I_FloatConfig) {
   return transformTranslate({
     initValue: { x: floatRangeX, y: 0 },
     timeline: [
-      { to: { x: -floatRangeX, y: -floatRangeY }, durationSeconds: half, keySplines },
-      { to: { x: floatRangeX, y: 0 }, durationSeconds: half, keySplines },
+      { toAbs: { x: -floatRangeX, y: -floatRangeY }, durationSeconds: half, keySplines },
+      { toAbs: { x: floatRangeX, y: 0 }, durationSeconds: half, keySplines },
     ],
     begin: config?.begin,
     loopCount,
     isAdditive: true,
-    isRelativeMove: false,
   })
 }

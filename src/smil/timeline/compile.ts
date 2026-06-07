@@ -46,7 +46,7 @@ export function buildTimeline<T>(config: I_BuildTimelineConfig<T>): I_TimelineRe
 
   // 2. values（initValue 为第一个点，keyframes 依次追加，共 n+1 个点）
   const valueList: string[] = [serializer(initValue)]
-  keyframes.forEach(k => valueList.push(serializer(k.to)))
+  keyframes.forEach(k => valueList.push(serializer(k.toAbs)))
   const values = valueList.join(';')
 
   // 3. keyTimes（n+1 个点，强制最后一帧为 1 避免浮点精度问题）

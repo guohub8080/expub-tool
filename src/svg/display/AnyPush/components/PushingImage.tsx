@@ -21,7 +21,7 @@ import { assembleTimeline } from "../timeline/segmentAssembler";
  *
  * 动画参数：
  * - initValue: {x:0, y:0} — foreignObject 自身坐标已通过 x/y 属性设置了初始偏移
- * - isRelativeMove: true  — 每段的 to 值是相对位移，不是绝对坐标
+ * - toRel 模式 — 每段的 toRel 值是相对位移，不是绝对坐标
  * - isAdditive: true      — translate 叠加到 foreignObject 自身坐标上
  * - loopCount: 0          — 无限循环
  * - isFreeze: true        — 循环间隙保持最后一帧
@@ -72,7 +72,6 @@ const PushingImage = (props: {
                 loopCount: 0,
                 isFreeze: true,
                 isAdditive: true,
-                isRelativeMove: true
             })}
         </g>
     )

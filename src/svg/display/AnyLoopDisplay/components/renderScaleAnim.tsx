@@ -43,7 +43,7 @@ export const buildScaleAnimConfig = ({
   const ease = entryScale?.keySplines ?? exitScale?.keySplines ?? DEFAULT_EASE
 
   const entrySegs = buildScalePhaseSegments({ scaleConfig: entryScale, phaseDuration: switchDuration, simpleTargetValue: 1, defaultEase: ease })
-  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
+  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 1
   const staySegs = buildStaySegments({ stayConfig: stayScale, stayDuration, entryEndValue: lastEntryValue, defaultEase: ease })
 
   const exitTargetValue = defaultTo(exitScale?.initValue, 1)

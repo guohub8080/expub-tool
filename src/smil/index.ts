@@ -13,7 +13,7 @@ export { getBackBezier0_1 } from "./bezier/getBackBezier"
 
 // Timeline compiler
 export { buildTimeline } from "./timeline/compile"
-export type { I_TimelineKeyframe, I_TimelineResult, T_ValueSerializer } from "./timeline/types"
+export type { I_TimelineKeyframe, I_AbsRelKeyframe, I_TimelineResult, T_ValueSerializer } from "./timeline/types"
 
 // animateTransform
 export { transformTranslate } from "./animateTransform/translate"

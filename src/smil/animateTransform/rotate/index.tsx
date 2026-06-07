@@ -18,7 +18,6 @@ export function transformRotate(config: I_RotateConfig) {
     isFreeze = false,
     loopCount = 1,
     isAdditive = true,
-    isRelativeRotate = false,
     restart,
   } = config
 
@@ -31,10 +30,11 @@ export function transformRotate(config: I_RotateConfig) {
   for (const seg of timeline) {
     let nextAngle: number
 
-    if (isRelativeRotate) {
-      nextAngle = lastAngle + defaultTo(seg.to, 0)
+    if (!isNil(seg.toAbs)) {
+      nextAngle = seg.toAbs
     } else {
-      nextAngle = defaultTo(seg.to, lastAngle)
+      // toRel
+      nextAngle = lastAngle + seg.toRel!
     }
 
     angles.push(nextAngle)
@@ -44,7 +44,7 @@ export function transformRotate(config: I_RotateConfig) {
   // 2. 编译时间线
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
-    to: angles[i + 1],
+    toAbs: angles[i + 1],
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 

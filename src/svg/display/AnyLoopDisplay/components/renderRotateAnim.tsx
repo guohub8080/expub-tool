@@ -36,7 +36,7 @@ export const renderRotateAnim = ({
   const ease = entryRotation?.keySplines ?? exitRotation?.keySplines ?? DEFAULT_EASE
 
   const entrySegs = buildRotationPhaseSegments({ rotationConfig: entryRotation, phaseDuration: switchDuration, simpleTargetValue: 0, defaultEase: ease })
-  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
+  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 0
   const staySegs = buildStaySegments({ stayConfig: stayRotation, stayDuration, entryEndValue: lastEntryValue, defaultEase: ease })
   const exitSegs = buildRotationPhaseSegments({ rotationConfig: exitRotation, phaseDuration: nextSwitchDuration, simpleTargetValue: exitTargetValue, defaultEase: defaultTo(exitRotation?.keySplines, ease) })
 

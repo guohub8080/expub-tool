@@ -68,8 +68,8 @@ const CoverFlowY = (props: {
     const item = items[i]
     const delta = (i + 1) * step
     const target = reverse ? { x: 0, y: delta } : { x: 0, y: -delta }
-    outerTimeline.push({ to: target, durationSeconds: item.switchDuration, keySplines: item.keySplines })
-    outerTimeline.push({ to: target, durationSeconds: item.stayDuration })
+    outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: item.keySplines })
+    outerTimeline.push({ toAbs: target, durationSeconds: item.stayDuration })
   }
 
   return (
@@ -120,7 +120,6 @@ const CoverFlowY = (props: {
                       begin: '0s',
                       loopCount: 0,
                       isAdditive: false,
-                      isRelativeMove: false,
                       isFreeze: true,
                     })}
                   </g>
@@ -134,7 +133,6 @@ const CoverFlowY = (props: {
               loopCount: 0,
               isFreeze: true,
               isAdditive: true,
-              isRelativeMove: false,
             })}
           </g>
         </SvgEx>
@@ -162,7 +160,7 @@ function buildSlotScale(
       const holdSeg = enlargeSeg + 1
       targetValue = (seg === enlargeSeg || seg === holdSeg) ? fullScale : 1
     }
-    timeline.push({ to: targetValue, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
+    timeline.push({ toAbs: targetValue, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
   }
   return timeline
 }
@@ -187,7 +185,7 @@ function buildSlotTranslate(
       const holdSeg = enlargeSeg + 1
       target = (seg === enlargeSeg || seg === holdSeg) ? { x: scaleDx, y: scaleDy } : { x: 0, y: 0 }
     }
-    timeline.push({ to: target, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
+    timeline.push({ toAbs: target, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
   }
   return timeline
 }

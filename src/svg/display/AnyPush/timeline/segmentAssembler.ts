@@ -17,7 +17,7 @@ import { calculateDelayTime, calculateHoldTime } from "./sequenceCalculator";
  * 3. 退出段：从中心滑出到屏幕外（to = nextPic 的 exitOffset）
  * 4. 保持段：在屏幕外等待循环（to = {0,0}，duration = 剩余时间）
  *
- * 关键：所有 to 值都是相对位移（isRelativeMove=true），
+ * 关键：所有 toRel 值都是相对位移，
  * foreignObject 的初始 x/y 已经设为 entryOffset。
  */
 
@@ -44,14 +44,14 @@ export const assembleTimeline = (
     // 1. 进入段：从 entryOffset 位置移到中心
     //    foreignObject 初始在 entryOffset，需要 translate 一个 exitOffset 才能回到原点
     const entrySegment: I_TimelineSegment = {
-        to: getExitOffset(currentPic.direction, viewBoxW, viewBoxH),
+        toRel: getExitOffset(currentPic.direction, viewBoxW, viewBoxH),
         durationSeconds: currentPic.switchDuration,
         keySplines: currentPic.keySplines
     };
 
     // 2. 停留段：在中心不动
     const staySegment: I_TimelineSegment = {
-        to: { x: 0, y: 0 },
+        toRel: { x: 0, y: 0 },
         durationSeconds: currentPic.stayDuration,
         keySplines: currentPic.keySplines
     };
@@ -59,14 +59,14 @@ export const assembleTimeline = (
     // 3. 退出段：从中心滑到屏幕外（沿下一张图的退出方向）
     //    使用 nextPic 的方向，让当前图"让出"位置给下一张
     const exitSegment: I_TimelineSegment = {
-        to: getExitOffset(nextPic.direction, viewBoxW, viewBoxH),
+        toRel: getExitOffset(nextPic.direction, viewBoxW, viewBoxH),
         durationSeconds: nextPic.switchDuration,
         keySplines: nextPic.keySplines
     };
 
     // 4. 保持段：在屏幕外等待，直到自己的下一轮进入
     const holdSegment: I_TimelineSegment = {
-        to: { x: 0, y: 0 },
+        toRel: { x: 0, y: 0 },
         durationSeconds: calculateHoldTime(index, pics, totalCycleDuration),
         keySplines: currentPic.keySplines
     };

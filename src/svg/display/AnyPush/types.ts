@@ -67,8 +67,8 @@ export interface I_NormalizedPicConfig extends I_PicConfig {
  * 对应 transformTranslate 的一个 keyframe
  */
 export interface I_TimelineSegment {
-    /** 本段结束时的目标位移坐标（相对位移，因为 isRelativeMove=true） */
-    to: I_Point;
+    /** 本段结束时的目标位移坐标（相对位移，使用 toRel 模式） */
+    toRel: I_Point;
     /** 本段持续时间（秒） */
     durationSeconds: number;
     /** 本段的缓动曲线 */

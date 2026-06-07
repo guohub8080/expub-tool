@@ -3,7 +3,7 @@ import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
 import { buildTimeline } from '@smil/timeline/compile'
-import type { T_ValueSerializer } from '@smil/timeline/types'
+import type { T_ValueSerializer, I_AbsRelKeyframe } from '@smil/timeline/types'
 import type { I_TranslateConfig, I_TranslateValue } from './types'
 
 export type { I_TranslateConfig, I_TranslateValue } from './types'
@@ -14,24 +14,23 @@ const serializeTranslate: T_ValueSerializer<I_TranslateValue> = (v) => `${v.x} $
 function buildCoordinates(
   initX: number,
   initY: number,
-  timeline: I_TranslateConfig['timeline'],
-  isRelativeMove: boolean,
+  timeline: I_AbsRelKeyframe<Partial<I_TranslateValue>>[],
 ): I_TranslateValue[] {
   const coordinates: I_TranslateValue[] = [{ x: initX, y: initY }]
   let lastX = initX
   let lastY = initY
 
   for (const seg of timeline) {
-    const to = seg.to
     let newX: number
     let newY: number
 
-    if (isRelativeMove) {
-      newX = lastX + defaultTo(to.x, 0)
-      newY = lastY + defaultTo(to.y, 0)
+    if (!isNil(seg.toAbs)) {
+      newX = seg.toAbs.x ?? lastX
+      newY = seg.toAbs.y ?? lastY
     } else {
-      newX = to.x ?? lastX
-      newY = to.y ?? lastY
+      // toRel
+      newX = lastX + defaultTo(seg.toRel!.x, 0)
+      newY = lastY + defaultTo(seg.toRel!.y, 0)
     }
 
     coordinates.push({ x: newX, y: newY })
@@ -57,13 +56,12 @@ export function transformTranslate(config: I_TranslateConfig) {
   const isFreeze = defaultTo(config.isFreeze, false)
   const loopCount = defaultTo(config.loopCount, 1)
   const isAdditive = defaultTo(config.isAdditive, true)
-  const isRelativeMove = defaultTo(config.isRelativeMove, true)
 
-  const coordinates = buildCoordinates(initX, initY, timeline, isRelativeMove)
+  const coordinates = buildCoordinates(initX, initY, timeline)
 
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
-    to: coordinates[i + 1],
+    toAbs: coordinates[i + 1],
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 

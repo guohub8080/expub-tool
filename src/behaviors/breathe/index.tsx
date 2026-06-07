@@ -27,8 +27,8 @@ export function transformBreathe(config: I_BreatheConfig) {
     initValue: fromScale,
     origin,
     timeline: [
-      { to: toScale, durationSeconds: half, keySplines },
-      { to: fromScale, durationSeconds: half, keySplines },
+      { toAbs: toScale, durationSeconds: half, keySplines },
+      { toAbs: fromScale, durationSeconds: half, keySplines },
     ],
     begin,
     loopCount,

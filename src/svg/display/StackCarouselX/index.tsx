@@ -170,7 +170,6 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
                     loopCount: 0,
                     isFreeze: true,
                     isAdditive: false,
-                    isRelativeMove: false,
                     restart: "whenNotActive",
                   })}
                   <g>

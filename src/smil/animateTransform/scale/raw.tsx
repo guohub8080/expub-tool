@@ -25,14 +25,14 @@ export function transformScaleRaw(config: I_ScaleRawConfig) {
   const scaleValues: number[] = [initValue]
   let lastScale = initValue
   for (const seg of timeline) {
-    const nextScale = defaultTo(seg.to, lastScale)
+    const nextScale = defaultTo(seg.toAbs, lastScale)
     scaleValues.push(nextScale)
     lastScale = nextScale
   }
 
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
-    to: scaleValues[i + 1],
+    toAbs: scaleValues[i + 1],
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 

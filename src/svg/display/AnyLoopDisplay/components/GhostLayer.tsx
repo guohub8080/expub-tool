@@ -61,13 +61,13 @@ const GhostLayer = (props: {
       defaultEase: ease,
     })
 
-    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 0
 
     return transformSkewX({
       initValue: entrySkew.initValue,
       timeline: [
         ...entrySegs,
-        { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
+        { durationSeconds: ghostHoldDuration, toAbs: lastEntryValue, keySplines: ease },
       ],
       begin: `${ghostHoldDuration}s`,
       loopCount: 0,
@@ -88,13 +88,13 @@ const GhostLayer = (props: {
       defaultEase: ease,
     })
 
-    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 0
 
     return transformSkewY({
       initValue: entrySkew.initValue,
       timeline: [
         ...entrySegs,
-        { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
+        { durationSeconds: ghostHoldDuration, toAbs: lastEntryValue, keySplines: ease },
       ],
       begin: `${ghostHoldDuration}s`,
       loopCount: 0,
@@ -125,10 +125,10 @@ const GhostLayer = (props: {
       defaultEase: ease,
     })
 
-    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 0
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 0
     const timeline = [
       ...entrySegs,
-      { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
+      { durationSeconds: ghostHoldDuration, toAbs: lastEntryValue, keySplines: ease },
     ]
 
     return transformRotate({
@@ -161,10 +161,10 @@ const GhostLayer = (props: {
       defaultEase: ease,
     })
 
-    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 1
     const timeline = [
       ...entrySegs,
-      { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
+      { durationSeconds: ghostHoldDuration, toAbs: lastEntryValue, keySplines: ease },
     ]
 
     return {
@@ -194,10 +194,10 @@ const GhostLayer = (props: {
       defaultEase: ease,
     })
 
-    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
+    const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 1
     const timeline = [
       ...entrySegs,
-      { durationSeconds: ghostHoldDuration, to: lastEntryValue, keySplines: ease },
+      { durationSeconds: ghostHoldDuration, toAbs: lastEntryValue, keySplines: ease },
     ]
 
     return animateOpacity({
@@ -248,8 +248,8 @@ const GhostLayer = (props: {
       {animateVisibility({
         initValue: "hidden",
         timeline: [
-          { durationSeconds: ghostHoldDuration, to: "visible" },
-          { durationSeconds: ghostEntryDuration, to: "hidden" },
+          { durationSeconds: ghostHoldDuration, toAbs: "visible" },
+          { durationSeconds: ghostEntryDuration, toAbs: "hidden" },
         ],
         begin: "0s",
         loopCount: 0,
@@ -258,14 +258,13 @@ const GhostLayer = (props: {
       {transformTranslate({
         initValue: enterOffscreenTranslate,
         timeline: [
-          { durationSeconds: ghostHoldDuration, to: enterOffscreenTranslate, keySplines: DEFAULT_EASE },
-          { durationSeconds: ghostEntryDuration, to: { x: 0, y: 0 },          keySplines: DEFAULT_EASE },
+          { durationSeconds: ghostHoldDuration, toAbs: enterOffscreenTranslate, keySplines: DEFAULT_EASE },
+          { durationSeconds: ghostEntryDuration, toAbs: { x: 0, y: 0 },          keySplines: DEFAULT_EASE },
         ],
         begin: "0s",
         loopCount: 0,
         isFreeze: true,
         isAdditive: false,
-        isRelativeMove: false,
       })}
       {ghostContent}
     </g>

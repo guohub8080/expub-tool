@@ -32,7 +32,7 @@ export const genWidthAnimate = (options: extrudeOptions): React.ReactElement => 
 
   const widthTimeline: I_TimelineKeyframe<string>[] = options.timeline.map((segment) => ({
     keySplines: defaultTo(segment.keySplines, getEaseBezier({ isOut: true })),
-    to: `${100 * (segment.toHeight / options.initHeight)}%`,
+    toAbs: `${100 * (segment.toHeight / options.initHeight)}%`,
     durationSeconds: segment.durationSeconds,
   }));
 

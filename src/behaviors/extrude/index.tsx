@@ -57,7 +57,7 @@ export const genAnimateExtrude = (props: extrudeOptions): React.ReactElement => 
 
   const widthTimeline: I_TimelineKeyframe<string>[] = props.timeline.map((segment) => ({
     keySplines: defaultTo(segment.keySplines, getEaseBezier({isOut: true})),
-    to: `${100 * (segment.toHeight / props.initHeight)}%`,
+    toAbs: `${100 * (segment.toHeight / props.initHeight)}%`,
     durationSeconds: segment.durationSeconds,
   }));
 
@@ -100,8 +100,8 @@ export const genAnimateExtrude = (props: extrudeOptions): React.ReactElement => 
         {animateHeight({
           initValue: props.initHeight,
           timeline: [
-            { to: 0, durationSeconds: 0.001 },
-            { to: 0, durationSeconds: widthParams.totalDuration - 0.001 },
+            { toAbs: 0, durationSeconds: 0.001 },
+            { toAbs: 0, durationSeconds: widthParams.totalDuration - 0.001 },
           ],
           begin: props.begin,
           isFreeze: true,

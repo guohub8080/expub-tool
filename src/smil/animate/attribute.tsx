@@ -35,14 +35,14 @@ export function animateAttribute<T extends number | string>(
   const values: T[] = [initValue]
   let last = initValue
   for (const seg of timeline) {
-    const next = defaultTo(seg.to, last)
+    const next = defaultTo(seg.toAbs, last)
     values.push(next)
     last = next
   }
 
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
-    to: values[i + 1],
+    toAbs: values[i + 1],
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 

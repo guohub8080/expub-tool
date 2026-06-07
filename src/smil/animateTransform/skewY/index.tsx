@@ -23,14 +23,14 @@ export function transformSkewY(config: I_SkewYConfig) {
   const angles: number[] = [initValue]
   let lastAngle = initValue
   for (const seg of timeline) {
-    const nextAngle = defaultTo(seg.to, lastAngle)
+    const nextAngle = defaultTo(seg.toAbs, lastAngle)
     angles.push(nextAngle)
     lastAngle = nextAngle
   }
 
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
-    to: angles[i + 1],
+    toAbs: angles[i + 1],
     keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
   }))
 

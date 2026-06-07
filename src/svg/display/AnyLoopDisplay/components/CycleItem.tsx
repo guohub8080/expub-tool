@@ -90,7 +90,7 @@ const CycleItem = (props: {
     defaultEase: ease,
   })
 
-  const lastEntryValue = entrySegs[entrySegs.length - 1].to
+  const lastEntryValue = entrySegs[entrySegs.length - 1].toAbs
   const staySegs = buildStayTranslateSegments({
     stayConfig: item.stay.translate,
     stayDuration,
@@ -209,7 +209,6 @@ const CycleItem = (props: {
         loopCount: 0,
         isFreeze: true,
         isAdditive: false,
-        isRelativeMove: false,
       })}
       {content}
     </g>
@@ -228,7 +227,7 @@ const getEntryBuffer = (entryScale?: I_NormalizedChildItem['entry']['scale']): n
 const getExitBuffer = (exitScale?: I_NormalizedChildItem['exit']['scale']): number => {
   if (isNil(exitScale)) return 1
   if (exitScale.timeline) {
-    const timelineMax = max(exitScale.timeline.map(segment => segment.to)) ?? 1
+    const timelineMax = max(exitScale.timeline.map(segment => segment.toAbs)) ?? 1
     return max([1, timelineMax]) ?? 1
   }
   return max([1, defaultTo(exitScale.initValue, 1)]) ?? 1

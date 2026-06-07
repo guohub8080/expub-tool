@@ -27,12 +27,12 @@ export const renderOpacityAnim = ({
   const ease = entryOpacity?.keySplines ?? exitOpacity?.keySplines ?? DEFAULT_EASE
 
   const entrySegs = buildOpacityPhaseSegments({ opacityConfig: entryOpacity, phaseDuration: switchDuration, simpleTargetValue: 1, defaultEase: ease })
-  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].to : 1
+  const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 1
   const staySegs = buildStaySegments({ stayConfig: stayOpacity, stayDuration, entryEndValue: lastEntryValue, defaultEase: ease })
   const exitSegs = buildOpacityPhaseSegments({ opacityConfig: exitOpacity, phaseDuration: nextSwitchDuration, simpleTargetValue: exitTargetValue, defaultEase: defaultTo(exitOpacity?.keySplines, ease) })
 
   // hold 段：有 holdOpacity 配置时构建自定义 hold 段，否则保持 exit 终态
-  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].to : exitTargetValue
+  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].toAbs : exitTargetValue
   const holdSegs = holdOpacity
     ? buildStaySegments({ stayConfig: holdOpacity, stayDuration: holdDuration, entryEndValue: lastExitValue, defaultEase: ease })
     : undefined

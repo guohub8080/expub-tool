@@ -99,20 +99,20 @@ export function buildSlotTimelines({
     const isExit = nextPos === 3
 
     translateTimeline.push({
-      to: isExit ? exitConfig.translate : posConfig.translateValues[nextPos],
+      toAbs: isExit ? exitConfig.translate : posConfig.translateValues[nextPos],
       durationSeconds: dur,
       keySplines: splines,
     })
 
     scaleTimeline.push({
-      to: isExit ? exitConfig.scale : posConfig.scaleValues[nextPos],
+      toAbs: isExit ? exitConfig.scale : posConfig.scaleValues[nextPos],
       durationSeconds: dur,
       keySplines: splines,
     })
 
     if (hasSkew) {
       skewTimeline.push({
-        to: isExit ? exitConfig.skew!.angle : 0,
+        toAbs: isExit ? exitConfig.skew!.angle : 0,
         durationSeconds: dur,
         keySplines: defaultTo(skewSplines, splines),
       })
@@ -120,7 +120,7 @@ export function buildSlotTimelines({
 
     if (hasRotation) {
       rotateTimeline.push({
-        to: isExit ? (exitConfig.rotation!.angle ?? 0) : 0,
+        toAbs: isExit ? (exitConfig.rotation!.angle ?? 0) : 0,
         durationSeconds: dur,
         keySplines: exitConfig.rotation!.keySplines ?? splines,
       })

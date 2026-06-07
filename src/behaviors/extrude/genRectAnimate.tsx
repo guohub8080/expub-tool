@@ -5,8 +5,8 @@ export const genRectAnimate = (widthTotalDuration: number, options: extrudeOptio
   return animateHeight({
     initValue: options.initHeight,
     timeline: [
-      { to: 0, durationSeconds: 0.001 },
-      { to: 0, durationSeconds: widthTotalDuration - 0.001 },
+      { toAbs: 0, durationSeconds: 0.001 },
+      { toAbs: 0, durationSeconds: widthTotalDuration - 0.001 },
     ],
     begin: options.begin,
     isFreeze: true,
