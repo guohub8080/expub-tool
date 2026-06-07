@@ -16,6 +16,7 @@ export default function CamaraStagePage() {
       <div style={{ width: 300, margin: '0 auto' }}>
         <CamaraStage
           viewport={{ width: 300, height: 500 }}
+          loopCount={0}
           camera={{
             initial: { x: 0, y: 0, z: 0 },
             timeline: [
@@ -49,43 +50,44 @@ export default function CamaraStagePage() {
         横移视差（近快远慢）
       </h3>
       <p style={{ fontSize: 12, color: '#6b7280' }}>
-        三层不同深度，camera x: 0 → 300 → -300 → 0，近处偏移更大
+        三层不同深度，camera x: 0 → 100 → -100 → 0，近处偏移更大
       </p>
       <div style={{ width: 300, margin: '0 auto' }}>
         <CamaraStage
           viewport={{ width: 300, height: 300 }}
-          focalLength={400}
+          focalLength={600}
+          loopCount={0}
           camera={{
             initial: { x: 0, y: 0, z: 0 },
             timeline: [
-              { durationSeconds: 1, toAbs: { x: 300 } },
-              { durationSeconds: 1, toAbs: { x: -300 } },
-              { durationSeconds: 1, toAbs: { x: 0 } },
+              { durationSeconds: 1.2, toAbs: { x: 100 } },
+              { durationSeconds: 1.2, toAbs: { x: -100 } },
+              { durationSeconds: 1.2, toAbs: { x: 0 } },
             ],
           }}
           scenes={[
             {
               id: 'near',
-              world: { x: 0, y: 0, z: 200 },
+              world: { x: 0, y: 0, z: 300 },
               kind: 'world',
               objects: [
-                { id: 'nearObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(3), size: { w: 150, h: 150 } },
+                { id: 'nearObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(3), size: { w: 160, h: 160 } },
               ],
             },
             {
               id: 'mid',
-              world: { x: 0, y: 0, z: 400 },
+              world: { x: 0, y: 0, z: 600 },
               kind: 'world',
               objects: [
-                { id: 'midObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(4), size: { w: 150, h: 150 } },
+                { id: 'midObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(4), size: { w: 160, h: 160 } },
               ],
             },
             {
               id: 'far',
-              world: { x: 0, y: 0, z: 800 },
+              world: { x: 0, y: 0, z: 1200 },
               kind: 'world',
               objects: [
-                { id: 'farObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(5), size: { w: 150, h: 150 } },
+                { id: 'farObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(5), size: { w: 160, h: 160 } },
               ],
             },
           ]}

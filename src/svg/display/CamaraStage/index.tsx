@@ -38,6 +38,8 @@ const CamaraStage = (props: I_CamaraStageProps) => {
   const { viewport, camera, scenes, canvasBg } = props
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const isDev = ExPubGoConfig().mode === 'development'
+  const loopCount = defaultTo(props.loopCount, 1)
+  const repeatCount = loopCount === 0 ? 'indefinite' : String(loopCount)
 
   // 烘焙：Props → CanonicalTrack[]
   const { tracks, totalDuration } = bake(props)
@@ -76,7 +78,7 @@ const CamaraStage = (props: I_CamaraStageProps) => {
                 {scenes.map(scene => (
                   <g key={scene.id} data-scene={scene.id}>
                     {(sceneTracks.get(scene.id) ?? []).map(track =>
-                      emitObjectGroup(track, totalDuration),
+                      emitObjectGroup(track, totalDuration, repeatCount),
                     )}
                   </g>
                 ))}

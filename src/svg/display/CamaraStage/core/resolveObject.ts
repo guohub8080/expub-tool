@@ -75,7 +75,6 @@ export function resolveObject(params: I_ResolveObjectParams): I_ResolvedFrame {
     if (entrance) {
       return applyEntranceModifier(entrance, rz, worldTx, worldTy, worldScale)
     }
-    // 无配置时默认行为：rz <= 0 时不可见，线性渐显
     return applyDefaultPassThrough(rz, worldTx, worldTy, worldScale)
   }
 
@@ -85,9 +84,14 @@ export function resolveObject(params: I_ResolveObjectParams): I_ResolvedFrame {
 
 /**
  * 入场修饰器：
- * u = clamp(rz / triggerDistance, 0, 1)
- * u=0 时对象刚进入 → modifier 全开（opacity=from, offset=from）
- * u=1 时入场完成 → modifier 归零（opacity=to, offset=to）
+ *
+ * u = clamp((rz + triggerDistance) / (triggerDistance × 2), 0, 1)
+ *
+ * - rz = -triggerDistance: u = 0 → camera 刚进入触发区，物体不可见
+ * - rz = 0:               u = 0.5 → camera 到达物体平面，半程显现
+ * - rz = +triggerDistance: u = 1 → camera 已越过，入场完成
+ *
+ * 这样物体在 camera "接近" 时就开始显现，而非等 camera 完全越过后才出现。
  */
 function applyEntranceModifier(
   entrance: I_EntranceConfig,
@@ -97,7 +101,7 @@ function applyEntranceModifier(
   worldScale: number,
 ): I_ResolvedFrame {
   const triggerDist = defaultTo(entrance.triggerDistance, 200)
-  const u = clamp(rz / triggerDist, 0, 1)
+  const u = clamp((rz + triggerDist) / (triggerDist * 2), 0, 1)
 
   const opacityFrom = defaultTo(entrance.opacity?.from, 0)
   const opacityTo = defaultTo(entrance.opacity?.to, 1)
@@ -116,14 +120,15 @@ function applyEntranceModifier(
   }
 }
 
-/** 默认 passThrough 行为：rz < 0 不可见，线性渐显到 rz = 200 */
+/** 默认 passThrough 行为：对称渐显 */
 function applyDefaultPassThrough(
   rz: number,
   worldTx: number,
   worldTy: number,
   worldScale: number,
 ): I_ResolvedFrame {
-  const u = clamp(rz / 200, 0, 1)
+  const triggerDist = 200
+  const u = clamp((rz + triggerDist) / (triggerDist * 2), 0, 1)
   return {
     tx: worldTx,
     ty: worldTy,

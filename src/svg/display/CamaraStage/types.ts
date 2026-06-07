@@ -34,7 +34,7 @@ export type T_SceneKind = 'world' | 'passThrough'
 
 /** 入场修饰器配置（仅 passThrough 生效） */
 export type I_EntranceConfig = {
-  /** 触发距离：rz < 此值时开始入场（默认 200） */
+  /** 触发距离：rz ± 此值为入场窗口（默认 200） */
   triggerDistance?: number
   /** 透明度范围：from → to 随 u 从 0→1 */
   opacity?: { from: number; to: number }
@@ -134,6 +134,8 @@ export type I_CamaraStageProps = {
   scenes: Scene[]
   /** 采样率 fps（默认 30） */
   sampleRate?: number
+  /** 重复次数，0 = 无限循环（默认 1） */
+  loopCount?: number
   /** 画布背景 */
   canvasBg?: string
   /** 外间距 */

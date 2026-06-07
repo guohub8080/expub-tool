@@ -23,7 +23,11 @@ import type { CanonicalTrack } from '../types'
  *     </g>
  *   </g>
  */
-export function emitObjectGroup(track: CanonicalTrack, totalDuration: number): React.ReactNode {
+export function emitObjectGroup(
+  track: CanonicalTrack,
+  totalDuration: number,
+  repeatCount: string,
+): React.ReactNode {
   const { frames, size, asset } = track
 
   if (frames.length < 2) return null
@@ -48,6 +52,7 @@ export function emitObjectGroup(track: CanonicalTrack, totalDuration: number): R
         calcMode="linear"
         begin="0s"
         fill="freeze"
+        repeatCount={repeatCount}
       />
       <g>
         {/* scale 层：深度缩放（内容居中于原点，直接 scale） */}
@@ -60,6 +65,7 @@ export function emitObjectGroup(track: CanonicalTrack, totalDuration: number): R
           calcMode="linear"
           begin="0s"
           fill="freeze"
+          repeatCount={repeatCount}
         />
         <g>
           {/* opacity 层 */}
@@ -71,6 +77,7 @@ export function emitObjectGroup(track: CanonicalTrack, totalDuration: number): R
             calcMode="linear"
             begin="0s"
             fill="freeze"
+            repeatCount={repeatCount}
           />
           {/* 内容居中于原点，使 scale 以内容中心为锚点 */}
           <g transform={`translate(${-w / 2}, ${-h / 2})`}>
