@@ -1,23 +1,27 @@
 /**
  * LayerGroup — 单个 layer 的 SVG 渲染
  *
- * 结构（固定骨架，三层 <g>）：
- *   <g data-layer="id">
- *     <animateTransform type="translate" />    ← camera 驱动的位移
- *     <animateTransform type="scale" />        ← camera 驱动的透视缩放
- *     <animate attributeName="opacity" />      ← 入场 / 穿越可见性
- *     {content}                                ← 图片 / jsx 内容
- *   </g>
+ * 固定骨架（两层 <g>，world + entrance）：
  *
- * translate 和 scale 在同一个 <g> 上不行（animateTransform 会互相覆盖），
- * 所以需要嵌套。但保持最小嵌套：
- *   <g data-layer>       ← translate
- *     <g>                 ← scale
- *       <g>               ← opacity
- *         content
+ *   <g data-layer="id">                  ← world translate
+ *     <animateTransform type="translate" />
+ *     <g>                                  ← world scale
+ *       <animateTransform type="scale" />
+ *       <g data-enter>                     ← entrance translate (offset)
+ *         <animateTransform type="translate" additive="sum" />
+ *         <g>                              ← entrance scale
+ *           <animateTransform type="scale" />
+ *           <g>                            ← entrance opacity
+ *             <animate attributeName="opacity" />
+ *             content
+ *           </g>
+ *         </g>
  *       </g>
  *     </g>
  *   </g>
+ *
+ * 非 entering 层的 entrance modifier 恒为 identity（0 offset, scale=1, opacity=1），
+ * 所以内层 <g> 不产生视觉影响。
  */
 
 import type { ReactNode } from "react"
@@ -36,42 +40,64 @@ interface I_LayerGroupProps {
 
 const LayerGroup = (props: I_LayerGroupProps) => {
   const { layer, compiled, viewportWidth, viewportHeight } = props
-  const { init, translateTimeline, scaleTimeline, opacityTimeline } = compiled
+  const { init } = compiled
 
   const content: ReactNode = renderContent(layer, viewportWidth, viewportHeight)
 
   return (
     <g data-layer={layer.id}>
-      {/* translate 层 */}
+      {/* ── world translate ── */}
       <g>
         {transformTranslate({
-          initValue: { x: init.tx, y: init.ty },
-          timeline: translateTimeline,
+          initValue: { x: init.worldTx, y: init.worldTy },
+          timeline: compiled.worldTranslateTimeline,
           begin: "0s",
           loopCount: 1,
           isFreeze: true,
           isAdditive: false,
         })}
-        {/* scale 层 */}
+        {/* ── world scale ── */}
         <g>
           {transformScaleRaw({
-            initValue: init.scale,
-            timeline: scaleTimeline,
+            initValue: init.worldScale,
+            timeline: compiled.worldScaleTimeline,
             begin: "0s",
             loopCount: 1,
             isFreeze: true,
             isAdditive: false,
           })}
-          {/* opacity 层 */}
+          {/* ── entrance translate modifier ── */}
           <g>
-            {animateOpacity({
-              initValue: init.opacity,
-              timeline: opacityTimeline,
+            {transformTranslate({
+              initValue: { x: init.enterTx, y: init.enterTy },
+              timeline: compiled.enterTranslateTimeline,
               begin: "0s",
               loopCount: 1,
               isFreeze: true,
+              isAdditive: false,
             })}
-            {content}
+            {/* ── entrance scale modifier ── */}
+            <g>
+              {transformScaleRaw({
+                initValue: init.enterScale,
+                timeline: compiled.enterScaleTimeline,
+                begin: "0s",
+                loopCount: 1,
+                isFreeze: true,
+                isAdditive: false,
+              })}
+              {/* ── entrance opacity modifier ── */}
+              <g>
+                {animateOpacity({
+                  initValue: init.enterOpacity,
+                  timeline: compiled.enterOpacityTimeline,
+                  begin: "0s",
+                  loopCount: 1,
+                  isFreeze: true,
+                })}
+                {content}
+              </g>
+            </g>
           </g>
         </g>
       </g>
@@ -79,7 +105,7 @@ const LayerGroup = (props: I_LayerGroupProps) => {
   )
 }
 
-/** 渲染 layer 内容（图片或 jsx），坐标系平移到左上角对齐 viewport 中心 */
+/** 渲染 layer 内容，坐标系平移到左上角对齐 viewport 中心 */
 const renderContent = (layer: I_NormalizedLayer, w: number, h: number): ReactNode => {
   const tx = -w / 2
   const ty = -h / 2

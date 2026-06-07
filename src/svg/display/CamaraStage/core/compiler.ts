@@ -1,11 +1,8 @@
 /**
  * compiler — 采样 + 编译
  *
- * 流程：
- *   1. 解析 camera timeline → 分段 + 总时长
- *   2. 按 sampleRate 均匀采样 camera 位置
- *   3. 对每个 layer 的每帧做投影 → tx / ty / scale / opacity
- *   4. 首帧为 initValue，后续帧为 timeline keyframes
+ * 对每个 layer 的每帧投影出 worldState + entranceModifier，
+ * 分别编译为独立的 SMIL timeline。
  */
 
 import type { I_CompiledLayer } from "../types"
@@ -20,7 +17,6 @@ export const compileAllLayers = (config: I_NormalizedConfig): {
   const { viewport, camera, layers, sampleRate } = config
   const { segments, totalDuration } = resolveCameraTimeline(camera)
 
-  // 均匀采样 camera 位置
   const sampleCount = Math.ceil(totalDuration * sampleRate) + 1
   const samples = Array.from({ length: sampleCount }, (_, i) => {
     const t = (i / (sampleCount - 1)) * totalDuration
@@ -28,53 +24,66 @@ export const compileAllLayers = (config: I_NormalizedConfig): {
   })
 
   const compiled = layers.map(layer => compileLayer({ viewport, layer, samples }))
-
   return { compiled, totalDuration }
 }
 
 const compileLayer = ({
-  viewport,
-  layer,
-  samples,
+  viewport, layer, samples,
 }: {
   viewport: I_NormalizedConfig["viewport"]
   layer: I_NormalizedConfig["layers"][number]
   samples: { position: { x: number; y: number; z: number }; time: number }[]
 }): I_CompiledLayer => {
-  // 对每帧投影
   const frames = samples.map(sample =>
     projectLayer({ viewport, cameraPosition: sample.position, layer })
   )
 
-  // 首帧为 initValue
   const init = {
-    tx: frames[0].tx,
-    ty: frames[0].ty,
-    scale: frames[0].scale,
-    opacity: frames[0].opacity,
+    // world state
+    worldTx: frames[0].worldTx,
+    worldTy: frames[0].worldTy,
+    worldScale: frames[0].worldScale,
+    // entrance modifier
+    enterTx: frames[0].enterTx,
+    enterTy: frames[0].enterTy,
+    enterScale: frames[0].enterScale,
+    enterOpacity: frames[0].enterOpacity,
+    // final
+    finalTx: frames[0].finalTx,
+    finalTy: frames[0].finalTy,
+    finalScale: frames[0].finalScale,
+    finalOpacity: frames[0].finalOpacity,
   }
 
-  // 后续帧 → timeline keyframes
-  const translateTimeline = frames.slice(1).map((frame, i) => ({
-    durationSeconds: samples[i + 1].time - samples[i].time,
-    toAbs: { x: frame.tx, y: frame.ty },
-  }))
-
-  const scaleTimeline = frames.slice(1).map((frame, i) => ({
-    durationSeconds: samples[i + 1].time - samples[i].time,
-    toAbs: frame.scale,
-  }))
-
-  const opacityTimeline = frames.slice(1).map((frame, i) => ({
-    durationSeconds: samples[i + 1].time - samples[i].time,
-    toAbs: frame.opacity,
-  }))
+  const dur = (i: number) => samples[i + 1].time - samples[i].time
 
   return {
     layerId: layer.id,
     init,
-    translateTimeline,
-    scaleTimeline,
-    opacityTimeline,
+    // world translate
+    worldTranslateTimeline: frames.slice(1).map((f, i) => ({
+      durationSeconds: dur(i),
+      toAbs: { x: f.worldTx, y: f.worldTy },
+    })),
+    // world scale
+    worldScaleTimeline: frames.slice(1).map((f, i) => ({
+      durationSeconds: dur(i),
+      toAbs: f.worldScale,
+    })),
+    // entrance translate (offset)
+    enterTranslateTimeline: frames.slice(1).map((f, i) => ({
+      durationSeconds: dur(i),
+      toAbs: { x: f.enterTx, y: f.enterTy },
+    })),
+    // entrance scale (factor, multiplicative on worldScale)
+    enterScaleTimeline: frames.slice(1).map((f, i) => ({
+      durationSeconds: dur(i),
+      toAbs: f.enterScale,
+    })),
+    // entrance opacity
+    enterOpacityTimeline: frames.slice(1).map((f, i) => ({
+      durationSeconds: dur(i),
+      toAbs: f.enterOpacity,
+    })),
   }
 }

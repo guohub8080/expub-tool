@@ -84,27 +84,30 @@ export interface I_ViewportConfig {
 
 // ─── 编译结果 ───
 
-/** 单帧采样结果 */
+/** 单帧投影结果 */
 export interface I_LayerFrame {
-  /** 相对 viewport 中心的 x 偏移（像素） */
-  tx: number
-  /** 相对 viewport 中心的 y 偏移（像素） */
-  ty: number
-  /** 投影缩放 */
-  scale: number
-  /** 透明度 */
-  opacity: number
+  worldTx: number
+  worldTy: number
+  worldScale: number
+  enterTx: number
+  enterTy: number
+  enterScale: number
+  enterOpacity: number
+  finalTx: number
+  finalTy: number
+  finalScale: number
+  finalOpacity: number
 }
 
-/** 单个 layer 的完整编译结果 */
+/** 单个 layer 的编译结果：world 轨道 + entrance 修饰轨道 */
 export interface I_CompiledLayer {
   layerId: string
-  /** 首帧值（SMIL initValue） */
   init: I_LayerFrame
-  /** 后续帧 keyframes */
-  translateTimeline: I_TimelineKeyframe<{ x: number; y: number }>[]
-  scaleTimeline: I_TimelineKeyframe<number>[]
-  opacityTimeline: I_TimelineKeyframe<number>[]
+  worldTranslateTimeline: I_TimelineKeyframe<{ x: number; y: number }>[]
+  worldScaleTimeline: I_TimelineKeyframe<number>[]
+  enterTranslateTimeline: I_TimelineKeyframe<{ x: number; y: number }>[]
+  enterScaleTimeline: I_TimelineKeyframe<number>[]
+  enterOpacityTimeline: I_TimelineKeyframe<number>[]
 }
 
 // ─── 组件 Props ───
