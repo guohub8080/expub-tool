@@ -24,7 +24,7 @@ function FaceContent({ content, width, height }: {
   if (!content.url) return null
 
   return (
-    <svg
+    <SvgEx
       viewBox={`0 0 ${width} ${height}`}
       style={{
         display: 'inline-block',
@@ -89,7 +89,6 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
         >
           <g transform={`translate(${cx} ${cy})`}>
             <g>
-              {/* 翻转动画：scale X 从 1 到 -1 */}
               <animateTransform
                 attributeName="transform"
                 type="scale"
