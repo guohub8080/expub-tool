@@ -16,6 +16,7 @@ import StackCarouselPage from './pages/StackCarouselPage'
 import ClickFlipCardPage from './pages/ClickFlipCardPage'
 import ClickPopupPage from './pages/ClickPopupPage'
 import ClickCascadePage from './pages/ClickCascadePage'
+import CamaraStagePage from './pages/CamaraStagePage'
 
 const links = [
   { to: '/', label: 'SMIL' },
@@ -32,6 +33,7 @@ const links = [
   { to: '/click-flip', label: 'ClickFlip' },
   { to: '/click-popup', label: 'ClickPopup' },
   { to: '/click-cascade', label: 'ClickCascade' },
+  { to: '/camara-stage', label: 'CamaraStage' },
   { to: '/behaviors', label: 'Behaviors' },
   { to: '/css', label: 'CSS' },
   { to: '/utils', label: 'Utils' },
@@ -86,6 +88,7 @@ export default function App() {
           <Route path="/click-flip" element={<ClickFlipCardPage />} />
           <Route path="/click-popup" element={<ClickPopupPage />} />
           <Route path="/click-cascade" element={<ClickCascadePage />} />
+          <Route path="/camara-stage" element={<CamaraStagePage />} />
           <Route path="/behaviors" element={<BehaviorsPage />} />
           <Route path="/css" element={<CssPage />} />
           <Route path="/utils" element={<UtilsPage />} />

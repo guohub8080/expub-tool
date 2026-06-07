@@ -48,6 +48,9 @@ export type { I_StackCarouselItem } from "./display/StackCarouselX"
 
 export { default as StackCarouselY } from "./display/StackCarouselY"
 
+export { default as CamaraStage } from "./display/CamaraStage"
+export type { I_CamaraStageProps } from "./display/CamaraStage"
+
 export { ClickFlipCard } from "./click"
 export type { I_ClickFlipProps, I_FaceContent } from "./click"
 
