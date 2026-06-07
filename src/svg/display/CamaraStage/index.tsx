@@ -1,14 +1,15 @@
 /**
- * CamaraStage — 导演式 Layer World 动画系统
+ * CamaraStage — 导演式 Layer World 动画系统（Approach B）
  *
  * 渲染结构（固定骨架）：
  *   SectionEx
  *   └─ section（overflow 裁剪）
  *      └─ SvgEx
  *         └─ <g visibility="hidden">（防 SMIL 闪烁）
- *            └─ <g data-camera>（viewport 中心）
- *               └─ <g data-stage>（可选：scene 级偏移）
- *                  └─ LayerGroup × N（每个 layer 独立渲染 + 统一 camera 驱动动画）
+ *            └─ <g data-camera>（共享镜头运动 translate）
+ *               <animateTransform type="translate" />
+ *               └─ <g data-stage>
+ *                  └─ LayerGroup × N（per-layer parallax + entrance）
  */
 
 import defaultTo from "lodash/defaultTo"
@@ -17,7 +18,7 @@ import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
-import { setVisibility } from "@smil/index"
+import { setVisibility, transformTranslate } from "@smil/index"
 import { resolveCanvasBg } from "@utils/svg/resolveCanvasBg"
 import { normalizeProps } from "./utils/normalizer"
 import { compileAllLayers } from "./core/compiler"
@@ -30,7 +31,7 @@ export default function CamaraStage(props: I_CamaraStageProps) {
   const isDev = ExPubGoConfig().mode === "development"
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
 
-  const { compiled, totalDuration } = compileAllLayers(config)
+  const { cameraBase, compiled, totalDuration } = compileAllLayers(config)
 
   return (
     <SectionEx
@@ -48,8 +49,16 @@ export default function CamaraStage(props: I_CamaraStageProps) {
         >
           <g visibility="hidden">
             {setVisibility({ to: "visible", begin: "0.01s", isFreeze: true })}
-            {/* data-camera：viewport 中心，所有 layer 的 translate 以此为原点 */}
-            <g data-camera transform={`translate(${viewport.centerX}, ${viewport.centerY})`}>
+            {/* data-camera：共享镜头运动（centerX - camera.x, centerY + camera.y） */}
+            <g data-camera>
+              {transformTranslate({
+                initValue: { x: cameraBase.initTx, y: cameraBase.initTy },
+                timeline: cameraBase.translateTimeline,
+                begin: "0s",
+                loopCount: 1,
+                isFreeze: true,
+                isAdditive: false,
+              })}
               <g data-stage>
                 {layers.map((layer, i) => (
                   <LayerGroup

@@ -1,14 +1,13 @@
 /**
- * LayerGroup — 单个 layer 的 SVG 渲染
+ * LayerGroup — 单个 layer 的 SVG 渲染（Approach B）
  *
- * 固定骨架（两层 <g>，world + entrance）：
- *
- *   <g data-layer="id">                  ← world translate
+ * DOM 骨架：
+ *   <g data-layer="id">                  ← parallax translate（per-layer delta）
  *     <animateTransform type="translate" />
  *     <g>                                  ← world scale
  *       <animateTransform type="scale" />
  *       <g data-enter>                     ← entrance translate (offset)
- *         <animateTransform type="translate" additive="sum" />
+ *         <animateTransform type="translate" />
  *         <g>                              ← entrance scale
  *           <animateTransform type="scale" />
  *           <g>                            ← entrance opacity
@@ -20,8 +19,7 @@
  *     </g>
  *   </g>
  *
- * 非 entering 层的 entrance modifier 恒为 identity（0 offset, scale=1, opacity=1），
- * 所以内层 <g> 不产生视觉影响。
+ * camera base translate 在父级 <g data-camera> 上，此组件只管 per-layer 部分。
  */
 
 import type { ReactNode } from "react"
@@ -46,11 +44,11 @@ const LayerGroup = (props: I_LayerGroupProps) => {
 
   return (
     <g data-layer={layer.id}>
-      {/* ── world translate ── */}
+      {/* ── parallax translate（per-layer delta） ── */}
       <g>
         {transformTranslate({
-          initValue: { x: init.worldTx, y: init.worldTy },
-          timeline: compiled.worldTranslateTimeline,
+          initValue: { x: init.parallaxTx, y: init.parallaxTy },
+          timeline: compiled.parallaxTranslateTimeline,
           begin: "0s",
           loopCount: 1,
           isFreeze: true,

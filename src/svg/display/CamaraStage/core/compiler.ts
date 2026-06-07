@@ -1,16 +1,18 @@
 /**
- * compiler — 采样 + 编译
+ * compiler — 采样 + 编译（Approach B）
  *
- * 对每个 layer 的每帧投影出 worldState + entranceModifier，
- * 分别编译为独立的 SMIL timeline。
+ * 输出：
+ *   - cameraBase：共享镜头运动（所有 layer 共用一个 animateTransform）
+ *   - compiled layers：per-layer parallax delta + entrance modifier
  */
 
-import type { I_CompiledLayer } from "../types"
+import type { I_CameraBaseCompiled, I_CompiledLayer } from "../types"
 import type { I_NormalizedConfig } from "../utils/normalizer"
 import { resolveCameraTimeline, sampleCameraAt } from "./cameraSampler"
-import { projectLayer } from "./projector"
+import { projectLayer, cameraBaseTranslate } from "./projector"
 
 export const compileAllLayers = (config: I_NormalizedConfig): {
+  cameraBase: I_CameraBaseCompiled
   compiled: I_CompiledLayer[]
   totalDuration: number
 } => {
@@ -23,8 +25,37 @@ export const compileAllLayers = (config: I_NormalizedConfig): {
     return sampleCameraAt(segments, t)
   })
 
+  // ── camera base timeline（共享） ──
+  const cameraBase = compileCameraBase(samples, viewport)
+
+  // ── per-layer parallax + entrance ──
   const compiled = layers.map(layer => compileLayer({ viewport, layer, samples }))
-  return { compiled, totalDuration }
+
+  return { cameraBase, compiled, totalDuration }
+}
+
+/** 编译共享 camera base：translate(centerX - camera.x, centerY + camera.y) */
+const compileCameraBase = (
+  samples: { position: { x: number; y: number }; time: number }[],
+  viewport: I_NormalizedConfig["viewport"],
+): I_CameraBaseCompiled => {
+  // cameraBase = (centerX - camera.x, centerY + camera.y)
+  const toBase = (camX: number, camY: number) => ({
+    x: viewport.centerX - camX,
+    y: viewport.centerY + camY,
+  })
+
+  const firstBase = toBase(samples[0].position.x, samples[0].position.y)
+  const dur = (i: number) => samples[i + 1].time - samples[i].time
+
+  return {
+    initTx: firstBase.x,
+    initTy: firstBase.y,
+    translateTimeline: samples.slice(1).map((s, i) => ({
+      durationSeconds: dur(i),
+      toAbs: toBase(s.position.x, s.position.y),
+    })),
+  }
 }
 
 const compileLayer = ({
@@ -39,20 +70,13 @@ const compileLayer = ({
   )
 
   const init = {
-    // world state
-    worldTx: frames[0].worldTx,
-    worldTy: frames[0].worldTy,
+    parallaxTx: frames[0].parallaxTx,
+    parallaxTy: frames[0].parallaxTy,
     worldScale: frames[0].worldScale,
-    // entrance modifier
     enterTx: frames[0].enterTx,
     enterTy: frames[0].enterTy,
     enterScale: frames[0].enterScale,
     enterOpacity: frames[0].enterOpacity,
-    // final
-    finalTx: frames[0].finalTx,
-    finalTy: frames[0].finalTy,
-    finalScale: frames[0].finalScale,
-    finalOpacity: frames[0].finalOpacity,
   }
 
   const dur = (i: number) => samples[i + 1].time - samples[i].time
@@ -60,10 +84,10 @@ const compileLayer = ({
   return {
     layerId: layer.id,
     init,
-    // world translate
-    worldTranslateTimeline: frames.slice(1).map((f, i) => ({
+    // parallax translate (per-layer delta)
+    parallaxTranslateTimeline: frames.slice(1).map((f, i) => ({
       durationSeconds: dur(i),
-      toAbs: { x: f.worldTx, y: f.worldTy },
+      toAbs: { x: f.parallaxTx, y: f.parallaxTy },
     })),
     // world scale
     worldScaleTimeline: frames.slice(1).map((f, i) => ({

@@ -84,26 +84,31 @@ export interface I_ViewportConfig {
 
 // ─── 编译结果 ───
 
-/** 单帧投影结果 */
+/** 共享 camera base 编译结果（所有 layer 共用一个） */
+export interface I_CameraBaseCompiled {
+  initTx: number
+  initTy: number
+  translateTimeline: I_TimelineKeyframe<{ x: number; y: number }>[]
+}
+
+/** 单帧投影结果（per-layer parallax delta + entrance modifier） */
 export interface I_LayerFrame {
-  worldTx: number
-  worldTy: number
+  // parallax delta（per-layer，已减去 camera base）
+  parallaxTx: number
+  parallaxTy: number
   worldScale: number
+  // 入场修饰器
   enterTx: number
   enterTy: number
   enterScale: number
   enterOpacity: number
-  finalTx: number
-  finalTy: number
-  finalScale: number
-  finalOpacity: number
 }
 
-/** 单个 layer 的编译结果：world 轨道 + entrance 修饰轨道 */
+/** 单个 layer 的编译结果：parallax 轨道 + entrance 修饰轨道 */
 export interface I_CompiledLayer {
   layerId: string
   init: I_LayerFrame
-  worldTranslateTimeline: I_TimelineKeyframe<{ x: number; y: number }>[]
+  parallaxTranslateTimeline: I_TimelineKeyframe<{ x: number; y: number }>[]
   worldScaleTimeline: I_TimelineKeyframe<number>[]
   enterTranslateTimeline: I_TimelineKeyframe<{ x: number; y: number }>[]
   enterScaleTimeline: I_TimelineKeyframe<number>[]

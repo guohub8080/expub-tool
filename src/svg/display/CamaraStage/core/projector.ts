@@ -1,30 +1,22 @@
 /**
- * projector — 统一运动公式 + 入场修饰器
+ * projector — Approach B：camera base + per-layer parallax delta
  *
- * 核心公理：
- *   每个 layer 从一开始就属于统一的 camera/world 系统。
- *   入场不是一个独立于世界的动画系统，而是附着在 world projection
- *   之上的 temporary entrance modifier。该 modifier 只在入场窗口内生效，
- *   并随进度衰减到 0；当 modifier 消失后，layer 自然完全服从统一世界控制。
+ * 分解策略：
+ *   camera base（共享）：(-camera.x, +camera.y) 放在 <g data-camera> 上
+ *   parallax delta（per-layer）：每个 layer 的深度响应差值
  *
- * 公式：
- *   rz = layerZ - cameraZ
- *   k = depthScale(rz)
+ * 数学推导：
+ *   原始 worldTx = (layer.worldX - camera.x) * k
  *
- *   worldTx = rx * k
- *   worldTy = -ry * k
- *   worldScale = k
+ *   cameraBase = -camera.x
+ *   parallaxDelta = worldTx - cameraBase
+ *                 = (layer.worldX - camera.x) * k + camera.x
+ *                 = layer.worldX * k + camera.x * (1 - k)
  *
- *   u = entranceProgress(rz, role)      // 0=未入场, 1=完全并入世界
+ *   验证：cameraBase + parallaxDelta = -camera.x + layer.worldX*k + camera.x*(1-k)
+ *                                   = layer.worldX*k - camera.x*k = (layer.worldX - camera.x)*k = worldTx ✓
  *
- *   enterTx = (1-u) * entranceOffsetX   // 侧向偏移，衰减到 0
- *   enterScale = lerp(1.15, 1, u)       // 轻微放大，衰减到 1
- *   enterOpacity = u                     // 0→1 淡入
- *
- *   finalTx = worldTx + enterTx
- *   finalTy = worldTy + enterTy
- *   finalScale = worldScale * enterScale
- *   finalOpacity = enterOpacity
+ * entrance modifier 不变，仍然附着在 per-layer 上。
  */
 
 import type { I_Vec3, T_LayerRole } from "../types"
@@ -95,9 +87,9 @@ const entranceDirectionX = (rx: number): number => {
 // ─── 投影 ───
 
 export interface I_LayerProjection {
-  // world 主状态（统一 camera/world 公式）
-  worldTx: number
-  worldTy: number
+  // per-layer parallax delta（已减去 camera base）
+  parallaxTx: number
+  parallaxTy: number
   worldScale: number
 
   // 入场修饰器
@@ -105,12 +97,6 @@ export interface I_LayerProjection {
   enterTy: number
   enterScale: number // 乘法因子，1 = 无修饰
   enterOpacity: number
-
-  // 最终合成
-  finalTx: number
-  finalTy: number
-  finalScale: number
-  finalOpacity: number
 }
 
 export interface I_ProjectOptions {
@@ -119,8 +105,25 @@ export interface I_ProjectOptions {
   layer: I_NormalizedLayer
 }
 
+// ─── camera base ───
+
 /**
- * 投影：world state + entrance modifier → final state
+ * Camera base translate：共享的镜头运动偏移
+ *
+ * cameraBase = (-camera.x, +camera.y)
+ * 所有 layer 共用，放在 <g data-camera> 上
+ */
+export const cameraBaseTranslate = (cameraPosition: I_Vec3): { tx: number; ty: number } => ({
+  tx: -cameraPosition.x,
+  ty: cameraPosition.y,
+})
+
+// ─── 投影 ───
+
+/**
+ * 投影：camera base + parallax delta + entrance modifier
+ *
+ * parallaxDelta = layer 的深度响应差值（减去 camera base 后的部分）
  */
 export const projectLayer = (options: I_ProjectOptions): I_LayerProjection => {
   const { viewport, cameraPosition, layer } = options
@@ -131,10 +134,18 @@ export const projectLayer = (options: I_ProjectOptions): I_LayerProjection => {
   const ry = layer.worldY - cameraPosition.y
   const rz = layer.worldZ - cameraPosition.z
 
-  // ── world state ──
+  // ── depth scale ──
   const k = depthScale(f, rz)
-  const worldTx = rx * k
-  const worldTy = -ry * k
+
+  // ── parallax delta (approach B) ──
+  // worldTx = (layer.worldX - camera.x) * k
+  // parallaxDelta = worldTx - cameraBaseTx = worldTx - (-camera.x)
+  //               = layer.worldX * k + camera.x * (1 - k)
+  const parallaxTx = layer.worldX * k + cameraPosition.x * (1 - k)
+  // worldTy = -(layer.worldY - camera.y) * k
+  // parallaxDelta = worldTy - cameraBaseTy = worldTy - camera.y
+  //               = -layer.worldY * k + camera.y * (k - 1)
+  const parallaxTy = -layer.worldY * k + cameraPosition.y * (k - 1)
   const worldScale = k
 
   // ── entrance modifier ──
@@ -145,13 +156,8 @@ export const projectLayer = (options: I_ProjectOptions): I_LayerProjection => {
   const enterScale = layer.role === "entering" ? ENTER_SCALE_FROM + (1 - ENTER_SCALE_FROM) * u : 1
   const enterOpacity = u
 
-  // ── final ──
   return {
-    worldTx, worldTy, worldScale,
+    parallaxTx, parallaxTy, worldScale,
     enterTx, enterTy, enterScale, enterOpacity,
-    finalTx: worldTx + enterTx,
-    finalTy: worldTy + enterTy,
-    finalScale: worldScale * enterScale,
-    finalOpacity: enterOpacity,
   }
 }
