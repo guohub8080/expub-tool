@@ -31,7 +31,7 @@ export default function CamaraStagePage() {
               world: { x: 0, y: 0, z: 300 },
               kind: 'world',
               objects: [
-                { id: 'objA', local: { x: 0, y: 0, z: 0 }, asset: PLACEHOLDER_300x500 },
+                { id: 'objA', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(1) },
               ],
             },
             {
@@ -40,7 +40,7 @@ export default function CamaraStagePage() {
               kind: 'passThrough',
               entrance: { triggerDistance: 200, opacity: { from: 0, to: 1 } },
               objects: [
-                { id: 'objB', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(1) },
+                { id: 'objB', local: { x: 0, y: 0, z: 0 }, asset: PLACEHOLDER_300x500 },
               ],
             },
           ]}
