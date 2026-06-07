@@ -14,6 +14,7 @@ import SkewPushYPage from './pages/SkewPushYPage'
 import AnyLoopDisplayPage from './pages/AnyLoopDisplayPage'
 import StackCarouselPage from './pages/StackCarouselPage'
 import ClickFlipCardPage from './pages/ClickFlipCardPage'
+import ClickFlipOncePage from './pages/ClickFlipOncePage'
 import ClickPopupPage from './pages/ClickPopupPage'
 import ClickCascadePage from './pages/ClickCascadePage'
 import CamaraStagePage from './pages/CamaraStagePage'
@@ -31,6 +32,7 @@ const links = [
   { to: '/any-loop-display', label: 'AnyLoopDisplay' },
   { to: '/stack-carousel', label: 'StackCarousel' },
   { to: '/click-flip', label: 'ClickFlip' },
+  { to: '/click-flip-once', label: 'FlipOnce' },
   { to: '/click-popup', label: 'ClickPopup' },
   { to: '/click-cascade', label: 'ClickCascade' },
   { to: '/camara-stage', label: 'CamaraStage' },
@@ -86,6 +88,7 @@ export default function App() {
           <Route path="/any-loop-display" element={<AnyLoopDisplayPage />} />
           <Route path="/stack-carousel" element={<StackCarouselPage />} />
           <Route path="/click-flip" element={<ClickFlipCardPage />} />
+          <Route path="/click-flip-once" element={<ClickFlipOncePage />} />
           <Route path="/click-popup" element={<ClickPopupPage />} />
           <Route path="/click-cascade" element={<ClickCascadePage />} />
           <Route path="/camara-stage" element={<CamaraStagePage />} />
