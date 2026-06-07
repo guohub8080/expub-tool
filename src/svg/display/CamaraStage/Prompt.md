@@ -1,292 +1,277 @@
-- - - # 导演式 Layer World SVG 系统 Prompt
+- - - 你现在是一个资深的图形引擎 / SVG 编译器 / 离线动画烘焙系统设计师。
+      我要你帮我设计一套**用于微信公众号 SVG 的导演式镜头动画编译系统**。
+      请严格基于下面这套原则工作，不要偷换成普通平面补间系统，不要改写成运行时动画框架，不要把最终方案变成依赖运行时 JS 的 3D 播放器。最终播放平台是微信公众号内的 SVG，因此最终交付物必须是**静态 SVG/JSX + SMIL**，而不是运行时 scene engine。[[developer.mozilla](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateTransform)]
+      
+      ## 一、核心目标
+      
+      我要做的不是普通元素动画，而是一种**镜头后撤 / 平移 / 穿越**的 SVG 动画体验。
+      它的核心不是“每个元素自己动一下”，而是：
     
-      你现在是一个资深的图形引擎 / SVG 编译器设计师。
-      我要你帮我设计一套用于微信公众号 SVG 的**导演式分层世界动画系统（Layer World System）**。请严格基于下面这套思路工作，不要擅自改成普通平面补间系统，也不要偷换成运行时动画框架。
-
-      ## 一、系统定位
-
-      这个系统**不再追求完整 3D 物理正确投影引擎**，而是一个**导演式的世界运动模拟系统**。它的目标不是精确求解所有 3D 点，而是：
-    
-      - 用统一的 camera 语法模拟“我在一个世界里运动”
-      - 用多个 layer 表示世界中的不同图层 / 场景卡片 / 图像平面
-      - 让这些 layer 在统一镜头规则下产生“后撤、推进、穿越、入场、退远、视差”的感觉
-      - 最终在 build 阶段编译成**纯静态 SVG/JSX + SMIL**
-      - 最终产物在公众号里直接播放，**不依赖运行时 JS**
-    
-      换句话说：
-
-      - 开发时：允许存在虚拟 world、虚拟 camera、layer 时间轴、编译器
-      - 输出时：只有单个静态 `<svg>`，其中是多层 `<g>` 与 SMIL 动画
-      - 这不是一个真正的 3D 渲染器，而是一个**导演式世界运动编译器**
+      - 在开发阶段建立一个**虚拟空间**
+      - 在这个空间里定义 **camera / scene / object** 的位置和时间关系
+      - 允许在开发阶段使用**真实 3D scene / 真实 camera / 普通 JS 框架**作为离线 authoring solver
+      - 在 build / bake 阶段，把 camera 看到的关键帧结果**烘焙**成 2D screen-space 轨道
+      - 再把这些轨道编译成**单个静态 `<svg>`**，内部由多个 `<g>` 和 SMIL 动画组成
+      - 最终产物在微信公众号里**直接播放**，不依赖运行时 JS，不依赖外部 CSS，不依赖运行时 3D 框架
+      
+      也就是说：
+      
+      - **开发时**：允许有虚拟 camera、虚拟 z 空间、采样器、离线 3D solver、编译器
+      - **输出时**：只有单个静态 `<svg>`，里面是多个 `<g>`、`<animate>`、`<animateTransform>`
     
       ## 二、平台限制
     
-      这是给微信公众号 SVG 用的，所以必须遵守以下原则：
+      这是给微信公众号 SVG 用的，因此必须遵守：
     
       - 不依赖运行时 JS
       - 不依赖外部 CSS
       - 不使用嵌套 `<svg>`
       - 尽量避免复杂的 ID 引用关系
-      - 最终结构必须是：**单顶层 `<svg>` + 多层 `<g>`**
-      - 动画使用 SMIL：`<animate>` / `<animateTransform>` / `<set>`
-
+      - 最终结构应为：**单顶层 `<svg>` + 多层 `<g>`**
+      - 动画主要使用 SMIL：`<animate>` / `<animateTransform>`
+      - 输出应尽量稳定、扁平、可直接嵌入 SVG/JSX
+      
       补充理解：
-
-      - `<g>` 是主要分层容器，对 `<g>` 的 `transform` 会作用到其全部子元素。
-      - `<animateTransform>` 可直接动画化 `translate / scale / rotate / skew`。
-      - `keyTimes` 与 `values` 必须一一对应，且全部时间值位于 0 到 1 之间。
-      - SVG 的叠放顺序主要由文档顺序控制，后面的元素会压在前面的元素之上。
-    
+      
+      - `<g>` 是主要的空间分层容器，适合承接 `transform`，并把变换传递给子元素[[mdn2.netlify](https://mdn2.netlify.app/en-us/docs/web/svg/element/g/)]
+      - `transform` / `animateTransform` 可以直接挂在 `<g>` 或元素上[[developer.mozilla](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorials/SVG_from_scratch/Basic_transformations)]
+      - SVG 并不真的懂 3D；最终 SVG 只是播放 2D transform/opacity 的结果
+      - 不要把最终方案设计成在 SVG 里实时跑 camera 计算
+      
       ## 三、根本原则
-
-      请始终基于这个原则思考：
-
-      **SVG 是播放层，不是空间层；世界感来自编译器定义的统一运动规则，而不是 SVG 自己真的懂 3D。**
-    
-      因此：
-
-      - 最终 SVG 不存在真实 z-buffer
-      - 不存在运行时 camera 节点
-      - 不存在运行时世界求值
-      - 所有“这是同一个世界”的感觉，都必须在编译阶段被写成一组统一的 `translate / scale / opacity` 时间轨迹
-    
-      这里特别强调：
-    
-      我现在要的，不是“数学上更像 3D”优先，而是“**视觉上更像处于同一个持续运动世界**”优先。
-
-      ## 四、核心设计目标
-
-      这个系统的核心目标不是单个元素做小动画，而是让多个 layer 看起来像：
-    
-      - 处在同一个统一运动的世界里
-      - 共享同一个镜头节奏
-      - 在不同时间从不同方向进入主视野
-      - 入场后继续跟着同一个世界运动，而不是完成入场后钉死
-
+      
+      请始终基于以下原则思考：
+      
+      > **SVG 只是播放层，不是空间层；空间只存在于开发阶段和编译阶段。**
+      
       也就是说：
-
-      - 一张图从右边“穿进来”
-      - 另一张图稍后从左边“穿进来”
-      - 前面的旧图继续退远
-      - 新进来的图入场后也继续跟着镜头一起晃 / 一起退远 / 一起偏移
+      
+      - 最终 SVG 不真的拥有 3D 空间
+      - 3D / camera / 景深 / 视差 / 穿越 都是在 authoring / bake / compile 阶段虚拟和求解出来的
+      - 最终落地结果只能是 2D 的 `translate / scale / opacity / clip / rotate` 等回放数据
     
-      这种统一性，**优先通过统一 camera 规则 + layer 分层规则达成**，而不是通过复杂的逐点透视引擎达成。
-
-      ## 五、世界模型
-
-      ## 1. Layer World
+      ## 四、Authoring 与 Output 的双层架构
     
-      系统的基本单位不是 mesh，不是 path 点云，而是**Layer**。每个 layer 代表一张图、一个图组、一个场景卡片、或一个需要整体运动的世界平面。
+      系统必须明确区分两层：
 
+      ## 1. Authoring Solver Layer
+
+      这是开发阶段的离线求解层。这里允许：
+    
+      - 用普通 JS / Three.js / 自定义 solver / 其他框架
+      - 真正搭一个 3D scene
+      - 真正放一个 camera
+      - 真正控制关键帧
+      - 在任意时间 `t` 采样 camera 和对象的世界位置
+      - 计算对象在 camera 内的相对位置与屏幕投影
+      - 得到 baked screen-space 数据
+      
+      这里可以有真实 3D、矩阵、camera、世界坐标、时间采样器。
+      
+      ## 2. SVG Playback Layer
+    
+      这是输出层。这里**不允许**存在：
+
+      - 运行时 camera
+      - 运行时 3D
+      - 运行时 solver
+      - 运行时布局重算
+      
+      这里只允许：
+      
+      - 静态 `<svg>`
+      - 多个 `<g>`
+      - `animate / animateTransform`
+      - 预编译好的 `values / keyTimes / keySplines`
+      
+      ## 五、空间模型
+      
+      整个系统有一个统一的虚拟世界坐标系：
+      
       ```
       ts
-      type Layer = {
-        id: string
-        asset: string
-        worldX: number
-        worldY: number
-        worldZ: number
-        width?: number
-        height?: number
-        role?: 'base' | 'entering' | 'foreground' | 'background'
-        timeline?: LayerTrack[]
-      }
+      type Vec3 = { x: number; y: number; z: number }
       ```
     
-      这里的 `worldX / worldY / worldZ` 是**导演化世界坐标**，它们不要求严格 3D 正确，但必须用于产生统一的世界感。
+      坐标语义固定为：
     
-      ## 2. Camera
+      - `x`：向右为正
+      - `y`：向上为正
+      - `z`：沿镜头方向的深度轴
+      
+      必须严格理解前后关系由**相对 camera 的深度**决定，而不是绝对 z 决定。
+      
+      设：
+      
+      - `e = element world position`
+      - `c = camera world position`
+      
+      则：
+      
+      ```
+      ts
+      rx = ex - cx
+      ry = ey - cy
+      rz = ez - cz
+      ```
+      
+      语义必须是：
+      
+      - `rz > 0`：元素在 camera 前方
+      - `rz = 0`：元素在 camera 平面上，是危险区
+      - `rz < 0`：元素在 camera 后方
+      
+      也就是说，元素是否在前面，不由绝对 z 决定，而由 `ez - cz` 决定。
+      
+      ## 六、Camera
 
-      camera 是整个世界运动的唯一主骨架。
-      camera 不输出成 SVG 节点，它只存在于编译阶段，用来生成所有 layer 的运动轨迹。
-    
-      第一版约束如下：
-    
-      - camera **不旋转**
-      - camera 永远朝向 `{x:0,y:0,z:1}`
-      - camera 允许：
-        - 沿 z 后撤 / 推进
-        - 轻微上下摆动
-        - 轻微左右摆动
-        - 停顿、折返、再次推进
-    
+      camera 处在与 scene/object 相同的 world space 中。
+      camera 永远作为**开发时 / 编译时的参考系**存在，而**不会输出为 SVG 节点**。
+      
       ```
       ts
       type Camera = {
-        initial: { x: number; y: number; z: number }
+        initial: Vec3
         timeline: CameraSegment[]
       }
+      ```
+
+      camera 是整个系统的**主骨架**。
+      scene 和 object 可以有局部表演，但不能篡改 camera 的主语义。
+      
+      ## 七、空间链路
+      
+      整个空间解析链路必须严格是：
+      
+      ```
       ts
-      type CameraSegment = {
+      objectLocal
+      -> sceneWorld
+      -> cameraRelative
+      -> screen2D
+      ```
+      
+      也就是：
+      
+      - object 先在 scene 内排布
+      - scene 决定整块内容在世界中的位置
+      - camera 决定相对镜头的位置
+      - 最终投影成屏幕空间的位置与缩放
+    
+      请后续所有函数、编译流程、数据结构都围绕这条链路设计。
+      
+      ## 八、投影模型
+      
+      设：
+      
+      ```
+      ts
+      viewport = { width: 300, height: 500 }
+      center = { x: 150, y: 250 }
+      f = 300
+      ```
+      
+      采用简化 pinhole / perspective 模型：
+      
+      ```
+      ts
+      scale = f / rz
+      screenX = centerX + rx * scale
+      screenY = centerY - ry * scale
+      ```
+    
+      要求你始终理解：
+      
+      - `screenX/screenY` 与 `scale` 在几何求值上**共享同一个深度因子**
+      - 所以在求值层，translate 与 scale 是**耦合的**
+      - 但在最终 SVG 编译层，可以把它们拆成独立动画通道输出
+      - 即：**求值耦合，输出分离**
+    
+      ## 九、时间模型
+    
+      整个系统必须有统一的全局主时间轴：
+    
+      ```
+      ts
+      globalTimeline = {
         duration: number
-        toAbs?: Partial<Vec3>
-        toRel?: Partial<Vec3>
-        easing?: string
       }
       ```
-
-      ## 3. 世界感优先于物理正确
-
-      这一版系统不是要求每个 layer 严格通过完整透视矩阵求值，而是要求所有 layer**共享同一套镜头运动规则**。因此，只要满足以下条件，就视为世界感成立：
-
-      - 所有 layer 共享一个 camera 主时间轴
-      - 每个 layer 的位置变化与 scale 变化受同一套深度规则控制
-      - 某个 layer 入场后，会继续服从同一镜头的后续运动
-      - 同一时刻不同深度的 layer，对 camera 运动的响应不同，从而形成视差与层次感
-    
-      ## 六、统一运动公式
-
-      虽然这一版是导演式模拟系统，但仍然要求使用**统一的近似投影公式**，使所有 layer 看起来处于同一个运动世界中。
-
-      对每个 layer，先定义相对 camera 位置：
-    
-      ```
-      ts
-      rx = layer.worldX - camera.x
-      ry = layer.worldY - camera.y
-      rz = layer.worldZ - camera.z
-      ```
-    
-      然后使用统一的近似投影：
-    
-      ```
-      ts
-      scale = depthScale(rz)
-      translateX = centerX + rx * scale
-      translateY = centerY - ry * scale
-      ```
-    
-      其中：
-    
-      - `depthScale(rz)` 可以是近似透视规则
-      - 第一版建议优先使用：
-
-      ```
-      ts
-      depthScale(rz) = f / rz
-      ```
-    
-      但允许在危险区、穿越区、导演化入场区做替换或限幅。
+      
+      要求：
+      
+      - 所有 scene `<g>`
+      - 所有 object `<g>`
+      - 所有 opacity / translate / scale 动画
+      
+      最终都共享这一条完整时间轴。
+      哪怕某个 scene/object 只在局部时段活跃，也必须在整条 timeline 上占位。
+      
       也就是说：
+      
+      - 所有编译出的 `keyTimes` 都必须落在同一条 `0..1` 母时间轴上
+      - 每个 `<g>` 的动画都要挂满整片 duration
+      - 不允许每个 scene 自己偷偷有一套独立片长
     
-      - 平时：尽量维持统一公式
-      - 特效区：允许导演式 override
-    
-      请始终记住：
-    
-      **translate 不是独立于 scale 的，它必须和 scale 共享同一深度逻辑。**也就是说，远处 layer 不只是更小，而且应更靠近画面中心；近处 layer 不只是更大，而且横向/纵向偏移也更明显。
-    
-      ## 七、Layer 的入场规则
-    
-      系统必须支持以下导演语义：
-    
-      - 某个 layer 原本在世界中较远处或画面侧边
-      - 当 camera 持续运动时，它在合适时机进入主视野
-      - 进入时可以带有“穿进来 / 浮现 / 从大回落”的效果
-      - 入场后，它不应脱离系统，而应继续服从统一镜头规则
-    
-      也就是说：
-    
-      **入场动画只是 layer 进入世界视野的一个阶段，不是它独立于世界运动的单独特效。**
-    
-      ## 1. 入场的统一定义
-    
-      一个 layer 的入场，必须同时由这三件事构成：
-    
-      - 可见性变化：`opacity`
-      - 深度感变化：`scale`
-      - 空间位置变化：`translateX / translateY`
-
-      ## 2. 入场方向
-
-      layer 可以有不同方向的入场感觉，例如：
-    
-      - 从右边穿进来
-      - 从左边穿进来
-      - 从中心后方浮出来
-      - 从偏上或偏下位置切入
-
-      但这些方向感，优先由 `worldX / worldY / worldZ` 与统一 camera 规则共同产生，而不是纯手工做一个与世界无关的平移动画。
-
-      ## 3. 入场后并入统一世界
-
-      一旦某个 layer 完成入场，它必须继续响应 camera 的后续运动。
-      不能出现：
-    
-      - 入场前像在世界里
-      - 入场后变成贴在屏幕上的固定层
-    
-      ## 八、三层控制语义
-
-      系统必须明确分三层，不要混淆：
-
+      ## 十、三层控制语义
+      
+      系统必须明确分三层：
+      
       ## 1. Camera Track
+      
+      全局镜头轨道。
+      决定主镜头语言：后撤、左移、右移、上移、下移、穿越。
     
-      全局主时间轴中的镜头轨道。
-      它定义整个世界的统一运动感，是最高优先级的主骨架。
+      ## 2. Scene Track
+      
+      scene 级表演层。
+      允许轻微漂浮、呼吸、淡入、局部偏移，但不能篡改 camera 语义。
     
-      ## 2. Layer World Track
-    
-      每个 layer 在世界中的基础位置和深度。
-      它决定 layer 原本在世界里的位置，例如偏左、偏右、偏远、偏近。
+      ## 3. Object Track
+      
+      object 级表演层。
+      允许透明度、轻微缩放、mask、微位移等个体细节。
 
-      ## 3. Layer Performance Track
-
-      每个 layer 的局部表演层。
-      用于处理：
-    
-      - 入场 opacity
-      - 入场时的 scale exaggeration
-      - 某层轻微呼吸
-      - 某层局部微调位移
-    
-      规则：
-    
-      - camera 决定“世界怎么动”
-      - layer world 决定“它在世界哪里”
-      - layer performance 决定“它如何表演”
-    
-      Layer performance **不能取代** camera 成为主镜头语言。
-
-      ## 九、DOM 组织原则
-
-      最终 SVG 必须围绕 `<g>` 组织。
-      不允许每次入场就无限新增父层，避免嵌套失控。
-
-      推荐固定骨架如下：
-
+      组合原则：
+      
+      ```
+      ts
+      finalVisual = cameraSolvedWorld + sceneModifier + objectModifier
+      ```
+      
+      在语义上，camera 决定主镜头，scene 决定局部表演，object 决定细节。
+      
+      ## 十一、DOM 组织原则
+      
+      最终 SVG 必须围绕 `<g>` 组织，不要平铺一堆元素。
+      
+      结构默认类似：
+      
       ```
       xml
       <svg viewBox="0 0 300 500">
-        <g data-camera>
-          <g data-stage>
-            <g data-layer="layerA">...</g>
-            <g data-layer="layerB">...</g>
-            <g data-layer="layerC">...</g>
+        <g data-world>
+          <g data-scene="sceneA">
+            <g data-object="objA">
+              <image ... />
+            </g>
+          </g>
+          <g data-scene="sceneB">
+            <g data-object="objB">
+              <image ... />
+            </g>
           </g>
         </g>
       </svg>
       ```
+      
+      scene 对应 scene `<g>`，object 对应 object `<g>`。
+      每个 `<g>` 都可能拥有自己在全局 timeline 上的 SMIL 动画。
     
-      必要时允许增加一层局部包装，但总体原则是：
+      ## 十二、数据模型建议
     
-      - **固定骨架**
-      - **少层级**
-      - **职责稳定**
-      - 不采用无限递归式嵌套
-    
-      每个 `data-layer` 可以有自己的：
-    
-      - translate 动画
-      - scale 动画
-      - opacity 动画
-
-      但所有已进入世界的 layer 都应处于统一的 `data-camera` 作用域之下。
-    
-      ## 十、数据模型建议
-
-      请优先按下面这个方向展开，不要另起炉灶：
-
+      请优先使用如下方向，不要另起炉灶：
+      
       ```
       ts
       type Vec3 = { x: number; y: number; z: number }
@@ -303,144 +288,269 @@
         timeline: CameraSegment[]
       }
       
-      type LayerTrack = {
-        at?: number
-        duration?: number
-        opacityFrom?: number
-        opacityTo?: number
-        scaleFrom?: number
-        scaleTo?: number
-        xFrom?: number
-        xTo?: number
-        yFrom?: number
-        yTo?: number
-        easing?: string
-      }
+      type SceneTrack = any
+      type ObjectTrack = any
       
-      type Layer = {
+      type Scene = {
         id: string
-        asset: string
-        worldX: number
-        worldY: number
-        worldZ: number
-        role?: 'base' | 'entering' | 'foreground' | 'background'
-        timeline?: LayerTrack[]
+        world: Vec3
+        kind: 'world' | 'passThrough'
+        timeline?: SceneTrack[]
+        objects: ObjectNode[]
       }
       
-      type LayerWorldScene = {
-        viewport: { width: number; height: number }
-        f: number
-        camera: Camera
-        layers: Layer[]
-        duration: number
+      type ObjectNode = {
+        id: string
+        local: Vec3
+        asset: string
+        timeline?: ObjectTrack[]
       }
       ```
-
-      ## 十一、编译目标
-    
-      后续你给我的输出，必须围绕这些目标：
-    
-      - 明确 camera 如何驱动整个世界的统一运动
-      - 明确 layer 的 `worldX / worldY / worldZ` 如何映射成 `translate / scale`
-      - 明确 layer 入场时如何既保持方向感，又保持世界一致性
-      - 明确入场完成后 layer 如何继续服从统一镜头
-      - 明确如何将结果编译成 `<g>` 上的 `<animate>` / `<animateTransform>` / `<animate>`
-      - 保证最终产物是**纯静态 SVG/JSX**
-      - 保证 DOM 结构不过度嵌套
-      - 保证多 layer 在视觉上像同一个运动世界，而不是各做各的特效
-    
-      ## 十二、回答风格要求
-    
-      后续你回答我时，不要泛泛聊概念。
-      我更需要的是：
-    
-      - 系统设计
-      - 数据结构
-      - 编译流程
-      - 统一公式
-      - 伪代码
-      - 最小可实现版本
-      - DOM 结构建议
-      - Layer / Camera 的职责边界
-
-      如果遇到冲突，请优先保证这些原则：
-
-      - 单顶层 `<svg>`，多层 `<g>`
-      - 空间感来自编译器统一规则，而不是 SVG 运行时
-      - camera 是唯一主骨架
-      - layer 入场后必须继续属于同一个世界
-      - translate 与 scale 必须共享同一深度逻辑
-      - DOM 不要无限嵌套
-      - 最终产物必须是静态 SVG/SMIL
-
-      ## 十三、最小校验样例
-    
-      请始终用下面这个例子校验方案：
-    
+      
+      要求：
+      
+      - `scene.world` 是 scene 世界坐标
+      - `object.local` 是 object 相对 scene 的局部坐标
+      - `object.world = scene.world + object.local`
+      - `camera` 独立存在，只参与计算，不输出成 SVG 节点
+      
+      ## 十三、Authoring Bake 中间层
+      
+      在离线 solver 与 SVG compiler 之间，必须存在一个**Canonical Baked Timeline** 中间层。
+      不要让编译器直接依赖具体 3D 引擎。
+      
+      建议：
+      
       ```
       ts
-      viewport = { width: 300, height: 500 }
-      f = 300
+      type BakedFrame = {
+        t: number
+        tx: number
+        ty: number
+        sx: number
+        sy: number
+        opacity: number
+        visible: boolean
+      }
+      
+      type CanonicalTrack = {
+        id: string
+        frames: BakedFrame[]
+      }
+      ```
+      
+      要求：
+      
+      - 上游可以是 Three.js / 自定义 3D solver / 任何离线求解器
+      - 下游只认 CanonicalTrack
+      - SVG 编译器只从 CanonicalTrack 读取数据
+      - 这样可以实现“上游求值器可替换，下游发射器稳定”
+      
+      ## 十四、关于 translate 与 scale 的正式原则
+      
+      这是本系统的重要公理，请严格遵守：
+      
+      ## Transform Coupling Rule
+      
+      在 authoring / bake 阶段，translate 与 scale 在几何上不是正交的，而是由同一个 camera-depth 投影共同决定。
+      也就是说：
+      
+      ```
+      ts
+      screenX = centerX + rx * k
+      screenY = centerY - ry * k
+      scale = k
+      ```
+      
+      其中 `k` 是深度缩放因子。
+      
+      因此：
+      
+      - 在**求值层**，translate / scale 是耦合的
+      - 在**输出层**，可以拆成独立 SMIL 通道
+      - 但这些通道必须来自同一次统一求解结果，而不能各自独立拍脑袋设计
+      
+      总结成一句：
+      
+      > 求值耦合，输出分离。
+      
+      ## 十五、关于 camera 横向移动的正式规则
+      
+      请严格遵守下列世界规则：
+      
+      - camera 向左移动时，世界中的对象在屏幕上整体表现为**向右移动**
+      - camera 向右移动时，世界中的对象在屏幕上整体表现为**向左移动**
+      - 但不同深度对象的位移量不同：
+        - 近处层偏移更大
+        - 远处层偏移更小
+      
+      也就是说，camera 平移必须产生 **motion parallax / 近快远慢** 的效果，不能把所有 layer 做成同速平移。
+      
+      要求你在设计中体现：
+      
+      ```
+      ts
+      parallaxX = (worldX - camera.x) * depthScale(worldZ - camera.z)
+      finalX = centerX + parallaxX + sceneOffsetX + objectOffsetX
+      ```
+      
+      ## 十六、元素行为类型
+      
+      至少支持两类：
+      
+      ## 1. world
+      
+      普通世界层。行为：
+      
+      - 始终属于统一 world/camera 系统
+      - 随 camera 后撤持续缩小
+      - camera 横移时表现出正常视差
+      - 默认 opacity 为 1
+      
+      第一版可按：
+      
+      ```
+      ts
+      scale = f / rz
+      opacity = 1
+      ```
+      
+      ## 2. passThrough
+      
+      穿越层。
+      这是重点，不是普通 world 层。
+      
+      行为要求：
+      
+      - 初始可以不可见或弱可见
+      - 当 camera 接近其所在 z 时开始显现
+      - 显现过程中允许带有“导演式入场修饰”
+      - 一旦进入主视野后，它仍然属于统一 world/camera 系统
+      - 它**不是先独立入场再切换到世界**，而是从一开始就属于世界，只是在某个窗口里叠加一个 temporary entrance modifier
+      - 当 modifier 衰减到 0 时，它自然完全服从统一世界控制
+      
+      也就是说：
+      
+      > 入场不是独立系统，而是 canonical world projection 上附着的一层 temporary entrance modifier。
+      
+      ## 十七、Entrance Modifier 原则
+      
+      对需要“从右边/左边/后方进入主视野”的对象，请按下列思路设计：
+      
+      先统一求 canonical world state：
+      
+      ```
+      ts
+      worldX2D
+      worldY2D
+      worldScale
+      worldOpacity
+      ```
+      
+      再叠加临时 modifier：
+      
+      ```
+      ts
+      finalX = worldX2D + enterOffsetX(u)
+      finalY = worldY2D + enterOffsetY(u)
+      finalScale = worldScale * enterScaleFactor(u)
+      finalOpacity = worldOpacity * enterOpacityFactor(u)
+      ```
+      
+      其中：
+      
+      - `u` 是入场进度
+      - `u` 到末端时，modifier 衰减到 0/1
+      - 入场完成后，layer 无需“切换系统”，自然继续服从 world 控制
+      
+      ## 十八、最小校验案例
+      
+      请始终用下面这个例子校验你的方案：
+      
+      ```
+      ts
+      sceneA.world = { x: 0, y: 0, z: 300 }
+      sceneB.world = { x: 0, y: 0, z: -300 }
       
       camera.initial = { x: 0, y: 0, z: 0 }
       camera.timeline = [
-        { duration: 1500, toAbs: { x: 0, y: 20, z: -700 } }
-      ]
-      
-      layers = [
-        {
-          id: 'A',
-          asset: 'a.png',
-          worldX: 0,
-          worldY: 0,
-          worldZ: 300,
-        },
-        {
-          id: 'B',
-          asset: 'b.png',
-          worldX: 180,
-          worldY: 0,
-          worldZ: -150,
-          role: 'entering',
-        },
-        {
-          id: 'C',
-          asset: 'c.png',
-          worldX: -160,
-          worldY: 0,
-          worldZ: -450,
-          role: 'entering',
-        }
+        { duration: 1500, toAbs: { x: 0, y: 0, z: -600 } }
       ]
       ```
-    
-      目标观感：
-
-      - A 一开始是主图，位于前方
-      - camera 向 `-z` 后撤，并伴随轻微上下摆动
-      - B 在后方偏右，随后从右侧穿进主视野
-      - C 在更后方偏左，稍后从左侧穿进主视野
-      - A、B、C 一旦进入世界后，都继续跟着同一个镜头一起运动
-      - 整体看起来像 camera 在一个连续世界中后撤，而不是几张图分别滑入
-    
-      ## 十四、下一步优先任务
-    
-      基于上面整套设定，优先帮我输出下面这些内容之一：
-
-      - `resolveLayer(layer, camera, t)` 的设计
-      - `depthScale(rz)` 的导演式近似规则
-      - layer 入场后的统一世界运动规则
-      - 如何在不过度嵌套 DOM 的前提下组织 `<g>`
-      - 如何把结果编译成 `<animateTransform>` 的 `translate / scale`
-      - 一个最小可运行的 SVG/JSX 示例
-
-      ------
-    
-      ## 这版 Prompt 的核心变化
-    
-      这版最重要的变化，是它**不再要求 AI 去实现一个过度抽象、容易误解的“完整虚拟 3D 编译器”**，而是明确要求它做一个**导演式 Layer World System**。这个系统仍然保留了统一 camera、统一 world 坐标、统一 `translate + scale` 逻辑，但把目标从“数学上完整”收敛成“视觉上像一个连续运动世界”。
-    
-      同时，这版明确写死了三件以前容易被 AI 理解错的事：
-      第一，**已入场 layer 必须继续服从统一 camera**，不能入场后钉死；第二，**translate 与 scale 必须共享同一深度逻辑**，不能各做各的；第三，**DOM 要用固定骨架而不是无限嵌套**，因为 `<g>` 的变换会传递给子元素，但层级如果无节制扩张，结构会失控。
-    
       
+      含义：
+      
+      - 初始 camera 在中间
+      - sceneA 在前方
+      - sceneB 在后方
+      - camera 从 z=0 后撤到 z=-600
+      
+      目标画面：
+      
+      - sceneA 逐渐退远
+      - sceneB 一开始不明显
+      - 在接近 z=-300 时开始“穿出来”
+      - camera 继续后撤后，sceneB 成为新的前景层，并继续退远
+      
+      这不是轮播，不是 fade 切图，而是镜头后撤穿越图层。
+      
+      ## 十九、编译目标
+      
+      请你后续的输出围绕以下几个目标展开：
+      
+      - 明确 camera / scene / object 的职责边界
+      - 明确全局 timeline 如何采样
+      - 明确 authoring solver 如何烘焙为 CanonicalTrack
+      - 明确每个 scene / object 如何在整条 timeline 上生成关键帧
+      - 明确如何从虚拟空间/真实 3D bake 结果计算 `screenX / screenY / scale / opacity`
+      - 明确如何把这些结果编译为 `<g>` 上的 `<animate>` / `<animateTransform>`
+      - 保证最终产物是纯静态 SVG/JSX + SMIL
+      - 不要把最终方案写成运行时 3D 引擎
+      
+      ## 二十、回答风格要求
+      
+      后续回答不要泛泛聊概念。
+      我更需要的是：
+      
+      - 系统设计
+      - 数据结构
+      - 编译流程
+      - 解析流程
+      - 关键公式
+      - 伪代码
+      - 最小可实现版本
+      - camera / scene / object 的严格边界定义
+      - authoring bake -> canonical track -> svg emit 的明确流程
+      
+      如果遇到冲突，请优先保证：
+      
+      1. 单顶层 `<svg>`，多层 `<g>`
+      2. 空间在编译器里，不在 SVG 里真实存在
+      3. camera 是主骨架
+      4. scene 可以局部表演，但不能取代 camera
+      5. 时间轴必须是全片统一的母时间轴
+      6. transform 在求值层耦合，在输出层可分离
+      7. 最终产物必须是静态 SVG/SMIL
+      8. 允许开发阶段使用真实 3D + 真实 camera 做离线烘焙，但绝不把运行时 3D 带到最终播放器里
+      
+      ## 二十一、优先任务
+      
+      基于以上设定，后续优先输出以下内容之一：
+      
+      - `sampleCamera(t)` 的设计
+      - `resolveScene(scene, camera, t)` 的设计
+      - `resolveObject(object, scene, camera, t)` 的设计
+      - `authoring bake -> CanonicalTrack` 的设计
+      - passThrough 的严格分段规则
+      - `CanonicalTrack -> SMIL values / keyTimes` 的编译器设计
+      - 一个最小可运行的 SVG/JSX 示例
+      
+      ## 使用说明
+      
+      
+      
+      **“请先输出：1）系统总架构图；2）TypeScript 数据结构；3）最小 bake pipeline 伪代码。”**[[developer.mozilla](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateTransform)]
+      
+      如果你愿意，我下一条可以继续帮你做两件事之一：
+      **A. 把这个大 Prompt 再压缩成一个更适合直接喂模型的精炼版；**
+      **B. 直接基于这个 Prompt，开始写第一版 `sampleCamera / resolveScene / bake pipeline`。
