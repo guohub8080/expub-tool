@@ -41,8 +41,8 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: -500, y: 0 },
                   timeline: [
-                    { durationSeconds: 1.5, to: { x: 30, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.5, toAbs: { x: 30, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -55,8 +55,8 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: 500, y: 0 },
                   timeline: [
-                    { durationSeconds: 1.5, to: { x: -30, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.5, toAbs: { x: -30, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -81,9 +81,9 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: -500, y: -300 },
                   timeline: [
-                    { durationSeconds: 1, to: { x: -100, y: 60 } },
-                    { durationSeconds: 0.5, to: { x: 20, y: -10 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                    { durationSeconds: 1, toAbs: { x: -100, y: 60 } },
+                    { durationSeconds: 0.5, toAbs: { x: 20, y: -10 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 } },
                   ],
                 },
               },
@@ -96,9 +96,9 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: 500, y: -300 },
                   timeline: [
-                    { durationSeconds: 1, to: { x: 100, y: 60 } },
-                    { durationSeconds: 0.5, to: { x: -20, y: -10 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                    { durationSeconds: 1, toAbs: { x: 100, y: 60 } },
+                    { durationSeconds: 0.5, toAbs: { x: -20, y: -10 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 } },
                   ],
                 },
               },
@@ -128,10 +128,10 @@ export default function AnyLoopDisplayPage() {
               stay: {
                 translate: {
                   timeline: [
-                    { durationSeconds: 0.5, to: { x: 0, y: -8 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: 8 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: -4 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: -8 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 8 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: -4 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 } },
                   ],
                 },
               },
@@ -149,10 +149,10 @@ export default function AnyLoopDisplayPage() {
               stay: {
                 translate: {
                   timeline: [
-                    { durationSeconds: 0.5, to: { x: 0, y: 8 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: -8 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: 4 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 8 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: -8 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 4 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 } },
                   ],
                 },
               },
@@ -177,9 +177,9 @@ export default function AnyLoopDisplayPage() {
               stay: {
                 translate: {
                   timeline: [
-                    { durationSeconds: 0.75, to: { x: 15, y: 0 } },
-                    { durationSeconds: 0.75, to: { x: -15, y: 0 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                    { durationSeconds: 0.75, toAbs: { x: 15, y: 0 } },
+                    { durationSeconds: 0.75, toAbs: { x: -15, y: 0 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 } },
                   ],
                 },
               },
@@ -192,9 +192,9 @@ export default function AnyLoopDisplayPage() {
               stay: {
                 translate: {
                   timeline: [
-                    { durationSeconds: 0.75, to: { x: -15, y: 0 } },
-                    { durationSeconds: 0.75, to: { x: 15, y: 0 } },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 } },
+                    { durationSeconds: 0.75, toAbs: { x: -15, y: 0 } },
+                    { durationSeconds: 0.75, toAbs: { x: 15, y: 0 } },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 } },
                   ],
                 },
               },
@@ -219,8 +219,8 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: 0, y: -500 },
                   timeline: [
-                    { durationSeconds: 1.5, to: { x: 0, y: 20 }, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.5, toAbs: { x: 0, y: 20 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -228,8 +228,8 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: 0, y: 0 },
                   timeline: [
-                    { durationSeconds: 0.5, to: { x: 0, y: 15 } },
-                    { durationSeconds: 1.5, to: { x: 0, y: -500 }, keySplines: getEaseBezier({ isIn: true }) },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 15 } },
+                    { durationSeconds: 1.5, toAbs: { x: 0, y: -500 }, keySplines: getEaseBezier({ isIn: true }) },
                   ],
                 },
               },
@@ -241,8 +241,8 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: 0, y: 500 },
                   timeline: [
-                    { durationSeconds: 1.5, to: { x: 0, y: -20 }, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.5, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.5, toAbs: { x: 0, y: -20 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -250,8 +250,8 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: 0, y: 0 },
                   timeline: [
-                    { durationSeconds: 0.5, to: { x: 0, y: -15 } },
-                    { durationSeconds: 1.5, to: { x: 0, y: 500 }, keySplines: getEaseBezier({ isIn: true }) },
+                    { durationSeconds: 0.5, toAbs: { x: 0, y: -15 } },
+                    { durationSeconds: 1.5, toAbs: { x: 0, y: 500 }, keySplines: getEaseBezier({ isIn: true }) },
                   ],
                 },
               },
@@ -275,8 +275,8 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: -500, y: 0 },
                   timeline: [
-                    { durationSeconds: 1.8, to: { x: 20, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.7, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.8, toAbs: { x: 20, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.7, toAbs: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
                 rotation: { angle: 360 },
@@ -291,8 +291,8 @@ export default function AnyLoopDisplayPage() {
                 translate: {
                   initValue: { x: 500, y: 0 },
                   timeline: [
-                    { durationSeconds: 1.8, to: { x: -20, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.7, to: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.8, toAbs: { x: -20, y: 0 }, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.7, toAbs: { x: 0, y: 0 }, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
                 rotation: { angle: -360 },
@@ -373,8 +373,8 @@ export default function AnyLoopDisplayPage() {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: 0.1,
                   timeline: [
-                    { durationSeconds: 1.8, to: 1.3, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.7, to: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.8, toAbs: 1.3, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.7, toAbs: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -388,8 +388,8 @@ export default function AnyLoopDisplayPage() {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: 0.1,
                   timeline: [
-                    { durationSeconds: 1.8, to: 1.3, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 0.7, to: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.8, toAbs: 1.3, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 0.7, toAbs: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -456,8 +456,8 @@ export default function AnyLoopDisplayPage() {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: 720,
                   timeline: [
-                    { durationSeconds: 1.5, to: -180, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 1, to: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.5, toAbs: -180, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 1, toAbs: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -471,8 +471,8 @@ export default function AnyLoopDisplayPage() {
                   childCanvasOrigin: ORIGIN.Center,
                   initValue: -720,
                   timeline: [
-                    { durationSeconds: 1.5, to: 180, keySplines: getEaseBezier({ isOut: true }) },
-                    { durationSeconds: 1, to: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                    { durationSeconds: 1.5, toAbs: 180, keySplines: getEaseBezier({ isOut: true }) },
+                    { durationSeconds: 1, toAbs: 0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                   ],
                 },
               },
@@ -534,9 +534,9 @@ export default function AnyLoopDisplayPage() {
               entry: { translate: { direction: 'T' } },
               stay: {
                 scale: { timeline: [
-                  { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
-                  { durationSeconds: 1, to: 1, keySplines: getEaseBezier({ isIn: true }) },
-                  { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
+                  { durationSeconds: 1, toAbs: 1.15, keySplines: getEaseBezier({ isOut: true }) },
+                  { durationSeconds: 1, toAbs: 1, keySplines: getEaseBezier({ isIn: true }) },
+                  { durationSeconds: 1, toAbs: 1.15, keySplines: getEaseBezier({ isOut: true }) },
                 ] },
               },
               stayDuration: 3, switchDuration: 2,
@@ -546,9 +546,9 @@ export default function AnyLoopDisplayPage() {
               entry: { translate: { direction: 'B' } },
               stay: {
                 scale: { timeline: [
-                  { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
-                  { durationSeconds: 1, to: 1, keySplines: getEaseBezier({ isIn: true }) },
-                  { durationSeconds: 1, to: 1.15, keySplines: getEaseBezier({ isOut: true }) },
+                  { durationSeconds: 1, toAbs: 1.15, keySplines: getEaseBezier({ isOut: true }) },
+                  { durationSeconds: 1, toAbs: 1, keySplines: getEaseBezier({ isIn: true }) },
+                  { durationSeconds: 1, toAbs: 1.15, keySplines: getEaseBezier({ isOut: true }) },
                 ] },
               },
               stayDuration: 3, switchDuration: 2,
@@ -569,14 +569,14 @@ export default function AnyLoopDisplayPage() {
               entry: { translate: { direction: 'T' } },
               stay: {
                 opacity: { timeline: [
-                  { durationSeconds: 1, to: 0.6 },
-                  { durationSeconds: 1, to: 1 },
+                  { durationSeconds: 1, toAbs: 0.6 },
+                  { durationSeconds: 1, toAbs: 1 },
                 ] },
                 rotation: { timeline: [
-                  { durationSeconds: 0.75, to: 5 },
-                  { durationSeconds: 0.75, to: -5 },
-                  { durationSeconds: 0.75, to: 5 },
-                  { durationSeconds: 0.75, to: 0 },
+                  { durationSeconds: 0.75, toAbs: 5 },
+                  { durationSeconds: 0.75, toAbs: -5 },
+                  { durationSeconds: 0.75, toAbs: 5 },
+                  { durationSeconds: 0.75, toAbs: 0 },
                 ] },
               },
               stayDuration: 3, switchDuration: 2,
@@ -586,14 +586,14 @@ export default function AnyLoopDisplayPage() {
               entry: { translate: { direction: 'B' } },
               stay: {
                 opacity: { timeline: [
-                  { durationSeconds: 1, to: 0.6 },
-                  { durationSeconds: 1, to: 1 },
+                  { durationSeconds: 1, toAbs: 0.6 },
+                  { durationSeconds: 1, toAbs: 1 },
                 ] },
                 rotation: { timeline: [
-                  { durationSeconds: 0.75, to: -5 },
-                  { durationSeconds: 0.75, to: 5 },
-                  { durationSeconds: 0.75, to: -5 },
-                  { durationSeconds: 0.75, to: 0 },
+                  { durationSeconds: 0.75, toAbs: -5 },
+                  { durationSeconds: 0.75, toAbs: 5 },
+                  { durationSeconds: 0.75, toAbs: -5 },
+                  { durationSeconds: 0.75, toAbs: 0 },
                 ] },
               },
               stayDuration: 3, switchDuration: 2,
@@ -615,8 +615,8 @@ export default function AnyLoopDisplayPage() {
                 childCanvasOrigin: ORIGIN.Center,
                 initValue: 0.3,
                 timeline: [
-                  { durationSeconds: 1.2, to: 1.2, keySplines: getEaseBezier({ isOut: true }) },
-                  { durationSeconds: 0.8, to: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
+                  { durationSeconds: 1.2, toAbs: 1.2, keySplines: getEaseBezier({ isOut: true }) },
+                  { durationSeconds: 0.8, toAbs: 1, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
                 ],
               },
             },
@@ -624,11 +624,11 @@ export default function AnyLoopDisplayPage() {
             exit: {
               translate: {
                 initValue: { x: 0, y: 0 },
-                timeline: [{ durationSeconds: 2, to: { x: 0, y: 0 } }],
+                timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 } }],
               },
             },
             hold: {
-              opacity: { timeline: [{ durationSeconds: 0.01, to: 0 }] },
+              opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] },
             },
             stayDuration: 2,
             switchDuration: 2,

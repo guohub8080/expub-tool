@@ -80,8 +80,8 @@ export default function SmilPage() {
             {animateOpacity({
               initValue: 1,
               timeline: [
-                { to: 0.2, durationSeconds: 1, keySpline: EASE_OUT },
-                { to: 1, durationSeconds: 1, keySpline: EASE_IN },
+                { toAbs: 0.2, durationSeconds: 1, keySpline: EASE_OUT },
+                { toAbs: 1, durationSeconds: 1, keySpline: EASE_IN },
               ],
               loopCount: 'indefinite',
             })}
@@ -96,8 +96,8 @@ export default function SmilPage() {
             {transformScale({
               initValue: 1,
               timeline: [
-                { to: 1.2, durationSeconds: 0.6, keySpline: EASE_OUT },
-                { to: 1, durationSeconds: 0.6, keySpline: EASE_IN },
+                { toAbs: 1.2, durationSeconds: 0.6, keySpline: EASE_OUT },
+                { toAbs: 1, durationSeconds: 0.6, keySpline: EASE_IN },
               ],
               origin: [60, 60],
               loopCount: 'indefinite',
@@ -113,8 +113,8 @@ export default function SmilPage() {
             {transformScaleRaw({
               initValue: 1,
               timeline: [
-                { to: 0.5, durationSeconds: 1 },
-                { to: 1, durationSeconds: 1 },
+                { toAbs: 0.5, durationSeconds: 1 },
+                { toAbs: 1, durationSeconds: 1 },
               ],
               loopCount: 'indefinite',
             })}
@@ -129,7 +129,7 @@ export default function SmilPage() {
             {transformRotate({
               initValue: 0,
               timeline: [
-                { to: 360, durationSeconds: 3 },
+                { toAbs: 360, durationSeconds: 3 },
               ],
               origin: [60, 60],
               loopCount: 'indefinite',
@@ -145,8 +145,8 @@ export default function SmilPage() {
             {transformTranslate({
               initValue: { x: 0, y: 0 },
               timeline: [
-                { to: { x: 120, y: 0 }, durationSeconds: 1.5, keySpline: EASE_IN_OUT },
-                { to: { x: 0, y: 0 }, durationSeconds: 1.5, keySpline: EASE_IN_OUT },
+                { toAbs: { x: 120, y: 0 }, durationSeconds: 1.5, keySpline: EASE_IN_OUT },
+                { toAbs: { x: 0, y: 0 }, durationSeconds: 1.5, keySpline: EASE_IN_OUT },
               ],
               loopCount: 'indefinite',
             })}
@@ -161,8 +161,8 @@ export default function SmilPage() {
             {transformSkewX({
               initValue: 0,
               timeline: [
-                { to: 20, durationSeconds: 1 },
-                { to: 0, durationSeconds: 1 },
+                { toAbs: 20, durationSeconds: 1 },
+                { toAbs: 0, durationSeconds: 1 },
               ],
               loopCount: 'indefinite',
             })}
@@ -183,7 +183,7 @@ export default function SmilPage() {
             {animatePathStroke({
               pathLength: 200,
               timeline: [
-                { to: 0, durationSeconds: 2, keySpline: EASE_OUT },
+                { toAbs: 0, durationSeconds: 2, keySpline: EASE_OUT },
               ],
               loopCount: 'indefinite',
             })}
@@ -220,8 +220,8 @@ export default function SmilPage() {
             {animateHeight({
               initValue: 0,
               timeline: [
-                { to: 100, durationSeconds: 1.5, keySpline: EXPO_OUT },
-                { to: 0, durationSeconds: 1.5, keySpline: EXPO_IN },
+                { toAbs: 100, durationSeconds: 1.5, keySpline: EXPO_OUT },
+                { toAbs: 0, durationSeconds: 1.5, keySpline: EXPO_IN },
               ],
               loopCount: 'indefinite',
             })}
@@ -236,8 +236,8 @@ export default function SmilPage() {
             {animateWidth({
               initValue: 0,
               timeline: [
-                { to: 100, durationSeconds: 1.5, keySpline: EXPO_OUT },
-                { to: 0, durationSeconds: 1.5, keySpline: EXPO_IN },
+                { toAbs: 100, durationSeconds: 1.5, keySpline: EXPO_OUT },
+                { toAbs: 0, durationSeconds: 1.5, keySpline: EXPO_IN },
               ],
               loopCount: 'indefinite',
             })}
@@ -279,9 +279,9 @@ export default function SmilPage() {
           {JSON.stringify(buildTimeline({
             initValue: 0,
             timeline: [
-              { to: 1, durationSeconds: 0.3, keySplines: '0.42 0 0.58 1' },
-              { to: 0.5, durationSeconds: 0.5 },
-              { to: 0, durationSeconds: 0.2 },
+              { toAbs: 1, durationSeconds: 0.3, keySplines: '0.42 0 0.58 1' },
+              { toAbs: 0.5, durationSeconds: 0.5 },
+              { toAbs: 0, durationSeconds: 0.2 },
             ],
           }), null, 2)}
         </p>
