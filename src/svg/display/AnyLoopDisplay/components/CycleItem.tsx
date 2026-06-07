@@ -116,7 +116,7 @@ const CycleItem = (props: {
   const hasSkewY = !isNil(item.entry.skewY) || !isNil(item.exit.skewY) || !isNil(item.stay.skewY)
   const hasScale = !isNil(item.entry.scale) || !isNil(item.exit.scale) || !isNil(item.stay.scale)
   const hasRotation = !isNil(item.entry.rotation) || !isNil(item.exit.rotation) || !isNil(item.stay.rotation)
-  const hasOpacity = !isNil(item.entry.opacity) || !isNil(item.exit.opacity) || !isNil(item.stay.opacity)
+  const hasOpacity = !isNil(item.entry.opacity) || !isNil(item.exit.opacity) || !isNil(item.stay.opacity) || !isNil(item.hold.opacity)
 
   // 内容节点：从最内层往外逐层包裹，只有存在对应动画时才加 <g>
   let content: React.ReactNode = renderChildItemContent({ item, contentWidth, contentHeight })
@@ -126,7 +126,7 @@ const CycleItem = (props: {
       <g>
         {renderOpacityAnim({
           entryOpacity: item.entry.opacity, exitOpacity: item.exit.opacity,
-          stayOpacity: item.stay.opacity,
+          stayOpacity: item.stay.opacity, holdOpacity: item.hold.opacity,
           stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
         })}
         {content}

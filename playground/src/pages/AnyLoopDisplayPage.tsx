@@ -603,7 +603,7 @@ export default function AnyLoopDisplayPage() {
       </div>
       {/* ── 底部推入 + scale 过冲 + stay 缩小 + exit 不退出 ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — 底部推入 + scale 过冲 + stay 缩小 + exit 不移动 + opacity 归零</h3>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — 底部推入 + scale 过冲 + stay 缩小 + exit 不移动 + hold opacity 归零</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           canvasBg="#f0fdf4"
@@ -626,7 +626,9 @@ export default function AnyLoopDisplayPage() {
                 initValue: { x: 0, y: 0 },
                 timeline: [{ durationSeconds: 2, to: { x: 0, y: 0 } }],
               },
-              opacity: { from: 0 },
+            },
+            hold: {
+              opacity: { timeline: [{ durationSeconds: 0.01, to: 0 }] },
             },
             stayDuration: 2,
             switchDuration: 2,

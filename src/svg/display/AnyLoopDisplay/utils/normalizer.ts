@@ -257,6 +257,9 @@ export interface I_NormalizedChildItem {
     scale?: I_NormalizedScaleConfig
     opacity?: I_NormalizedOpacityConfig
   }
+  hold: {
+    opacity?: I_NormalizedStayAnimConfig
+  }
   stayDuration: number
   switchDuration: number
 }
@@ -308,6 +311,9 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
       scale: normalizeScale(item.exit?.scale),
       opacity: normalizeOpacity(item.exit?.opacity),
     },
+    hold: {
+      opacity: normalizeStayAnim(item.hold?.opacity),
+    },
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
   }
@@ -321,10 +327,13 @@ const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem =>
  */
 const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
   const n = items.length
+  const totalDuration = items.reduce((sum, item) => sum + item.switchDuration + item.stayDuration, 0)
+
   for (let i = 0; i < n; i++) {
     const item = items[i]
     const entryDuration = item.switchDuration
     const exitDuration = items[(i + 1) % n].switchDuration
+    const holdDuration = totalDuration - entryDuration - item.stayDuration - exitDuration
 
     const checks: { timeline: readonly { durationSeconds: number }[] | undefined; max: number; label: string }[] = [
       // Entry
@@ -348,6 +357,8 @@ const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
       { timeline: item.stay.opacity?.timeline, max: item.stayDuration, label: 'stay opacity' },
       { timeline: item.stay.skewX?.timeline, max: item.stayDuration, label: 'stay skewX' },
       { timeline: item.stay.skewY?.timeline, max: item.stayDuration, label: 'stay skewY' },
+      // Hold
+      { timeline: item.hold.opacity?.timeline, max: holdDuration, label: 'hold opacity' },
     ]
 
     for (const { timeline, max, label } of checks) {

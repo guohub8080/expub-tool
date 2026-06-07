@@ -5,21 +5,22 @@ import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { buildOpacityPhaseSegments, buildStaySegments } from "../utils/phaseSegmentBuilders"
 import { DEFAULT_EASE, combinePhaseSegments } from "./buildFullSegments"
 
-/** 生成 opacity animate（支持 timeline 模式 + stay 配置） */
+/** 生成 opacity animate（支持 timeline 模式 + stay/hold 配置） */
 export const renderOpacityAnim = ({
-  entryOpacity, exitOpacity, stayOpacity,
+  entryOpacity, exitOpacity, stayOpacity, holdOpacity,
   stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
 }: {
   entryOpacity?: I_NormalizedChildItem['entry']['opacity']
   exitOpacity?: I_NormalizedChildItem['exit']['opacity']
   stayOpacity?: I_NormalizedChildItem['stay']['opacity']
+  holdOpacity?: I_NormalizedChildItem['hold']['opacity']
   stayDuration: number
   switchDuration: number
   nextSwitchDuration: number
   holdDuration: number
   begin: number
 }) => {
-  if (isNil(entryOpacity) && isNil(exitOpacity) && isNil(stayOpacity)) return null
+  if (isNil(entryOpacity) && isNil(exitOpacity) && isNil(stayOpacity) && isNil(holdOpacity)) return null
 
   const animInitValue = defaultTo(entryOpacity?.initValue, 1)
   const exitTargetValue = defaultTo(exitOpacity?.initValue, 1)
@@ -30,7 +31,13 @@ export const renderOpacityAnim = ({
   const staySegs = buildStaySegments({ stayConfig: stayOpacity, stayDuration, entryEndValue: lastEntryValue, defaultEase: ease })
   const exitSegs = buildOpacityPhaseSegments({ opacityConfig: exitOpacity, phaseDuration: nextSwitchDuration, simpleTargetValue: exitTargetValue, defaultEase: defaultTo(exitOpacity?.keySplines, ease) })
 
-  const segs = combinePhaseSegments(entrySegs, staySegs, exitSegs, exitTargetValue, holdDuration, ease)
+  // hold 段：有 holdOpacity 配置时构建自定义 hold 段，否则保持 exit 终态
+  const lastExitValue = exitSegs.length > 0 ? exitSegs[exitSegs.length - 1].to : exitTargetValue
+  const holdSegs = holdOpacity
+    ? buildStaySegments({ stayConfig: holdOpacity, stayDuration: holdDuration, entryEndValue: lastExitValue, defaultEase: ease })
+    : undefined
+
+  const segs = combinePhaseSegments(entrySegs, staySegs, exitSegs, exitTargetValue, holdDuration, ease, holdSegs)
 
   return animateOpacity({
     initValue: animInitValue,

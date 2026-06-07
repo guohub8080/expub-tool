@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import type { T_Direction8, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_EntryTranslateConfig, I_StayTranslateConfig, I_StayAnimConfig } from "@svg/types"
+import type { I_TimelineKeyframe } from "@smil/timeline/types"
 
 export type { I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_EntryTranslateConfig, I_StayTranslateConfig } from "@svg/types"
 
@@ -51,6 +52,12 @@ export interface I_ExitConfig {
   opacity?: I_EntryOpacityConfig
 }
 
+/** hold 阶段动画配置（仅支持 timeline 写法，屏外等待期间精确控制属性归位） */
+export interface I_HoldConfig {
+  /** hold 期间的透明度动画，必须用 timeline 指定关键帧 */
+  opacity?: { timeline: I_TimelineKeyframe<number>[] }
+}
+
 export interface I_AnyLoopDisplayChildItem {
   /** 图片地址（与 jsx 二选一） */
   url?: string
@@ -62,6 +69,8 @@ export interface I_AnyLoopDisplayChildItem {
   stay?: I_StayConfig
   /** 退出配置 */
   exit?: I_ExitConfig
+  /** hold 阶段配置（屏外等待期间，用于归位属性值） */
+  hold?: I_HoldConfig
   /** 停留时长（秒），图片全屏静止的持续时间，默认 2 */
   stayDuration?: number
   /**
