@@ -78,6 +78,17 @@ export const projectToScreen = (options: I_ProjectOptions): I_ProjectionFrame =>
       return { screenX: 0, screenY: 0, scale: 0, opacity: 0 }
     }
     const scale = safeScale(f, rz)
+    // 近裁剪：rz 太小时物体"贴脸"scale 巨大，淡出避免放大
+    const nearClip = f / MAX_SCALE
+    if (rz < nearClip) {
+      const t = rz / nearClip  // 0→1
+      return {
+        screenX: rx * scale,
+        screenY: -ry * scale,
+        scale,
+        opacity: t,
+      }
+    }
     return {
       screenX: rx * scale,
       screenY: -ry * scale,
