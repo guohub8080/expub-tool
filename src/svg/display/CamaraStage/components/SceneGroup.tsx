@@ -58,7 +58,7 @@ const SceneGroup = (props: I_SceneGroupProps) => {
           initValue: initTranslate,
           timeline: track.translate,
           begin: "0s",
-          loopCount: 0,
+          loopCount: 1,
           isFreeze: true,
           isAdditive: false,
         })}
@@ -68,7 +68,7 @@ const SceneGroup = (props: I_SceneGroupProps) => {
             initValue: initScale,
             timeline: track.scale,
             begin: "0s",
-            loopCount: 0,
+            loopCount: 1,
             isFreeze: true,
             isAdditive: false,
           })}
@@ -78,7 +78,7 @@ const SceneGroup = (props: I_SceneGroupProps) => {
               initValue: initOpacity,
               timeline: track.opacity,
               begin: "0s",
-              loopCount: 0,
+              loopCount: 1,
               isFreeze: true,
             })}
             <g>
