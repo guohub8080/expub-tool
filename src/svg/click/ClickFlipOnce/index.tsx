@@ -6,6 +6,7 @@ import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import svgURL from '@utils/svg/svgURL'
+import { getEaseBezier } from '@smil/bezier'
 import type { I_ClickFlipOnceProps, I_FaceContent } from './types'
 
 export type { I_ClickFlipOnceProps, I_FaceContent } from './types'
@@ -13,6 +14,7 @@ export type { I_ClickFlipOnceProps, I_FaceContent } from './types'
 const DEFAULT_FLIP_DURATION = 1
 const MIN_FLIP_DURATION = 0.3
 const MAX_FLIP_DURATION = 3
+const EASE_IN_OUT = getEaseBezier({ isIn: true, isOut: true })
 
 /** 渲染卡牌单面内容（url 或 jsx） */
 function FaceContent({ content, width, height }: {
@@ -27,16 +29,15 @@ function FaceContent({ content, width, height }: {
     <SvgEx
       viewBox={`0 0 ${width} ${height}`}
       style={{
-        display: 'inline-block',
+        display: 'block',
         width: '100%',
         margin: 0,
-        background: `${svgURL(content.url)} 0 0/100% 100% no-repeat`,
-        boxSizing: 'border-box',
-        outline: 'none',
-        userSelect: 'none',
-        verticalAlign: 'top',
-        WebkitUserSelect: 'none',
+        backgroundImage: svgURL(content.url),
+        backgroundSize: '100% 100%',
+        backgroundPosition: '0px 0px',
+        backgroundRepeat: 'no-repeat',
         pointerEvents: 'none',
+        userSelect: 'none',
       }}
     />
   )
@@ -45,7 +46,29 @@ function FaceContent({ content, width, height }: {
 /**
  * ClickFlipOnce — 点击翻转卡片（仅一次）
  *
- * 严格对标 reference/无限点击翻转卡片/reference.html
+ * 从 ClickFlipCard 简化而来：去掉按压状态机，只保留 click → flip 一次。
+ *
+ * DOM 结构：
+ *
+ *   <svg viewBox="0 0 W H">
+ *     <g transform="translate(halfW, 0)">        ← 翻转轴心：水平中心
+ *       <g>
+ *         <animateTransform scale 1→-1 click>     ← 翻转动画（spline 缓动）
+ *         <g transform="translate(-halfW, 0)">
+ *           <g transform="translate(W, 0) scale(-1, 1)">  ← 反面（预镜像，翻转后双重镜像=正常）
+ *             <foreignObject> 反面内容
+ *           </g>
+ *           <g>                                             ← 正面
+ *             <animate opacity 1→0 click>                    ← 翻转过半后正面消失
+ *             <foreignObject> 正面内容
+ *             <rect>                                        ← 点击热区
+ *               <set visibility hidden click>                ← 点击后热区消失
+ *             </rect>
+ *           </g>
+ *         </g>
+ *       </g>
+ *     </g>
+ *   </svg>
  */
 const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -53,14 +76,10 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
 
   const W = props.canvasSize.w
   const H = props.canvasSize.h
-  const cx = W / 2
-  const cy = H / 2
+  const halfW = W / 2
   const rawDur = defaultTo(props.flipDuration, DEFAULT_FLIP_DURATION)
   const flipDur = clamp(rawDur, MIN_FLIP_DURATION, MAX_FLIP_DURATION)
-  const halfDur = flipDur / 2
-  const doubleH = H * 2
-
-  const calcMode = props.keySplines ? 'spline' : 'linear'
+  const dur = `${flipDur}s`
 
   return (
     <SectionEx
@@ -76,70 +95,73 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
         ...spacingResult,
       }}
     >
-      <section style={{ overflow: 'hidden', lineHeight: 0, margin: 0 }}>
+      <section style={{ height: 0 }}>
         <SvgEx
           viewBox={`0 0 ${W} ${H}`}
+          role="img"
+          aria-label="插图"
+          style={{ display: 'block', width: '100%', marginTop: '0px', backgroundColor: props.canvasBg }}
+        />
+      </section>
+
+      <section style={{ height: 0 }}>
+        <SvgEx
+          viewBox={`0 0 ${W} ${H}`}
+          role="img"
+          aria-label="插图"
           style={{
             display: 'block',
-            margin: '0 auto',
-            backgroundColor: props.canvasBg,
+            width: '100%',
+            marginTop: '-1px',
             pointerEvents: 'none',
+            userSelect: 'none',
           }}
-          width="100%"
         >
-          <g transform={`translate(${cx} ${cy})`}>
+          {/* 翻转轴心：translate(水平中心) → scale → translate(-水平中心) */}
+          <g transform={`translate(${halfW} 0)`}>
             <g>
+              {/* 翻转动画：scale X 从 1 到 -1，spline 缓动 */}
               <animateTransform
+                calcMode="spline"
                 attributeName="transform"
                 type="scale"
-                values="1 1; -1 1"
-                keyTimes="0; 1"
-                dur={`${flipDur}s`}
-                begin="click"
+                values="1 1;-1 1"
+                dur={dur}
+                keyTimes="0;1"
+                keySplines={EASE_IN_OUT}
                 fill="freeze"
+                begin="click"
                 restart="never"
-                calcMode={calcMode}
-                {...(props.keySplines ? { keySplines: props.keySplines } : {})}
               />
 
-              <g transform={`translate(${-cx} ${-cy})`}>
-
-                {/* ── 反面 ── */}
-                <g>
-                  <animateTransform
-                    attributeName="transform"
-                    type="translate"
-                    values={`0 ${doubleH}`}
-                    begin={`click+${halfDur}s`}
-                    calcMode="discrete"
-                    dur="1ms"
-                    fill="freeze"
-                    restart="never"
-                  />
-                  <g transform={`scale(-1,1) translate(${-W} ${-doubleH})`}>
-                    <foreignObject x="0" y="0" width={W} height={H}>
-                      <FaceContent content={props.backSide} width={W} height={H} />
-                    </foreignObject>
-                  </g>
+              <g transform={`translate(${-halfW} 0)`}>
+                {/* 反面：预先 scale(-1,1) 镜像，翻转后双重镜像=正常显示 */}
+                <g transform={`translate(${W} 0) scale(-1 1)`}>
+                  <foreignObject x={0} y={0} width={W} height={H}>
+                    <FaceContent content={props.backSide} width={W} height={H} />
+                  </foreignObject>
                 </g>
 
-                {/* ── 正面 ── */}
+                {/* 正面 */}
                 <g>
+                  {/* 翻转过半后正面消失（keyTimes 0.5 处离散切换） */}
                   <animate
+                    calcMode="linear"
                     attributeName="opacity"
-                    values="1; 0"
-                    begin={`click+${halfDur}s`}
-                    calcMode="discrete"
-                    dur="1ms"
+                    values="1;1;0;0"
+                    dur={dur}
+                    keyTimes="0;0.5;0.5;1"
                     fill="freeze"
+                    begin="click"
                   />
-                  <foreignObject x="0" y="0" width={W} height={H}>
+                  <foreignObject x={0} y={0} width={W} height={H}>
                     <FaceContent content={props.frontSide} width={W} height={H} />
                   </foreignObject>
+
+                  {/* 点击热区：点击后立即消失，防止重复触发 */}
                   <rect
-                    width={W}
-                    height={H}
-                    opacity="0"
+                    x={0} y={0} width={W} height={H}
+                    fill="#000" opacity={0}
                     style={{ pointerEvents: 'visible' }}
                   >
                     <set
@@ -150,12 +172,17 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
                     />
                   </rect>
                 </g>
-
               </g>
             </g>
           </g>
         </SvgEx>
       </section>
+
+      {/* 底部占位（维持 viewBox 高度） */}
+      <SvgEx
+        viewBox={`0 0 ${W} ${H}`}
+        style={{ display: 'block', width: '100%', pointerEvents: 'none', userSelect: 'none' }}
+      />
     </SectionEx>
   )
 }

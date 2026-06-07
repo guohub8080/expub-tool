@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Reference flip test</title></head>
+<body style="max-width:375px;margin:20px auto">
+<h3>Reference HTML (from reference.html)</h3>
+<section style="height: 0; opacity: 0; margin: 0;">·</section>
+<section style="background-position: center top; background-repeat: repeat; background-size: 100% auto; font-size: 0 !important; line-height: 0 !important; margin: 0 !important; overflow: hidden; padding: 0 !important;">
+  <section style="font-size: 0; line-height: 0; margin: 0; padding: 0; transform: scale(1);">
+    <section style="font-size: 0; height: 0; line-height: 0;">
+      <svg viewbox="0 0 300 300" style="width: 100%;"></svg>
+    </section>
+    <svg enable-background="new 0 0 300 300" style="pointer-events: none;" version="1.1" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(150 150)">
+        <g>
+          <animateTransform attributeName="transform" begin="click" dur="1s" fill="freeze" keyTimes="0; 1" restart="never" type="scale" values="1 1; -1 1"></animateTransform>
+          <g transform="translate(-150 -150)">
+            <g>
+              <animateTransform attributeName="transform" begin="click+0.5s" calcMode="discrete" dur="1ms" fill="freeze" restart="never" type="translate" values="0 600"></animateTransform>
+              <g transform="scale(-1,1) translate(-300, -600)">
+                <foreignObject x="0" y="0" width="300" height="300">
+                  <svg style="background: url('https://bcn.external-editor.com/files/202511/M2OVPhQs_LSy7.png') 0 0/100% 100% no-repeat; display: inline-block; width: 100%; box-sizing: border-box;" viewBox="0 0 300 300"></svg>
+                </foreignObject>
+              </g>
+            </g>
+            <g>
+              <animate attributeName="opacity" begin="click+0.5s" calcMode="discrete" dur="1ms" fill="freeze" values="1; 0"></animate>
+              <foreignObject x="0" y="0" width="300" height="300">
+                <svg style="background: url('https://bcn.external-editor.com/files/202511/NTGjJGxj_96fV.png') 0 0/100% 100% no-repeat; display: inline-block; width: 100%; box-sizing: border-box;" viewBox="0 0 300 300"></svg>
+              </foreignObject>
+              <rect height="300" opacity="0" style="pointer-events: visible" width="300" x="0" y="0">
+                <set attributeName="visibility" begin="click" from="visible" to="hidden"></set>
+              </rect>
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </section>
+</section>
+</body>
+</html>
