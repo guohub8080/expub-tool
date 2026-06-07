@@ -1,6 +1,8 @@
 import { CamaraStage } from 'expub-tool/svg'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
 
+const PLACEHOLDER_300x500 = '/300x500.png'
+
 export default function CamaraStagePage() {
   return (
     <div>
@@ -29,7 +31,7 @@ export default function CamaraStagePage() {
               world: { x: 0, y: 0, z: 300 },
               kind: 'world',
               objects: [
-                { id: 'objA', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(1) },
+                { id: 'objA', local: { x: 0, y: 0, z: 0 }, asset: PLACEHOLDER_300x500 },
               ],
             },
             {
@@ -38,7 +40,7 @@ export default function CamaraStagePage() {
               kind: 'passThrough',
               entrance: { triggerDistance: 200, opacity: { from: 0, to: 1 } },
               objects: [
-                { id: 'objB', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(2) },
+                { id: 'objB', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(1) },
               ],
             },
           ]}
@@ -71,7 +73,7 @@ export default function CamaraStagePage() {
               world: { x: 0, y: 0, z: 300 },
               kind: 'world',
               objects: [
-                { id: 'nearObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(3), size: { w: 160, h: 160 } },
+                { id: 'nearObj', local: { x: 0, y: 0, z: 0 }, asset: PLACEHOLDER_300x500, size: { w: 160, h: 160 } },
               ],
             },
             {
@@ -79,7 +81,7 @@ export default function CamaraStagePage() {
               world: { x: 0, y: 0, z: 600 },
               kind: 'world',
               objects: [
-                { id: 'midObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(4), size: { w: 160, h: 160 } },
+                { id: 'midObj', local: { x: 0, y: 0, z: 0 }, asset: PLACEHOLDER_300x500, size: { w: 160, h: 160 } },
               ],
             },
             {
@@ -87,7 +89,7 @@ export default function CamaraStagePage() {
               world: { x: 0, y: 0, z: 1200 },
               kind: 'world',
               objects: [
-                { id: 'farObj', local: { x: 0, y: 0, z: 0 }, asset: getWechat300x500(5), size: { w: 160, h: 160 } },
+                { id: 'farObj', local: { x: 0, y: 0, z: 0 }, asset: PLACEHOLDER_300x500, size: { w: 160, h: 160 } },
               ],
             },
           ]}
