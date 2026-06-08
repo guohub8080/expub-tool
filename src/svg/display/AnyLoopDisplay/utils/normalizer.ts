@@ -1,6 +1,7 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { isDefined } from '@utils/fn/isDefined'
+import { hasKey } from '@utils/fn/hasKey'
 import sum from "lodash/sum"
 import { DIRECTION_8 } from "@svg/types"
 import type { T_Direction8, T_Origin, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig, I_EntryTranslateConfig, I_StayTranslateConfig } from "@svg/types"
@@ -215,7 +216,7 @@ const normalizeStayAnim = (value: I_StayAnimConfig | undefined): I_NormalizedSta
  */
 const normalizeStayTranslate = (value: I_StayTranslateConfig | undefined): I_NormalizedStayTranslateConfig | undefined => {
   if (isNil(value)) return undefined
-  if ('timeline' in value) return { timeline: value.timeline }
+  if (hasKey(value, 'timeline')) return { timeline: value.timeline }
   return { fixedValue: { x: value.x, y: value.y } }
 }
 
