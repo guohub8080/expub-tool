@@ -2,7 +2,6 @@ import svgURL from "@utils/svg/svgURL"
 import type { I_CanvasBg, T_CanvasBgPosition } from "@svg/types"
 import defaultTo from 'lodash/defaultTo'
 import isEmpty from 'lodash/isEmpty'
-import isNil from 'lodash/isNil'
 import { isDefined } from '@utils/fn/isDefined'
 
 /**
@@ -50,13 +49,13 @@ export const resolveCanvasBg = (canvasBg?: I_CanvasBg): Record<string, string> =
     throw new Error('resolveCanvasBg: canvasBg can only provide one of "url" or "color", not both')
   }
 
-  if (isNil(canvasBg.url) && isNil(canvasBg.color)) {
+  if (!isDefined(canvasBg.url) && !isDefined(canvasBg.color)) {
     throw new Error('resolveCanvasBg: canvasBg must provide one of "url" or "color"')
   }
 
   const style: Record<string, string> = {}
 
-  if (!isNil(canvasBg.color)) {
+  if (isDefined(canvasBg.color)) {
     if (!isValidColor(canvasBg.color)) {
       throw new Error(`resolveCanvasBg: invalid color format "${canvasBg.color}". Expected hex (#fff, #ffffff, #ffffffff) or rgb/rgba (rgb(0,0,0), rgba(0,0,0,0.5))`)
     }
@@ -64,7 +63,7 @@ export const resolveCanvasBg = (canvasBg?: I_CanvasBg): Record<string, string> =
   }
 
   // 背景图
-  if (!isNil(canvasBg.url)) {
+  if (isDefined(canvasBg.url)) {
     style.backgroundImage = svgURL(canvasBg.url)
 
     const fit = defaultTo(canvasBg.fit, 'stretch')
