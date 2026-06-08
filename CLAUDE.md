@@ -68,7 +68,7 @@ import { svgURL, getEaseBezier, validateWechatSvg } from "expub-tool/svg-utils" 
 
 ## 非空判断规范
 
-**核心原则：`if ()` 里只写纯布尔值，空值判断必须用 `isNil` / `isDefined`。**
+**核心原则：`if ()` 里只写纯布尔值，空值判断必须用 `isNil` / `isDefined`。禁止 `!isNil` / `!isDefined`，禁止 `||` 拼接多个空值判断。**
 
 ### 什么时候用 isNil / isDefined
 
@@ -107,6 +107,19 @@ if (isDefined(canvasBg.url)) { ... }
 // ❌ 禁止用 !x / if(x) 做空值判断
 if (!canvasBg) return {}
 if (canvasBg.url) { ... }
+
+// ❌ 禁止 !isNil / !isDefined — 用对应的反义函数
+if (!isNil(x)) { ... }       // → 改为 if (isDefined(x))
+if (!isDefined(x)) { ... }   // → 改为 if (isNil(x))
+
+// ❌ 禁止 || 拼接多个空值判断 — 用嵌套 ternary 或提取函数
+if (isNil(a) || isNil(b)) return null
+// → 改为提取函数：
+const buildAnim = () => {
+  if (isNil(a)) return null
+  if (isNil(b)) return null
+  return someExpr
+}
 ```
 
 ## SMIL animateTransform 嵌套规则
