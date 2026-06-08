@@ -4,6 +4,7 @@ import defaultTo from 'lodash/defaultTo'
 import isEmpty from 'lodash/isEmpty'
 import isNil from 'lodash/isNil'
 import isString from 'lodash/isString'
+import { isDefined } from '@utils/fn/isDefined'
 
 /**
  * 九宫格 position → CSS backgroundPosition 映射
@@ -57,7 +58,7 @@ export const resolveCanvasBg = (canvasBg?: I_CanvasBg | string): Record<string, 
 
   const bg = canvasBg as I_CanvasBg
 
-  if (bg.url && bg.color) {
+  if (isDefined(bg.url) && isDefined(bg.color)) {
     throw new Error('resolveCanvasBg: canvasBg can only provide one of "url" or "color", not both')
   }
 
