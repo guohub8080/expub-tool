@@ -156,7 +156,7 @@ const CycleItem = (props: {
       contentWidth, contentHeight,
       stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
     })
-    if (scaleAnimConfig) {
+    if (isDefined(scaleAnimConfig)) {
       // 用嵌套 <g> 隔离 translate→scale→translate-back，
       // 而不是在同一个 <g> 上用 additive="sum"（微信 WebView 对非 Center origin 叠加不准）
       content = (

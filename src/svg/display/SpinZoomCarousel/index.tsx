@@ -4,6 +4,7 @@ import type { I_CanvasBg } from '@svg/types'
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
+import { isDefined } from '@utils/fn/isDefined'
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
@@ -58,7 +59,7 @@ const SpinZoomCarousel = (props: {
   const kt = (t: number) => t / T
 
   const renderContent = (pic: I_SpinZoomItem) => {
-    if (pic.item) return pic.item
+    if (isDefined(pic.item)) return pic.item
     return (
       <SvgEx viewBox={`0 0 ${w} ${h}`}
         style={{ backgroundImage: svgURL(pic.url!), backgroundSize: "cover" }} />

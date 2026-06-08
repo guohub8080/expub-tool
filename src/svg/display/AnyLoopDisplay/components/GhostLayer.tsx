@@ -224,15 +224,15 @@ const GhostLayer = (props: {
   // 从最内层往外逐层包裹，只有存在对应动画时才加 <g>
   let ghostContent: React.ReactNode = renderChildItemContent({ item: firstItem, contentWidth, contentHeight })
 
-  if (ghostOpacityAnim) {
+  if (isDefined(ghostOpacityAnim)) {
     ghostContent = <g>{ghostOpacityAnim}{ghostContent}</g>
   }
 
-  if (ghostRotateAnim) {
+  if (isDefined(ghostRotateAnim)) {
     ghostContent = <g>{ghostRotateAnim}{ghostContent}</g>
   }
 
-  if (ghostScaleAnimConfig) {
+  if (isDefined(ghostScaleAnimConfig)) {
     // 嵌套 <g> 隔离 translate→scale→translate-back，与 CycleItem 一致
     ghostContent = (
       <g transform={`translate(${ghostScaleAnimConfig.originX}, ${ghostScaleAnimConfig.originY})`}>
@@ -246,11 +246,11 @@ const GhostLayer = (props: {
     )
   }
 
-  if (ghostSkewYAnim) {
+  if (isDefined(ghostSkewYAnim)) {
     ghostContent = <g>{ghostSkewYAnim}{ghostContent}</g>
   }
 
-  if (ghostSkewXAnim) {
+  if (isDefined(ghostSkewXAnim)) {
     ghostContent = <g>{ghostSkewXAnim}{ghostContent}</g>
   }
 

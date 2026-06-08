@@ -1,5 +1,6 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
+import { isDefined } from '@utils/fn/isDefined'
 import type { I_CanvasBg } from '@svg/types'
 import max from "lodash/max"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
@@ -66,7 +67,7 @@ const AnyLoopDisplay = (props: {
 
   // 校验 jsx 模式下最外层 SVG 的 viewBox 是否跟内容区域尺寸一致
   items.forEach(item => {
-    if (item.jsx) {
+    if (isDefined(item.jsx)) {
       validateJsxViewBox({ jsx: item.jsx, contentWidth: contentW, contentHeight: contentH })
     }
   })
