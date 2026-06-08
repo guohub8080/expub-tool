@@ -267,7 +267,7 @@ export const buildStayTranslateSegments = ({
   if (stayDuration <= 0) return []
 
   // 无配置：hold 在 entry 最终值
-  if (!stayConfig) {
+  if (isNil(stayConfig)) {
     return [{ durationSeconds: stayDuration, toAbs: entryEndValue, keySplines: defaultEase }]
   }
 
