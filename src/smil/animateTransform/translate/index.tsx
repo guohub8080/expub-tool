@@ -25,8 +25,8 @@ function buildCoordinates(
     let newY: number
 
     if (!isNil(seg.toAbs)) {
-      newX = seg.toAbs.x ?? lastX
-      newY = seg.toAbs.y ?? lastY
+      newX = defaultTo(seg.toAbs.x, lastX)
+      newY = defaultTo(seg.toAbs.y, lastY)
     } else {
       // toRel
       newX = lastX + defaultTo(seg.toRel!.x, 0)
@@ -62,13 +62,13 @@ export function transformTranslate(config: I_TranslateConfig) {
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
     toAbs: coordinates[i + 1],
-    keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
+    keySplines: defaultTo(seg.keySplines, LINEAR_KEY_SPLINE),
   }))
 
   const result = buildTimeline({ initValue: { x: initX, y: initY }, timeline: fullKeyframes, serializer: serializeTranslate })
 
   const hasKeySplines = timeline.some(seg => seg.keySplines)
-  const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')
+  const finalCalcMode = defaultTo(calcMode, hasKeySplines ? 'spline' : 'linear')
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount
 
   return (

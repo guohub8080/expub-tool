@@ -1,4 +1,5 @@
 import React from 'react'
+import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import defaultTo from 'lodash/defaultTo'
 import clamp from 'lodash/clamp'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
@@ -59,7 +60,7 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
   const flipDur = clamp(rawDur, MIN_FLIP_DURATION, MAX_FLIP_DURATION)
   const dur = `${flipDur}s`
 
-  const hotArea = props.hotArea
+  const hotArea = props.frontSide.hotArea
   const hotX = defaultTo(hotArea?.x, 0)
   const hotY = defaultTo(hotArea?.y, 0)
   const hotW = defaultTo(hotArea?.w, W)
@@ -82,21 +83,16 @@ const ClickFlipOnce = (props: I_ClickFlipOnceProps) => {
       <section style={{ height: 0 }}>
         <SvgEx
           viewBox={`0 0 ${W} ${H}`}
-          role="img"
-          aria-label="插图"
-          style={{ display: 'block', width: '100%', marginTop: '0px', backgroundColor: props.canvasBg }}
+          style={{ display: 'block', width: '100%', marginTop: '0px', ...resolveCanvasBg(props.canvasBg) }}
         />
       </section>
 
       <section style={{ height: 0 }}>
         <SvgEx
           viewBox={`0 0 ${W} ${H}`}
-          role="img"
-          aria-label="插图"
           style={{
             display: 'block',
             width: '100%',
-            marginTop: '-1px',
             pointerEvents: 'none',
             userSelect: 'none',
           }}

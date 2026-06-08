@@ -66,7 +66,7 @@ const CycleItem = (props: {
   // 简单模式：由 direction + distance 自动计算 offscreen 坐标
   // 高级模式：用户自定义 initValue
   const translateInitValue = entryTranslate.timeline
-    ? (entryTranslate.initValue ?? { x: 0, y: 0 })
+    ? (defaultTo(entryTranslate.initValue, { x: 0, y: 0 }))
     : getOffscreenTranslate({
         direction: entryTranslate.direction, canvasWidth, canvasHeight,
         bufferMultiplier: defaultTo(entryTranslate.distance, getEntryBuffer(item.entry.scale)),
@@ -81,7 +81,7 @@ const CycleItem = (props: {
       })
 
   // ── 分阶段构建 translate timeline ──
-  const ease = entryTranslate.keySplines ?? exitTranslate.keySplines ?? DEFAULT_EASE
+  const ease = defaultTo(entryTranslate.keySplines, defaultTo(exitTranslate.keySplines, DEFAULT_EASE))
 
   const entrySegs = buildTranslatePhaseSegments({
     translateConfig: entryTranslate,
@@ -101,13 +101,13 @@ const CycleItem = (props: {
   const exitSegs = buildTranslatePhaseSegments({
     translateConfig: exitTranslate,
     phaseDuration: nextSwitchDuration,
-    simpleTargetValue: exitOffscreen ?? { x: 0, y: 0 },
+    simpleTargetValue: defaultTo(exitOffscreen, { x: 0, y: 0 }),
     defaultEase: defaultTo(exitTranslate.keySplines, ease),
   })
 
   const translateTimeline = combinePhaseSegments(
     entrySegs, staySegs, exitSegs,
-    exitOffscreen ?? { x: 0, y: 0 },
+    defaultTo(exitOffscreen, { x: 0, y: 0 }),
     holdDuration,
     DEFAULT_EASE,
   )
@@ -227,10 +227,10 @@ const getEntryBuffer = (entryScale?: I_NormalizedChildItem['entry']['scale']): n
 const getExitBuffer = (exitScale?: I_NormalizedChildItem['exit']['scale']): number => {
   if (isNil(exitScale)) return 1
   if (exitScale.timeline) {
-    const timelineMax = max(exitScale.timeline.map(segment => segment.toAbs)) ?? 1
-    return max([1, timelineMax]) ?? 1
+    const timelineMax = defaultTo(max(exitScale.timeline.map(segment => segment.toAbs)), 1)
+    return defaultTo(max([1, timelineMax]), 1)
   }
-  return max([1, defaultTo(exitScale.initValue, 1)]) ?? 1
+  return defaultTo(max([1, defaultTo(exitScale.initValue, 1)]), 1)
 }
 
 export default CycleItem

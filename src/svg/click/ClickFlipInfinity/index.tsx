@@ -1,4 +1,5 @@
 import React from 'react'
+import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
@@ -11,10 +12,10 @@ import {
 	outerScaleToggleAnims,
 	flipScaleAnims,
 	opacityToggleAnims,
-	clickResetTranslateAnims,
-	hiddenResetTranslateAnims,
 } from './smil'
-import { FaceContent } from './FaceContent'
+import { FaceContent } from './components/FaceContent'
+import { ClickInteractionLayer } from './components/ClickInteractionLayer'
+import { ResetTriggerLayer } from './components/ResetTriggerLayer'
 import type { I_ClickFlipInfinityProps } from './types'
 
 const DEFAULT_FLIP_DURATION = 1
@@ -33,7 +34,7 @@ const ClickFlipInfinity = (props: I_ClickFlipInfinityProps) => {
 
 	const W = props.canvasSize.w
 	const H = props.canvasSize.h
-	const bgColor = props.canvasBg
+	// canvasBg resolved via resolveCanvasBg
 	const rawFlipDur = defaultTo(props.flipDuration, DEFAULT_FLIP_DURATION)
 	const flipDur = clamp(rawFlipDur, MIN_FLIP_DURATION, MAX_FLIP_DURATION)
 	const pressFlipDur = flipDur + HOLD_TIME
@@ -57,9 +58,7 @@ const ClickFlipInfinity = (props: I_ClickFlipInfinityProps) => {
 			<section style={{ height: 0 }}>
 				<SvgEx
 					viewBox={`0 0 ${W} ${H}`}
-					role="img"
-					aria-label="插图"
-					style={{ display: 'block', width: '100%', marginTop: '0px', backgroundColor: bgColor }}
+					style={{ display: 'block', width: '100%', marginTop: '0px', ...resolveCanvasBg(props.canvasBg) }}
 				/>
 			</section>
 
@@ -67,12 +66,9 @@ const ClickFlipInfinity = (props: I_ClickFlipInfinityProps) => {
 			<section style={{ height: 0 }}>
 				<SvgEx
 					viewBox={`0 0 ${W} ${H}`}
-					role="img"
-					aria-label="插图"
 					style={{
 						display: 'block',
 						width: '100%',
-						marginTop: '-1px',
 						pointerEvents: 'none',
 						userSelect: 'none',
 					}}
@@ -100,29 +96,15 @@ const ClickFlipInfinity = (props: I_ClickFlipInfinityProps) => {
 									<g>
 										{opacityToggleAnims({ flipDur })}
 
-										{/* 正面 */}
 										<foreignObject x={0} y={0} width={W} height={H}>
 											<FaceContent content={props.frontSide} width={W} height={H} />
 										</foreignObject>
 
-										{/* 点击交互层：translate ±10000 管理点击目标的可见性 */}
-										<g>
-											{clickResetTranslateAnims({ discreteDur })}
-
-											{/* 主点击区域 */}
-											<rect x={0} y={0} width={W} height={H} fill="#39f" opacity={0} style={{ pointerEvents: 'visible' }}>
-												<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="mouseup" />
-												<animate attributeName="x" dur="1s" fill="remove" restart="always" values="-88888888" begin="click" />
-											</rect>
-
-											{/* 隐藏的重置触发器 */}
-											<g transform="translate(10000 0)">
-												<g>
-													{hiddenResetTranslateAnims({ pressFlipDur })}
-													<rect x={0} y={0} width={W} height={H} fill="#000" opacity={0} style={{ pointerEvents: 'visible' }} />
-												</g>
-											</g>
-										</g>
+										<ClickInteractionLayer
+													W={W} H={H} discreteDur={discreteDur} pressFlipDur={pressFlipDur}
+													frontHotArea={props.frontSide.hotArea}
+													backHotArea={props.backSide.hotArea}
+												/>
 									</g>
 								</g>
 							</g>
@@ -130,27 +112,7 @@ const ClickFlipInfinity = (props: I_ClickFlipInfinityProps) => {
 					</g>
 				</SvgEx>
 
-				{/* 180° 旋转重置触发层 */}
-				<section style={{ height: 0, transform: 'rotate(180deg)' }}>
-					<SvgEx
-						viewBox={`0 0 ${W} ${H}`}
-						role="img"
-						aria-label="插图"
-						style={{
-							transform: 'rotate(180deg)',
-							display: 'block',
-							width: '100%',
-							pointerEvents: 'none',
-							userSelect: 'none',
-						}}
-					>
-						<g opacity={0}>
-							<rect x={0} y={0} width={W} height={H} fill="blue" style={{ pointerEvents: 'visible' }} />
-							<animateTransform calcMode="discrete" attributeName="transform" type="translate" values="4000 0" dur="0.2s" begin="mousedown" />
-							<animateTransform calcMode="discrete" attributeName="transform" type="translate" values="4000 0" dur="0.2s" begin="touchstart" />
-						</g>
-					</SvgEx>
-				</section>
+				<ResetTriggerLayer W={W} H={H} hotArea={props.backSide.hotArea} />
 			</section>
 
 			{/* 底部占位（维持 viewBox 高度） */}

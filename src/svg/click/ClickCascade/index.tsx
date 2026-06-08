@@ -1,4 +1,5 @@
 import React from 'react'
+import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
@@ -21,7 +22,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 
 	const W = props.canvasSize.w
 	const H = props.canvasSize.h
-	const bgColor = props.canvasBg
+	// canvasBg resolved via resolveCanvasBg
 	const childItems = props.childItems
 
 	if (!childItems || childItems.length < 2) {
@@ -161,7 +162,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 				<SvgEx
 					viewBox={`0 0 ${W} ${H}`}
 					style={{
-						backgroundColor: bgColor,
+						...resolveCanvasBg(props.canvasBg),
 						boxSizing: 'border-box',
 						display: 'inline-block',
 						pointerEvents: 'none',

@@ -1,6 +1,7 @@
 import React from 'react'
 import isNil from 'lodash/isNil'
 import type { T_NativeAnimateMotion } from '@smil/types'
+import defaultTo from 'lodash/defaultTo'
 
 export type T_PathMotionRotate = 'auto' | 'auto-reverse' | number
 
@@ -42,7 +43,7 @@ export function animateMotion(config: I_PathMotionConfig) {
 
   const rotateValue = resolveRotate(rotate)
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount
-  const finalKeyTimes = calcMode === 'spline' ? keyTimes ?? '0;1' : undefined
+  const finalKeyTimes = calcMode === 'spline' ? defaultTo(keyTimes, '0;1') : undefined
 
   return (
     <animateMotion

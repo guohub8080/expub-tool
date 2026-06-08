@@ -2,6 +2,7 @@ import { round } from 'lodash'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import isNil from 'lodash/isNil'
 import type { I_TimelineKeyframe, I_TimelineResult, T_ValueSerializer } from './types'
+import defaultTo from 'lodash/defaultTo'
 
 export interface I_BuildTimelineConfig<T> {
   /** 初始值（values 的第一个点，必填） */
@@ -60,7 +61,7 @@ export function buildTimeline<T>(config: I_BuildTimelineConfig<T>): I_TimelineRe
   const keyTimes = keyTimesList.join(';')
 
   // 4. keySplines（n 个，= values 点数 - 1，未填默认线性）
-  const keySplines = keyframes.map(k => k.keySplines ?? LINEAR_KEY_SPLINE).join(';')
+  const keySplines = keyframes.map(k => defaultTo(k.keySplines, LINEAR_KEY_SPLINE)).join(';')
 
   return { values, keyTimes, keySplines, totalDuration }
 }

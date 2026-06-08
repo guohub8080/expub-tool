@@ -24,7 +24,7 @@ export const renderOpacityAnim = ({
 
   const animInitValue = defaultTo(entryOpacity?.initValue, 1)
   const exitTargetValue = defaultTo(exitOpacity?.initValue, 1)
-  const ease = entryOpacity?.keySplines ?? exitOpacity?.keySplines ?? DEFAULT_EASE
+  const ease = defaultTo(entryOpacity?.keySplines, defaultTo(exitOpacity?.keySplines, DEFAULT_EASE))
 
   const entrySegs = buildOpacityPhaseSegments({ opacityConfig: entryOpacity, phaseDuration: switchDuration, simpleTargetValue: 1, defaultEase: ease })
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 1

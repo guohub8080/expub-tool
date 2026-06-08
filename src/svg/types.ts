@@ -254,3 +254,22 @@ export type I_StayTranslateConfig =
  *    timeline 总时长必须 ≤ stayDuration，剩余时间 hold 在最后值
  */
 export type I_StayAnimConfig = number | { timeline: I_TimelineKeyframe<number>[] }
+
+/** 背景图适配方式 */
+export type T_CanvasBgFit = 'stretch' | 'cover' | 'contain' | 'tile'
+
+/** 背景图对齐方式（九宫格） */
+export type T_CanvasBgPosition = 'center' | 'left' | 'right' | 'top' | 'bottom'
+	| 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
+
+/** 画布背景配置 */
+export interface I_CanvasBg {
+	/** 背景图 URL */
+	url?: string
+	/** 背景色 "#xxx", "rgba(...)", "rgb(...)" */
+	color?: string
+	/** 适配方式，默认 'stretch' */
+	fit?: T_CanvasBgFit
+	/** 对齐方式，默认 'center'。stretch 时忽略 */
+	position?: T_CanvasBgPosition
+}

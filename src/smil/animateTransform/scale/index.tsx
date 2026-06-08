@@ -37,7 +37,7 @@ export function transformScale(config: I_ScaleConfig) {
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
     toAbs: scaleValues[i + 1],
-    keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
+    keySplines: defaultTo(seg.keySplines, LINEAR_KEY_SPLINE),
   }))
 
   const result = buildTimeline({ initValue, timeline: fullKeyframes })
@@ -49,7 +49,7 @@ export function transformScale(config: I_ScaleConfig) {
 
   // 4. 公共属性
   const hasKeySplines = timeline.some(seg => seg.keySplines)
-  const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')
+  const finalCalcMode = defaultTo(calcMode, hasKeySplines ? 'spline' : 'linear')
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount
   const fillValue = isFreeze ? 'freeze' : 'remove'
   const additiveValue = isAdditive ? 'sum' : undefined

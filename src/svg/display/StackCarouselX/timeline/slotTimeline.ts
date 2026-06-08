@@ -120,9 +120,9 @@ export function buildSlotTimelines({
 
     if (hasRotation) {
       rotateTimeline.push({
-        toAbs: isExit ? (exitConfig.rotation!.angle ?? 0) : 0,
+        toAbs: isExit ? (defaultTo(exitConfig.rotation!.angle, 0)) : 0,
         durationSeconds: dur,
-        keySplines: exitConfig.rotation!.keySplines ?? splines,
+        keySplines: defaultTo(exitConfig.rotation!.keySplines, splines),
       })
     }
   }

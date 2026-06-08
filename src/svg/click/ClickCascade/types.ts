@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { I_CanvasBg } from '@svg/types'
 import type { T_SpacingProps } from '@css-fn/spacing'
 
 export interface I_CascadeChildItem {
@@ -18,7 +19,7 @@ export interface I_ClickCascadeProps {
   /** SVG 画布尺寸（viewBox） */
   canvasSize: { w: number; h: number }
   /** 画布背景色，不传则透明 */
-  canvasBg?: string
+  canvasBg?: I_CanvasBg
   /** 图层配置数组（至少 2 张），第 1 张为底层，依次向上叠加 */
   childItems: I_CascadeChildItem[]
   /** 外层 margin-top 间距 */

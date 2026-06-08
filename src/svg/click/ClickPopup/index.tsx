@@ -1,4 +1,5 @@
 import React from 'react'
+import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
@@ -6,7 +7,7 @@ import clamp from 'lodash/clamp'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import { popupBounceAnims, popupOpacityAnims } from './smil'
-import { FaceContent } from '../ClickFlipInfinity/FaceContent'
+import { FaceContent } from '../ClickFlipInfinity/components/FaceContent'
 import type { I_ClickPopupProps } from './types'
 
 const DEFAULT_BOUNCE_DURATION = 0.6
@@ -20,7 +21,7 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 
 	const W = props.canvasSize.w
 	const H = props.canvasSize.h
-	const bgColor = props.canvasBg
+	// canvasBg resolved via resolveCanvasBg
 	const rawDur = defaultTo(props.bounceDuration, DEFAULT_BOUNCE_DURATION)
 	const bounceDur = clamp(rawDur, MIN_BOUNCE_DURATION, MAX_BOUNCE_DURATION)
 	const holdRatio = HOLD_RATIO
@@ -44,9 +45,7 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 			<section style={{ height: 0 }}>
 				<SvgEx
 					viewBox={`0 0 ${W} ${H}`}
-					role="img"
-					aria-label="插图"
-					style={{ display: 'block', width: '100%', marginTop: '0px', backgroundColor: bgColor }}
+					style={{ display: 'block', width: '100%', marginTop: '0px', ...resolveCanvasBg(props.canvasBg) }}
 				/>
 			</section>
 
@@ -54,8 +53,6 @@ const ClickPopup = (props: I_ClickPopupProps) => {
 			<section style={{ height: 0 }}>
 				<SvgEx
 					viewBox={`0 0 ${W} ${H}`}
-					role="img"
-					aria-label="插图"
 					style={{
 						display: 'block',
 						width: '100%',

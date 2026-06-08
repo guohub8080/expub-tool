@@ -34,13 +34,13 @@ export const buildScaleAnimConfig = ({
   const animInitValue = defaultTo(entryScale?.initValue, 1)
 
   const scaleOrigin = getRotationOrigin({
-    origin: defaultTo(entryScale?.childCanvasOrigin, exitScale?.childCanvasOrigin ?? 'Center'),
+    origin: defaultTo(entryScale?.childCanvasOrigin, defaultTo(exitScale?.childCanvasOrigin, 'Center')),
     contentWidth,
     contentHeight,
   })
 
   const [originX, originY] = scaleOrigin
-  const ease = entryScale?.keySplines ?? exitScale?.keySplines ?? DEFAULT_EASE
+  const ease = defaultTo(entryScale?.keySplines, defaultTo(exitScale?.keySplines, DEFAULT_EASE))
 
   const entrySegs = buildScalePhaseSegments({ scaleConfig: entryScale, phaseDuration: switchDuration, simpleTargetValue: 1, defaultEase: ease })
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 1

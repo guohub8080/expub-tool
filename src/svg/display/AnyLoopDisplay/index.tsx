@@ -1,4 +1,5 @@
 import defaultTo from "lodash/defaultTo"
+import type { I_CanvasBg } from '@svg/types'
 import max from "lodash/max"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
@@ -46,7 +47,7 @@ const AnyLoopDisplay = (props: {
    */
   childCanvas?: { x: number; y: number; w: number; h: number }
   /** 画布背景：颜色字符串（如 "#fff"）或图片 URL */
-  canvasBg?: string
+  canvasBg?: I_CanvasBg
   /** 外间距配置 */
   spacing?: T_SpacingProps
 }) => {
@@ -56,7 +57,7 @@ const AnyLoopDisplay = (props: {
   }
 
   const { w, h } = props.canvasSize
-  const canvas = props.childCanvas ?? { x: 0, y: 0, w, h }
+  const canvas = defaultTo(props.childCanvas, { x: 0, y: 0, w, h })
   const { x: canvasX, y: canvasY, w: contentW, h: contentH } = canvas
   const items = normalizeChildItems(props.childItems)
   const { totalDuration, itemTimelines, ghostTimeline } = buildCyclicTimelines(items)
@@ -104,7 +105,7 @@ const AnyLoopDisplay = (props: {
                   enterOffscreenTranslate={
                     // 高级模式取 initValue，简单模式由 direction 计算 offscreen
                     items[0].entry.translate.timeline
-                      ? (items[0].entry.translate.initValue ?? { x: 0, y: 0 })
+                      ? (defaultTo(items[0].entry.translate.initValue, { x: 0, y: 0 }))
                       : getOffscreenTranslate({
                           direction: items[0].entry.translate.direction, canvasWidth: w, canvasHeight: h,
                           bufferMultiplier: defaultTo(items[0].entry.translate.distance, max([1, defaultTo(items[0].entry.scale?.initValue, 1)])),

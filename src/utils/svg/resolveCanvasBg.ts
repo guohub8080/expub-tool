@@ -1,22 +1,88 @@
 import svgURL from "@utils/svg/svgURL"
+import type { I_CanvasBg, T_CanvasBgPosition } from "@svg/types"
+import defaultTo from 'lodash/defaultTo'
+
+/**
+ * 九宫格 position → CSS backgroundPosition 映射
+ */
+const POSITION_MAP: Record<T_CanvasBgPosition, string> = {
+	center: 'center center',
+	left: 'left center',
+	right: 'right center',
+	top: 'center top',
+	bottom: 'center bottom',
+	topLeft: 'left top',
+	topRight: 'right top',
+	bottomLeft: 'left bottom',
+	bottomRight: 'right bottom',
+}
+
+/**
+ * 校验颜色值是否为合法的 hex / rgb / rgba 格式
+ *
+ * 合法示例：#fff, #ffffff, #ffffffff, rgb(0,0,0), rgba(0,0,0,0.5)
+ */
+const COLOR_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$|^rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(,\s*[\d.]+\s*)?\)$/
+
+const isValidColor = (color: string): boolean => COLOR_RE.test(color.trim())
 
 /**
  * 解析画布背景配置，返回 CSS style 对象。
  *
- * 支持三种输入：
- * - 颜色字符串（如 "#fff", "red", "rgba(0,0,0,0.5)"）→ backgroundColor
- * - 图片 URL（http:// 或 data: 开头）→ backgroundImage + backgroundSize: cover
- * - undefined / 不传 → 空对象（无背景）
+ * 适配规则：
+ * - stretch（默认）: backgroundSize: '100% 100%'，position 无意义，忽略
+ * - cover:  backgroundSize: 'cover'，position 决定裁剪锚点
+ * - contain: backgroundSize: 'contain'，position 决定留白位置
+ * - tile:   backgroundRepeat: 'repeat'，自然尺寸平铺，position 决定起始对齐
  *
- * @param canvasBg — 背景配置字符串
- * @returns CSS style 对象，可直接展开到 style 属性
+ * 校验：
+ * - canvasBg 对象必须至少提供 url 或 color 之一，否则报错
+ * - color 必须符合 hex (#xxx / #xxxxxx / #xxxxxxxx) 或 rgb/rgba 格式，否则报错
  */
-export const resolveCanvasBg = (canvasBg?: string): Record<string, string> => {
-  if (!canvasBg) return {}
+export const resolveCanvasBg = (canvasBg?: I_CanvasBg): Record<string, string> => {
+	if (!canvasBg) return {}
 
-  const isUrl = canvasBg.startsWith('http') || canvasBg.startsWith('data:')
+	if (!canvasBg.url && !canvasBg.color) {
+		throw new Error('resolveCanvasBg: canvasBg must provide at least one of "url" or "color"')
+	}
 
-  return isUrl
-    ? { backgroundImage: svgURL(canvasBg), backgroundSize: "cover" }
-    : { backgroundColor: canvasBg }
+	if (canvasBg.color && !isValidColor(canvasBg.color)) {
+		throw new Error(`resolveCanvasBg: invalid color format "${canvasBg.color}". Expected hex (#fff, #ffffff, #ffffffff) or rgb/rgba (rgb(0,0,0), rgba(0,0,0,0.5))`)
+	}
+
+	const style: Record<string, string> = {}
+
+	// 背景色
+	if (canvasBg.color) {
+		style.backgroundColor = canvasBg.color
+	}
+
+	// 背景图
+	if (canvasBg.url) {
+		style.backgroundImage = svgURL(canvasBg.url)
+
+		const fit = defaultTo(canvasBg.fit, 'stretch')
+		const pos = defaultTo(canvasBg.position, 'center')
+
+		switch (fit) {
+			case 'stretch':
+				style.backgroundSize = '100% 100%'
+				// stretch 铺满，position 无意义，忽略
+				break
+			case 'cover':
+				style.backgroundSize = 'cover'
+				style.backgroundPosition = POSITION_MAP[pos]
+				break
+			case 'contain':
+				style.backgroundSize = 'contain'
+				style.backgroundPosition = POSITION_MAP[pos]
+				break
+			case 'tile':
+				style.backgroundRepeat = 'repeat'
+				style.backgroundPosition = POSITION_MAP[pos]
+				break
+		}
+	}
+
+	return style
 }

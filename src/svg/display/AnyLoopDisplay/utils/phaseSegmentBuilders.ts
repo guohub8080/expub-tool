@@ -1,5 +1,6 @@
 import sum from "lodash/sum"
 import type { I_NormalizedChildItem, I_NormalizedTranslateConfig, I_NormalizedStayTranslateConfig } from "./normalizer"
+import defaultTo from 'lodash/defaultTo'
 
 /**
  * 构建 rotation 单阶段（entry 或 exit）的 timeline segments
@@ -225,7 +226,7 @@ export const buildTranslatePhaseSegments = ({
 }): { durationSeconds: number; toAbs: { x: number; y: number }; keySplines?: string }[] => {
   if (!translateConfig.timeline) {
     // 简单模式：单段动画到目标值
-    return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: translateConfig.keySplines ?? defaultEase }]
+    return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultTo(translateConfig.keySplines, defaultEase) }]
   }
 
   // 高级模式：使用用户 timeline

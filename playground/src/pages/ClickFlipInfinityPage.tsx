@@ -39,6 +39,23 @@ export default function ClickFlipInfinityPage() {
 
 			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
 				<h3 style={{ margin: '0 0 8px' }}>JSX 复合 SVG — 正面呼吸+浮动，反面闪烁文字</h3>
+			<div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+				<h3 style={{ margin: '0 0 8px' }}>热区配置 — 正面点击左半，反面点击右半</h3>
+				<p style={{ margin: '0 0 8px', fontSize: 14, color: '#666' }}>正面只有左半可点击翻面，翻过去后反面只有右半可点击翻回</p>
+				<ClickFlipInfinity
+					canvasSize={{ w: 300, h: 300 }}
+					canvasBg="#f0f0f0"
+					frontSide={{
+						url: getWechat300x300(1),
+						hotArea: { x: 0, y: 0, w: 150, h: 300 },
+					}}
+					backSide={{
+						url: getWechat300x300(2),
+						hotArea: { x: 150, y: 0, w: 150, h: 300 },
+					}}
+				/>
+			</div>
+
 				<ClickFlipInfinity
 					canvasSize={{ w: 300, h: 400 }}
 					canvasBg="#0f0f23"

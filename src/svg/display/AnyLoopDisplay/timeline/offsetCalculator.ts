@@ -1,5 +1,6 @@
 import isPlainObject from "lodash/isPlainObject"
 import type { T_Direction8, T_Origin } from "@svg/types"
+import defaultTo from 'lodash/defaultTo'
 
 /**
  * 方向位移计算器
@@ -42,7 +43,7 @@ export const getOffscreenTranslate = ({
     TL: offscreenDistanceY, TR: offscreenDistanceY,
     BL: -offscreenDistanceY, BR: -offscreenDistanceY,
   }
-  return { x: xMap[direction] ?? 0, y: yMap[direction] ?? 0 }
+  return { x: defaultTo(xMap[direction], 0), y: defaultTo(yMap[direction], 0) }
 }
 
 /**

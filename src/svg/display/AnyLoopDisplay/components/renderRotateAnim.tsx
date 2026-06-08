@@ -28,12 +28,12 @@ export const renderRotateAnim = ({
   const exitTargetValue = defaultTo(exitRotation?.initValue, 0)
 
   const rotationOrigin = getRotationOrigin({
-    origin: defaultTo(entryRotation?.childCanvasOrigin, exitRotation?.childCanvasOrigin ?? 'Center'),
+    origin: defaultTo(entryRotation?.childCanvasOrigin, defaultTo(exitRotation?.childCanvasOrigin, 'Center')),
     contentWidth,
     contentHeight,
   })
 
-  const ease = entryRotation?.keySplines ?? exitRotation?.keySplines ?? DEFAULT_EASE
+  const ease = defaultTo(entryRotation?.keySplines, defaultTo(exitRotation?.keySplines, DEFAULT_EASE))
 
   const entrySegs = buildRotationPhaseSegments({ rotationConfig: entryRotation, phaseDuration: switchDuration, simpleTargetValue: 0, defaultEase: ease })
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 0

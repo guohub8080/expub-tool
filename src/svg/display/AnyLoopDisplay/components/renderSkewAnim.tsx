@@ -25,7 +25,7 @@ export const renderSkewAxisAnim = ({
 
   const animInitValue = defaultTo(entrySkew?.initValue, 0)
   const exitTargetValue = defaultTo(exitSkew?.initValue, 0)
-  const ease = entrySkew?.keySplines ?? exitSkew?.keySplines ?? DEFAULT_EASE
+  const ease = defaultTo(entrySkew?.keySplines, defaultTo(exitSkew?.keySplines, DEFAULT_EASE))
 
   const entrySegs = buildSkewPhaseSegments({ skewConfig: entrySkew, phaseDuration: switchDuration, simpleTargetValue: 0, defaultEase: ease })
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 0

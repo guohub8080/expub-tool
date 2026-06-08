@@ -1,4 +1,6 @@
 import SectionEx from "@html/basicEx/SectionEx"
+import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
+import type { I_CanvasBg } from '@svg/types'
 import SvgEx from "@html/basicEx/SvgEx"
 import floor from "lodash/floor"
 import defaultTo from "lodash/defaultTo"
@@ -20,7 +22,7 @@ const CoverFlowY = (props: {
   canvasSize: { w: number; h: number }
   spacing?: T_SpacingProps
   childItems?: I_CoverFlowItemConfig[]
-  canvasBg?: string
+  canvasBg?: I_CanvasBg
   itemCanvasSize: { w: number; h: number }
   itemGap?: number
   itemScale?: number
@@ -82,7 +84,7 @@ const CoverFlowY = (props: {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}
-          style={{ display: "block", margin: "0 auto", backgroundColor: props.canvasBg }}
+          style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }}
           width="100%">
           <g>
             {slots.map((slot, si) => {

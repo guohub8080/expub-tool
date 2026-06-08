@@ -1,7 +1,7 @@
 import React from 'react'
 import SvgEx from '@html/basicEx/SvgEx'
 import svgURL from '@utils/svg/svgURL'
-import type { I_FaceContent } from './types'
+import type { I_FaceContent } from '../types'
 
 /**
  * 渲染卡牌单面内容（url 或 jsx）
@@ -22,8 +22,6 @@ export function FaceContent({ content, width, height }: {
 	return (
 		<SvgEx
 			viewBox={`0 0 ${width} ${height}`}
-			role="img"
-			aria-label="插图"
 			style={{
 				display: 'block',
 				width: '100%',

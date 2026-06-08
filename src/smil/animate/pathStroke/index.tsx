@@ -1,6 +1,7 @@
 import React from 'react'
 import { animateAttribute } from '../attribute'
 import type { I_AnimateAttributeConfig } from '../attribute'
+import defaultTo from 'lodash/defaultTo'
 
 export interface I_PathStrokeConfig extends Omit<I_AnimateAttributeConfig<number>, 'attributeName' | 'initValue'> {
   pathLength: number
@@ -12,8 +13,8 @@ export function animatePathStroke(config: I_PathStrokeConfig) {
   return animateAttribute<number>({
     ...rest,
     attributeName: 'stroke-dashoffset',
-    initValue: rest.initValue ?? pathLength,
-    isFreeze: rest.isFreeze ?? true,
+    initValue: defaultTo(rest.initValue, pathLength),
+    isFreeze: defaultTo(rest.isFreeze, true),
   })
 }
 

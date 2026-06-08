@@ -1,4 +1,6 @@
 import React from "react"
+import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
+import type { I_CanvasBg } from '@svg/types'
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
@@ -59,7 +61,7 @@ interface I_StackCarouselYProps {
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
   /** 画布背景色，默认 #FFFFFF */
-  canvasBg?: string
+  canvasBg?: I_CanvasBg
   /** 反向：叠层偏移在下方 */
   isReversed?: boolean
   /** 外层 margin-top 间距 */
@@ -79,7 +81,6 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
   const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
-  const bgColor = props.canvasBg
   const isDev = ExPubGoConfig().mode === "development"
 
   const items = normalizeItems({ items: props.childItems, defaultExitDirection: DIRECTION_8.Right })
@@ -126,7 +127,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
         >
           <g>
             <foreignObject x={0} y={0} width={viewBoxW} height={viewBoxH}>
-              <svg viewBox={`0 0 ${viewBoxW} ${viewBoxH}`} style={{ backgroundColor: bgColor, width: "100%" }} />
+              <svg viewBox={`0 0 ${viewBoxW} ${viewBoxH}`} style={{ ...resolveCanvasBg(props.canvasBg), width: "100%" }} />
             </foreignObject>
           </g>
 

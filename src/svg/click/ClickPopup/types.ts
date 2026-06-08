@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { I_CanvasBg } from '@svg/types'
 import type { T_SpacingProps } from '@css-fn/spacing'
 
 /** 弹窗单面内容 */
@@ -11,7 +12,7 @@ export interface I_ClickPopupProps {
 	/** SVG viewBox 尺寸 */
 	canvasSize: { w: number; h: number }
 	/** 画布背景色，默认 #FFFFFF */
-	canvasBg?: string
+	canvasBg?: I_CanvasBg
 	/** 底层背景内容 */
 	cover: I_FaceContent
 	/** 弹出内容 */

@@ -1,4 +1,6 @@
 import SectionEx from "@html/basicEx/SectionEx"
+import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
+import type { I_CanvasBg } from '@svg/types'
 import SvgEx from "@html/basicEx/SvgEx"
 import max from "lodash/max"
 import min from "lodash/min"
@@ -28,7 +30,7 @@ const SkewSlideCarouselY = (props: {
   stepDuration?: number
   itemGap?: number
   spacing?: T_SpacingProps
-  canvasBg?: string
+  canvasBg?: I_CanvasBg
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   if (!props.items?.length) return null
@@ -65,14 +67,14 @@ const SkewSlideCarouselY = (props: {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`}
-          style={{ display: "block", margin: "0 auto", backgroundColor: props.canvasBg }} width="100%">
+          style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }} width="100%">
           <g transform={`translate(${itemGap}, ${itemGap})`}>
             <g transform={`translate(${contentW / 2}, 0)`}>
               {items.map((item, i) => {
                 const begin = (i - 1) * step
                 const useItem = !!item.item
-                const dirIn = item.skewIn ?? DEFAULT_SKEW_IN
-                const dirOut = item.skewOut ?? DEFAULT_SKEW_OUT
+                const dirIn = defaultTo(item.skewIn, DEFAULT_SKEW_IN)
+                const dirOut = defaultTo(item.skewOut, DEFAULT_SKEW_OUT)
                 const sa = dirIn === 'L' ? skewAngle : -skewAngle
                 const xOff = dirIn === 'L' ? -offset : offset
                 const ty = `${xOff} ${h}; 0 0; ${xOff} ${-h}; ${xOff} ${-h}`

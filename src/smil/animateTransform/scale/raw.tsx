@@ -33,13 +33,13 @@ export function transformScaleRaw(config: I_ScaleRawConfig) {
   const fullKeyframes = timeline.map((seg, i) => ({
     durationSeconds: seg.durationSeconds,
     toAbs: scaleValues[i + 1],
-    keySplines: seg.keySplines ?? LINEAR_KEY_SPLINE,
+    keySplines: defaultTo(seg.keySplines, LINEAR_KEY_SPLINE),
   }))
 
   const result = buildTimeline({ initValue, timeline: fullKeyframes, serializer: serializeScale })
 
   const hasKeySplines = timeline.some(seg => seg.keySplines)
-  const finalCalcMode = calcMode ?? (hasKeySplines ? 'spline' : 'linear')
+  const finalCalcMode = defaultTo(calcMode, hasKeySplines ? 'spline' : 'linear')
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount
 
   return (

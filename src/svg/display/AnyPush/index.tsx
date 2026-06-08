@@ -1,4 +1,6 @@
 import SectionEx from "@html/basicEx/SectionEx"
+import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
+import type { I_CanvasBg } from '@svg/types'
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
@@ -32,7 +34,7 @@ const AnyPush = (props: {
   canvasSize?: T_CanvasSize
   spacing?: T_SpacingProps
   childItems?: I_PicConfig[]
-  canvasBg?: string
+  canvasBg?: I_CanvasBg
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.childItems?.[0]
@@ -65,7 +67,7 @@ const AnyPush = (props: {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`}
-          style={{ display: "block", margin: "0 auto", backgroundColor: props.canvasBg }}
+          style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }}
           width="100%">
           {pics.map((pic, index) => (
             <PushingImage key={index} pic={pic}
