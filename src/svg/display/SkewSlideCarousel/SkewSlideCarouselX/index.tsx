@@ -49,8 +49,13 @@ const SkewSlideCarouselX = (props: {
   const offset = round(contentH * Math.tan(skewAngle * Math.PI / 180) / 2)
   const yOff = reverse ? offset : -offset
 
+  // buffer: foreignObject 比 contentW 多 1px，skewY 在底部额外贡献 tan(angle)px
+  const buf = 2
+  const entryX = w + buf
+  const exitX = -(w + buf)
+
   // 4 段式：入场 → 中心 → 出场 → 停留
-  const tx = `${w} ${yOff}; 0 0; ${-w} ${yOff}; ${-w} ${yOff}`
+  const tx = `${entryX} ${yOff}; 0 0; ${exitX} ${yOff}; ${exitX} ${yOff}`
   const sa = reverse ? skewAngle : -skewAngle
   const sk = `${sa}; 0; ${-sa}; ${-sa}`
 
