@@ -265,7 +265,7 @@ const ItemImage = ({ item, imageW, imageH }: {
         width: "100%",
       }}
     >
-      {item.link ? (
+      {isDefined(item.link) ? (
         <a
           href={item.link}
           target="_blank"
@@ -273,9 +273,7 @@ const ItemImage = ({ item, imageW, imageH }: {
         >
           <rect x={0} y={0} width={imageW} height={imageH} opacity={0} fill="transparent" style={{ pointerEvents: "painted" }} />
         </a>
-      ) : (
-        <rect x={0} y={0} width={imageW} height={imageH} fill="transparent" opacity={0} style={{ pointerEvents: "painted" }} />
-      )}
+      ) : null}
     </SvgEx>
   )
 }
