@@ -1,6 +1,7 @@
 import svgURL from "@utils/svg/svgURL"
 import type { I_CanvasBg, T_CanvasBgPosition } from "@svg/types"
 import defaultTo from 'lodash/defaultTo'
+import isNil from 'lodash/isNil'
 
 /**
  * 九宫格 position → CSS backgroundPosition 映射
@@ -36,11 +37,12 @@ const isValidColor = (color: string): boolean => COLOR_RE.test(color.trim())
  * - tile:   backgroundRepeat: 'repeat'，自然尺寸平铺，position 决定起始对齐
  *
  * 校验：
- * - canvasBg 对象必须至少提供 url 或 color 之一，否则报错
+ * - canvasBg 未传 → 无背景，返回 {}
+ * - canvasBg 传了但既没有 url 也没有 color → 报错
  * - color 必须符合 hex (#xxx / #xxxxxx / #xxxxxxxx) 或 rgb/rgba 格式，否则报错
  */
 export const resolveCanvasBg = (canvasBg?: I_CanvasBg): Record<string, string> => {
-	if (!canvasBg) return {}
+	if (isNil(canvasBg)) return {}
 
 	if (!canvasBg.url && !canvasBg.color) {
 		throw new Error('resolveCanvasBg: canvasBg must provide at least one of "url" or "color"')
