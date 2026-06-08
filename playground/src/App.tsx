@@ -18,6 +18,7 @@ import ClickFlipOncePage from './pages/ClickFlipOncePage'
 import ClickPopupPage from './pages/ClickPopupPage'
 import ClickCascadePage from './pages/ClickCascadePage'
 import CamaraStagePage from './pages/CamaraStagePage'
+import ExtrudeShowcasePage from './pages/ExtrudeShowcasePage'
 
 const links = [
   { to: '/', label: 'SMIL' },
@@ -35,6 +36,7 @@ const links = [
   { to: '/click-flip-once', label: 'FlipOnce' },
   { to: '/click-popup', label: 'ClickPopup' },
   { to: '/click-cascade', label: 'ClickCascade' },
+  { to: '/extrude-showcase', label: 'Extrude' },
   { to: '/camara-stage', label: 'CamaraStage' },
   { to: '/behaviors', label: 'Behaviors' },
   { to: '/css', label: 'CSS' },
@@ -91,6 +93,7 @@ export default function App() {
           <Route path="/click-flip-once" element={<ClickFlipOncePage />} />
           <Route path="/click-popup" element={<ClickPopupPage />} />
           <Route path="/click-cascade" element={<ClickCascadePage />} />
+          <Route path="/extrude-showcase" element={<ExtrudeShowcasePage />} />
           <Route path="/camara-stage" element={<CamaraStagePage />} />
           <Route path="/behaviors" element={<BehaviorsPage />} />
           <Route path="/css" element={<CssPage />} />
