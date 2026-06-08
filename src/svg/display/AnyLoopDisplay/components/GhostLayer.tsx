@@ -5,7 +5,7 @@ import { transformTranslate, transformSkewX, transformSkewY, transformRotate, tr
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
 import { getRotationOrigin } from "../timeline/offsetCalculator"
-import { buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments, buildSkewPhaseSegments } from "../utils/phaseSegmentBuilders"
+import { buildTranslatePhaseSegments, buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments, buildSkewPhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
 // ease-in-out cubic-bezier，用于所有进入/退出动画
@@ -27,7 +27,7 @@ const DEFAULT_EASE = "0.42 0 0.58 1"
  *   - [0, totalDuration-entryDuration)：停在屏幕外，visibility=hidden
  *   - [totalDuration-entryDuration, totalDuration)：执行进入动画，visibility=visible
  *   - totalDuration 时刻：瞬间 hidden，图1已到位，Ghost 完成使命
- * - rotate/scale/skew：begin=totalDuration-entryDuration
+ * - rotate/scale/skew/opacity：begin=totalDuration-entryDuration
  *   - entry 段从 keyTime 0 开始，与 CycleItem 的 keyTimes 结构完全一致
  *   - entry 完成后 hold 在最终值直到周期结束
  */
@@ -48,6 +48,19 @@ const GhostLayer = (props: {
   const { firstItem, enterOffscreenTranslate, ghostTimeline, totalDuration, contentWidth, contentHeight } = props
   const ghostEntryDuration = ghostTimeline.entryDuration
   const ghostHoldDuration = totalDuration - ghostEntryDuration
+
+  // ── Ghost translate entry segments ──
+  // 使用与 CycleItem 相同的 buildTranslatePhaseSegments，确保 Ghost 的进入路径完全一致
+  // 包括高级 timeline 模式（过冲回弹、弧线进入等）
+  const entryTranslate = firstItem.entry.translate
+  const translateEase = defaultTo(entryTranslate.keySplines, DEFAULT_EASE)
+
+  const ghostEntryTranslateSegs = buildTranslatePhaseSegments({
+    translateConfig: entryTranslate,
+    phaseDuration: ghostEntryDuration,
+    simpleTargetValue: { x: 0, y: 0 },
+    defaultEase: translateEase,
+  })
 
   // Ghost skewX：与 CycleItem 一致，支持简单模式和高级 timeline 模式
   // begin = ghostHoldDuration，entry 段从 keyTime 0 开始
@@ -271,7 +284,7 @@ const GhostLayer = (props: {
         initValue: enterOffscreenTranslate,
         timeline: [
           { durationSeconds: ghostHoldDuration, toAbs: enterOffscreenTranslate, keySplines: DEFAULT_EASE },
-          { durationSeconds: ghostEntryDuration, toAbs: { x: 0, y: 0 },          keySplines: DEFAULT_EASE },
+          ...ghostEntryTranslateSegs,
         ],
         begin: "0s",
         loopCount: 0,
