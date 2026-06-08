@@ -64,21 +64,40 @@ export default function BehaviorsPage() {
       </Section>
 
       {/* genAnimateExtrude */}
-      <Section title="genAnimateExtrude — click the top area">
-        <div style={{ position: 'relative', width: 300, height: 300, overflow: 'hidden', borderRadius: 8 }}>
-          <div style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18, fontWeight: 600 }}>
-            被遮住的内容
+      <Section title="genAnimateExtrude — click the gray area">
+        {/*
+          挤出动画原理：
+          1. SVG viewBox="0 0 300 100"，width 从 100% → 300%（由于 viewBox 宽高比，高度从 100px → 300px）
+          2. 外层 div overflow:hidden + width:300 横向裁住 SVG，只让纵向增长可见
+          3. 内容放在 SVG 下方正常流中，SVG 增长时把内容推下去
+          4. 内部 rect (opacity:0, pointer-events:painted) 是点击热区，点击后自毁 (height→0)，
+             后续点击穿透到下方内容
+        */}
+        <div style={{ width: 300, overflow: 'hidden', borderRadius: 8 }}>
+          {/* SVG 区域 — 点击灰色区域触发挤出 */}
+          <div style={{ width: 300, overflow: 'hidden', background: '#e5e7eb' }}>
+            {genAnimateExtrude({
+              canvasWidth: 300,
+              initHeight: 100,
+              timeline: [
+                { toHeight: 300, durationSeconds: 1 },
+              ],
+              begin: 'click',
+            })}
           </div>
-        </div>
-        <div style={{ marginTop: -300, position: 'relative' }}>
-          {genAnimateExtrude({
-            canvasWidth: 300,
-            initHeight: 100,
-            timeline: [
-              { toHeight: 300, durationSeconds: 1 },
-            ],
-            begin: 'click',
-          })}
+          {/* 内容 — 被 SVG 增长推下去 */}
+          <div style={{
+            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+            height: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            fontSize: 18,
+            fontWeight: 600,
+          }}>
+            被推出的内容
+          </div>
         </div>
       </Section>
     </div>
