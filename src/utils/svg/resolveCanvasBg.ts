@@ -3,6 +3,7 @@ import type { I_CanvasBg, T_CanvasBgPosition } from "@svg/types"
 import defaultTo from 'lodash/defaultTo'
 import isEmpty from 'lodash/isEmpty'
 import isNil from 'lodash/isNil'
+import isString from 'lodash/isString'
 
 /**
  * 九宫格 position → CSS backgroundPosition 映射
@@ -38,36 +39,47 @@ const isValidColor = (color: string): boolean => COLOR_RE.test(color.trim())
  * - tile:   backgroundRepeat: 'repeat'，自然尺寸平铺，position 决定起始对齐
  *
  * 校验：
- * - canvasBg 未传 → 无背景，返回 {}
- * - canvasBg 传了但既没有 url 也没有 color → 报错
+ * - canvasBg 未传 / 空对象 → 无背景，返回 {}
+ * - 字符串简写 canvasBg="#fff" → 等价于 { color: "#fff" }
+ * - 传了但既没有 url 也没有 color → 报错
  * - color 必须符合 hex (#xxx / #xxxxxx / #xxxxxxxx) 或 rgb/rgba 格式，否则报错
  */
-export const resolveCanvasBg = (canvasBg?: I_CanvasBg): Record<string, string> => {
+export const resolveCanvasBg = (canvasBg?: I_CanvasBg | string): Record<string, string> => {
   if (isEmpty(canvasBg)) return {}
 
-  if (canvasBg.url && canvasBg.color) {
+  // 字符串简写：canvasBg="#fff" → { color: "#fff" }
+  if (isString(canvasBg)) {
+    if (!isValidColor(canvasBg)) {
+      throw new Error(`resolveCanvasBg: invalid color format "${canvasBg}". Expected hex (#fff, #ffffff, #ffffffff) or rgb/rgba (rgb(0,0,0), rgba(0,0,0,0.5))`)
+    }
+    return { backgroundColor: canvasBg }
+  }
+
+  const bg = canvasBg as I_CanvasBg
+
+  if (bg.url && bg.color) {
     throw new Error('resolveCanvasBg: canvasBg can only provide one of "url" or "color", not both')
   }
 
-  if (isNil(canvasBg.url) && isNil(canvasBg.color)) {
+  if (isNil(bg.url) && isNil(bg.color)) {
     throw new Error('resolveCanvasBg: canvasBg must provide one of "url" or "color"')
   }
 
   const style: Record<string, string> = {}
 
-  if (!isNil(canvasBg.color)) {
-    if (!isValidColor(canvasBg.color)) {
-      throw new Error(`resolveCanvasBg: invalid color format "${canvasBg.color}". Expected hex (#fff, #ffffff, #ffffffff) or rgb/rgba (rgb(0,0,0), rgba(0,0,0,0.5))`)
+  if (!isNil(bg.color)) {
+    if (!isValidColor(bg.color)) {
+      throw new Error(`resolveCanvasBg: invalid color format "${bg.color}". Expected hex (#fff, #ffffff, #ffffffff) or rgb/rgba (rgb(0,0,0), rgba(0,0,0,0.5))`)
     }
-    style.backgroundColor = canvasBg.color
+    style.backgroundColor = bg.color
   }
 
   // 背景图
-  if (!isNil(canvasBg.url)) {
-    style.backgroundImage = svgURL(canvasBg.url)
+  if (!isNil(bg.url)) {
+    style.backgroundImage = svgURL(bg.url)
 
-    const fit = defaultTo(canvasBg.fit, 'stretch')
-    const pos = defaultTo(canvasBg.position, 'center')
+    const fit = defaultTo(bg.fit, 'stretch')
+    const pos = defaultTo(bg.position, 'center')
 
     switch (fit) {
       case 'stretch':
