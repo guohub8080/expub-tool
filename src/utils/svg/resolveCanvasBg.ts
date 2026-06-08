@@ -43,7 +43,7 @@ const isValidColor = (color: string): boolean => COLOR_RE.test(color.trim())
  * - color 必须符合 hex (#xxx / #xxxxxx / #xxxxxxxx) 或 rgb/rgba 格式，否则报错
  */
 export const resolveCanvasBg = (canvasBg?: I_CanvasBg): Record<string, string> => {
-  if (isNil(canvasBg) || isEmpty(canvasBg)) return {}
+  if (isEmpty(canvasBg)) return {}
 
   if (canvasBg.url && canvasBg.color) {
     throw new Error('resolveCanvasBg: canvasBg can only provide one of "url" or "color", not both')
