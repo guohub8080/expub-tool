@@ -26,10 +26,10 @@ export type { T_SeamlessImgMode } from "./standard/SeamlessImg"
 export { default as AnyPush } from "./display/AnyPush"
 export type { I_PicConfig } from "./display/AnyPush/types"
 
-export { default as CoverFlowX } from "./display/CoverFlowX"
-export type { I_CoverFlowItemConfig } from "./display/CoverFlowX/types"
+export { default as CoverFlowX } from "./display/CoverFlow/CoverFlowX"
+export type { I_CoverFlowItemConfig } from "./display/CoverFlow/types"
 
-export { default as CoverFlowY } from "./display/CoverFlowY"
+export { default as CoverFlowY } from "./display/CoverFlow/CoverFlowY"
 
 export { default as SwipeViewYContainer } from "./containers/SwipeViewYContainer"
 export { default as SnapSwipeViewYContainer } from "./containers/SnapSwipeViewYContainer"
