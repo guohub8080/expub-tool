@@ -55,10 +55,10 @@ export const ORIGIN = {
 } as const
 
 export type T_HotArea = {
-  x?: number
-  y?: number
-  w?: number
-  h?: number
+  x: number
+  y: number
+  w: number
+  h: number
 }
 
 /** 斜切配置（StackCarouselX 使用） */

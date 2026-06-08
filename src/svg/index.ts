@@ -52,7 +52,7 @@ export { ClickFlipInfinity } from "./click"
 export type { I_ClickFlipInfinityProps, I_FaceContent } from "./click"
 
 export { ClickFlipOnce } from "./click"
-export type { I_ClickFlipOnceProps, I_HotArea } from "./click"
+export type { I_ClickFlipOnceProps } from "./click"
 
 export { ClickPopup } from "./click"
 export type { I_ClickPopupProps } from "./click"

@@ -9,7 +9,7 @@ import svgURL from '@utils/svg/svgURL'
 import { getEaseBezier } from '@smil/bezier'
 import type { I_ClickFlipOnceProps, I_FaceContent } from './types'
 
-export type { I_ClickFlipOnceProps, I_FaceContent, I_HotArea } from './types'
+export type { I_ClickFlipOnceProps, I_FaceContent } from './types'
 
 const DEFAULT_FLIP_DURATION = 1
 const MIN_FLIP_DURATION = 0.3
