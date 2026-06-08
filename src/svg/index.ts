@@ -35,10 +35,9 @@ export { default as SwipeViewYContainer } from "./containers/SwipeViewYContainer
 export { default as SnapSwipeViewYContainer } from "./containers/SnapSwipeViewYContainer"
 
 export { default as SpinZoomCarousel } from "./display/SpinZoomCarousel"
-export { default as SkewSlideCarousel } from "./display/SkewSlideCarousel"
-export { default as SkewSlideCarouselY } from "./display/SkewSlideCarouselY"
-export { default as SkewPushY } from "./display/SkewPushY"
-export type { I_SkewPushChildItem } from "./display/SkewPushY"
+export { default as SkewSlideCarousel } from "./display/SkewSlideCarousel/SkewSlideCarouselX"
+export type { I_SkewSlideItem } from "./display/SkewSlideCarousel/types"
+export { default as SkewSlideCarouselY } from "./display/SkewSlideCarousel/SkewSlideCarouselY"
 
 export { default as AnyLoopDisplay } from "./display/AnyLoopDisplay"
 export type { I_AnyLoopDisplayChildItem } from "./display/AnyLoopDisplay"
