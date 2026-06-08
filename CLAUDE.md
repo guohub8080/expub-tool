@@ -66,6 +66,26 @@ import { svgURL, getEaseBezier, validateWechatSvg } from "expub-tool/svg-utils" 
 | `@css-fn/*` | `src/css/cssFunctions/*` |
 | `@css-presets/*` | `src/css/cssPresets/*` |
 
+## 非空判断规范
+
+所有判断变量是否为 `null` / `undefined` 的场景，必须使用 lodash 的 `isNil` / `isDefined`，禁止用 `!x` 或 `if (x)` 做非空判断（`!x` 会误判 `0`、`""`、`false`）：
+
+- **判断为空**：`if (isNil(x))` — x 是 null 或 undefined
+- **判断非空**：`if (isDefined(x))` — x 不是 null 且不是 undefined（类型守卫，收窄为 NonNullable<T>）
+
+```ts
+import isNil from 'lodash/isNil'
+import { isDefined } from '@utils/fn/isDefined'
+
+// ✅ 正确
+if (isNil(canvasBg)) return {}
+if (isDefined(canvasBg.url)) { ... }
+
+// ❌ 禁止
+if (!canvasBg) return {}
+if (canvasBg.url) { ... }
+```
+
 ## SMIL animateTransform 嵌套规则
 
 多个 `<animateTransform>` 不能放在同一个 `<g>` 上——后一个会覆盖前一个的 `transform`，且会覆盖该 `<g>` 上已有的静态 `transform` 属性。每个 `<animateTransform>` 必须包在独立的 `<g>` 中。

@@ -1,3 +1,4 @@
+import isNil from 'lodash/isNil'
 
 /**
  * 幂次方缓动函数的贝塞尔曲线值映射表
@@ -91,7 +92,7 @@ export function getPowerBezier(options: {
 
     // 验证幂次范围：必须是 1-5
     if (power < 1 || power > 5 || !Number.isInteger(power)) {
-        throw new Error(`[getPowerBezier] 幂次必须是 1-5 的整数，当前值: ${power}`);
+        throw new Error(`[getPowerBezier] power must be an integer from 1 to 5, got: ${power}`);
     }
 
     // 特殊处理：power=1 直接返回 linear
@@ -100,8 +101,8 @@ export function getPowerBezier(options: {
     }
 
     // 检查幂次是否在映射表中（理论上不会到这里，因为已经验证了 1-5）
-    if (!(power in POWER_BEZIER_MAP)) {
-        throw new Error(`[getPowerBezier] 不支持的幂次: ${power}`);
+    if (isNil(POWER_BEZIER_MAP[power as PowerLevel])) {
+        throw new Error(`[getPowerBezier] unsupported power: ${power}`);
     }
 
     const bezierMap = POWER_BEZIER_MAP[power as PowerLevel];

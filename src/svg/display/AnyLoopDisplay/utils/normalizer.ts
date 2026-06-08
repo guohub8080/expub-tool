@@ -1,5 +1,6 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
+import { isDefined } from '@utils/fn/isDefined'
 import sum from "lodash/sum"
 import { DIRECTION_8 } from "@svg/types"
 import type { T_Direction8, T_Origin, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig, I_EntryTranslateConfig, I_StayTranslateConfig } from "@svg/types"
@@ -202,7 +203,7 @@ const normalizeSkew = (skew: I_EntrySkewConfig | undefined): I_NormalizedSkewCon
 const normalizeStayAnim = (value: I_StayAnimConfig | undefined): I_NormalizedStayAnimConfig | undefined => {
   if (isNil(value)) return undefined
   if (typeof value === 'number') return { fixedValue: value }
-  if (value.timeline) return { timeline: value.timeline }
+  if (isDefined(value.timeline)) return { timeline: value.timeline }
   return undefined
 }
 
@@ -266,7 +267,7 @@ export interface I_NormalizedChildItem {
 
 /** 填充单张图片配置的默认值并校验 */
 const fillDefaults = (item: I_AnyLoopDisplayChildItem): I_NormalizedChildItem => {
-  if (!item.url && !item.jsx) {
+  if (isNil(item.url) && isNil(item.jsx)) {
     throw new Error("Each childItem must have either `url` or `jsx`. Both cannot be empty.")
   }
 
@@ -373,7 +374,7 @@ const validateTimelineDurations = (items: I_NormalizedChildItem[]): void => {
 }
 
 export const normalizeChildItems = (items: I_AnyLoopDisplayChildItem[]): I_NormalizedChildItem[] => {
-  if (!items || items.length === 0) {
+  if (isNil(items) || items.length === 0) {
     throw new Error("`childItems` must not be empty.")
   }
 

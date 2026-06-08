@@ -1,3 +1,5 @@
+import isNil from 'lodash/isNil'
+
 export type IssueSeverity = 'error' | 'warning' | 'info';
 
 export interface ValidationIssue {
@@ -99,7 +101,7 @@ export function validateWechatSvg(svgCode: string): ValidationResult {
   }
 
   const rootSVG = doc.querySelector('svg');
-  if (!rootSVG) {
+  if (isNil(rootSVG)) {
     issues.push({
       severity: 'error',
       rule: 'SVG根元素',
@@ -268,9 +270,9 @@ export function validateWechatSvg(svgCode: string): ValidationResult {
     // 规则1: animateMotion只允许path属性
     if (tagName === 'animatemotion' || tagName === 'animateMotion') {
       const path = el.getAttribute('path');
-      if (!path) {
+      if (isNil(path)) {
         const hasMpath = el.querySelector('mpath');
-        if (!hasMpath) {
+        if (isNil(hasMpath)) {
           // 检查是否有其他不允许的属性
           const allowedAttrs = new Set(['path', 'begin', 'dur', 'repeatcount', 'fill', 'keypoints', 'keysplines', 'calcmode', 'values']);
           for (const attr of el.attributes) {

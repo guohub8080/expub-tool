@@ -1,6 +1,8 @@
 import React from 'react'
 import SvgEx from '@html/basicEx/SvgEx'
 import svgURL from '@utils/svg/svgURL'
+import isNil from 'lodash/isNil'
+import { isDefined } from '@utils/fn/isDefined'
 import type { I_FaceContent } from '../types'
 
 /**
@@ -14,10 +16,10 @@ export function FaceContent({ content, width, height }: {
 	width: number
 	height: number
 }) {
-	if (content.jsx) {
+	if (isDefined(content.jsx)) {
 		return <>{content.jsx}</>
 	}
-	if (!content.url) return null
+	if (isNil(content.url)) return null
 
 	return (
 		<SvgEx

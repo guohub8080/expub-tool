@@ -12,6 +12,6 @@ import { isArray, isEmpty } from 'lodash';
  */
 export function assertNonEmptyArray<T>(value: unknown, paramName: string = 'array'): asserts value is T[] {
   if (!isArray(value) || isEmpty(value)) {
-    throw new Error(`${paramName} 必须是非空数组`);
+    throw new Error(`${paramName} must be a non-empty array`);
   }
 }

@@ -4,6 +4,7 @@ import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
+import { isDefined } from '@utils/fn/isDefined'
 import max from 'lodash/max'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
 import { getEaseBezier } from '@smil/bezier'
@@ -25,7 +26,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 	// canvasBg resolved via resolveCanvasBg
 	const childItems = props.childItems
 
-	if (!childItems || childItems.length < 2) {
+	if (isNil(childItems) || childItems.length < 2) {
 		throw new Error('`childItems` must contain at least 2 items.')
 	}
 

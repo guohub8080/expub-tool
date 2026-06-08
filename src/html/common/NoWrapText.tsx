@@ -27,7 +27,7 @@ import type { ReactNode } from "react"
 const NoWrapText = (props: {
     textList: string[] | { text: string, style: React.CSSProperties }[] | ReactNode[]
 }) => {
-    if (!isArray(props.textList)) throw new Error("NoWrapText 组件的 textList 属性必须是数组")
+    if (!isArray(props.textList)) throw new Error("NoWrapText: textList must be an array")
     return props.textList.map((item, index) => {
         // 如果是 React 元素，直接返回
         if (isValidElement(item)) return item

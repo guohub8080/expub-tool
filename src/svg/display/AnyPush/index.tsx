@@ -3,6 +3,7 @@ import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import type { I_CanvasBg } from '@svg/types'
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import type { T_CanvasSize } from "@svg/types"
@@ -41,8 +42,8 @@ const AnyPush = (props: {
   const firstUrl = firstPic?.url
 
   // item 模式没有 url，必须传 canvasSize
-  if (!firstUrl && !firstPic?.item) return null
-  if (!firstUrl && (!props.canvasSize?.w || !props.canvasSize?.h)) {
+  if (isNil(firstUrl) && isNil(firstPic?.item)) return null
+  if (isNil(firstUrl) && (isNil(props.canvasSize?.w) || isNil(props.canvasSize?.h))) {
     throw new Error("`canvasSize` is required when using `item` mode (no `url` provided).")
   }
 

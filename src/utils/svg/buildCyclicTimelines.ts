@@ -109,6 +109,7 @@
  */
 
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 
 /** 每一项的切换配置 */
 export type T_SwitchPhase = {
@@ -225,7 +226,7 @@ export interface I_CyclicTimelines {
  * // result.ghostTimeline === { begin: 0, holdDuration: 7, entryDuration: 2 }
  */
 export const buildCyclicTimelines = (items: T_SwitchPhase[], options?: I_CyclicTimelineOptions): I_CyclicTimelines => {
-  if (!items.length) {
+  if (isNil(items) || items.length === 0) {
     throw new Error('`items` must not be empty.')
   }
 

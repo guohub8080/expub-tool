@@ -37,7 +37,7 @@ export function animateMotion(config: I_PathMotionConfig) {
     restart,
   } = config
 
-  if (!path) {
+  if (isNil(path)) {
     throw new Error('`path` must not be empty.')
   }
 

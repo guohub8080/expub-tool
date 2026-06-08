@@ -18,3 +18,4 @@ export { default as getImgSizeAsync } from "./dom/getImgSizeAsync"
 // Pure functions
 export { assertNonEmptyArray } from "./fn/assertNonEmptyArray"
 export { isNonEmptyArray } from "./fn/isNonEmptyArray"
+export { isDefined } from "./fn/isDefined"

@@ -1,4 +1,6 @@
 import sum from "lodash/sum"
+import isNil from 'lodash/isNil'
+import { isDefined } from '@utils/fn/isDefined'
 import type { I_NormalizedChildItem, I_NormalizedTranslateConfig, I_NormalizedStayTranslateConfig } from "./normalizer"
 import defaultTo from 'lodash/defaultTo'
 
@@ -20,7 +22,7 @@ export const buildRotationPhaseSegments = ({
   simpleTargetValue: number
   defaultEase: string
 }): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
-  if (!rotationConfig?.timeline) {
+  if (isNil(rotationConfig?.timeline)) {
     // 简单模式：单段动画到目标值
     return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultEase }]
   }
@@ -58,7 +60,7 @@ export const buildScalePhaseSegments = ({
   simpleTargetValue: number
   defaultEase: string
 }): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
-  if (!scaleConfig?.timeline) {
+  if (isNil(scaleConfig?.timeline)) {
     // 简单模式：单段动画到目标值
     return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultEase }]
   }
@@ -96,7 +98,7 @@ export const buildOpacityPhaseSegments = ({
   simpleTargetValue: number
   defaultEase: string
 }): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
-  if (!opacityConfig?.timeline) {
+  if (isNil(opacityConfig?.timeline)) {
     // 简单模式：单段动画到目标值
     return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultEase }]
   }
@@ -134,7 +136,7 @@ export const buildSkewPhaseSegments = ({
   simpleTargetValue: number
   defaultEase: string
 }): { durationSeconds: number; toAbs: number; keySplines?: string }[] => {
-  if (!skewConfig?.timeline) {
+  if (isNil(skewConfig?.timeline)) {
     // 简单模式：单段动画到目标值
     return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultEase }]
   }
@@ -177,17 +179,17 @@ export const buildStaySegments = ({
   if (stayDuration <= 0) return []
 
   // 无配置：hold 在 entry 最终值
-  if (!stayConfig) {
+  if (isNil(stayConfig)) {
     return [{ durationSeconds: stayDuration, toAbs: entryEndValue, keySplines: defaultEase }]
   }
 
   // 固定值模式
-  if (stayConfig.fixedValue !== undefined) {
+  if (isDefined(stayConfig.fixedValue)) {
     return [{ durationSeconds: stayDuration, toAbs: stayConfig.fixedValue, keySplines: defaultEase }]
   }
 
   // timeline 模式
-  if (stayConfig.timeline) {
+  if (isDefined(stayConfig.timeline)) {
     const timelineTotal = sum(stayConfig.timeline.map(segment => segment.durationSeconds))
     if (timelineTotal > stayDuration) {
       throw new Error(`Stay timeline total duration (${timelineTotal}s) must not exceed stay duration (${stayDuration}s).`)
@@ -224,7 +226,7 @@ export const buildTranslatePhaseSegments = ({
   simpleTargetValue: { x: number; y: number }
   defaultEase: string
 }): { durationSeconds: number; toAbs: { x: number; y: number }; keySplines?: string }[] => {
-  if (!translateConfig.timeline) {
+  if (isNil(translateConfig.timeline)) {
     // 简单模式：单段动画到目标值
     return [{ durationSeconds: phaseDuration, toAbs: simpleTargetValue, keySplines: defaultTo(translateConfig.keySplines, defaultEase) }]
   }
@@ -275,7 +277,7 @@ export const buildStayTranslateSegments = ({
   }
 
   // timeline 模式
-  if (stayConfig.timeline) {
+  if (isDefined(stayConfig.timeline)) {
     const timelineTotal = sum(stayConfig.timeline.map(segment => segment.durationSeconds))
     if (timelineTotal > stayDuration) {
       throw new Error(`Stay translate timeline total (${timelineTotal}s) must not exceed stay duration (${stayDuration}s).`)

@@ -4,6 +4,7 @@ import type { I_CanvasBg } from '@svg/types'
 import SvgEx from "@html/basicEx/SvgEx"
 import floor from "lodash/floor"
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import type { T_CanvasSize } from "@svg/types"
@@ -35,7 +36,7 @@ const CoverFlowX = (props: {
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.childItems?.[0]
-  if (!firstPic?.url && !firstPic?.item) return null
+  if (isNil(firstPic?.url) && isNil(firstPic?.item)) return null
 
   const viewBoxW = props.canvasSize.w
   const viewBoxH = props.canvasSize.h

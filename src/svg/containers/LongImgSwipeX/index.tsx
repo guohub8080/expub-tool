@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
+import isNil from 'lodash/isNil'
 import { spacing, SPACING_ZERO } from '@css-fn/spacing'
 import type { T_SpacingProps } from '@css-fn/spacing'
 import useImgSize from '@utils/hooks/useImgSize'
@@ -50,7 +51,7 @@ const LongImgSwipeX = (props: {
     return '400%'
   }, [exposedPercent])
 
-  if (!imgURL) return null
+  if (isNil(imgURL)) return null
 
   return (
     <SectionEx

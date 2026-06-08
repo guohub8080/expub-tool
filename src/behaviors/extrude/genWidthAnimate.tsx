@@ -21,13 +21,13 @@ export type extrudeOptions = {
 
 export const genWidthAnimate = (options: extrudeOptions): React.ReactElement => {
   if (isNil(options.canvasWidth)) {
-    throw new Error('canvasWidth 是必填参数');
+    throw new Error('canvasWidth is required');
   }
   if (isNil(options.initHeight)) {
-    throw new Error('initHeight 是必填参数');
+    throw new Error('initHeight is required');
   }
   if (isEmpty(options.timeline) || !Array.isArray(options.timeline)) {
-    throw new Error('timeline 必须是非空数组');
+    throw new Error('timeline must be a non-empty array');
   }
 
   const widthTimeline: I_TimelineKeyframe<string>[] = options.timeline.map((segment) => ({

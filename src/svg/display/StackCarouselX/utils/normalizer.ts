@@ -47,7 +47,7 @@ export const normalizeItems = ({ items, defaultExitDirection }: {
   items?: I_StackCarouselItem[]
   defaultExitDirection: T_Direction8
 }): I_NormalizedStackItem[] => {
-  if (!items || items.length === 0) {
+  if (isNil(items) || items.length === 0) {
     throw new Error("`pics` must not be empty. StackCarousel requires at least 1 item.")
   }
   const normalized = items.map(item => fillDefaults(item, defaultExitDirection))

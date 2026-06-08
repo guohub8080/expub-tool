@@ -2,6 +2,8 @@ import React from 'react'
 import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import defaultTo from 'lodash/defaultTo'
 import clamp from 'lodash/clamp'
+import isNil from 'lodash/isNil'
+import { isDefined } from '@utils/fn/isDefined'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import SectionEx from '@html/basicEx/SectionEx'
@@ -23,8 +25,8 @@ function FaceContent({ content, width, height }: {
   width: number
   height: number
 }) {
-  if (content.jsx) return <>{content.jsx}</>
-  if (!content.url) return null
+  if (isDefined(content.jsx)) return <>{content.jsx}</>
+  if (isNil(content.url)) return null
 
   return (
     <SvgEx

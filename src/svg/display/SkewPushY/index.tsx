@@ -7,6 +7,7 @@ import min from "lodash/min"
 import floor from "lodash/floor"
 import round from "lodash/round"
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
@@ -43,7 +44,7 @@ const SkewPushY = (props: {
   canvasBg?: I_CanvasBg
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  if (!props.childItems?.length) return null
+  if (isNil(props.childItems) || props.childItems.length === 0) return null
 
   const { w, h } = props.canvasSize
   const items = props.childItems

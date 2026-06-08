@@ -3,6 +3,7 @@ import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import type { I_CanvasBg } from '@svg/types'
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
@@ -34,7 +35,7 @@ const SpinZoomCarousel = (props: {
   spacing?: T_SpacingProps
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  if (!props.items?.length) return null
+  if (isNil(props.items) || props.items.length === 0) return null
 
   const { w, h } = props.canvasSize
   const cx = w / 2

@@ -44,23 +44,25 @@ const isValidColor = (color: string): boolean => COLOR_RE.test(color.trim())
 export const resolveCanvasBg = (canvasBg?: I_CanvasBg): Record<string, string> => {
 	if (isNil(canvasBg)) return {}
 
-	if (!canvasBg.url && !canvasBg.color) {
-		throw new Error('resolveCanvasBg: canvasBg must provide at least one of "url" or "color"')
+	if (canvasBg.url && canvasBg.color) {
+		throw new Error('resolveCanvasBg: canvasBg can only provide one of "url" or "color", not both')
 	}
 
-	if (canvasBg.color && !isValidColor(canvasBg.color)) {
-		throw new Error(`resolveCanvasBg: invalid color format "${canvasBg.color}". Expected hex (#fff, #ffffff, #ffffffff) or rgb/rgba (rgb(0,0,0), rgba(0,0,0,0.5))`)
+	if (isNil(canvasBg.url) && isNil(canvasBg.color)) {
+		throw new Error('resolveCanvasBg: canvasBg must provide one of "url" or "color"')
 	}
 
 	const style: Record<string, string> = {}
 
-	// 背景色
-	if (canvasBg.color) {
+	if (!isNil(canvasBg.color)) {
+		if (!isValidColor(canvasBg.color)) {
+			throw new Error(`resolveCanvasBg: invalid color format "${canvasBg.color}". Expected hex (#fff, #ffffff, #ffffffff) or rgb/rgba (rgb(0,0,0), rgba(0,0,0,0.5))`)
+		}
 		style.backgroundColor = canvasBg.color
 	}
 
 	// 背景图
-	if (canvasBg.url) {
+	if (!isNil(canvasBg.url)) {
 		style.backgroundImage = svgURL(canvasBg.url)
 
 		const fit = defaultTo(canvasBg.fit, 'stretch')

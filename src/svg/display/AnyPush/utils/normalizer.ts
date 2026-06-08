@@ -1,6 +1,8 @@
 import type { I_PicConfig, I_NormalizedPicConfig } from "../types";
 import { DEFAULT_DIRECTION, DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types";
 import defaultTo from "lodash/defaultTo";
+import isNil from "lodash/isNil";
+import { isDefined } from "@utils/fn/isDefined";
 import { getEaseBezier } from "@smil/bezier";
 
 /**
@@ -17,11 +19,11 @@ export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 const fillDefaults = (pic: I_PicConfig): I_NormalizedPicConfig => {
     const useItem = !!pic.item
 
-    if (!pic.url && !pic.item) {
+    if (isNil(pic.url) && isNil(pic.item)) {
         throw new Error("Each pic must have either `url` or `item`. `url` and `item` cannot both be empty.")
     }
 
-    if (pic.url && pic.item) {
+    if (isDefined(pic.url) && isDefined(pic.item)) {
         console.warn("`url` is ignored when `item` is also provided.")
     }
 
@@ -44,7 +46,7 @@ const fillDefaults = (pic: I_PicConfig): I_NormalizedPicConfig => {
  * 3. 多张图 → 逐个填充默认值
  */
 export const normalizePics = (pics?: I_PicConfig[]): I_NormalizedPicConfig[] => {
-    if (!pics || pics.length === 0) {
+    if (isNil(pics) || pics.length === 0) {
         throw new Error("`pics` must not be empty. AnyPush requires at least 1 image.")
     }
 

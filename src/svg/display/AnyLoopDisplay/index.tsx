@@ -1,4 +1,5 @@
 import defaultTo from "lodash/defaultTo"
+import isNil from "lodash/isNil"
 import type { I_CanvasBg } from '@svg/types'
 import max from "lodash/max"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
@@ -52,7 +53,7 @@ const AnyLoopDisplay = (props: {
   spacing?: T_SpacingProps
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  if (!props.childItems?.length) {
+  if (isNil(props.childItems) || props.childItems.length === 0) {
     throw new Error("`childItems` must not be empty.")
   }
 
