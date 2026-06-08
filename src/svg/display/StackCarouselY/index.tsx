@@ -13,7 +13,6 @@ import { transformTranslate, transformScaleRaw } from "@smil/index"
 import { transformSkewX } from "@smil/animateTransform/skewX"
 import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
-import svgURL from "@utils/svg/svgURL"
 import { DIRECTION_8 } from "@svg/types"
 
 import max from "lodash/max"
@@ -25,6 +24,7 @@ import { buildSlotTimelines } from "../StackCarouselX/timeline/slotTimeline"
 import type { I_PositionConfig, I_SlotExitConfig } from "../StackCarouselX/timeline/slotTimeline"
 import { resolveRotationOrigin } from "../StackCarouselX/utils/rotationOrigin"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
+import { ItemImage } from "../shared/ItemImage"
 
 const DEFAULT_BACK_OFFSET = 162
 /** back/mid 默认缩放比例（叠层深度效果，center 恒为 1.0） */
@@ -224,7 +224,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
                         <g>
                           {buildRotateAnim()}
                           <foreignObject x={0} y={0} width={cardW} height={cardH}>
-                            <ItemImageY item={item} imageW={cardW} imageH={cardH} />
+                            <ItemImage item={item} imageW={cardW} imageH={cardH} />
                           </foreignObject>
                         </g>
                       </g>
@@ -237,38 +237,6 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
         </SvgEx>
       </section>
     </SectionEx>
-  )
-}
-
-const ItemImageY = ({ item, imageW, imageH }: {
-  item: I_NormalizedStackItem
-  imageW: number
-  imageH: number
-}) => {
-  if (item.useItem) {
-    return <>{item.jsx}</>
-  }
-
-  return (
-    <SvgEx
-      viewBox={`0 0 ${imageW} ${imageH}`}
-      style={{
-        backgroundImage: svgURL(item.url!),
-        backgroundSize: "cover",
-        pointerEvents: "visible",
-        width: "100%",
-      }}
-    >
-      {isDefined(item.link) ? (
-        <a
-          href={item.link}
-          target="_blank"
-          style={{ display: "inline-block", width: "100%", height: "100%", color: "transparent" }}
-        >
-          <rect x={0} y={0} width={imageW} height={imageH} opacity={0} fill="transparent" style={{ pointerEvents: "painted" }} />
-        </a>
-      ) : null}
-    </SvgEx>
   )
 }
 

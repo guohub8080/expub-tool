@@ -1,5 +1,6 @@
 import React from "react"
 import { isDefined } from '@utils/fn/isDefined'
+import { ItemImage } from "../shared/ItemImage"
 import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import SectionEx from "@html/basicEx/SectionEx"
 import { DIRECTION_8 } from "@svg/types"
@@ -242,39 +243,6 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
         </SvgEx>
       </section>
     </SectionEx>
-  )
-}
-
-/** 渲染单张图片内容 */
-const ItemImage = ({ item, imageW, imageH }: {
-  item: I_NormalizedStackItem
-  imageW: number
-  imageH: number
-}) => {
-  if (item.useItem) {
-    return <>{item.jsx}</>
-  }
-
-  return (
-    <SvgEx
-      viewBox={`0 0 ${imageW} ${imageH}`}
-      style={{
-        backgroundImage: svgURL(item.url!),
-        backgroundSize: "cover",
-        pointerEvents: "visible",
-        width: "100%",
-      }}
-    >
-      {isDefined(item.link) ? (
-        <a
-          href={item.link}
-          target="_blank"
-          style={{ display: "inline-block", width: "100%", height: "100%", color: "transparent" }}
-        >
-          <rect x={0} y={0} width={imageW} height={imageH} opacity={0} fill="transparent" style={{ pointerEvents: "painted" }} />
-        </a>
-      ) : null}
-    </SvgEx>
   )
 }
 
