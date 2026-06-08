@@ -42,20 +42,20 @@ import { DIRECTION_8 } from "@svg/types";
  * 图片从这个位置开始，通过 translate 动画滑到中心 (0,0)
  */
 export const getEntryOffset = (
-    direction: T_Direction8,
-    viewBoxW: number,
-    viewBoxH: number
+  direction: T_Direction8,
+  viewBoxW: number,
+  viewBoxH: number
 ): I_Point => {
-    switch (direction) {
-        case DIRECTION_8.Left:  return { x: viewBoxW, y: 0 };
-        case DIRECTION_8.Right: return { x: -viewBoxW, y: 0 };
-        case DIRECTION_8.Top:   return { x: 0, y: viewBoxH };
-        case DIRECTION_8.Bottom: return { x: 0, y: -viewBoxH };
-        case DIRECTION_8.TopLeft:     return { x: viewBoxW, y: viewBoxH };
-        case DIRECTION_8.TopRight:    return { x: -viewBoxW, y: viewBoxH };
-        case DIRECTION_8.BottomLeft:  return { x: viewBoxW, y: -viewBoxH };
-        case DIRECTION_8.BottomRight: return { x: -viewBoxW, y: -viewBoxH };
-    }
+  switch (direction) {
+    case DIRECTION_8.Left:  return { x: viewBoxW, y: 0 };
+    case DIRECTION_8.Right: return { x: -viewBoxW, y: 0 };
+    case DIRECTION_8.Top:   return { x: 0, y: viewBoxH };
+    case DIRECTION_8.Bottom: return { x: 0, y: -viewBoxH };
+    case DIRECTION_8.TopLeft:     return { x: viewBoxW, y: viewBoxH };
+    case DIRECTION_8.TopRight:    return { x: -viewBoxW, y: viewBoxH };
+    case DIRECTION_8.BottomLeft:  return { x: viewBoxW, y: -viewBoxH };
+    case DIRECTION_8.BottomRight: return { x: -viewBoxW, y: -viewBoxH };
+  }
 };
 
 /**
@@ -65,27 +65,27 @@ export const getEntryOffset = (
  * 所以在 assembleTimeline 中，进入段的 to 值使用 exitOffset。
  */
 export const getExitOffset = (
-    direction: T_Direction8,
-    viewBoxW: number,
-    viewBoxH: number
+  direction: T_Direction8,
+  viewBoxW: number,
+  viewBoxH: number
 ): I_Point => {
-    switch (direction) {
-        case DIRECTION_8.Left:  return { x: -viewBoxW, y: 0 };
-        case DIRECTION_8.Right: return { x: viewBoxW, y: 0 };
-        case DIRECTION_8.Top:   return { x: 0, y: -viewBoxH };
-        case DIRECTION_8.Bottom: return { x: 0, y: viewBoxH };
-        case DIRECTION_8.TopLeft:     return { x: -viewBoxW, y: -viewBoxH };
-        case DIRECTION_8.TopRight:    return { x: viewBoxW, y: -viewBoxH };
-        case DIRECTION_8.BottomLeft:  return { x: -viewBoxW, y: viewBoxH };
-        case DIRECTION_8.BottomRight: return { x: viewBoxW, y: viewBoxH };
-    }
+  switch (direction) {
+    case DIRECTION_8.Left:  return { x: -viewBoxW, y: 0 };
+    case DIRECTION_8.Right: return { x: viewBoxW, y: 0 };
+    case DIRECTION_8.Top:   return { x: 0, y: -viewBoxH };
+    case DIRECTION_8.Bottom: return { x: 0, y: viewBoxH };
+    case DIRECTION_8.TopLeft:     return { x: -viewBoxW, y: -viewBoxH };
+    case DIRECTION_8.TopRight:    return { x: viewBoxW, y: -viewBoxH };
+    case DIRECTION_8.BottomLeft:  return { x: -viewBoxW, y: viewBoxH };
+    case DIRECTION_8.BottomRight: return { x: viewBoxW, y: viewBoxH };
+  }
 };
 
 /** 初始位置 = 进入偏移（供 foreignObject 的 x/y 属性使用） */
 export const getInitialPosition = (
-    direction: T_Direction8,
-    viewBoxW: number,
-    viewBoxH: number
+  direction: T_Direction8,
+  viewBoxW: number,
+  viewBoxH: number
 ): I_Point => {
-    return getEntryOffset(direction, viewBoxW, viewBoxH);
+  return getEntryOffset(direction, viewBoxW, viewBoxH);
 };

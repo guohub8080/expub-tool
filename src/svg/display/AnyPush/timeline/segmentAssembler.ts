@@ -32,58 +32,58 @@ import { calculateDelayTime, calculateHoldTime } from "./sequenceCalculator";
  * @returns 4 段时间线（进入、停留、退出、保持）
  */
 export const assembleTimeline = (
-    index: number,
-    pics: I_NormalizedPicConfig[],
-    viewBoxW: number,
-    viewBoxH: number,
-    totalCycleDuration: number
+  index: number,
+  pics: I_NormalizedPicConfig[],
+  viewBoxW: number,
+  viewBoxH: number,
+  totalCycleDuration: number
 ): I_TimelineSegment[] => {
-    const currentPic = pics[index];
-    const nextPic = pics[(index + 1) % pics.length];
+  const currentPic = pics[index];
+  const nextPic = pics[(index + 1) % pics.length];
 
-    // 1. 进入段：从 entryOffset 位置移到中心
-    //    foreignObject 初始在 entryOffset，需要 translate 一个 exitOffset 才能回到原点
-    const entrySegment: I_TimelineSegment = {
-        toRel: getExitOffset(currentPic.direction, viewBoxW, viewBoxH),
-        durationSeconds: currentPic.switchDuration,
-        keySplines: currentPic.keySplines
-    };
+  // 1. 进入段：从 entryOffset 位置移到中心
+  //    foreignObject 初始在 entryOffset，需要 translate 一个 exitOffset 才能回到原点
+  const entrySegment: I_TimelineSegment = {
+    toRel: getExitOffset(currentPic.direction, viewBoxW, viewBoxH),
+    durationSeconds: currentPic.switchDuration,
+    keySplines: currentPic.keySplines
+  };
 
-    // 2. 停留段：在中心不动
-    const staySegment: I_TimelineSegment = {
-        toRel: { x: 0, y: 0 },
-        durationSeconds: currentPic.stayDuration,
-        keySplines: currentPic.keySplines
-    };
+  // 2. 停留段：在中心不动
+  const staySegment: I_TimelineSegment = {
+    toRel: { x: 0, y: 0 },
+    durationSeconds: currentPic.stayDuration,
+    keySplines: currentPic.keySplines
+  };
 
-    // 3. 退出段：从中心滑到屏幕外（沿下一张图的退出方向）
-    //    使用 nextPic 的方向，让当前图"让出"位置给下一张
-    const exitSegment: I_TimelineSegment = {
-        toRel: getExitOffset(nextPic.direction, viewBoxW, viewBoxH),
-        durationSeconds: nextPic.switchDuration,
-        keySplines: nextPic.keySplines
-    };
+  // 3. 退出段：从中心滑到屏幕外（沿下一张图的退出方向）
+  //    使用 nextPic 的方向，让当前图"让出"位置给下一张
+  const exitSegment: I_TimelineSegment = {
+    toRel: getExitOffset(nextPic.direction, viewBoxW, viewBoxH),
+    durationSeconds: nextPic.switchDuration,
+    keySplines: nextPic.keySplines
+  };
 
-    // 4. 保持段：在屏幕外等待，直到自己的下一轮进入
-    const holdSegment: I_TimelineSegment = {
-        toRel: { x: 0, y: 0 },
-        durationSeconds: calculateHoldTime(index, pics, totalCycleDuration),
-        keySplines: currentPic.keySplines
-    };
+  // 4. 保持段：在屏幕外等待，直到自己的下一轮进入
+  const holdSegment: I_TimelineSegment = {
+    toRel: { x: 0, y: 0 },
+    durationSeconds: calculateHoldTime(index, pics, totalCycleDuration),
+    keySplines: currentPic.keySplines
+  };
 
-    return [entrySegment, staySegment, exitSegment, holdSegment];
+  return [entrySegment, staySegment, exitSegment, holdSegment];
 };
 
 /** 获取所有图片的延迟时间 */
 export const getAllDelayTimes = (pics: I_NormalizedPicConfig[]): number[] => {
-    return pics.map((_, index) => calculateDelayTime(index, pics));
+  return pics.map((_, index) => calculateDelayTime(index, pics));
 };
 
 /** 获取所有图片的初始位置（foreignObject 的 x/y） */
 export const getAllInitialPositions = (
-    pics: I_NormalizedPicConfig[],
-    viewBoxW: number,
-    viewBoxH: number
+  pics: I_NormalizedPicConfig[],
+  viewBoxW: number,
+  viewBoxH: number
 ): { x: number; y: number }[] => {
-    return pics.map(pic => getEntryOffset(pic.direction, viewBoxW, viewBoxH));
+  return pics.map(pic => getEntryOffset(pic.direction, viewBoxW, viewBoxH));
 };

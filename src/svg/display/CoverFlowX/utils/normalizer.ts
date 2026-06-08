@@ -10,24 +10,24 @@ export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 
 /** 内部函数，填充单项配置的默认值并校验 */
 const fillDefaults = (item: I_CoverFlowItemConfig): I_NormalizedItemConfig => {
-    const useItem = !!item.item
+  const useItem = !!item.item
 
-    if (isNil(item.url) && isNil(item.item)) {
-        throw new Error("Each item must have either `url` or `item`. `url` and `item` cannot both be empty.")
-    }
+  if (isNil(item.url) && isNil(item.item)) {
+    throw new Error("Each item must have either `url` or `item`. `url` and `item` cannot both be empty.")
+  }
 
-    if (isDefined(item.url) && isDefined(item.item)) {
-        console.warn("`url` is ignored when `item` is also provided.")
-    }
+  if (isDefined(item.url) && isDefined(item.item)) {
+    console.warn("`url` is ignored when `item` is also provided.")
+  }
 
-    return {
-        url: item.url,
-        item: item.item,
-        useItem,
-        switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
-        stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
-        keySplines: defaultTo(item.keySplines, DEFAULT_KEY_SPLINES)
-    }
+  return {
+    url: item.url,
+    item: item.item,
+    useItem,
+    switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
+    stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
+    keySplines: defaultTo(item.keySplines, DEFAULT_KEY_SPLINES)
+  }
 }
 
 /**
@@ -39,19 +39,19 @@ const fillDefaults = (item: I_CoverFlowItemConfig): I_NormalizedItemConfig => {
  * - ≥3 张 → 直接使用
  */
 export const normalizeItems = (items?: I_CoverFlowItemConfig[]): I_NormalizedItemConfig[] => {
-    if (isNil(items) || items.length === 0) {
-        throw new Error("`pics` must not be empty. CoverFlow requires at least 1 item.")
-    }
+  if (isNil(items) || items.length === 0) {
+    throw new Error("`pics` must not be empty. CoverFlow requires at least 1 item.")
+  }
 
-    const normalized = items.map(fillDefaults)
+  const normalized = items.map(fillDefaults)
 
-    if (normalized.length === 1) {
-        return [normalized[0], normalized[0], normalized[0]]
-    }
+  if (normalized.length === 1) {
+    return [normalized[0], normalized[0], normalized[0]]
+  }
 
-    if (normalized.length === 2) {
-        return [normalized[0], normalized[1], normalized[0]]
-    }
+  if (normalized.length === 2) {
+    return [normalized[0], normalized[1], normalized[0]]
+  }
 
-    return normalized
+  return normalized
 };

@@ -24,33 +24,33 @@
  * 计算反弹缓动的贝塞尔曲线控制点
  */
 function calculateBounceBezier(
-    type: 'in' | 'out' | 'inOut',
-    intensity: number
+  type: 'in' | 'out' | 'inOut',
+  intensity: number
 ): string {
-    // 限制 intensity 在合理范围内
-    const clampedIntensity = Math.max(0, Math.min(1, intensity));
-    
-    if (type === 'out') {
-        // easeOutBounce: 结尾反弹（最常用）
-        // 快速下落，撞击后弹起
-        // 与 Elastic 的区别：x 值更陡峭，制造"撞击"感
-        const y1 = -clampedIntensity;
-        const y2 = 1 + clampedIntensity;
-        return `0.75 ${y1} 0.22 ${y2}`;  // x 值比 Elastic 更陡峭
-    }
-    
-    if (type === 'in') {
-        // easeInBounce: 开头反弹
-        // 从上方弹起，最后重重落下
-        const y1 = -clampedIntensity;
-        const y2 = 1 + clampedIntensity * 0.6;
-        return `${0.78 - clampedIntensity * 0.08} ${y1} 0.71 ${y2}`;
-    }
-    
-    // easeInOutBounce: 两端都反弹
+  // 限制 intensity 在合理范围内
+  const clampedIntensity = Math.max(0, Math.min(1, intensity));
+  
+  if (type === 'out') {
+    // easeOutBounce: 结尾反弹（最常用）
+    // 快速下落，撞击后弹起
+    // 与 Elastic 的区别：x 值更陡峭，制造"撞击"感
     const y1 = -clampedIntensity;
     const y2 = 1 + clampedIntensity;
-    return `0.75 ${y1} 0.22 ${y2}`;
+    return `0.75 ${y1} 0.22 ${y2}`;  // x 值比 Elastic 更陡峭
+  }
+  
+  if (type === 'in') {
+    // easeInBounce: 开头反弹
+    // 从上方弹起，最后重重落下
+    const y1 = -clampedIntensity;
+    const y2 = 1 + clampedIntensity * 0.6;
+    return `${0.78 - clampedIntensity * 0.08} ${y1} 0.71 ${y2}`;
+  }
+  
+  // easeInOutBounce: 两端都反弹
+  const y1 = -clampedIntensity;
+  const y2 = 1 + clampedIntensity;
+  return `0.75 ${y1} 0.22 ${y2}`;
 }
 
 /**
@@ -129,28 +129,28 @@ function calculateBounceBezier(
  * getBounceBezier0_1({ intensity: 0.5 })   // 突然的撞击感
  */
 export function getBounceBezier0_1(options: {
-    isIn?: boolean
-    isOut?: boolean
-    intensity?: number
+  isIn?: boolean
+  isOut?: boolean
+  intensity?: number
 }): string {
-    const { 
-        isIn = false, 
-        isOut = false, 
-        intensity = 0.5  // 默认 50% 反弹（中等强度）
-    } = options;
+  const { 
+    isIn = false, 
+    isOut = false, 
+    intensity = 0.5  // 默认 50% 反弹（中等强度）
+  } = options;
 
-    // in: 开头反弹
-    if (isIn && !isOut) {
-        return calculateBounceBezier('in', intensity);
-    }
+  // in: 开头反弹
+  if (isIn && !isOut) {
+    return calculateBounceBezier('in', intensity);
+  }
 
-    // out: 结尾反弹
-    if (!isIn && isOut) {
-        return calculateBounceBezier('out', intensity);
-    }
+  // out: 结尾反弹
+  if (!isIn && isOut) {
+    return calculateBounceBezier('out', intensity);
+  }
 
-    // in-out（默认）：两端都反弹
-    return calculateBounceBezier('inOut', intensity);
+  // in-out（默认）：两端都反弹
+  return calculateBounceBezier('inOut', intensity);
 }
 
 /**

@@ -9,34 +9,34 @@ import isNil from 'lodash/isNil'
  * - GreenSock (GSAP) Ease Visualizer
  */
 const POWER_BEZIER_MAP = {
-    // 二次方 (Quadratic) - 中等力度
-    // 来源: easings.net - easeInQuad, easeOutQuad, easeInOutQuad
-    2: {
-        in: "0.55 0.085 0.68 0.53",      // easeInQuad
-        out: "0.25 0.46 0.45 0.94",      // easeOutQuad
-        inOut: "0.455 0.03 0.515 0.955", // easeInOutQuad
-    },
-    // 三次方 (Cubic) - 强力度
-    // 来源: easings.net - easeInCubic, easeOutCubic, easeInOutCubic
-    3: {
-        in: "0.55 0.055 0.675 0.19",     // easeInCubic
-        out: "0.215 0.61 0.355 1",       // easeOutCubic
-        inOut: "0.645 0.045 0.355 1",    // easeInOutCubic
-    },
-    // 四次方 (Quartic) - 很强力度
-    // 来源: easings.net - easeInQuart, easeOutQuart, easeInOutQuart
-    4: {
-        in: "0.895 0.03 0.685 0.22",     // easeInQuart
-        out: "0.165 0.84 0.44 1",        // easeOutQuart
-        inOut: "0.77 0 0.175 1",         // easeInOutQuart
-    },
-    // 五次方 (Quintic) - 极强力度
-    // 来源: easings.net - easeInQuint, easeOutQuint, easeInOutQuint
-    5: {
-        in: "0.755 0.05 0.855 0.06",     // easeInQuint
-        out: "0.23 1 0.32 1",            // easeOutQuint
-        inOut: "0.86 0 0.07 1",          // easeInOutQuint
-    },
+  // 二次方 (Quadratic) - 中等力度
+  // 来源: easings.net - easeInQuad, easeOutQuad, easeInOutQuad
+  2: {
+    in: "0.55 0.085 0.68 0.53",      // easeInQuad
+    out: "0.25 0.46 0.45 0.94",      // easeOutQuad
+    inOut: "0.455 0.03 0.515 0.955", // easeInOutQuad
+  },
+  // 三次方 (Cubic) - 强力度
+  // 来源: easings.net - easeInCubic, easeOutCubic, easeInOutCubic
+  3: {
+    in: "0.55 0.055 0.675 0.19",     // easeInCubic
+    out: "0.215 0.61 0.355 1",       // easeOutCubic
+    inOut: "0.645 0.045 0.355 1",    // easeInOutCubic
+  },
+  // 四次方 (Quartic) - 很强力度
+  // 来源: easings.net - easeInQuart, easeOutQuart, easeInOutQuart
+  4: {
+    in: "0.895 0.03 0.685 0.22",     // easeInQuart
+    out: "0.165 0.84 0.44 1",        // easeOutQuart
+    inOut: "0.77 0 0.175 1",         // easeInOutQuart
+  },
+  // 五次方 (Quintic) - 极强力度
+  // 来源: easings.net - easeInQuint, easeOutQuint, easeInOutQuint
+  5: {
+    in: "0.755 0.05 0.855 0.06",     // easeInQuint
+    out: "0.23 1 0.32 1",            // easeOutQuint
+    inOut: "0.86 0 0.07 1",          // easeInOutQuint
+  },
 } as const;
 
 type PowerLevel = keyof typeof POWER_BEZIER_MAP;
@@ -84,67 +84,67 @@ type PowerLevel = keyof typeof POWER_BEZIER_MAP;
  * // => "0.86 0 0.07 1"
  */
 export function getPowerBezier(options: {
-    power: 1 | 2 | 3 | 4 | 5
-    isIn?: boolean
-    isOut?: boolean
+  power: 1 | 2 | 3 | 4 | 5
+  isIn?: boolean
+  isOut?: boolean
 }): string {
-    const { power, isIn = false, isOut = false } = options;
+  const { power, isIn = false, isOut = false } = options;
 
-    // 验证幂次范围：必须是 1-5
-    if (power < 1 || power > 5 || !Number.isInteger(power)) {
-        throw new Error(`[getPowerBezier] power must be an integer from 1 to 5, got: ${power}`);
-    }
+  // 验证幂次范围：必须是 1-5
+  if (power < 1 || power > 5 || !Number.isInteger(power)) {
+    throw new Error(`[getPowerBezier] power must be an integer from 1 to 5, got: ${power}`);
+  }
 
-    // 特殊处理：power=1 直接返回 linear
-    if (power === 1) {
-        return "0 0 1 1"; // linear，无缓动
-    }
+  // 特殊处理：power=1 直接返回 linear
+  if (power === 1) {
+    return "0 0 1 1"; // linear，无缓动
+  }
 
-    // 检查幂次是否在映射表中（理论上不会到这里，因为已经验证了 1-5）
-    if (isNil(POWER_BEZIER_MAP[power as PowerLevel])) {
-        throw new Error(`[getPowerBezier] unsupported power: ${power}`);
-    }
+  // 检查幂次是否在映射表中（理论上不会到这里，因为已经验证了 1-5）
+  if (isNil(POWER_BEZIER_MAP[power as PowerLevel])) {
+    throw new Error(`[getPowerBezier] unsupported power: ${power}`);
+  }
 
-    const bezierMap = POWER_BEZIER_MAP[power as PowerLevel];
+  const bezierMap = POWER_BEZIER_MAP[power as PowerLevel];
 
-    // in: 缓慢启动后快速加速
-    if (isIn && !isOut) {
-        return bezierMap.in;
-    }
+  // in: 缓慢启动后快速加速
+  if (isIn && !isOut) {
+    return bezierMap.in;
+  }
 
-    // out: 快速启动后缓慢减速
-    if (!isIn && isOut) {
-        return bezierMap.out;
-    }
+  // out: 快速启动后缓慢减速
+  if (!isIn && isOut) {
+    return bezierMap.out;
+  }
 
-    // in-out（默认）：对称缓动，两头慢中间快
-    // 当 isIn && isOut 或 !isIn && !isOut 时都返回这个
-    return bezierMap.inOut;
+  // in-out（默认）：对称缓动，两头慢中间快
+  // 当 isIn && isOut 或 !isIn && !isOut 时都返回这个
+  return bezierMap.inOut;
 }
 
 /**
  * 幂次方缓动常量（便于直接使用）
  */
 export const POWER_BEZIER = {
-    quad: {
-        in: POWER_BEZIER_MAP[2].in,
-        out: POWER_BEZIER_MAP[2].out,
-        inOut: POWER_BEZIER_MAP[2].inOut,
-    },
-    cubic: {
-        in: POWER_BEZIER_MAP[3].in,
-        out: POWER_BEZIER_MAP[3].out,
-        inOut: POWER_BEZIER_MAP[3].inOut,
-    },
-    quart: {
-        in: POWER_BEZIER_MAP[4].in,
-        out: POWER_BEZIER_MAP[4].out,
-        inOut: POWER_BEZIER_MAP[4].inOut,
-    },
-    quint: {
-        in: POWER_BEZIER_MAP[5].in,
-        out: POWER_BEZIER_MAP[5].out,
-        inOut: POWER_BEZIER_MAP[5].inOut,
-    },
+  quad: {
+    in: POWER_BEZIER_MAP[2].in,
+    out: POWER_BEZIER_MAP[2].out,
+    inOut: POWER_BEZIER_MAP[2].inOut,
+  },
+  cubic: {
+    in: POWER_BEZIER_MAP[3].in,
+    out: POWER_BEZIER_MAP[3].out,
+    inOut: POWER_BEZIER_MAP[3].inOut,
+  },
+  quart: {
+    in: POWER_BEZIER_MAP[4].in,
+    out: POWER_BEZIER_MAP[4].out,
+    inOut: POWER_BEZIER_MAP[4].inOut,
+  },
+  quint: {
+    in: POWER_BEZIER_MAP[5].in,
+    out: POWER_BEZIER_MAP[5].out,
+    inOut: POWER_BEZIER_MAP[5].inOut,
+  },
 } as const;
 

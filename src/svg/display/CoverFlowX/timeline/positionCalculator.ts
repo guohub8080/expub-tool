@@ -6,24 +6,24 @@ import type { I_Layout } from "../types";
  * viewBoxW = imageW + 2 * gap + 2 * peekPx
  */
 export const calculateLayout = (
-    imageW: number,
-    imageH: number,
-    peekPx: number,
-    gap: number,
-    sideScale: number,
+  imageW: number,
+  imageH: number,
+  peekPx: number,
+  gap: number,
+  sideScale: number,
 ): I_Layout => {
-    const viewBoxW = imageW + 2 * gap + 2 * peekPx
-    const viewBoxH = imageH
+  const viewBoxW = imageW + 2 * gap + 2 * peekPx
+  const viewBoxH = imageH
 
-    const centerX = peekPx + gap
-    const rightX = peekPx + gap + imageW + gap
-    const leftX = peekPx - imageW * sideScale
+  const centerX = peekPx + gap
+  const rightX = peekPx + gap + imageW + gap
+  const leftX = peekPx - imageW * sideScale
 
-    const sideY = imageH * (1 - sideScale) / 2
+  const sideY = imageH * (1 - sideScale) / 2
 
-    const origin: [number, number] = [imageW / 2, imageH / 2]
+  const origin: [number, number] = [imageW / 2, imageH / 2]
 
-    return { viewBoxW, viewBoxH, centerX, leftX, rightX, sideY, origin }
+  return { viewBoxW, viewBoxH, centerX, leftX, rightX, sideY, origin }
 }
 
 /** 右侧 peek 位置 */
@@ -40,5 +40,5 @@ export const getOffScreenRightX = (layout: I_Layout): number => layout.viewBoxW
 
 /** 屏幕外左侧（第 5 段：从左 peek 滑出屏外） */
 export const getOffScreenLeftX = (imageW: number, sideScale: number): number => {
-    return -imageW * sideScale
+  return -imageW * sideScale
 }

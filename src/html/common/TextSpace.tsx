@@ -28,34 +28,34 @@ import type { CSSProperties } from "react"
  * @param display - 显示方式（默认 inline-block）
  */
 const TextSpace = (props: {
-    /** em 单位的宽度 */
-    em?: number
-    /** rem 单位的宽度 */
-    rem?: number
-    /** 自定义宽度 */
-    width?: number | string
-    /** 显示方式 */
-    display?: CSSProperties["display"]
-    style?: CSSProperties
+  /** em 单位的宽度 */
+  em?: number
+  /** rem 单位的宽度 */
+  rem?: number
+  /** 自定义宽度 */
+  width?: number | string
+  /** 显示方式 */
+  display?: CSSProperties["display"]
+  style?: CSSProperties
 }) => {
-    const style: CSSProperties = {
-        display: props.display || "inline-block",
-        fontSize: "inherit",
-        ...props.style
-    }
+  const style: CSSProperties = {
+    display: props.display || "inline-block",
+    fontSize: "inherit",
+    ...props.style
+  }
 
-    // 优先级：width > rem > em
-    if (!isNil(props.width)) {
-        style.width = isNumber(props.width) ? `${props.width}px` : props.width
-    } else if (!isNil(props.rem)) {
-        style.width = `${props.rem}rem`
-    } else if (!isNil(props.em)) {
-        style.width = `${props.em}em`
-    } else {
-        style.width = "1em" // 默认 1em
-    }
+  // 优先级：width > rem > em
+  if (!isNil(props.width)) {
+    style.width = isNumber(props.width) ? `${props.width}px` : props.width
+  } else if (!isNil(props.rem)) {
+    style.width = `${props.rem}rem`
+  } else if (!isNil(props.em)) {
+    style.width = `${props.em}em`
+  } else {
+    style.width = "1em" // 默认 1em
+  }
 
-    return <span style={style}>&nbsp;</span>
+  return <span style={style}>&nbsp;</span>
 }
 
 export default TextSpace

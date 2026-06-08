@@ -22,25 +22,25 @@ import defaultTo from 'lodash/defaultTo'
  * 计算 Ease 缓动的贝塞尔曲线控制点
  */
 function calculateEaseBezier(
-    type: 'ease' | 'in' | 'out' | 'inOut'
+  type: 'ease' | 'in' | 'out' | 'inOut'
 ): string {
-    if (type === 'in') {
-        // ease-in: 开始慢，逐渐加速
-        return "0.42 0 1 1";
-    }
-    
-    if (type === 'out') {
-        // ease-out: 开始快，逐渐减速
-        return "0 0 0.58 1";
-    }
-    
-    if (type === 'inOut') {
-        // ease-in-out: 两端慢，中间快
-        return "0.42 0 0.58 1";
-    }
-    
-    // ease: CSS 标准 ease 曲线（默认）
-    return "0.25 0.1 0.25 1";
+  if (type === 'in') {
+    // ease-in: 开始慢，逐渐加速
+    return "0.42 0 1 1";
+  }
+  
+  if (type === 'out') {
+    // ease-out: 开始快，逐渐减速
+    return "0 0 0.58 1";
+  }
+  
+  if (type === 'inOut') {
+    // ease-in-out: 两端慢，中间快
+    return "0.42 0 0.58 1";
+  }
+  
+  // ease: CSS 标准 ease 曲线（默认）
+  return "0.25 0.1 0.25 1";
 }
 
 /**
@@ -76,29 +76,29 @@ function calculateEaseBezier(
  * transition: cubic-bezier(0, 0, 0.58, 1)
  */
 export function getEaseBezier(options?: {
-    isIn?: boolean
-    isOut?: boolean
+  isIn?: boolean
+  isOut?: boolean
 }): string {
-    const isIn = defaultTo(options?.isIn, false)
-    const isOut = defaultTo(options?.isOut, false)
+  const isIn = defaultTo(options?.isIn, false)
+  const isOut = defaultTo(options?.isOut, false)
 
-    // ease-in-out: 两端慢，中间快
-    if (isIn && isOut) {
-        return calculateEaseBezier('inOut');
-    }
+  // ease-in-out: 两端慢，中间快
+  if (isIn && isOut) {
+    return calculateEaseBezier('inOut');
+  }
 
-    // ease-in: 开始慢，逐渐加速
-    if (isIn && !isOut) {
-        return calculateEaseBezier('in');
-    }
+  // ease-in: 开始慢，逐渐加速
+  if (isIn && !isOut) {
+    return calculateEaseBezier('in');
+  }
 
-    // ease-out: 开始快，逐渐减速
-    if (!isIn && isOut) {
-        return calculateEaseBezier('out');
-    }
+  // ease-out: 开始快，逐渐减速
+  if (!isIn && isOut) {
+    return calculateEaseBezier('out');
+  }
 
-    // ease（默认）: CSS 标准 ease 曲线
-    return calculateEaseBezier('ease');
+  // ease（默认）: CSS 标准 ease 曲线
+  return calculateEaseBezier('ease');
 }
 
 /**

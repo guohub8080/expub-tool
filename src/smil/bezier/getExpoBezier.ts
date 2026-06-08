@@ -8,9 +8,9 @@
  * - Robert Penner's Easing Functions
  */
 const EXPO_BEZIER_VALUES = {
-    in: "0.95 0.05 0.795 0.035",       // easeInExpo: 开始几乎静止，随后瞬间加速至极限
-    out: "0.19 1 0.22 1",              // easeOutExpo: 开始速度极高，随后瞬间停止
-    inOut: "1 0 0 1",                  // easeInOutExpo: 先指数加速，再指数减速
+  in: "0.95 0.05 0.795 0.035",       // easeInExpo: 开始几乎静止，随后瞬间加速至极限
+  out: "0.19 1 0.22 1",              // easeOutExpo: 开始速度极高，随后瞬间停止
+  inOut: "1 0 0 1",                  // easeInOutExpo: 先指数加速，再指数减速
 } as const;
 
 /**
@@ -55,23 +55,23 @@ const EXPO_BEZIER_VALUES = {
  * // => "1 0 0 1"
  */
 export function getExpoBezier(options?: {
-    isIn?: boolean
-    isOut?: boolean
+  isIn?: boolean
+  isOut?: boolean
 }): string {
-    const { isIn = false, isOut = false } = options || {};
+  const { isIn = false, isOut = false } = options || {};
 
-    // in: 开始几乎静止，随后瞬间加速至极限
-    if (isIn && !isOut) {
-        return EXPO_BEZIER_VALUES.in;
-    }
+  // in: 开始几乎静止，随后瞬间加速至极限
+  if (isIn && !isOut) {
+    return EXPO_BEZIER_VALUES.in;
+  }
 
-    // out: 开始速度极高，随后瞬间停止
-    if (!isIn && isOut) {
-        return EXPO_BEZIER_VALUES.out;
-    }
+  // out: 开始速度极高，随后瞬间停止
+  if (!isIn && isOut) {
+    return EXPO_BEZIER_VALUES.out;
+  }
 
-    // in-out（默认）：先指数加速，再指数减速，首尾几乎无运动
-    return EXPO_BEZIER_VALUES.inOut;
+  // in-out（默认）：先指数加速，再指数减速，首尾几乎无运动
+  return EXPO_BEZIER_VALUES.inOut;
 }
 
 /**

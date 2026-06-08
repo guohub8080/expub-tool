@@ -8,9 +8,9 @@
  * - Robert Penner's Easing Functions
  */
 const SINE_BEZIER_VALUES = {
-    in: "0.47 0 0.745 0.715",         // easeInSine: 开始缓慢，逐渐加速
-    out: "0.39 0.575 0.565 1",        // easeOutSine: 开始快速，逐渐减速
-    inOut: "0.445 0.05 0.55 0.95",    // easeInOutSine: 首尾平滑，中间加速
+  in: "0.47 0 0.745 0.715",         // easeInSine: 开始缓慢，逐渐加速
+  out: "0.39 0.575 0.565 1",        // easeOutSine: 开始快速，逐渐减速
+  inOut: "0.445 0.05 0.55 0.95",    // easeInOutSine: 首尾平滑，中间加速
 } as const;
 
 /**
@@ -51,24 +51,24 @@ const SINE_BEZIER_VALUES = {
  * // => "0.445 0.05 0.55 0.95"
  */
 export function getSineBezier(options?: {
-    isIn?: boolean
-    isOut?: boolean
+  isIn?: boolean
+  isOut?: boolean
 }): string {
-    const { isIn = false, isOut = false } = options || {};
+  const { isIn = false, isOut = false } = options || {};
 
-    // in: 开始缓慢，逐渐加速
-    if (isIn && !isOut) {
-        return SINE_BEZIER_VALUES.in;
-    }
+  // in: 开始缓慢，逐渐加速
+  if (isIn && !isOut) {
+    return SINE_BEZIER_VALUES.in;
+  }
 
-    // out: 开始快速，逐渐减速
-    if (!isIn && isOut) {
-        return SINE_BEZIER_VALUES.out;
-    }
+  // out: 开始快速，逐渐减速
+  if (!isIn && isOut) {
+    return SINE_BEZIER_VALUES.out;
+  }
 
-    // in-out（默认）：首尾平滑，中间加速，类似钟摆运动
-    // 当 isIn && isOut 或 !isIn && !isOut 时都返回这个
-    return SINE_BEZIER_VALUES.inOut;
+  // in-out（默认）：首尾平滑，中间加速，类似钟摆运动
+  // 当 isIn && isOut 或 !isIn && !isOut 时都返回这个
+  return SINE_BEZIER_VALUES.inOut;
 }
 
 /**

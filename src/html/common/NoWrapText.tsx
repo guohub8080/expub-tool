@@ -25,20 +25,20 @@ import type { ReactNode } from "react"
  * @param textList - 文本列表，可以是字符串数组或包含样式的对象数组
  */
 const NoWrapText = (props: {
-    textList: string[] | { text: string, style: React.CSSProperties }[] | ReactNode[]
+  textList: string[] | { text: string, style: React.CSSProperties }[] | ReactNode[]
 }) => {
-    if (!isArray(props.textList)) throw new Error("NoWrapText: textList must be an array")
-    return props.textList.map((item, index) => {
-        // 如果是 React 元素，直接返回
-        if (isValidElement(item)) return item
-        // 如果是字符串，渲染为不换行 span
-        if (isString(item)) {
-            return <span key={index} style={baseStyle}>{item}</span>
-        } else {
-            const obj = item as { text: string, style: React.CSSProperties }
-            return <span key={index} style={{ ...baseStyle, ...obj.style }}>{obj.text}</span>
-        }
-    })
+  if (!isArray(props.textList)) throw new Error("NoWrapText: textList must be an array")
+  return props.textList.map((item, index) => {
+    // 如果是 React 元素，直接返回
+    if (isValidElement(item)) return item
+    // 如果是字符串，渲染为不换行 span
+    if (isString(item)) {
+      return <span key={index} style={baseStyle}>{item}</span>
+    } else {
+      const obj = item as { text: string, style: React.CSSProperties }
+      return <span key={index} style={{ ...baseStyle, ...obj.style }}>{obj.text}</span>
+    }
+  })
 }
 
 export default NoWrapText
@@ -49,7 +49,7 @@ export default NoWrapText
  * 基础样式 - 继承父元素字体大小和颜色，保持词组内部不换行
  */
 const baseStyle: React.CSSProperties = {
-    fontSize: "inherit",
-    color: "inherit",
-    whiteSpace: "nowrap"
+  fontSize: "inherit",
+  color: "inherit",
+  whiteSpace: "nowrap"
 }

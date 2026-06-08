@@ -14,7 +14,7 @@ import type { I_NormalizedPicConfig } from "../types";
 
 /** 总周期时长 = 所有图片的 (切换 + 停留) 之和 */
 export const calculateTotalCycleDuration = (pics: I_NormalizedPicConfig[]): number => {
-    return pics.reduce((total, pic) => total + pic.switchDuration + pic.stayDuration, 0);
+  return pics.reduce((total, pic) => total + pic.switchDuration + pic.stayDuration, 0);
 };
 
 /**
@@ -32,18 +32,18 @@ export const calculateTotalCycleDuration = (pics: I_NormalizedPicConfig[]): numb
  * @returns 延迟时间（秒），负数表示提前开始
  */
 export const calculateDelayTime = (index: number, pics: I_NormalizedPicConfig[]): number => {
-    if (index === 0) {
-        // 第一张图需要"提前"启动，让它在周期起点就已到达中心
-        return -pics[0].switchDuration;
-    }
+  if (index === 0) {
+    // 第一张图需要"提前"启动，让它在周期起点就已到达中心
+    return -pics[0].switchDuration;
+  }
 
-    // 后续图片：累加前面所有图的 (切换 + 停留)
-    let delay = pics[0].stayDuration;
-    for (let i = 1; i < index; i++) {
-        delay += pics[i].switchDuration + pics[i].stayDuration;
-    }
+  // 后续图片：累加前面所有图的 (切换 + 停留)
+  let delay = pics[0].stayDuration;
+  for (let i = 1; i < index; i++) {
+    delay += pics[i].switchDuration + pics[i].stayDuration;
+  }
 
-    return delay;
+  return delay;
 };
 
 /**
@@ -58,17 +58,17 @@ export const calculateDelayTime = (index: number, pics: I_NormalizedPicConfig[])
  * @returns 保持时间（秒）
  */
 export const calculateHoldTime = (
-    index: number,
-    pics: I_NormalizedPicConfig[],
-    totalDuration: number
+  index: number,
+  pics: I_NormalizedPicConfig[],
+  totalDuration: number
 ): number => {
-    const currentPic = pics[index];
-    const nextPic = pics[(index + 1) % pics.length];
+  const currentPic = pics[index];
+  const nextPic = pics[(index + 1) % pics.length];
 
-    return (
-        totalDuration
-        - currentPic.switchDuration
-        - currentPic.stayDuration
-        - nextPic.switchDuration
-    );
+  return (
+    totalDuration
+    - currentPic.switchDuration
+    - currentPic.stayDuration
+    - nextPic.switchDuration
+  );
 };

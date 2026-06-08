@@ -24,37 +24,37 @@
  * 计算后退缓动的贝塞尔曲线控制点
  */
 function calculateBackBezier(
-    type: 'in' | 'out' | 'inOut',
-    intensity: number
+  type: 'in' | 'out' | 'inOut',
+  intensity: number
 ): string {
-    // 限制 intensity 在合理范围内
-    const clampedIntensity = Math.max(0, Math.min(1, intensity));
-    
-    if (type === 'out') {
-        // easeOutBack: 结尾过冲
-        // 快速向前，超过目标后回退停下（像汽车刹车前倾）
-        // 标准值: (0.175, 0.885, 0.32, 1.275)
-        // intensity 控制 y2 的过冲幅度 (1 + 0.275 * intensity/0.55)
-        const overshoot = 0.5 * clampedIntensity;  // 最大过冲 0.5
-        const y2 = 1 + overshoot;
-        return `0.175 0.885 0.32 ${y2}`;
-    }
-    
-    if (type === 'in') {
-        // easeInBack: 开头回退
-        // 先向后回退，再向前加速（像拉弓蓄力）
-        // 标准值: (0.6, -0.28, 0.735, 0.045)
-        // intensity 控制 y1 的回退幅度
-        const pullback = -0.5 * clampedIntensity;  // 最大回退 -0.5
-        return `0.6 ${pullback} 0.735 0.045`;
-    }
-    
-    // easeInOutBack: 两端都有回退/过冲
-    // 开头回退，结尾过冲
-    // 标准值: (0.68, -0.55, 0.265, 1.55)
-    const pullback = -clampedIntensity;
-    const overshoot = 1 + clampedIntensity;
-    return `0.68 ${pullback} 0.265 ${overshoot}`;
+  // 限制 intensity 在合理范围内
+  const clampedIntensity = Math.max(0, Math.min(1, intensity));
+  
+  if (type === 'out') {
+    // easeOutBack: 结尾过冲
+    // 快速向前，超过目标后回退停下（像汽车刹车前倾）
+    // 标准值: (0.175, 0.885, 0.32, 1.275)
+    // intensity 控制 y2 的过冲幅度 (1 + 0.275 * intensity/0.55)
+    const overshoot = 0.5 * clampedIntensity;  // 最大过冲 0.5
+    const y2 = 1 + overshoot;
+    return `0.175 0.885 0.32 ${y2}`;
+  }
+  
+  if (type === 'in') {
+    // easeInBack: 开头回退
+    // 先向后回退，再向前加速（像拉弓蓄力）
+    // 标准值: (0.6, -0.28, 0.735, 0.045)
+    // intensity 控制 y1 的回退幅度
+    const pullback = -0.5 * clampedIntensity;  // 最大回退 -0.5
+    return `0.6 ${pullback} 0.735 0.045`;
+  }
+  
+  // easeInOutBack: 两端都有回退/过冲
+  // 开头回退，结尾过冲
+  // 标准值: (0.68, -0.55, 0.265, 1.55)
+  const pullback = -clampedIntensity;
+  const overshoot = 1 + clampedIntensity;
+  return `0.68 ${pullback} 0.265 ${overshoot}`;
 }
 
 /**
@@ -139,28 +139,28 @@ function calculateBackBezier(
  * getBounceBezier0_1({ intensity: 0.5 })    // 撞击感，有冲击
  */
 export function getBackBezier0_1(options: {
-    isIn?: boolean
-    isOut?: boolean
-    intensity?: number
+  isIn?: boolean
+  isOut?: boolean
+  intensity?: number
 }): string {
-    const { 
-        isIn = false, 
-        isOut = false, 
-        intensity = 0.55  // 默认 55% 强度
-    } = options;
+  const { 
+    isIn = false, 
+    isOut = false, 
+    intensity = 0.55  // 默认 55% 强度
+  } = options;
 
-    // in: 开头回退
-    if (isIn && !isOut) {
-        return calculateBackBezier('in', intensity);
-    }
+  // in: 开头回退
+  if (isIn && !isOut) {
+    return calculateBackBezier('in', intensity);
+  }
 
-    // out: 结尾过冲
-    if (!isIn && isOut) {
-        return calculateBackBezier('out', intensity);
-    }
+  // out: 结尾过冲
+  if (!isIn && isOut) {
+    return calculateBackBezier('out', intensity);
+  }
 
-    // in-out（默认）: 两端都有
-    return calculateBackBezier('inOut', intensity);
+  // in-out（默认）: 两端都有
+  return calculateBackBezier('inOut', intensity);
 }
 
 /**

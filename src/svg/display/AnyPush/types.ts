@@ -26,8 +26,8 @@ export const DEFAULT_STAY_DURATION = 0.5;
 
 /** 二维坐标点 */
 export interface I_Point {
-    x: number;
-    y: number;
+  x: number;
+  y: number;
 }
 
 /**
@@ -35,18 +35,18 @@ export interface I_Point {
  * 所有字段均可选，缺失值由 normalizer 填充默认值
  */
 export interface I_PicConfig {
-    /** 图片地址（与 item 二选一） */
-    url?: string;
-    /** 自定义 SVG 内容（与 url 二选一，优先级高于 url） */
-    item?: ReactNode;
-    /** 滑入方向，默认 "L" */
-    direction?: T_Direction8;
-    /** 从屏幕外滑入到中心的时长（秒），默认 0.5 */
-    switchDuration?: number;
-    /** 在中心停留的时长（秒），默认 0.5 */
-    stayDuration?: number;
-    /** 缓动贝塞尔曲线，默认 ease-in-out */
-    keySplines?: string;
+  /** 图片地址（与 item 二选一） */
+  url?: string;
+  /** 自定义 SVG 内容（与 url 二选一，优先级高于 url） */
+  item?: ReactNode;
+  /** 滑入方向，默认 "L" */
+  direction?: T_Direction8;
+  /** 从屏幕外滑入到中心的时长（秒），默认 0.5 */
+  switchDuration?: number;
+  /** 在中心停留的时长（秒），默认 0.5 */
+  stayDuration?: number;
+  /** 缓动贝塞尔曲线，默认 ease-in-out */
+  keySplines?: string;
 }
 
 /**
@@ -54,12 +54,12 @@ export interface I_PicConfig {
  * 由 normalizer.ts 的 normalizePic() 生成
  */
 export interface I_NormalizedPicConfig extends I_PicConfig {
-    direction: T_Direction8;
-    switchDuration: number;
-    stayDuration: number;
-    keySplines: string;
-    /** 标记 item 模式，用于判断渲染方式 */
-    useItem: boolean;
+  direction: T_Direction8;
+  switchDuration: number;
+  stayDuration: number;
+  keySplines: string;
+  /** 标记 item 模式，用于判断渲染方式 */
+  useItem: boolean;
 }
 
 /**
@@ -67,12 +67,12 @@ export interface I_NormalizedPicConfig extends I_PicConfig {
  * 对应 transformTranslate 的一个 keyframe
  */
 export interface I_TimelineSegment {
-    /** 本段结束时的目标位移坐标（相对位移，使用 toRel 模式） */
-    toRel: I_Point;
-    /** 本段持续时间（秒） */
-    durationSeconds: number;
-    /** 本段的缓动曲线 */
-    keySplines: string;
+  /** 本段结束时的目标位移坐标（相对位移，使用 toRel 模式） */
+  toRel: I_Point;
+  /** 本段持续时间（秒） */
+  durationSeconds: number;
+  /** 本段的缓动曲线 */
+  keySplines: string;
 }
 
 /** 完整的时间线 = 有序的时间线段数组 */
@@ -80,7 +80,7 @@ export type T_AnimationTimeline = I_TimelineSegment[];
 
 /** 时间计算结果集合（预留接口） */
 export interface I_TimingCalculations {
-    totalCycleDuration: number;
-    delayTimeByIndex: (index: number) => number;
-    holdTimeByIndex: (index: number) => number;
+  totalCycleDuration: number;
+  delayTimeByIndex: (index: number) => number;
+  holdTimeByIndex: (index: number) => number;
 }

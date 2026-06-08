@@ -8,37 +8,37 @@ import React from 'react'
  * Release (mouseup/click): 1,1 → -1,1 (smooth flip)
  */
 export function flipScaleAnims({ flipDur, pressFlipDur, keySplines }: {
-	flipDur: number
-	pressFlipDur: number
-	keySplines: string
+  flipDur: number
+  pressFlipDur: number
+  keySplines: string
 }) {
-	const holdKeyTime = ((pressFlipDur - flipDur) / pressFlipDur).toFixed(6)
-	const pressDur = `${pressFlipDur}s`
-	const releaseDur = `${flipDur}s`
-	const pressSplines = `${keySplines};${keySplines}`
+  const holdKeyTime = ((pressFlipDur - flipDur) / pressFlipDur).toFixed(6)
+  const pressDur = `${pressFlipDur}s`
+  const releaseDur = `${flipDur}s`
+  const pressSplines = `${keySplines};${keySplines}`
 
-	return (
-		<>
-			<animateTransform calcMode="spline" attributeName="transform" type="scale"
-				values="-1 1;-1 1;1 1" dur={pressDur}
-				keyTimes={`0;${holdKeyTime};1`} keySplines={pressSplines}
-				fill="freeze" begin="mousedown" />
-			<animateTransform calcMode="spline" attributeName="transform" type="scale"
-				values="-1 1;-1 1;1 1" dur={pressDur}
-				keyTimes={`0;${holdKeyTime};1`} keySplines={pressSplines}
-				fill="freeze" begin="touchstart" />
-			<animateTransform calcMode="spline" attributeName="transform" type="scale"
-				values="-1 1;-1 1;-1 1" dur={pressDur}
-				keyTimes={`0;${holdKeyTime};1`} keySplines={pressSplines}
-				fill="freeze" begin="touchmove" />
-			<animateTransform calcMode="spline" attributeName="transform" type="scale"
-				values="1 1;-1 1" dur={releaseDur}
-				keyTimes="0;1" keySplines={keySplines}
-				fill="freeze" begin="mouseup" />
-			<animateTransform calcMode="spline" attributeName="transform" type="scale"
-				values="1 1;-1 1" dur={releaseDur}
-				keyTimes="0;1" keySplines={keySplines}
-				fill="freeze" begin="click" />
-		</>
-	)
+  return (
+    <>
+      <animateTransform calcMode="spline" attributeName="transform" type="scale"
+        values="-1 1;-1 1;1 1" dur={pressDur}
+        keyTimes={`0;${holdKeyTime};1`} keySplines={pressSplines}
+        fill="freeze" begin="mousedown" />
+      <animateTransform calcMode="spline" attributeName="transform" type="scale"
+        values="-1 1;-1 1;1 1" dur={pressDur}
+        keyTimes={`0;${holdKeyTime};1`} keySplines={pressSplines}
+        fill="freeze" begin="touchstart" />
+      <animateTransform calcMode="spline" attributeName="transform" type="scale"
+        values="-1 1;-1 1;-1 1" dur={pressDur}
+        keyTimes={`0;${holdKeyTime};1`} keySplines={pressSplines}
+        fill="freeze" begin="touchmove" />
+      <animateTransform calcMode="spline" attributeName="transform" type="scale"
+        values="1 1;-1 1" dur={releaseDur}
+        keyTimes="0;1" keySplines={keySplines}
+        fill="freeze" begin="mouseup" />
+      <animateTransform calcMode="spline" attributeName="transform" type="scale"
+        values="1 1;-1 1" dur={releaseDur}
+        keyTimes="0;1" keySplines={keySplines}
+        fill="freeze" begin="click" />
+    </>
+  )
 }

@@ -8,26 +8,26 @@ import React from 'react'
  * Release (mouseup/click): 0 → -10000 (click target moves off-screen)
  */
 export function clickResetTranslateAnims({ discreteDur }: { discreteDur: number }) {
-	const dur = `${discreteDur}s`
-	return (
-		<>
-			<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-				values="-10000 0;-10000 0;0 0;0 0" dur={dur}
-				keyTimes="0;0.6;0.6;1" fill="freeze" begin="mousedown" />
-			<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-				values="-10000 0;-10000 0;0 0;0 0" dur={dur}
-				keyTimes="0;0.6;0.6;1" fill="freeze" begin="touchstart" />
-			<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-				values="-10000 0;-10000 0;-10000 0;-10000 0" dur={dur}
-				keyTimes="0;0.6;0.6;1" fill="freeze" begin="touchmove" />
-			<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-				values="0 0;0 0;-10000 0;-10000 0" dur={dur}
-				keyTimes="0;0.5;0.5;1" fill="freeze" begin="mouseup" />
-			<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-				values="0 0;0 0;-10000 0;-10000 0" dur={dur}
-				keyTimes="0;0.5;0.5;1" fill="freeze" begin="click" />
-		</>
-	)
+  const dur = `${discreteDur}s`
+  return (
+    <>
+      <animateTransform calcMode="discrete" attributeName="transform" type="translate"
+        values="-10000 0;-10000 0;0 0;0 0" dur={dur}
+        keyTimes="0;0.6;0.6;1" fill="freeze" begin="mousedown" />
+      <animateTransform calcMode="discrete" attributeName="transform" type="translate"
+        values="-10000 0;-10000 0;0 0;0 0" dur={dur}
+        keyTimes="0;0.6;0.6;1" fill="freeze" begin="touchstart" />
+      <animateTransform calcMode="discrete" attributeName="transform" type="translate"
+        values="-10000 0;-10000 0;-10000 0;-10000 0" dur={dur}
+        keyTimes="0;0.6;0.6;1" fill="freeze" begin="touchmove" />
+      <animateTransform calcMode="discrete" attributeName="transform" type="translate"
+        values="0 0;0 0;-10000 0;-10000 0" dur={dur}
+        keyTimes="0;0.5;0.5;1" fill="freeze" begin="mouseup" />
+      <animateTransform calcMode="discrete" attributeName="transform" type="translate"
+        values="0 0;0 0;-10000 0;-10000 0" dur={dur}
+        keyTimes="0;0.5;0.5;1" fill="freeze" begin="click" />
+    </>
+  )
 }
 
 /**
@@ -37,18 +37,18 @@ export function clickResetTranslateAnims({ discreteDur }: { discreteDur: number 
  * Move (touchmove): moves to 0 (into view)
  */
 export function hiddenResetTranslateAnims({ pressFlipDur }: { pressFlipDur: number }) {
-	const dur = `${pressFlipDur}s`
-	return (
-		<>
-			<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-				values="10000 0;10000 0;10000 0" dur={dur}
-				keyTimes="0;0.00001;1" fill="remove" begin="mousedown" />
-			<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-				values="10000 0;10000 0;10000 0" dur={dur}
-				keyTimes="0;0.00001;1" fill="remove" begin="touchstart" />
-			<animateTransform calcMode="discrete" attributeName="transform" type="translate"
-				values="0 0;0 0;0 0" dur={dur}
-				keyTimes="0;0.00001;1" fill="remove" begin="touchmove" />
-		</>
-	)
+  const dur = `${pressFlipDur}s`
+  return (
+    <>
+      <animateTransform calcMode="discrete" attributeName="transform" type="translate"
+        values="10000 0;10000 0;10000 0" dur={dur}
+        keyTimes="0;0.00001;1" fill="remove" begin="mousedown" />
+      <animateTransform calcMode="discrete" attributeName="transform" type="translate"
+        values="10000 0;10000 0;10000 0" dur={dur}
+        keyTimes="0;0.00001;1" fill="remove" begin="touchstart" />
+      <animateTransform calcMode="discrete" attributeName="transform" type="translate"
+        values="0 0;0 0;0 0" dur={dur}
+        keyTimes="0;0.00001;1" fill="remove" begin="touchmove" />
+    </>
+  )
 }

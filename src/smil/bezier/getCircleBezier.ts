@@ -8,9 +8,9 @@
  * - Robert Penner's Easing Functions
  */
 const CIRCLE_BEZIER_VALUES = {
-    in: "0.6 0.04 0.98 0.335",         // easeInCirc: 开始缓慢，逐渐加速
-    out: "0.075 0.82 0.165 1",         // easeOutCirc: 开始快速，逐渐减速
-    inOut: "0.785 0.135 0.15 0.86",    // easeInOutCirc: 首尾平滑，中间加速
+  in: "0.6 0.04 0.98 0.335",         // easeInCirc: 开始缓慢，逐渐加速
+  out: "0.075 0.82 0.165 1",         // easeOutCirc: 开始快速，逐渐减速
+  inOut: "0.785 0.135 0.15 0.86",    // easeInOutCirc: 首尾平滑，中间加速
 } as const;
 
 /**
@@ -51,23 +51,23 @@ const CIRCLE_BEZIER_VALUES = {
  * // => "0.785 0.135 0.15 0.86"
  */
 export function getCircleBezier(options?: {
-    isIn?: boolean
-    isOut?: boolean
+  isIn?: boolean
+  isOut?: boolean
 }): string {
-    const { isIn = false, isOut = false } = options || {};
+  const { isIn = false, isOut = false } = options || {};
 
-    // in: 开始缓慢，逐渐加速
-    if (isIn && !isOut) {
-        return CIRCLE_BEZIER_VALUES.in;
-    }
+  // in: 开始缓慢，逐渐加速
+  if (isIn && !isOut) {
+    return CIRCLE_BEZIER_VALUES.in;
+  }
 
-    // out: 开始快速，逐渐减速
-    if (!isIn && isOut) {
-        return CIRCLE_BEZIER_VALUES.out;
-    }
+  // out: 开始快速，逐渐减速
+  if (!isIn && isOut) {
+    return CIRCLE_BEZIER_VALUES.out;
+  }
 
-    // in-out（默认）：首尾平滑，中间加速
-    return CIRCLE_BEZIER_VALUES.inOut;
+  // in-out（默认）：首尾平滑，中间加速
+  return CIRCLE_BEZIER_VALUES.inOut;
 }
 
 /**

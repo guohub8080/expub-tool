@@ -89,7 +89,7 @@ if (hasAnimation) { ... }
 if (!isEdge) { ... }
 if (!isValidColor(color)) { ... }
 if (!allowedAttrs.has(attr)) { ... }
-if (!(power in POWER_BEZIER_MAP)) { ... }   // in 运算符返回 boolean
+if (!has(POWER_BEZIER_MAP, power)) { ... }      // lodash has 检查属性存在
 if (!isArray(value) || isEmpty(value)) { ... }  // lodash 函数返回 boolean
 if (items.length === 0) { ... }             // 数值比较返回 boolean
 ```
@@ -112,6 +112,32 @@ if (canvasBg.url) { ... }
 ## SMIL animateTransform 嵌套规则
 
 多个 `<animateTransform>` 不能放在同一个 `<g>` 上——后一个会覆盖前一个的 `transform`，且会覆盖该 `<g>` 上已有的静态 `transform` 属性。每个 `<animateTransform>` 必须包在独立的 `<g>` 中。
+
+## 缩进规范
+
+- **统一使用 2 空格缩进**，禁止 Tab
+- 项目已配置 `.editorconfig` 和 `.vscode/settings.json` 强制执行
+- 每次编辑代码后，确保缩进符合 2 空格规范
+
+## 属性存在性检查规范
+
+- 一般场景使用 `has`（`lodash/has`）检查对象自身属性是否存在
+- `in` 会查原型链，`has` 只查自身属性，语义更明确
+- **例外**：区分联合类型（discriminated union）需要类型收窄时，使用 `in` 运算符（TypeScript 原生支持，`has` 无法收窄类型）
+
+```ts
+import has from 'lodash/has'
+
+// ✅ 一般场景用 has
+if (!has(POWER_BEZIER_MAP, power)) { ... }
+
+// ✅ 区分联合类型需要类型收窄时用 in（例外）
+type Config = { x: number; y: number } | { timeline: ...[] }
+if ('timeline' in value) { ... }  // TypeScript 能收窄类型
+
+// ❌ 一般场景禁止用 in
+if (!(power in POWER_BEZIER_MAP)) { ... }
+```
 
 ## 开发文档 (devDocs/)
 

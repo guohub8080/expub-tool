@@ -28,53 +28,53 @@ import { assembleTimeline } from "../timeline/segmentAssembler";
  * - begin: `${delay}s`    — 错开各图片的启动时间
  */
 const PushingImage = (props: {
-    /** 当前内容的标准化配置 */
-    pic: I_NormalizedPicConfig
-    /** 当前内容在数组中的索引 */
-    index: number
-    /** 所有内容的标准化配置（用于计算时间线） */
-    pics: I_NormalizedPicConfig[]
-    /** viewBox 宽度 */
-    viewBoxW: number
-    /** viewBox 高度 */
-    viewBoxH: number
-    /** 总周期时长（秒） */
-    totalCycleDuration: number
+  /** 当前内容的标准化配置 */
+  pic: I_NormalizedPicConfig
+  /** 当前内容在数组中的索引 */
+  index: number
+  /** 所有内容的标准化配置（用于计算时间线） */
+  pics: I_NormalizedPicConfig[]
+  /** viewBox 宽度 */
+  viewBoxW: number
+  /** viewBox 高度 */
+  viewBoxH: number
+  /** 总周期时长（秒） */
+  totalCycleDuration: number
 }) => {
-    const timeline = assembleTimeline(props.index, props.pics, props.viewBoxW, props.viewBoxH, props.totalCycleDuration)
-    const delay = calculateDelayTime(props.index, props.pics)
-    const initPos = getEntryOffset(props.pic.direction, props.viewBoxW, props.viewBoxH)
+  const timeline = assembleTimeline(props.index, props.pics, props.viewBoxW, props.viewBoxH, props.totalCycleDuration)
+  const delay = calculateDelayTime(props.index, props.pics)
+  const initPos = getEntryOffset(props.pic.direction, props.viewBoxW, props.viewBoxH)
 
-    return (
-        <g>
-            {/* 内容容器：初始位于屏幕外，由 animateTransform 驱动滑入 */}
-            <foreignObject x={initPos.x} y={initPos.y} width={props.viewBoxW} height={props.viewBoxH}>
-                {props.pic.useItem
-                    ? props.pic.item
-                    : <SvgEx
-                        style={{
-                            display: "block",
-                            backgroundImage: svgURL(props.pic.url!),
-                            backgroundSize: "100% auto",
-                            backgroundRepeat: "no-repeat",
-                            backgroundPosition: "center",
-                        }}
-                        viewBox={`0 0 ${props.viewBoxW} ${props.viewBoxH}`}
-                        width="100%"
-                    />
-                }
-            </foreignObject>
-            {/* SMIL 平移动画：4 段时间线 + 延迟启动 = 无限循环推入效果 */}
-            {transformTranslate({
-                initValue: { x: 0, y: 0 },
-                timeline,
-                begin: `${delay}s`,
-                loopCount: 0,
-                isFreeze: true,
-                isAdditive: true,
-            })}
-        </g>
-    )
+  return (
+    <g>
+      {/* 内容容器：初始位于屏幕外，由 animateTransform 驱动滑入 */}
+      <foreignObject x={initPos.x} y={initPos.y} width={props.viewBoxW} height={props.viewBoxH}>
+        {props.pic.useItem
+          ? props.pic.item
+          : <SvgEx
+            style={{
+              display: "block",
+              backgroundImage: svgURL(props.pic.url!),
+              backgroundSize: "100% auto",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
+            viewBox={`0 0 ${props.viewBoxW} ${props.viewBoxH}`}
+            width="100%"
+          />
+        }
+      </foreignObject>
+      {/* SMIL 平移动画：4 段时间线 + 延迟启动 = 无限循环推入效果 */}
+      {transformTranslate({
+        initValue: { x: 0, y: 0 },
+        timeline,
+        begin: `${delay}s`,
+        loopCount: 0,
+        isFreeze: true,
+        isAdditive: true,
+      })}
+    </g>
+  )
 }
 
 export default PushingImage

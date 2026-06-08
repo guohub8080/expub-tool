@@ -30,39 +30,39 @@ import getImgSizeAsync from "../dom/getImgSizeAsync"
  * ```
  */
 const useImgSize = (url: string, w?: number, h?: number) => {
-    const imgW = defaultTo(w, 0)
-    const imgH = defaultTo(h, 0)
-    const hasDefault = imgW + imgH > 0
+  const imgW = defaultTo(w, 0)
+  const imgH = defaultTo(h, 0)
+  const hasDefault = imgW + imgH > 0
 
-    const [size, setSize] = useState({ w: imgW, h: imgH })
-    const [loading, setLoading] = useState(!hasDefault)
-    const [error, setError] = useState(false)
+  const [size, setSize] = useState({ w: imgW, h: imgH })
+  const [loading, setLoading] = useState(!hasDefault)
+  const [error, setError] = useState(false)
 
-    useEffect(() => {
-        // 有默认值，不需要异步加载
-        if (hasDefault) {
-            setSize({ w: imgW, h: imgH })
-            setLoading(false)
-            setError(false)
-            return
-        }
+  useEffect(() => {
+    // 有默认值，不需要异步加载
+    if (hasDefault) {
+      setSize({ w: imgW, h: imgH })
+      setLoading(false)
+      setError(false)
+      return
+    }
 
-        // 无默认值，异步加载
-        setLoading(true)
+    // 无默认值，异步加载
+    setLoading(true)
+    setError(false)
+
+    getImgSizeAsync(url).then(result => {
+      if (result.isSuccess) {
+        setSize({ w: result.w, h: result.h })
         setError(false)
+      } else {
+        setError(true)
+      }
+      setLoading(false)
+    })
+  }, [url, w, h])
 
-        getImgSizeAsync(url).then(result => {
-            if (result.isSuccess) {
-                setSize({ w: result.w, h: result.h })
-                setError(false)
-            } else {
-                setError(true)
-            }
-            setLoading(false)
-        })
-    }, [url, w, h])
-
-    return { size, loading, error }
+  return { size, loading, error }
 }
 
 export default useImgSize

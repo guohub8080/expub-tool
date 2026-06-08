@@ -17,6 +17,6 @@
  * transition: cubic-bezier(0, 0, 1, 1)
  */
 export function getLinearBezier(): string {
-    return "0 0 1 1";
+  return "0 0 1 1";
 }
 

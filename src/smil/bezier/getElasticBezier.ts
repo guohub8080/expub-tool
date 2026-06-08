@@ -24,33 +24,33 @@
  * 计算弹性缓动的贝塞尔曲线控制点
  */
 function calculateElasticBezier(
-    type: 'in' | 'out' | 'inOut',
-    intensity: number
+  type: 'in' | 'out' | 'inOut',
+  intensity: number
 ): string {
-    // 限制 intensity 在合理范围内
-    const clampedIntensity = Math.max(0, Math.min(1, intensity));
-    
-    if (type === 'out') {
-        // easeOutElastic: 结尾过冲
-        // 开始正常，结尾超过目标值后回弹
-        const y1 = -clampedIntensity;
-        const y2 = 1 + clampedIntensity;
-        return `0.68 ${y1} 0.265 ${y2}`;
-    }
-    
-    if (type === 'in') {
-        // easeInElastic: 开头回退
-        // 开始时先回退（负值），然后冲向目标
-        const y1 = -clampedIntensity;
-        const y2 = 1 + clampedIntensity * 0.5; // in 的结尾过冲较小
-        return `${0.6 - clampedIntensity * 0.1} ${y1} 0.735 ${y2}`;
-    }
-    
-    // easeInOutElastic: 两端都有过冲
-    // 开头回退，结尾过冲
+  // 限制 intensity 在合理范围内
+  const clampedIntensity = Math.max(0, Math.min(1, intensity));
+  
+  if (type === 'out') {
+    // easeOutElastic: 结尾过冲
+    // 开始正常，结尾超过目标值后回弹
     const y1 = -clampedIntensity;
     const y2 = 1 + clampedIntensity;
     return `0.68 ${y1} 0.265 ${y2}`;
+  }
+  
+  if (type === 'in') {
+    // easeInElastic: 开头回退
+    // 开始时先回退（负值），然后冲向目标
+    const y1 = -clampedIntensity;
+    const y2 = 1 + clampedIntensity * 0.5; // in 的结尾过冲较小
+    return `${0.6 - clampedIntensity * 0.1} ${y1} 0.735 ${y2}`;
+  }
+  
+  // easeInOutElastic: 两端都有过冲
+  // 开头回退，结尾过冲
+  const y1 = -clampedIntensity;
+  const y2 = 1 + clampedIntensity;
+  return `0.68 ${y1} 0.265 ${y2}`;
 }
 
 /**
@@ -109,28 +109,28 @@ function calculateElasticBezier(
  * // => "0.68 0 0.265 1"
  */
 export function getElasticBezier0_1(options: {
-    isIn?: boolean
-    isOut?: boolean
-    intensity?: number
+  isIn?: boolean
+  isOut?: boolean
+  intensity?: number
 }): string {
-    const { 
-        isIn = false, 
-        isOut = false, 
-        intensity = 0.55  // 默认 55% 过冲
-    } = options;
+  const { 
+    isIn = false, 
+    isOut = false, 
+    intensity = 0.55  // 默认 55% 过冲
+  } = options;
 
-    // in: 开头回退
-    if (isIn && !isOut) {
-        return calculateElasticBezier('in', intensity);
-    }
+  // in: 开头回退
+  if (isIn && !isOut) {
+    return calculateElasticBezier('in', intensity);
+  }
 
-    // out: 结尾过冲
-    if (!isIn && isOut) {
-        return calculateElasticBezier('out', intensity);
-    }
+  // out: 结尾过冲
+  if (!isIn && isOut) {
+    return calculateElasticBezier('out', intensity);
+  }
 
-    // in-out（默认）：两端都有过冲
-    return calculateElasticBezier('inOut', intensity);
+  // in-out（默认）：两端都有过冲
+  return calculateElasticBezier('inOut', intensity);
 }
 
 /**
