@@ -1,4 +1,5 @@
 import React from 'react'
+import { isDefined } from '@utils/fn/isDefined'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
@@ -56,7 +57,7 @@ export function transformSkewX(config: I_SkewXConfig) {
       begin={begin}
       fill={isFreeze ? 'freeze' : 'remove'}
       additive={isAdditive ? 'sum' : undefined}
-      {...(!isNil(restart) && { restart })}
+      {...(isDefined(restart) && { restart })}
       {...config.native}
     />
   )

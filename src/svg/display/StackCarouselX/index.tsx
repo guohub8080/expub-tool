@@ -1,4 +1,5 @@
 import React from "react"
+import { isDefined } from '@utils/fn/isDefined'
 import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import SectionEx from "@html/basicEx/SectionEx"
 import { DIRECTION_8 } from "@svg/types"
@@ -154,13 +155,51 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
                 rotateTimeline,
               } = buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitConfig: slotExitConfig })
 
-              const rotationOrigin = !isNil(item.exit.rotation)
+              const rotationOrigin = isDefined(item.exit.rotation)
                 ? resolveRotationOrigin({
                     origin: defaultTo(item.exit.rotation.childCanvasOrigin, "Center"),
                     cardWidth: cardW,
                     cardHeight: cardH,
                   })
                 : undefined
+
+              const buildSkewAnim = () => {
+                if (isNil(skewTimeline)) return null
+                return skewType === 'Y'
+                  ? transformSkewY({
+                      initValue: 0,
+                      timeline: skewTimeline,
+                      begin: "0s",
+                      loopCount: 0,
+                      isFreeze: true,
+                      isAdditive: false,
+                      restart: "whenNotActive",
+                    })
+                  : transformSkewX({
+                      initValue: 0,
+                      timeline: skewTimeline,
+                      begin: "0s",
+                      loopCount: 0,
+                      isFreeze: true,
+                      isAdditive: false,
+                      restart: "whenNotActive",
+                    })
+              }
+
+              const buildRotateAnim = () => {
+                if (isNil(rotateTimeline)) return null
+                if (isNil(rotationOrigin)) return null
+                return transformRotate({
+                  initValue: 0,
+                  timeline: rotateTimeline,
+                  origin: rotationOrigin,
+                  begin: "0s",
+                  loopCount: 0,
+                  isFreeze: true,
+                  isAdditive: false,
+                  restart: "whenNotActive",
+                })
+              }
 
               return (
                 <g key={slotIndex}>
@@ -186,37 +225,9 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
                     <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
                       {/* 每个 animateTransform 必须包独立 <g>，避免互相覆盖 */}
                       <g>
-                        {!isNil(skewTimeline) && (skewType === 'Y'
-                          ? transformSkewY({
-                              initValue: 0,
-                              timeline: skewTimeline,
-                              begin: "0s",
-                              loopCount: 0,
-                              isFreeze: true,
-                              isAdditive: false,
-                              restart: "whenNotActive",
-                            })
-                          : transformSkewX({
-                              initValue: 0,
-                              timeline: skewTimeline,
-                              begin: "0s",
-                              loopCount: 0,
-                              isFreeze: true,
-                              isAdditive: false,
-                              restart: "whenNotActive",
-                            })
-                        )}
+                        {buildSkewAnim()}
                         <g>
-                          {!isNil(rotateTimeline) && !isNil(rotationOrigin) && transformRotate({
-                            initValue: 0,
-                            timeline: rotateTimeline,
-                            origin: rotationOrigin,
-                            begin: "0s",
-                            loopCount: 0,
-                            isFreeze: true,
-                            isAdditive: false,
-                            restart: "whenNotActive",
-                          })}
+                          {buildRotateAnim()}
                           <foreignObject x={0} y={0} width={cardW} height={cardH}>
                             <ItemImage item={item} imageW={cardW} imageH={cardH} />
                           </foreignObject>

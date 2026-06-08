@@ -35,7 +35,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
 
   /** 渲染单个 item 的内容 */
   const renderContent = (item: I_CascadeChildItem) => {
-    if (!isNil(item.jsx)) return item.jsx
+    if (isDefined(item.jsx)) return item.jsx
     if (isNil(item.url)) return null
     return (
       <foreignObject x={0} y={0} width={W} height={H}>

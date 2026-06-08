@@ -1,4 +1,5 @@
 import React from 'react'
+import { isDefined } from '@utils/fn/isDefined'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
@@ -24,7 +25,7 @@ function buildCoordinates(
     let newX: number
     let newY: number
 
-    if (!isNil(seg.toAbs)) {
+    if (isDefined(seg.toAbs)) {
       newX = defaultTo(seg.toAbs.x, lastX)
       newY = defaultTo(seg.toAbs.y, lastY)
     } else {
@@ -84,7 +85,7 @@ export function transformTranslate(config: I_TranslateConfig) {
       begin={begin}
       fill={isFreeze ? 'freeze' : 'remove'}
       additive={isAdditive ? 'sum' : undefined}
-      {...(!isNil(restart) && { restart })}
+      {...(isDefined(restart) && { restart })}
       {...config.native}
     />
   )

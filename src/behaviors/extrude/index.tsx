@@ -19,6 +19,7 @@
  */
 
 import React from 'react';
+import { isDefined } from '@utils/fn/isDefined'
 import {isNil, defaultTo, isEmpty} from 'lodash';
 import {buildTimeline} from '@smil/timeline/compile';
 import type {I_TimelineKeyframe} from '@smil/timeline/types';
@@ -69,7 +70,7 @@ export const genAnimateExtrude = (props: extrudeOptions): React.ReactElement => 
   const loopCount = defaultTo(props.loopCount, 1);
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount;
 
-  const hasKeySplines = props.timeline.some(seg => !isNil(seg.keySplines));
+  const hasKeySplines = props.timeline.some(seg => isDefined(seg.keySplines));
   const finalCalcMode = defaultTo(props.calcMode, hasKeySplines ? 'spline' : 'linear');
   const isFreeze = defaultTo(props.isFreeze, true);
 

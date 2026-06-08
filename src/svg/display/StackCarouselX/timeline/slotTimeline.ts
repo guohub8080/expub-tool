@@ -1,4 +1,5 @@
 import isNil from "lodash/isNil"
+import { isDefined } from '@utils/fn/isDefined'
 import defaultTo from "lodash/defaultTo"
 import max from "lodash/max"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
@@ -79,8 +80,8 @@ export function buildSlotTimelines({
   const initTranslate = posConfig.translateValues[startPos]
   const initScale = posConfig.scaleValues[startPos]
 
-  const hasSkew = !isNil(exitConfig.skew)
-  const hasRotation = !isNil(exitConfig.rotation)
+  const hasSkew = isDefined(exitConfig.skew)
+  const hasRotation = isDefined(exitConfig.rotation)
   const skewSplines = exitConfig.skew?.keySplines
 
   const translateTimeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []

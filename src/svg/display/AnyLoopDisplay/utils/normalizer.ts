@@ -127,7 +127,7 @@ export interface I_NormalizedStayTranslateConfig {
 const normalizeRotation = (rotation: I_RotationConfig | undefined): I_NormalizedRotationConfig | undefined => {
   if (isNil(rotation)) return undefined
 
-  const hasTimeline = !isNil(rotation.timeline)
+  const hasTimeline = isDefined(rotation.timeline)
 
   return {
     childCanvasOrigin: defaultTo(rotation.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
@@ -147,7 +147,7 @@ const normalizeRotation = (rotation: I_RotationConfig | undefined): I_Normalized
 const normalizeScale = (scale: I_EntryScaleConfig | undefined): I_NormalizedScaleConfig | undefined => {
   if (isNil(scale)) return undefined
 
-  const hasTimeline = !isNil(scale.timeline)
+  const hasTimeline = isDefined(scale.timeline)
 
   return {
     childCanvasOrigin: defaultTo(scale.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
@@ -167,7 +167,7 @@ const normalizeScale = (scale: I_EntryScaleConfig | undefined): I_NormalizedScal
 const normalizeOpacity = (opacity: I_EntryOpacityConfig | undefined): I_NormalizedOpacityConfig | undefined => {
   if (isNil(opacity)) return undefined
 
-  const hasTimeline = !isNil(opacity.timeline)
+  const hasTimeline = isDefined(opacity.timeline)
 
   return {
     initValue: hasTimeline ? defaultTo(opacity.initValue, 1) : defaultTo(opacity.from, 1),
@@ -186,7 +186,7 @@ const normalizeOpacity = (opacity: I_EntryOpacityConfig | undefined): I_Normaliz
 const normalizeSkew = (skew: I_EntrySkewConfig | undefined): I_NormalizedSkewConfig | undefined => {
   if (isNil(skew)) return undefined
 
-  const hasTimeline = !isNil(skew.timeline)
+  const hasTimeline = isDefined(skew.timeline)
 
   return {
     initValue: hasTimeline ? defaultTo(skew.initValue, 0) : defaultTo(skew.from, 0),

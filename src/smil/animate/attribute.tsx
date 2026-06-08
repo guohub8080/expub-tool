@@ -1,4 +1,5 @@
 import React from 'react'
+import { isDefined } from '@utils/fn/isDefined'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import isNil from 'lodash/isNil'
 import defaultTo from 'lodash/defaultTo'
@@ -64,7 +65,7 @@ export function animateAttribute<T extends number | string>(
       repeatCount={repeatCountValue}
       begin={begin}
       fill={isFreeze ? 'freeze' : 'remove'}
-      {...(!isNil(restart) && { restart })}
+      {...(isDefined(restart) && { restart })}
       {...config.native}
     />
   )

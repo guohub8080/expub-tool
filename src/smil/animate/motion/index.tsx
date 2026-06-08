@@ -1,4 +1,5 @@
 import React from 'react'
+import { isDefined } from '@utils/fn/isDefined'
 import isNil from 'lodash/isNil'
 import type { T_NativeAnimateMotion } from '@smil/types'
 import defaultTo from 'lodash/defaultTo'
@@ -56,7 +57,7 @@ export function animateMotion(config: I_PathMotionConfig) {
       repeatCount={repeatCountValue}
       begin={begin}
       fill={isFreeze ? 'freeze' : 'remove'}
-      {...(!isNil(restart) && { restart })}
+      {...(isDefined(restart) && { restart })}
       {...config.native}
     />
   )

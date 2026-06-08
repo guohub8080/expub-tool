@@ -1,4 +1,5 @@
 import isNil from "lodash/isNil"
+import { isDefined } from '@utils/fn/isDefined'
 import defaultTo from "lodash/defaultTo"
 import max from "lodash/max"
 import { transformTranslate } from "@smil/index"
@@ -112,11 +113,11 @@ const CycleItem = (props: {
     DEFAULT_EASE,
   )
 
-  const hasSkewX = !isNil(item.entry.skewX) || !isNil(item.exit.skewX) || !isNil(item.stay.skewX)
-  const hasSkewY = !isNil(item.entry.skewY) || !isNil(item.exit.skewY) || !isNil(item.stay.skewY)
-  const hasScale = !isNil(item.entry.scale) || !isNil(item.exit.scale) || !isNil(item.stay.scale)
-  const hasRotation = !isNil(item.entry.rotation) || !isNil(item.exit.rotation) || !isNil(item.stay.rotation)
-  const hasOpacity = !isNil(item.entry.opacity) || !isNil(item.exit.opacity) || !isNil(item.stay.opacity) || !isNil(item.hold.opacity)
+  const hasSkewX = isDefined(item.entry.skewX) || isDefined(item.exit.skewX) || isDefined(item.stay.skewX)
+  const hasSkewY = isDefined(item.entry.skewY) || isDefined(item.exit.skewY) || isDefined(item.stay.skewY)
+  const hasScale = isDefined(item.entry.scale) || isDefined(item.exit.scale) || isDefined(item.stay.scale)
+  const hasRotation = isDefined(item.entry.rotation) || isDefined(item.exit.rotation) || isDefined(item.stay.rotation)
+  const hasOpacity = isDefined(item.entry.opacity) || isDefined(item.exit.opacity) || isDefined(item.stay.opacity) || isDefined(item.hold.opacity)
 
   // 内容节点：从最内层往外逐层包裹，只有存在对应动画时才加 <g>
   let content: React.ReactNode = renderChildItemContent({ item, contentWidth, contentHeight })

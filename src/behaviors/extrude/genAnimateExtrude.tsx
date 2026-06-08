@@ -1,4 +1,5 @@
 import { defaultTo, isNil } from 'lodash';
+import { isDefined } from '@utils/fn/isDefined'
 import { buildTimeline } from '@smil/timeline/compile';
 import type { I_TimelineKeyframe } from '@smil/timeline/types';
 import { getEaseBezier } from "@smil/bezier/getEaseBezier";
@@ -23,7 +24,7 @@ export const genAnimateExtrude = (options: extrudeOptions): {
   const loopCount = defaultTo(options.loopCount, 1);
   const repeatCountValue = loopCount === 0 ? 'indefinite' : loopCount;
 
-  const hasKeySplines = options.timeline.some(seg => !isNil(seg.keySplines));
+  const hasKeySplines = options.timeline.some(seg => isDefined(seg.keySplines));
   const finalCalcMode = defaultTo(options.calcMode, hasKeySplines ? 'spline' : 'linear');
   const isFreeze = defaultTo(options.isFreeze, true);
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import { isDefined } from '@utils/fn/isDefined'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
@@ -30,7 +31,7 @@ export function transformRotate(config: I_RotateConfig) {
   for (const seg of timeline) {
     let nextAngle: number
 
-    if (!isNil(seg.toAbs)) {
+    if (isDefined(seg.toAbs)) {
       nextAngle = seg.toAbs
     } else {
       // toRel
@@ -72,7 +73,7 @@ export function transformRotate(config: I_RotateConfig) {
       begin={begin}
       fill={isFreeze ? 'freeze' : 'remove'}
       additive={isAdditive ? 'sum' : undefined}
-      {...(!isNil(restart) && { restart })}
+      {...(isDefined(restart) && { restart })}
       {...config.native}
     />
   )

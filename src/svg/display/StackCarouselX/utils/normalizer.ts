@@ -1,5 +1,6 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
+import { isDefined } from '@utils/fn/isDefined'
 import { getEaseBezier } from "@smil/bezier"
 import type { T_Direction8 } from "@svg/types"
 import type { I_StackCarouselItem, I_NormalizedStackItem, I_NormalizedExitConfig } from "../types"
@@ -19,11 +20,11 @@ const normalizeExit = (item: I_StackCarouselItem, defaultDirection: T_Direction8
 }
 
 const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Direction8): I_NormalizedStackItem => {
-  const useItem = !isNil(item.jsx)
+  const useItem = isDefined(item.jsx)
   if (isNil(item.url) && isNil(item.jsx)) {
     throw new Error("Each item must have either `url` or `jsx`.")
   }
-  if (!isNil(item.url) && !isNil(item.jsx)) {
+  if (isDefined(item.url) && isDefined(item.jsx)) {
     console.warn("`url` is ignored when `jsx` is also provided.")
   }
   return {

@@ -1,4 +1,5 @@
 import isNil from "lodash/isNil"
+import { isDefined } from '@utils/fn/isDefined'
 import defaultTo from "lodash/defaultTo"
 import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateOpacity, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
@@ -50,8 +51,9 @@ const GhostLayer = (props: {
 
   // Ghost skewX：与 CycleItem 一致，支持简单模式和高级 timeline 模式
   // begin = ghostHoldDuration，entry 段从 keyTime 0 开始
-  const ghostSkewXAnim = !isNil(firstItem.entry.skewX) && (() => {
-    const entrySkew = firstItem.entry.skewX!
+  const buildGhostSkewXAnim = () => {
+    if (isNil(firstItem.entry.skewX)) return null
+    const entrySkew = firstItem.entry.skewX
     const ease = defaultTo(entrySkew.keySplines, DEFAULT_EASE)
 
     const entrySegs = buildSkewPhaseSegments({
@@ -74,11 +76,12 @@ const GhostLayer = (props: {
       isFreeze: true,
       isAdditive: false,
     })
-  })()
+  }
 
   // Ghost skewY：与 skewX 结构相同，使用 transformSkewY
-  const ghostSkewYAnim = !isNil(firstItem.entry.skewY) && (() => {
-    const entrySkew = firstItem.entry.skewY!
+  const buildGhostSkewYAnim = () => {
+    if (isNil(firstItem.entry.skewY)) return null
+    const entrySkew = firstItem.entry.skewY
     const ease = defaultTo(entrySkew.keySplines, DEFAULT_EASE)
 
     const entrySegs = buildSkewPhaseSegments({
@@ -101,15 +104,16 @@ const GhostLayer = (props: {
       isFreeze: true,
       isAdditive: false,
     })
-  })()
+  }
 
   // Ghost rotate：与 CycleItem 一致，支持简单模式和高级 timeline 模式
   //
   // 关键：begin = ghostHoldDuration（而非 "0s"）
   // 这样 entry 段从 keyTime 0 开始，与 CycleItem 的 keyTimes 结构完全一致，
   // 避免因 hold 段在前导致 entry 段落在 keyTimes 中间位置而产生微小 easing 差异。
-  const ghostRotateAnim = !isNil(firstItem.entry.rotation) && (() => {
-    const entryRotation = firstItem.entry.rotation!
+  const buildGhostRotateAnim = () => {
+    if (isNil(firstItem.entry.rotation)) return null
+    const entryRotation = firstItem.entry.rotation
     const rotationOrigin = getRotationOrigin({
       origin: entryRotation.childCanvasOrigin,
       contentWidth,
@@ -140,12 +144,13 @@ const GhostLayer = (props: {
       isFreeze: true,
       isAdditive: false,
     })
-  })()
+  }
 
   // Ghost scale：与 CycleItem 一致，支持简单模式和高级 timeline 模式
   // 同 rotation，begin = ghostHoldDuration，entry 段从 keyTime 0 开始
-  const ghostScaleAnimConfig = !isNil(firstItem.entry.scale) && (() => {
-    const entryScale = firstItem.entry.scale!
+  const buildGhostScaleAnimConfig = () => {
+    if (isNil(firstItem.entry.scale)) return null
+    const entryScale = firstItem.entry.scale
     const scaleOrigin = getRotationOrigin({
       origin: entryScale.childCanvasOrigin,
       contentWidth,
@@ -179,12 +184,13 @@ const GhostLayer = (props: {
         isAdditive: false,
       }),
     }
-  })()
+  }
 
   // Ghost opacity：与 CycleItem 一致，支持简单模式和高级 timeline 模式
   // 同 rotate/scale，begin = ghostHoldDuration，entry 段从 keyTime 0 开始
-  const ghostOpacityAnim = !isNil(firstItem.entry.opacity) && (() => {
-    const entryOpacity = firstItem.entry.opacity!
+  const buildGhostOpacityAnim = () => {
+    if (isNil(firstItem.entry.opacity)) return null
+    const entryOpacity = firstItem.entry.opacity
     const ease = defaultTo(entryOpacity.keySplines, DEFAULT_EASE)
 
     const entrySegs = buildOpacityPhaseSegments({
@@ -207,7 +213,13 @@ const GhostLayer = (props: {
       loopCount: 0,
       isFreeze: true,
     })
-  })()
+  }
+
+  const ghostSkewXAnim = buildGhostSkewXAnim()
+  const ghostSkewYAnim = buildGhostSkewYAnim()
+  const ghostRotateAnim = buildGhostRotateAnim()
+  const ghostScaleAnimConfig = buildGhostScaleAnimConfig()
+  const ghostOpacityAnim = buildGhostOpacityAnim()
 
   // 从最内层往外逐层包裹，只有存在对应动画时才加 <g>
   let ghostContent: React.ReactNode = renderChildItemContent({ item: firstItem, contentWidth, contentHeight })

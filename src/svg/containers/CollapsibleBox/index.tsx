@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { isDefined } from '@utils/fn/isDefined'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
@@ -42,7 +43,7 @@ const CollapsibleBox = (props: {
     h: defaultTo(props.hotArea?.h, HOT_AREA_DEFAULT.h),
   }
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
-  const hasAfter = !isNil(props.afterContent)
+  const hasAfter = isDefined(props.afterContent)
   const fadeDur = defaultTo(props.collapseDelay, 0.1)
   const isDev = ExPubGoConfig().mode === 'development'
 

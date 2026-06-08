@@ -2,6 +2,7 @@ import svgURL from "@utils/svg/svgURL"
 import type { I_CanvasBg, T_CanvasBgPosition } from "@svg/types"
 import defaultTo from 'lodash/defaultTo'
 import isEmpty from 'lodash/isEmpty'
+import isNil from 'lodash/isNil'
 import { isDefined } from '@utils/fn/isDefined'
 
 /**
@@ -49,7 +50,7 @@ export const resolveCanvasBg = (canvasBg?: I_CanvasBg): Record<string, string> =
     throw new Error('resolveCanvasBg: canvasBg can only provide one of "url" or "color", not both')
   }
 
-  if (!isDefined(canvasBg.url) && !isDefined(canvasBg.color)) {
+  if (isNil(canvasBg.url) && isNil(canvasBg.color)) {
     throw new Error('resolveCanvasBg: canvasBg must provide one of "url" or "color"')
   }
 

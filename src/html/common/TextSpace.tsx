@@ -1,4 +1,5 @@
 import isNil from "lodash/isNil";
+import { isDefined } from '@utils/fn/isDefined'
 import isNumber from "lodash/isNumber";
 import type { CSSProperties } from "react"
 
@@ -45,11 +46,11 @@ const TextSpace = (props: {
   }
 
   // 优先级：width > rem > em
-  if (!isNil(props.width)) {
+  if (isDefined(props.width)) {
     style.width = isNumber(props.width) ? `${props.width}px` : props.width
-  } else if (!isNil(props.rem)) {
+  } else if (isDefined(props.rem)) {
     style.width = `${props.rem}rem`
-  } else if (!isNil(props.em)) {
+  } else if (isDefined(props.em)) {
     style.width = `${props.em}em`
   } else {
     style.width = "1em" // 默认 1em

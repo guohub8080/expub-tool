@@ -1,4 +1,5 @@
 import React from 'react'
+import { isDefined } from '@utils/fn/isDefined'
 import { LINEAR_KEY_SPLINE } from '@smil/constants'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
@@ -68,7 +69,7 @@ export function transformScale(config: I_ScaleConfig) {
         begin={begin}
         fill={fillValue}
         additive={additiveValue}
-        {...(!isNil(restart) && { restart })}
+        {...(isDefined(restart) && { restart })}
       />
       <animateTransform
         attributeName="transform"
@@ -82,7 +83,7 @@ export function transformScale(config: I_ScaleConfig) {
         begin={begin}
         fill={fillValue}
         additive={additiveValue}
-        {...(!isNil(restart) && { restart })}
+        {...(isDefined(restart) && { restart })}
         {...config.native}
       />
       <animateTransform
@@ -96,7 +97,7 @@ export function transformScale(config: I_ScaleConfig) {
         begin={begin}
         fill={fillValue}
         additive={additiveValue}
-        {...(!isNil(restart) && { restart })}
+        {...(isDefined(restart) && { restart })}
       />
     </>
   )
