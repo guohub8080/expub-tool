@@ -43,10 +43,10 @@ export type { I_SkewPushChildItem } from "./display/SkewPushY"
 export { default as AnyLoopDisplay } from "./display/AnyLoopDisplay"
 export type { I_AnyLoopDisplayChildItem } from "./display/AnyLoopDisplay"
 
-export { default as StackCarouselX } from "./display/StackCarousel/X"
-export type { I_StackCarouselItem } from "./display/StackCarousel/X"
+export { default as StackCarouselX } from "./display/StackCarousel/StackCarouselX"
+export type { I_StackCarouselItem } from "./display/StackCarousel/StackCarouselX"
 
-export { default as StackCarouselY } from "./display/StackCarousel/Y"
+export { default as StackCarouselY } from "./display/StackCarousel/StackCarouselY"
 
 export { ClickFlipInfinity } from "./click"
 export type { I_ClickFlipInfinityProps, I_FaceContent } from "./click"
