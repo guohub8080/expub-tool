@@ -1,7 +1,7 @@
 import isNil from 'lodash/isNil'
 import SvgEx from "@html/basicEx/SvgEx"
 import svgURL from "@utils/svg/svgURL"
-import type { I_NormalizedStackItem } from "../StackCarouselX/types"
+import type { I_NormalizedStackItem } from "../types"
 
 type ItemImageProps = {
   item: I_NormalizedStackItem
