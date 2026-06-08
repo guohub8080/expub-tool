@@ -95,9 +95,12 @@ const ExtrudeShowcase = (props: ExtrudeShowcaseProps) => {
         begin,
       })}
 
-      {/* Before 层：零高度，最上面 */}
+      {/* Before 层：零高度，负 margin 拉回与 Extrude SVG 重合，DOM 在后所以绘制在最上面 */}
       {!isNil(beforeNode) && (
-        <section style={beforeLayerStyle}>
+        <section style={{
+          ...beforeLayerBaseStyle,
+          marginTop: -H,
+        }}>
           {beforeNode}
         </section>
       )}
@@ -149,7 +152,7 @@ const zeroHeightStyle: React.CSSProperties = {
   overflow: 'visible',
 }
 
-const beforeLayerStyle: React.CSSProperties = {
+const beforeLayerBaseStyle: React.CSSProperties = {
   height: 0,
   lineHeight: 0,
   isolation: 'isolate',
