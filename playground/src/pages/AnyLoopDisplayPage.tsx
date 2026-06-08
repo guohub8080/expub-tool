@@ -13,7 +13,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#f3f4f6"
+          canvasBg={{ color: "#f3f4f6" }}
           childItems={[
             { url: getWechat300x300(1), entry: { translate: { direction: 'T' } },  stayDuration: 1 },
             { url: getWechat300x300(2), entry: { translate: { direction: 'TR' } }, stayDuration: 1 },
@@ -33,7 +33,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#dbeafe"
+          canvasBg={{ color: "#dbeafe" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -73,7 +73,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fce7f3"
+          canvasBg={{ color: "#fce7f3" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -115,7 +115,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#ecfdf5"
+          canvasBg={{ color: "#ecfdf5" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -169,7 +169,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fef9c3"
+          canvasBg={{ color: "#fef9c3" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -211,7 +211,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#ede9fe"
+          canvasBg={{ color: "#ede9fe" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -267,7 +267,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fef3c7"
+          canvasBg={{ color: "#fef3c7" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -323,7 +323,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fef3c7"
+          canvasBg={{ color: "#fef3c7" }}
           childItems={[
             { url: getWechat300x300(1), entry: { translate: { direction: 'TL' }, skewY: { from: 30 } }, exit: { skewY: { from: -30 } }, stayDuration: 1.5 },
             { url: getWechat300x300(2), entry: { translate: { direction: 'BR' }, skewY: { from: -30 } }, exit: { skewY: { from: 30 } }, stayDuration: 1.5 },
@@ -363,7 +363,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#ecfdf5"
+          canvasBg={{ color: "#ecfdf5" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -405,7 +405,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#ede9fe"
+          canvasBg={{ color: "#ede9fe" }}
           childItems={[
             { url: getWechat300x300(1), entry: { translate: { direction: 'TL' }, skewX: { from: 30 }, scale: { childCanvasOrigin: ORIGIN.BottomRight, from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
             { url: getWechat300x300(2), entry: { translate: { direction: 'BR' }, skewX: { from: -30 }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
@@ -446,7 +446,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fef9c3"
+          canvasBg={{ color: "#fef9c3" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -502,7 +502,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fef9c3"
+          canvasBg={{ color: "#fef9c3" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -527,7 +527,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#ecfdf5"
+          canvasBg={{ color: "#ecfdf5" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -562,7 +562,7 @@ export default function AnyLoopDisplayPage() {
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
-          canvasBg="#fce7f3"
+          canvasBg={{ color: "#fce7f3" }}
           childItems={[
             {
               url: getWechat300x300(1),
@@ -606,7 +606,7 @@ export default function AnyLoopDisplayPage() {
         <h3 style={{ margin: '0 0 8px' }}>4 图 — 底部推入 + scale 过冲 + stay 缩小 + exit 不移动 + hold opacity 归零</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#f0fdf4"
+          canvasBg={{ color: "#f0fdf4" }}
           childItems={[1, 2, 3, 4].map(n => ({
             url: getWechat300x300(n),
             entry: {

@@ -54,7 +54,7 @@ export default function AnyPushPage() {
       <CopyDemo title="基础推入切换 — 2 张图，默认方向 (Left)">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#1a1a2e"
+          canvasBg={{ color: "#1a1a2e" }}
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
@@ -65,7 +65,7 @@ export default function AnyPushPage() {
       <CopyDemo title="3 张图 — 四方向混合 (Right / Bottom / Left)">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#16213e"
+          canvasBg={{ color: "#16213e" }}
           childItems={[
             { url: getWechat300x300(3), direction: DIRECTION_8.Right },
             { url: getWechat300x300(4), direction: DIRECTION_8.Bottom },
@@ -77,7 +77,7 @@ export default function AnyPushPage() {
       <CopyDemo title="对角线方向 — 4 图各占一角 (TopLeft / TopRight / BottomLeft / BottomRight)">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#0f3460"
+          canvasBg={{ color: "#0f3460" }}
           childItems={[
             { url: getWechat300x300(1), direction: DIRECTION_8.TopLeft },
             { url: getWechat300x300(2), direction: DIRECTION_8.TopRight },
@@ -90,7 +90,7 @@ export default function AnyPushPage() {
       <CopyDemo title="纯对角线 — 慢速 + 不同缓动曲线">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#1a1a2e"
+          canvasBg={{ color: "#1a1a2e" }}
           childItems={[
             { url: getWechat300x300(1), direction: DIRECTION_8.TopLeft,     switchDuration: 1.2, stayDuration: 1.0, keySplines: getEaseBezier({ isIn: true, isOut: true }) },
             { url: getWechat300x300(2), direction: DIRECTION_8.TopRight,    switchDuration: 1.0, stayDuration: 0.8, keySplines: getSineBezier({ isIn: false, isOut: true }) },
@@ -103,7 +103,7 @@ export default function AnyPushPage() {
       <CopyDemo title="8 方向轮播 — 每张图不同方向">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#1b1b2f"
+          canvasBg={{ color: "#1b1b2f" }}
           childItems={[
             { url: getWechat300x300(1), direction: DIRECTION_8.Left, switchDuration: 0.4, stayDuration: 0.3 },
             { url: getWechat300x300(2), direction: DIRECTION_8.TopRight, switchDuration: 0.4, stayDuration: 0.3 },
@@ -120,7 +120,7 @@ export default function AnyPushPage() {
       <CopyDemo title="快速切换 — switchDuration=0.3, stayDuration=0.2">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#2d3436"
+          canvasBg={{ color: "#2d3436" }}
           childItems={[
             { url: getWechat300x300(6), switchDuration: 0.3, stayDuration: 0.2 },
             { url: getWechat300x300(7), switchDuration: 0.3, stayDuration: 0.2 },
@@ -132,7 +132,7 @@ export default function AnyPushPage() {
       <CopyDemo title="跑马灯 — stayDuration=0, 线性匀速">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#636e72"
+          canvasBg={{ color: "#636e72" }}
           childItems={[
             { url: getWechat300x300(1), direction: DIRECTION_8.Right, switchDuration: 0.8, stayDuration: 0, keySplines: "0 0 1 1" },
             { url: getWechat300x300(2), direction: DIRECTION_8.Right, switchDuration: 0.8, stayDuration: 0, keySplines: "0 0 1 1" },
@@ -143,7 +143,7 @@ export default function AnyPushPage() {
       <CopyDemo title="上下交替">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#2c3e50"
+          canvasBg={{ color: "#2c3e50" }}
           childItems={[
             { url: getWechat300x300(6), direction: DIRECTION_8.Top },
             { url: getWechat300x300(7), direction: DIRECTION_8.Bottom },
@@ -154,7 +154,7 @@ export default function AnyPushPage() {
       <CopyDemo title="浅色背景 canvasBg">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#fef3c7"
+          canvasBg={{ color: "#fef3c7" }}
           childItems={[
             { url: getWechat300x300(3), direction: DIRECTION_8.Top },
             { url: getWechat300x300(4), direction: DIRECTION_8.BottomLeft },
@@ -165,7 +165,7 @@ export default function AnyPushPage() {
       <CopyDemo title="Item 模式 — 自定义 SVG 内容">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#1e293b"
+          canvasBg={{ color: "#1e293b" }}
           childItems={[
             { item: <ColorBlockItem color="#7c3aed" label="Purple" />, direction: DIRECTION_8.Right },
             { item: <ColorBlockItem color="#059669" label="Green" />, direction: DIRECTION_8.TopLeft },
@@ -177,7 +177,7 @@ export default function AnyPushPage() {
       <CopyDemo title="混合模式 — url + item 混用">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#111827"
+          canvasBg={{ color: "#111827" }}
           childItems={[
             { url: getWechat300x300(1), direction: DIRECTION_8.Right },
             { item: <ColorBlockItem color="#dc2626" label="Red" />, direction: DIRECTION_8.TopLeft },
@@ -189,7 +189,7 @@ export default function AnyPushPage() {
       <CopyDemo title="单图自动复制">
         <AnyPush
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg="#18181b"
+          canvasBg={{ color: "#18181b" }}
           childItems={[
             { url: getWechat300x300(9) },
           ]}

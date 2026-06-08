@@ -19,7 +19,7 @@ export default function ClickFlipOncePage() {
 				<h3 style={{ margin: '0 0 8px' }}>自定义背景色 + 慢翻转 (2s)</h3>
 				<ClickFlipOnce
 					canvasSize={{ w: 300, h: 300 }}
-					canvasBg="#1a1a2e"
+					canvasBg={{ color: "#1a1a2e" }}
 					flipDuration={2}
 					frontSide={{ url: getWechat300x300(3) }}
 					backSide={{ url: getWechat300x300(4) }}
@@ -30,7 +30,7 @@ export default function ClickFlipOncePage() {
 				<h3 style={{ margin: '0 0 8px' }}>JSX 复合内容 — 正面带文字，反面纯色</h3>
 				<ClickFlipOnce
 					canvasSize={{ w: 300, h: 400 }}
-					canvasBg="#0f0f23"
+					canvasBg={{ color: "#0f0f23" }}
 					frontSide={{
 						jsx: (
 							<svg viewBox="0 0 300 400" style={{ width: '100%', display: 'block' }}>

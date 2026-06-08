@@ -74,7 +74,7 @@ export default function SpinZoomCarouselPage() {
         <h3 style={{ margin: '0 0 8px' }}>3 图 — canvasBg 颜色</h3>
         <SpinZoomCarousel
           canvasSize={{ w: 300, h: 500 }}
-          canvasBg="#1e1b4b"
+          canvasBg={{ color: "#1e1b4b" }}
           items={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },

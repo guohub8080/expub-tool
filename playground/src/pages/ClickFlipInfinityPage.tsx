@@ -30,7 +30,7 @@ export default function ClickFlipInfinityPage() {
 				<h3 style={{ margin: '0 0 8px' }}>自定义背景色 + 慢翻转 (1.5s 上限)</h3>
 				<ClickFlipInfinity
 					canvasSize={{ w: 300, h: 300 }}
-					canvasBg="#1a1a2e"
+					canvasBg={{ color: "#1a1a2e" }}
 					flipDuration={1.5}
 					frontSide={{ url: getWechat300x300(5) }}
 					backSide={{ url: getWechat300x300(6) }}
@@ -44,7 +44,7 @@ export default function ClickFlipInfinityPage() {
 				<p style={{ margin: '0 0 8px', fontSize: 14, color: '#666' }}>正面只有左半可点击翻面，翻过去后反面只有右半可点击翻回</p>
 				<ClickFlipInfinity
 					canvasSize={{ w: 300, h: 300 }}
-					canvasBg="#f0f0f0"
+					canvasBg={{ color: "#f0f0f0" }}
 					frontSide={{
 						url: getWechat300x300(1),
 						hotArea: { x: 0, y: 0, w: 150, h: 300 },
@@ -58,7 +58,7 @@ export default function ClickFlipInfinityPage() {
 
 				<ClickFlipInfinity
 					canvasSize={{ w: 300, h: 400 }}
-					canvasBg="#0f0f23"
+					canvasBg={{ color: "#0f0f23" }}
 					frontSide={{
 						jsx: (
 							<svg viewBox="0 0 300 400" style={{ width: '100%', display: 'block' }}>

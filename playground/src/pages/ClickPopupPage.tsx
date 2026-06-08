@@ -19,7 +19,7 @@ export default function ClickPopupPage() {
 				<h3 style={{ margin: '0 0 8px' }}>深色背景 + 慢弹跳 (1.2s)</h3>
 				<ClickPopup
 					canvasSize={{ w: 300, h: 300 }}
-					canvasBg="#1a1a2e"
+					canvasBg={{ color: "#1a1a2e" }}
 					bounceDuration={1.2}
 					cover={{ url: getWechat300x300(3) }}
 					popup={{ url: getWechat300x300(4) }}
@@ -30,7 +30,7 @@ export default function ClickPopupPage() {
 				<h3 style={{ margin: '0 0 8px' }}>JSX 弹窗 — 渐变背景 + 文字</h3>
 				<ClickPopup
 					canvasSize={{ w: 300, h: 400 }}
-					canvasBg="#0f0f23"
+					canvasBg={{ color: "#0f0f23" }}
 					cover={{ url: getWechat300x300(5) }}
 					popup={{
 						jsx: (
