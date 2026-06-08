@@ -68,20 +68,43 @@ import { svgURL, getEaseBezier, validateWechatSvg } from "expub-tool/svg-utils" 
 
 ## 非空判断规范
 
-所有判断变量是否为 `null` / `undefined` 的场景，必须使用 lodash 的 `isNil` / `isDefined`，禁止用 `!x` 或 `if (x)` 做非空判断（`!x` 会误判 `0`、`""`、`false`）：
+**核心原则：`if ()` 里只写纯布尔值，空值判断必须用 `isNil` / `isDefined`。**
+
+### 什么时候用 isNil / isDefined
+
+变量类型可能是 `null` / `undefined` 的场景（即类型为 `T | undefined`、`T | null`、`T | null | undefined`）：
 
 - **判断为空**：`if (isNil(x))` — x 是 null 或 undefined
-- **判断非空**：`if (isDefined(x))` — x 不是 null 且不是 undefined（类型守卫，收窄为 NonNullable<T>）
+- **判断非空**：`if (isDefined(x))` — x 不是 null 且不是 undefined（类型守卫，收窄为 NonNullable\<T\>）
+
+适用：props 可选字段、函数可选参数、`querySelector` 返回值、`getAttribute` 返回值等。
+
+### 什么时候直接写布尔值
+
+`if ()` 里的表达式**本身就是布尔类型**时，直接写，不加 isNil/isDefined：
+
+```ts
+// ✅ 纯布尔变量 / 布尔表达式 — 直接写
+if (hasAnimation) { ... }
+if (!isEdge) { ... }
+if (!isValidColor(color)) { ... }
+if (!allowedAttrs.has(attr)) { ... }
+if (!(power in POWER_BEZIER_MAP)) { ... }   // in 运算符返回 boolean
+if (!isArray(value) || isEmpty(value)) { ... }  // lodash 函数返回 boolean
+if (items.length === 0) { ... }             // 数值比较返回 boolean
+```
+
+### 示例
 
 ```ts
 import isNil from 'lodash/isNil'
 import { isDefined } from '@utils/fn/isDefined'
 
-// ✅ 正确
+// ✅ 空值判断 — 用 isNil / isDefined
 if (isNil(canvasBg)) return {}
 if (isDefined(canvasBg.url)) { ... }
 
-// ❌ 禁止
+// ❌ 禁止用 !x / if(x) 做空值判断
 if (!canvasBg) return {}
 if (canvasBg.url) { ... }
 ```
