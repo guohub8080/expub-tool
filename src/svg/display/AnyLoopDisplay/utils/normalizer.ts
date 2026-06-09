@@ -71,6 +71,7 @@ export interface I_NormalizedOpacityConfig {
  * - 高级模式：有 timeline，CycleItem 直接使用用户自定义的多段动画
  */
 export interface I_NormalizedSkewConfig {
+  childCanvasOrigin: T_Origin
   /** 起始斜切角度（度），简单模式下来自 from，高级模式下来自 initValue */
   initValue: number
   /** 缓动曲线，仅简单模式生效 */
@@ -189,6 +190,7 @@ const normalizeSkew = (skew: I_EntrySkewConfig | undefined): I_NormalizedSkewCon
   const hasTimeline = isDefined(skew.timeline)
 
   return {
+    childCanvasOrigin: defaultTo(skew.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
     initValue: hasTimeline ? defaultTo(skew.initValue, 0) : defaultTo(skew.from, 0),
     keySplines: hasTimeline ? undefined : skew.keySplines,
     timeline: hasTimeline ? skew.timeline : undefined,

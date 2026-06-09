@@ -173,31 +173,47 @@ const CycleItem = (props: {
   }
 
   if (hasSkewY) {
-    content = (
-      <g>
-        {renderSkewAxisAnim({
-          axis: 'Y',
-          entrySkew: item.entry.skewY, exitSkew: item.exit.skewY,
-          staySkew: item.stay.skewY,
-          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
-        })}
-        {content}
-      </g>
-    )
+    const skewAnimConfig = renderSkewAxisAnim({
+      axis: 'Y',
+      entrySkew: item.entry.skewY, exitSkew: item.exit.skewY,
+      staySkew: item.stay.skewY,
+      contentWidth, contentHeight,
+      stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+    })
+    if (isDefined(skewAnimConfig)) {
+      content = (
+        <g transform={`translate(${skewAnimConfig.originX}, ${skewAnimConfig.originY})`}>
+          <g>
+            {skewAnimConfig.skewAnim}
+            <g transform={`translate(${-skewAnimConfig.originX}, ${-skewAnimConfig.originY})`}>
+              {content}
+            </g>
+          </g>
+        </g>
+      )
+    }
   }
 
   if (hasSkewX) {
-    content = (
-      <g>
-        {renderSkewAxisAnim({
-          axis: 'X',
-          entrySkew: item.entry.skewX, exitSkew: item.exit.skewX,
-          staySkew: item.stay.skewX,
-          stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
-        })}
-        {content}
-      </g>
-    )
+    const skewAnimConfig = renderSkewAxisAnim({
+      axis: 'X',
+      entrySkew: item.entry.skewX, exitSkew: item.exit.skewX,
+      staySkew: item.stay.skewX,
+      contentWidth, contentHeight,
+      stayDuration, switchDuration, nextSwitchDuration, holdDuration, begin,
+    })
+    if (isDefined(skewAnimConfig)) {
+      content = (
+        <g transform={`translate(${skewAnimConfig.originX}, ${skewAnimConfig.originY})`}>
+          <g>
+            {skewAnimConfig.skewAnim}
+            <g transform={`translate(${-skewAnimConfig.originX}, ${-skewAnimConfig.originY})`}>
+              {content}
+            </g>
+          </g>
+        </g>
+      )
+    }
   }
 
   return (

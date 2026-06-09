@@ -635,6 +635,20 @@ export default function AnyLoopDisplayPage() {
           }))}
         />
       </div>
+
+      {/* ── Skew Cube 效果（模拟 SkewSlideCarouselX）── */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>3 图 — Skew Cube（origin=Bottom + Y 补偿 + hold opacity=0）</h3>
+        <AnyLoopDisplay
+          canvasSize={{ w: 300, h: 300 }}
+          canvasBg={{ color: "#fef3c7" }}
+          childItems={[
+            { url: getWechat300x300(1), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasOrigin: ORIGIN.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasOrigin: ORIGIN.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 2, switchDuration: 2 },
+            { url: getWechat300x300(2), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasOrigin: ORIGIN.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasOrigin: ORIGIN.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 2, switchDuration: 2 },
+            { url: getWechat300x300(3), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasOrigin: ORIGIN.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasOrigin: ORIGIN.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 2, switchDuration: 2 },
+          ]}
+        />
+      </div>
     </div>
   )
 }
