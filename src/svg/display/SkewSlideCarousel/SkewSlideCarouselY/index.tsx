@@ -50,6 +50,11 @@ const SkewSlideCarouselY = (props: {
 
   const offset = round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
 
+  // buffer: foreignObject 多 1px，skewX 在左/右边缘额外贡献 offset px（= contentW/2 × tan(angle)）
+  const buf = offset + 1
+  const entryY = h + buf
+  const exitY = -(h + buf)
+
   const keySplines = `${EASE}; ${EASE}; ${EASE}`
   const k1 = (step / dur).toFixed(6)
   const k2 = ((2 * step) / dur).toFixed(6)
@@ -75,7 +80,7 @@ const SkewSlideCarouselY = (props: {
                 const dirOut = defaultTo(item.skewOut, DEFAULT_SKEW_OUT)
                 const sa = dirIn === 'L' ? skewAngle : -skewAngle
                 const xOff = dirIn === 'L' ? -offset : offset
-                const ty = `${xOff} ${h}; 0 0; ${xOff} ${-h}; ${xOff} ${-h}`
+                const ty = `${xOff} ${entryY}; 0 0; ${xOff} ${exitY}; ${xOff} ${exitY}`
                 const sk = `${sa}; 0; ${dirOut === 'L' ? skewAngle : -skewAngle}; ${dirOut === 'L' ? skewAngle : -skewAngle}`
 
                 return (
