@@ -18,7 +18,6 @@ interface I_SkewSlideItemProps {
   entryAngle: number
   exitAngle: number
   signedCrossComp: number
-  buffer: number
   originX: number
   originY: number
 }
@@ -27,19 +26,19 @@ const SkewSlideItem = (props: I_SkewSlideItemProps) => {
   const {
     url, jsx, timeline,
     contentW, contentH, faceW, faceH,
-    axis, entryAngle, exitAngle, signedCrossComp, buffer,
+    axis, entryAngle, exitAngle, signedCrossComp,
     originX, originY,
   } = props
 
   const { begin, entryDuration, stayDuration, exitDuration, holdDuration } = timeline
 
-  // ── 离屏位置（含 buffer 防止 skew 导致的边缘残留） ──
+  // ── 离屏位置（translate 距离严格等于 faceW/faceH，保证 cube 面无缝衔接） ──
   const entryTranslate = axis === 'X'
-    ? { x: faceW + buffer, y: signedCrossComp }
-    : { x: signedCrossComp, y: faceH + buffer }
+    ? { x: faceW, y: signedCrossComp }
+    : { x: signedCrossComp, y: faceH }
   const exitTranslate = axis === 'X'
-    ? { x: -(faceW + buffer), y: signedCrossComp }
-    : { x: signedCrossComp, y: -(faceH + buffer) }
+    ? { x: -faceW, y: signedCrossComp }
+    : { x: signedCrossComp, y: -faceH }
   const center = { x: 0, y: 0 }
 
   // ── 构建 timeline segments ──

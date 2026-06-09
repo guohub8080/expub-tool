@@ -63,7 +63,8 @@ signedCrossComp = isReversed ? +crossComp : -crossComp
 
 ### 3. 四阶段动画值
 
-每个 item 的动画周期分为四个阶段：entry → stay → exit → hold
+每个 item 的动画周期分为四个阶段：entry → stay → exit → hold。
+translate 距离严格等于 faceW/faceH，保证 cube 面无缝衔接。
 
 | 阶段 | translate（X 轴） | skewY | opacity |
 |---|---|---|---|
@@ -77,10 +78,6 @@ signedCrossComp = isReversed ? +crossComp : -crossComp
 - X 轴 reversed：entryAngle = +angle, exitAngle = −angle
 - Y 轴 normal：entryAngle = +angle, exitAngle = −angle
 - Y 轴 reversed：entryAngle = −angle, exitAngle = +angle
-
-### 4. 缓冲区（buffer）
-
-离屏位置额外加 buffer = crossComp + 1，防止 skew 导致的边缘像素残留。
 
 ### 5. 时间轴模型
 

@@ -72,7 +72,6 @@ const SkewSlideCarousel = (props: I_SkewSlideCarouselProps) => {
   // ── 交叉轴补偿 ──
   const crossComp = getCrossCompensation(axis, contentW, contentH, skewAngle)
   const signedCrossComp = isReversed ? crossComp : -crossComp
-  const buffer = crossComp + 1
 
   // ── skew 角度方向 ──
   const entryAngle = axis === 'X'
@@ -122,7 +121,6 @@ const SkewSlideCarousel = (props: I_SkewSlideCarouselProps) => {
                 entryAngle={entryAngle}
                 exitAngle={exitAngle}
                 signedCrossComp={signedCrossComp}
-                buffer={buffer}
                 originX={originX}
                 originY={originY}
               />
