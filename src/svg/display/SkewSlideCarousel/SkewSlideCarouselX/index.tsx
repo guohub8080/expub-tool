@@ -3,6 +3,7 @@ import isNil from 'lodash/isNil'
 import max from 'lodash/max'
 import min from 'lodash/min'
 import floor from 'lodash/floor'
+import round from 'lodash/round'
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
@@ -73,6 +74,11 @@ const SkewSlideCarouselX = (props: {
   // ── 面宽度（translate 步进距离） ──
   const faceW = contentW + gap
 
+  // ── Y 补偿（与原 per-item 算法一致）──
+  // skew 状态下 translate Y = yOff，正面时 Y = 0
+  const offset = round(contentH / 2 * Math.tan(skewAngle * Math.PI / 180))
+  const yOff = isReversed ? offset : -offset
+
   // ── skew 角度方向（README 定义） ──
   // normal: entryAngle = -angle（从右进入），exitAngle = +angle（向左退出）
   // reversed: entryAngle = +angle，exitAngle = -angle
@@ -142,6 +148,7 @@ const SkewSlideCarouselX = (props: {
                 originY={originY}
                 entryAngle={entryAngle}
                 exitAngle={exitAngle}
+                yOff={yOff}
                 si={si}
                 N={N}
                 items={items}
@@ -174,30 +181,26 @@ const SkewSlotItem = (props: {
   originY: number
   entryAngle: number
   exitAngle: number
+  yOff: number
   si: number
   N: number
   items: I_SkewSlideCarouselChildItem[]
 }) => {
   const {
     item, slotX, slotY, contentW, contentH,
-    originX, originY, entryAngle, exitAngle,
+    originX, originY, entryAngle, exitAngle, yOff,
     si, N, items,
   } = props
   const isEdge = si === 0 || si === N + 2
-
-  // activeIdx: slot[1]=0（初始中心），slot[2]=1, slot[3]=2 ...
   const activeIdx = si - 1
 
-  // ── 初始 skew ──
-  // slot[1] (activeIdx=0)：中心，skew=0
-  // slot[0] (activeIdx=-1)：左 peek 副本（已退出状态），skew=exitAngle
-  // slot[2+] (activeIdx>=1)：右侧（待进入状态），skew=entryAngle
+  // 初始 skew 和 Y 补偿：正面=0/0，侧面=skewAngle/yOff
   const initSkew = activeIdx === 0 ? 0 : activeIdx < 0 ? exitAngle : entryAngle
+  const initY = activeIdx === 0 ? 0 : yOff
 
-  // ── skewY 动画 timeline ──
   const skewTimeline = buildSlotSkew(activeIdx, N, items, entryAngle, exitAngle)
+  const yOffTimeline = buildSlotYOff(activeIdx, N, items, yOff)
 
-  // ── 内容 ──
   const content = isDefined(item.jsx)
     ? item.jsx
     : <SvgEx viewBox={`0 0 ${contentW + 1} ${contentH + 1}`}
@@ -209,20 +212,30 @@ const SkewSlotItem = (props: {
 
   return (
     <g transform={`translate(${slotX},${slotY})`}>
-      <g transform={`translate(${originX}, ${originY})`}>
-        <g>
-          {!isEdge && transformSkewY({
-            initValue: initSkew,
-            timeline: skewTimeline,
-            begin: '0s',
-            loopCount: 0,
-            isFreeze: true,
-            isAdditive: false,
-          })}
-          <g transform={`translate(${-contentW / 2}, ${-contentH})`}>
-            <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
-              {content}
-            </foreignObject>
+      <g>
+        {!isEdge && transformTranslate({
+          initValue: { x: 0, y: initY },
+          timeline: yOffTimeline,
+          begin: '0s',
+          loopCount: 0,
+          isFreeze: true,
+          isAdditive: false,
+        })}
+        <g transform={`translate(${originX}, ${originY})`}>
+          <g>
+            {!isEdge && transformSkewY({
+              initValue: initSkew,
+              timeline: skewTimeline,
+              begin: '0s',
+              loopCount: 0,
+              isFreeze: true,
+              isAdditive: false,
+            })}
+            <g transform={`translate(${-contentW / 2}, ${-contentH})`}>
+              <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
+                {content}
+              </foreignObject>
+            </g>
           </g>
         </g>
       </g>
@@ -292,6 +305,39 @@ function buildSlotSkew(
     }
 
     timeline.push({ toAbs: targetValue, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
+  }
+  return timeline
+}
+
+// ── slot Y 补偿 timeline（与 skewY 严格同步）──
+// skew 状态 → yOff，正面（中心）→ 0
+
+function buildSlotYOff(
+  activeIdx: number, N: number, items: I_SkewSlideCarouselChildItem[],
+  yOff: number,
+): I_TimelineKeyframe<Partial<I_TranslateValue>>[] {
+  const timeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
+  const totalSegs = N * 2
+
+  for (let seg = 0; seg < totalSegs; seg++) {
+    const itemIdx = floor(seg / 2)
+    const item = items[itemIdx % N]
+    const isSwitch = seg % 2 === 0
+    const dur = isSwitch
+      ? defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION)
+      : defaultTo(item.stayDuration, DEFAULT_STAY_DURATION)
+    const splines = isSwitch ? EASE : undefined
+
+    let y: number
+    if (activeIdx <= 0) {
+      y = yOff
+    } else {
+      const enterSeg = (activeIdx - 1) * 2
+      const staySeg = enterSeg + 1
+      y = (seg === enterSeg || seg === staySeg) ? 0 : yOff
+    }
+
+    timeline.push({ toAbs: { x: 0, y }, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
   }
   return timeline
 }
