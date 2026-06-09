@@ -25,17 +25,24 @@ export type { I_SkewSlideCarouselChildItem } from '../types'
 /**
  * SkewSlideCarouselX — 横向斜切轮播（三面可见）
  *
- * 同时显示 3 个 slot：左面（带正向 skewY）、中间正面、右面（带反向 skewY）
+ * 同时显示 3 个 slot：左面（已退出，带 exitAngle skew）、中间正面、右面（待进入，带 entryAngle skew）
  * 外层 translate 整体推动切换，模拟 cube 旋转效果。
  *
- * 渲染结构：
- *   <g>                    ← 外层 translate（整体位移驱动切换）
- *     <g> slot[0]          ← 左 peek
- *     <g> slot[1]          ← 初始中心
- *     <g> slot[2]          ← 右 peek
- *     ...                  ← N+2 个 slot（含首尾副本）
- *     <animateTransform translate/>
- *   </g>
+ * 核心对齐原理（来自 README）：
+ * - skew origin 在底边中心 (faceW/2, contentH)
+ * - translate 步进距离 = faceW，保证面与面无缝衔接
+ * - skew 状态下需要 Y 方向交叉轴补偿 = contentH/2 * tan(angle)
+ * - skew 和 translate 是同一个 3D 旋转的两个 2D 投影，必须严格同步
+ *
+ * 渲染结构（每个 slot）：
+ *   <g translate(slotX, slotY)>        ← 静态定位（面在画布中的 X 位置 + 垂直居中）
+ *     <g>                              ← Y 补偿动画层（skew 时有 yOff，正面时 0）
+ *       <animateTransform translate/>
+ *       <g translate(originX, originY)> ← skew origin 定位
+ *         <g>                          ← skewY 动画层
+ *           <animateTransform skewY/>
+ *           <g translate(-cW/2, -cH)>  ← 内容反向定位
+ *             <foreignObject/>
  */
 const SkewSlideCarouselX = (props: {
   canvasSize: { w: number; h: number }
@@ -67,8 +74,19 @@ const SkewSlideCarouselX = (props: {
   // ── 面宽度（translate 步进距离） ──
   const faceW = contentW + gap
 
-  // ── Y 补偿：skewY 让内容绕底边倾斜，translate Y 偏移保持视觉中心稳定 ──
-  const yOff = round(contentH / 2 * Math.tan(skewAngle * Math.PI / 180))
+  // ── 交叉轴补偿（Y 方向） ──
+  // skew 状态下 origin 在底边中心，内容绕底边旋转，视觉中心上移/下移
+  // 补偿量 = contentH/2 * tan(angle)
+  const crossComp = round(contentH / 2 * Math.tan(skewAngle * Math.PI / 180))
+
+  // ── skew 角度方向（README 定义） ──
+  // normal: entryAngle = -angle（从右进入），exitAngle = +angle（向左退出）
+  // reversed: entryAngle = +angle，exitAngle = -angle
+  const entryAngle = isReversed ? skewAngle : -skewAngle
+  const exitAngle = isReversed ? -skewAngle : skewAngle
+
+  // ── Y 补偿方向（README: signedCrossComp = isReversed ? +crossComp : -crossComp） ──
+  const signedYOff = isReversed ? crossComp : -crossComp
 
   // ── skew origin：底边中心 ──
   const originX = faceW / 2
@@ -79,14 +97,16 @@ const SkewSlideCarouselX = (props: {
   const N = items.length
 
   // ── slot 排列 ──
-  // slot[1] 为初始中心，slot[0] 为左 peek，slot[2] 为右 peek
-  // 总共 N+3 个 slot（含首尾副本保证无缝循环）
+  // slot[1] = 初始中心，slot[0] = 左 peek（已退出状态），slot[2] = 右 peek（待进入状态）
+  // 总共 N+3 个 slot
   const centerX = (w - faceW) / 2
   const centerY = (h - contentH) / 2
 
   const slots: { item: I_SkewSlideCarouselChildItem; x: number }[] = []
   for (let i = 0; i < N + 3; i++) {
     const itemIdx = (i - 1 + N * 10) % N
+    // normal：slot[0] 在最右，slot 向左排列，外层向右推
+    // reversed：slot[0] 在最左，slot 向右排列，外层向左推
     const x = isReversed
       ? centerX - faceW + i * faceW
       : centerX + faceW - i * faceW
@@ -119,32 +139,25 @@ const SkewSlideCarouselX = (props: {
         <SvgEx viewBox={`0 0 ${w} ${h}`}
           style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }} width="100%">
           <g>
-            {slots.map((slot, si) => {
-              const isCenter = si === 1
-              const isLeftPeek = si === 0
-              const isRightPeek = si === 2
-              // 左面：正向 skew，右面：反向 skew，中间：0
-              // 但 slot 位置不同于 activeIdx，静态 skew 根据相对位置决定
-              return (
-                <SkewSlotItem
-                  key={si}
-                  item={slot.item}
-                  slotX={slot.x}
-                  slotY={centerY}
-                  contentW={contentW}
-                  contentH={contentH}
-                  faceW={faceW}
-                  originX={originX}
-                  originY={originY}
-                  skewAngle={skewAngle}
-                  yOff={yOff}
-                  isReversed={isReversed}
-                  si={si}
-                  N={N}
-                  items={items}
-                />
-              )
-            })}
+            {slots.map((slot, si) => (
+              <SkewSlotItem
+                key={si}
+                item={slot.item}
+                slotX={slot.x}
+                slotY={centerY}
+                contentW={contentW}
+                contentH={contentH}
+                faceW={faceW}
+                originX={originX}
+                originY={originY}
+                entryAngle={entryAngle}
+                exitAngle={exitAngle}
+                signedYOff={signedYOff}
+                si={si}
+                N={N}
+                items={items}
+              />
+            ))}
             {transformTranslate({
               initValue: { x: 0, y: 0 },
               timeline: outerTimeline,
@@ -171,37 +184,35 @@ const SkewSlotItem = (props: {
   faceW: number
   originX: number
   originY: number
-  skewAngle: number
-  yOff: number
-  isReversed: boolean
+  entryAngle: number
+  exitAngle: number
+  signedYOff: number
   si: number
   N: number
   items: I_SkewSlideCarouselChildItem[]
 }) => {
-  const { item, slotX, slotY, contentW, contentH, faceW, originX, originY, skewAngle, yOff, isReversed, si, N, items } = props
+  const {
+    item, slotX, slotY, contentW, contentH,
+    originX, originY, entryAngle, exitAngle, signedYOff,
+    si, N, items,
+  } = props
   const isEdge = si === 0 || si === N + 2
 
-  // activeIdx: slot[1]=0（初始中心），slot[2]=1 ...
+  // activeIdx: slot[1]=0（初始中心），slot[2]=1, slot[3]=2 ...
   const activeIdx = si - 1
 
-  // ── skewY timeline：每个 slot 在切换到中心时 skew → 0，离开时恢复 skew ──
-  // 左侧面 skewAngle（正向），右侧面 -skewAngle（反向）
-  // isReversed 时方向取反
-  const leftSkew = isReversed ? -skewAngle : skewAngle
-  const rightSkew = isReversed ? skewAngle : -skewAngle
-
-  // 初始 skew：slot[1] 是中心=0，slot[0] 是左=leftSkew，slot[2+] 是右=rightSkew
-  const initSkew = activeIdx === 0 ? 0 : activeIdx < 0 ? leftSkew : rightSkew
+  // ── 初始状态 ──
+  // slot[1] (activeIdx=0)：中心，skew=0，yOff=0
+  // slot[0] (activeIdx=-1)：左 peek 副本（已退出状态），skew=exitAngle，yOff=signedYOff
+  // slot[2+] (activeIdx>=1)：右侧（待进入状态），skew=entryAngle，yOff=signedYOff
+  const initSkew = activeIdx === 0 ? 0 : activeIdx < 0 ? exitAngle : entryAngle
+  const initYOff = activeIdx === 0 ? 0 : signedYOff
 
   // ── skewY 动画 timeline ──
-  const skewTimeline = buildSlotSkew(activeIdx, N, items, leftSkew, rightSkew)
+  const skewTimeline = buildSlotSkew(activeIdx, N, items, entryAngle, exitAngle)
 
-  // ── Y 补偿 translate timeline ──
-  // 中心面 yOff=0，左面和右面有 yOff 补偿
-  const leftYOff = isReversed ? -yOff : yOff
-  const rightYOff = isReversed ? yOff : -yOff
-  const initYOff = activeIdx === 0 ? 0 : activeIdx < 0 ? leftYOff : rightYOff
-  const yOffTimeline = buildSlotYOff(activeIdx, N, items, leftYOff, rightYOff)
+  // ── Y 补偿 translate timeline（与 skew 同步）──
+  const yOffTimeline = buildSlotYOff(activeIdx, N, items, signedYOff)
 
   // ── 内容 ──
   const content = isDefined(item.jsx)
@@ -247,24 +258,34 @@ const SkewSlotItem = (props: {
 }
 
 // ── normalize：保证至少 3 张 ──
+// 1 图 → 复制 3 遍 = 3 张
+// 2 图 → 复制 2 遍 = 4 张（用户说 ≥3 时 2 图复制 2 遍就够）
+// ≥ 3 图 → 不变
 
 function normalizeItems(childItems: I_SkewSlideCarouselChildItem[]): I_SkewSlideCarouselChildItem[] {
   const len = childItems.length
   if (len >= 3) return childItems
   if (len === 1) return [...childItems, ...childItems, ...childItems]
-  // len === 2：复制 3 遍 = 6 张
-  return [...childItems, ...childItems, ...childItems]
+  // len === 2：复制 2 遍 = 4 张
+  return [...childItems, ...childItems]
 }
 
 // ── slot skewY timeline ──
-// 规律同 CoverFlow 的 scale：
-// slot[1] (activeIdx=0): 初始中心，initSkew=0，第0段变为 rightSkew（推走），之后保持
-// slot[2] (activeIdx=1): initSkew=rightSkew，在段 (activeIdx-1)*2 时变为 0（进入中心），
-//   段 (activeIdx-1)*2+1 保持 0，段 (activeIdx-1)*2+2 变为 rightSkew（推走）
+//
+// 每个 slot 在切换到中心时 skew 变为 0（正面），离开中心时恢复 skew。
+// 时间段结构：N 轮 × 2 段（switch + stay），共 N*2 段。
+//
+// 规律（与 CoverFlow 的 scale 对应）：
+// - activeIdx=0（初始中心）：initSkew=0，第 0 段推走变为 exitAngle，之后保持 exitAngle
+// - activeIdx=K (K>=1)：initSkew=entryAngle
+//   - 段 (K-1)*2：skew 从当前值 → 0（进入中心）
+//   - 段 (K-1)*2+1：保持 0（stay）
+//   - 段 (K-1)*2+2：skew 0 → exitAngle（退出中心）
+//   - 之后保持 exitAngle
 
 function buildSlotSkew(
   activeIdx: number, N: number, items: I_SkewSlideCarouselChildItem[],
-  leftSkew: number, rightSkew: number,
+  entryAngle: number, exitAngle: number,
 ): I_TimelineKeyframe<number>[] {
   const timeline: I_TimelineKeyframe<number>[] = []
   const totalSegs = N * 2
@@ -279,22 +300,21 @@ function buildSlotSkew(
     const splines = isSwitch ? EASE : undefined
 
     let targetValue: number
-    if (activeIdx === 0) {
-      // 初始中心，第 0 段推走变成左面（leftSkew 方向 → 实际是右侧推走用 rightSkew）
-      // slot[1] 向左推走 → 它变成了"被推到左侧"的面
-      targetValue = leftSkew
-    } else if (activeIdx < 0) {
-      // 左 peek 副本，始终 leftSkew
-      targetValue = leftSkew
+    if (activeIdx <= 0) {
+      // 初始中心或左 peek 副本：推走后变成 exitAngle
+      targetValue = exitAngle
     } else {
-      const enlargeSeg = (activeIdx - 1) * 2
-      const holdSeg = enlargeSeg + 1
-      if (seg === enlargeSeg || seg === holdSeg) {
+      const enterSeg = (activeIdx - 1) * 2
+      const staySeg = enterSeg + 1
+      if (seg === enterSeg || seg === staySeg) {
+        // 进入中心 + stay：skew = 0
         targetValue = 0
-      } else if (seg > holdSeg) {
-        targetValue = leftSkew
+      } else if (seg > staySeg) {
+        // 退出后：exitAngle
+        targetValue = exitAngle
       } else {
-        targetValue = rightSkew
+        // 尚未进入：entryAngle
+        targetValue = entryAngle
       }
     }
 
@@ -303,11 +323,12 @@ function buildSlotSkew(
   return timeline
 }
 
-// ── slot Y 补偿 timeline（与 skew 同步） ──
+// ── slot Y 补偿 timeline ──
+// 与 skew 严格同步：skew=0 时 yOff=0，skew≠0 时 yOff=signedYOff
 
 function buildSlotYOff(
   activeIdx: number, N: number, items: I_SkewSlideCarouselChildItem[],
-  leftYOff: number, rightYOff: number,
+  signedYOff: number,
 ): I_TimelineKeyframe<Partial<I_TranslateValue>>[] {
   const timeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   const totalSegs = N * 2
@@ -322,19 +343,18 @@ function buildSlotYOff(
     const splines = isSwitch ? EASE : undefined
 
     let target: { x: number; y: number }
-    if (activeIdx === 0) {
-      target = { x: 0, y: leftYOff }
-    } else if (activeIdx < 0) {
-      target = { x: 0, y: leftYOff }
+    if (activeIdx <= 0) {
+      // 推走后 Y 补偿
+      target = { x: 0, y: signedYOff }
     } else {
-      const enlargeSeg = (activeIdx - 1) * 2
-      const holdSeg = enlargeSeg + 1
-      if (seg === enlargeSeg || seg === holdSeg) {
+      const enterSeg = (activeIdx - 1) * 2
+      const staySeg = enterSeg + 1
+      if (seg === enterSeg || seg === staySeg) {
+        // 中心：无补偿
         target = { x: 0, y: 0 }
-      } else if (seg > holdSeg) {
-        target = { x: 0, y: leftYOff }
       } else {
-        target = { x: 0, y: rightYOff }
+        // skew 状态：有补偿
+        target = { x: 0, y: signedYOff }
       }
     }
 
