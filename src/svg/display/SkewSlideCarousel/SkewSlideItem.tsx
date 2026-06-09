@@ -1,5 +1,5 @@
 import React from 'react'
-import { transformTranslate, transformSkewX, transformSkewY, animateOpacity } from '@smil/index'
+import { transformTranslate, transformSkewX, transformSkewY } from '@smil/index'
 import SvgEx from '@html/basicEx/SvgEx'
 import svgURL from '@utils/svg/svgURL'
 import { isDefined } from '@utils/fn/isDefined'
@@ -52,11 +52,6 @@ const SkewSlideItem = (props: I_SkewSlideItemProps) => {
     entryTarget: 0, stayTarget: 0, exitTarget: exitAngle, holdTarget: exitAngle,
   })
 
-  const opacityTimeline = buildPhaseSegments({
-    entryDur: entryDuration, stayDur: stayDuration, exitDur: exitDuration, holdDur: holdDuration,
-    entryTarget: 1, stayTarget: 1, exitTarget: 0, holdTarget: 0,
-  })
-
   // ── 内容偏移（相对于 skew origin） ──
   const contentOffsetX = -contentW / 2
   const contentOffsetY = axis === 'X' ? -contentH : 0
@@ -93,26 +88,16 @@ const SkewSlideItem = (props: I_SkewSlideItemProps) => {
         isAdditive: false,
       })}
       <g>
-        {/* opacity：entry 渐显，exit 渐隐，hold 不可见 */}
-        <g>
-          {animateOpacity({
-            initValue: 0,
-            timeline: opacityTimeline,
-            begin: `${begin}s`,
-            loopCount: 0,
-            isFreeze: true,
-          })}
-          {/* skew origin 偏移 */}
-          <g transform={`translate(${originX}, ${originY})`}>
-            <g>
-              {axis === 'Y'
-                ? transformSkewX(skewAnimConfig)
-                : transformSkewY(skewAnimConfig)}
-              <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
-                <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
-                  {content}
-                </foreignObject>
-              </g>
+        {/* skew origin 偏移 */}
+        <g transform={`translate(${originX}, ${originY})`}>
+          <g>
+            {axis === 'Y'
+              ? transformSkewX(skewAnimConfig)
+              : transformSkewY(skewAnimConfig)}
+            <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
+              <foreignObject x={0} y={0} width={contentW + 1} height={contentH + 1}>
+                {content}
+              </foreignObject>
             </g>
           </g>
         </g>
