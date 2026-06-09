@@ -47,17 +47,18 @@ const SkewSlideCarouselX = (props: {
   const isDev = ExPubGoConfig().mode === 'development'
 
   const offset = round(contentH * Math.tan(skewAngle * Math.PI / 180) / 2)
-  const yOff = reverse ? offset : -offset
+  const verticalCompensate = reverse ? offset : -offset
 
   // buffer: foreignObject 比 contentW 多 1px，skewY 在底部额外贡献 tan(angle)px
-  const buf = 2
-  const entryX = w + buf
-  const exitX = -(w + buf)
+  const exitBuffer = 2
+  const entryX = w + exitBuffer
+  const exitX = -(w + exitBuffer)
 
   // 4 段式：入场 → 中心 → 出场 → 停留
-  const tx = `${entryX} ${yOff}; 0 0; ${exitX} ${yOff}; ${exitX} ${yOff}`
-  const sa = reverse ? skewAngle : -skewAngle
-  const sk = `${sa}; 0; ${-sa}; ${-sa}`
+  const translateValues = `${entryX} ${verticalCompensate}; 0 0; ${exitX} ${verticalCompensate}; ${exitX} ${verticalCompensate}`
+  const entrySkewAngle = reverse ? skewAngle : -skewAngle
+  const exitSkewAngle = reverse ? -skewAngle : skewAngle
+  const skewValues = `${entrySkewAngle}; 0; ${exitSkewAngle}; ${exitSkewAngle}`
 
   const keySplines = `${EASE}; ${EASE}; ${EASE}`
   const k1 = (step / dur).toFixed(6)
@@ -86,12 +87,12 @@ const SkewSlideCarouselX = (props: {
                     <animate attributeName="opacity" values="0; 1" dur="1ms" fill="freeze"
                       begin={`${begin}s`} />
                     <animateTransform attributeName="transform" type="translate"
-                      values={tx} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
+                      values={translateValues} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
                       calcMode="spline" repeatCount="indefinite"
                       begin={`${begin}s`} fill="freeze" />
                     <g>
                       <animateTransform attributeName="transform" type="skewY"
-                        values={sk} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
+                        values={skewValues} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
                         calcMode="spline" repeatCount="indefinite"
                         begin={`${begin}s`} fill="freeze" />
                       <g transform={`translate(${-contentW / 2}, ${-contentH})`}>

@@ -51,9 +51,9 @@ const SkewSlideCarouselY = (props: {
   const offset = round(contentW * Math.tan(skewAngle * Math.PI / 180) / 2)
 
   // buffer: foreignObject 多 1px，skewX 在左/右边缘额外贡献 offset px（= contentW/2 × tan(angle)）
-  const buf = offset + 1
-  const entryY = h + buf
-  const exitY = -(h + buf)
+  const exitBuffer = offset + 1
+  const entryY = h + exitBuffer
+  const exitY = -(h + exitBuffer)
 
   const keySplines = `${EASE}; ${EASE}; ${EASE}`
   const k1 = (step / dur).toFixed(6)
@@ -78,22 +78,23 @@ const SkewSlideCarouselY = (props: {
                 const useItem = !!item.item
                 const dirIn = defaultTo(item.skewIn, DEFAULT_SKEW_IN)
                 const dirOut = defaultTo(item.skewOut, DEFAULT_SKEW_OUT)
-                const sa = dirIn === 'L' ? skewAngle : -skewAngle
-                const xOff = dirIn === 'L' ? -offset : offset
-                const ty = `${xOff} ${entryY}; 0 0; ${xOff} ${exitY}; ${xOff} ${exitY}`
-                const sk = `${sa}; 0; ${dirOut === 'L' ? skewAngle : -skewAngle}; ${dirOut === 'L' ? skewAngle : -skewAngle}`
+                const entrySkewAngle = dirIn === 'L' ? skewAngle : -skewAngle
+                const horizontalCompensate = dirIn === 'L' ? -offset : offset
+                const exitSkewAngle = dirOut === 'L' ? skewAngle : -skewAngle
+                const translateValues = `${horizontalCompensate} ${entryY}; 0 0; ${horizontalCompensate} ${exitY}; ${horizontalCompensate} ${exitY}`
+                const skewValues = `${entrySkewAngle}; 0; ${exitSkewAngle}; ${exitSkewAngle}`
 
                 return (
                   <g key={i} opacity={i === 0 ? 1 : 0}>
                     <animate attributeName="opacity" values="0; 1" dur="1ms" fill="freeze"
                       begin={`${begin}s`} />
                     <animateTransform attributeName="transform" type="translate"
-                      values={ty} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
+                      values={translateValues} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
                       calcMode="spline" repeatCount="indefinite"
                       begin={`${begin}s`} fill="freeze" />
                     <g>
                       <animateTransform attributeName="transform" type="skewX"
-                        values={sk} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
+                        values={skewValues} keyTimes={keyTimes} keySplines={keySplines} dur={`${dur}s`}
                         calcMode="spline" repeatCount="indefinite"
                         begin={`${begin}s`} fill="freeze" />
                       <g transform={`translate(${-contentW / 2}, 0)`}>
