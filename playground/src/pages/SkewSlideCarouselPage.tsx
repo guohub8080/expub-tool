@@ -62,11 +62,24 @@ export default function SkewSlideCarouselPage() {
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>3 图 — gap=30, childCanvasSize=240×240</h3>
+        <h3 style={{ margin: '0 0 8px' }}>3 图 — childCanvasSize=240×240，canvas 300×300</h3>
         <SkewSlideCarousel
           canvasSize={{ w: 300, h: 300 }}
           childCanvasSize={{ w: 240, h: 240 }}
-          gap={60}
+          childItems={[
+            { url: getWechat300x300(1), switchDuration: 3 },
+            { url: getWechat300x300(2), switchDuration: 3 },
+            { url: getWechat300x300(3), switchDuration: 3 },
+          ]}
+        />
+      </div>
+
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
+        <h3 style={{ margin: '0 0 8px' }}>3 图 — childCanvasSize=200×200 + gap=40，canvas 300×300</h3>
+        <SkewSlideCarousel
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvasSize={{ w: 200, h: 200 }}
+          gap={40}
           childItems={[
             { url: getWechat300x300(1), switchDuration: 3 },
             { url: getWechat300x300(2), switchDuration: 3 },
