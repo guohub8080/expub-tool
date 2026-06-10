@@ -7,7 +7,7 @@ import type { T_SpacingProps } from "@css-fn/spacing"
 import { resolveCanvasBg } from "@utils/svg/resolveCanvasBg"
 import type { I_CanvasBg } from "@svg/types"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
-import { transformTranslate } from "@smil/index"
+import { transformTranslate, animateVisibility } from "@smil/index"
 import type { I_AbsRelKeyframe, I_TranslateValue } from "@smil/index"
 import { normalizeItems, getExitOffset, calcTotalDuration } from "./utils"
 import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
@@ -57,12 +57,16 @@ const CoverOut = (props: {
           style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }}
           width="100%"
         >
-          {/* 底层静态图 0：当所有动画层滑走后，露出这张底图，形成无缝循环 */}
-          <g>
-            <foreignObject x={0} y={0} width={w} height={h}>
-              {renderContent(items[0], w, h)}
-            </foreignObject>
-          </g>
+          {/* Ghost 层：图 0 副本，平时 hidden，最后一张图滑出时 visible，循环无缝衔接 */}
+          {N > 1 && (
+            <CoverOutGhostLayer
+              item={items[0]}
+              items={items}
+              viewBoxW={w}
+              viewBoxH={h}
+              totalDuration={totalDuration}
+            />
+          )}
 
           {/* ══════ 阶段 1：首轮 ══════ */}
           {renderOrder.map(i => (
@@ -200,6 +204,55 @@ const CoverOutLoopItem = (props: {
         loopCount: 0,
         isFreeze: true,
         isAdditive: true,
+      })}
+    </g>
+  )
+}
+
+// ── Ghost 层（animateVisibility，不用 opacity） ──
+//
+// 图 0 的视觉副本，渲染在 DOM 最底层（SVG z 轴最底）。
+// 平时 hidden，最后一张图开始滑出时瞬间 visible，
+// 循环重置时瞬间 hidden（此时动画层图 0 回到中心，视觉无缝）。
+
+const CoverOutGhostLayer = (props: {
+  item: I_NormalizedCoverItem
+  items: I_NormalizedCoverItem[]
+  viewBoxW: number
+  viewBoxH: number
+  totalDuration: number
+}) => {
+  const { item, items, viewBoxW, viewBoxH, totalDuration } = props
+  const N = items.length
+
+  // Ghost 出现时刻 = 最后一张图开始滑出时
+  // = 前面所有图的 (stay + cover) + 最后一张的 stay
+  let ghostAppearTime = 0
+  for (let i = 0; i < N - 1; i++) {
+    ghostAppearTime += items[i].stayDuration + items[i].coverDuration
+  }
+  ghostAppearTime += items[N - 1].stayDuration
+
+  // Ghost 隐藏时刻 = 最后一张图滑完 = 总周期
+  // Ghost 可见时长 = 最后一张的 coverDuration
+  const ghostHiddenDuration = ghostAppearTime
+
+  const content = renderContent(item, viewBoxW, viewBoxH)
+
+  return (
+    <g visibility="hidden">
+      <foreignObject x={0} y={0} width={viewBoxW} height={viewBoxH}>
+        {content}
+      </foreignObject>
+      {animateVisibility({
+        initValue: "hidden",
+        timeline: [
+          { toAbs: "hidden", durationSeconds: ghostHiddenDuration },
+          { toAbs: "visible", durationSeconds: totalDuration - ghostHiddenDuration },
+        ],
+        begin: "0s",
+        loopCount: 0,
+        isFreeze: true,
       })}
     </g>
   )
