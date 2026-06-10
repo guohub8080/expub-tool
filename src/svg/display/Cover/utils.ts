@@ -1,6 +1,7 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { isDefined } from "@utils/fn/isDefined"
+import { DIRECTION_8 } from "@svg/types"
 import type { T_Direction8 } from "@svg/types"
 import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
 import { DEFAULT_COVER_DURATION, DEFAULT_STAY_DURATION, DEFAULT_DIRECTION, DEFAULT_KEY_SPLINES } from "./types"
@@ -48,14 +49,14 @@ export const getEntryOffset = (
   h: number,
 ): { x: number; y: number } => {
   switch (direction) {
-    case "L":  return { x: w, y: 0 }
-    case "R":  return { x: -w, y: 0 }
-    case "T":  return { x: 0, y: h }
-    case "B":  return { x: 0, y: -h }
-    case "TL": return { x: w, y: h }
-    case "TR": return { x: -w, y: h }
-    case "BL": return { x: w, y: -h }
-    case "BR": return { x: -w, y: -h }
+    case DIRECTION_8.Left:      return { x: w, y: 0 }
+    case DIRECTION_8.Right:     return { x: -w, y: 0 }
+    case DIRECTION_8.Top:       return { x: 0, y: h }
+    case DIRECTION_8.Bottom:    return { x: 0, y: -h }
+    case DIRECTION_8.TopLeft:   return { x: w, y: h }
+    case DIRECTION_8.TopRight:  return { x: -w, y: h }
+    case DIRECTION_8.BottomLeft:  return { x: w, y: -h }
+    case DIRECTION_8.BottomRight: return { x: -w, y: -h }
   }
 }
 
@@ -69,14 +70,14 @@ export const getExitOffset = (
   h: number,
 ): { x: number; y: number } => {
   switch (direction) {
-    case "L":  return { x: -w, y: 0 }
-    case "R":  return { x: w, y: 0 }
-    case "T":  return { x: 0, y: -h }
-    case "B":  return { x: 0, y: h }
-    case "TL": return { x: -w, y: -h }
-    case "TR": return { x: w, y: -h }
-    case "BL": return { x: -w, y: h }
-    case "BR": return { x: w, y: h }
+    case DIRECTION_8.Left:      return { x: -w, y: 0 }
+    case DIRECTION_8.Right:     return { x: w, y: 0 }
+    case DIRECTION_8.Top:       return { x: 0, y: -h }
+    case DIRECTION_8.Bottom:    return { x: 0, y: h }
+    case DIRECTION_8.TopLeft:   return { x: -w, y: -h }
+    case DIRECTION_8.TopRight:  return { x: w, y: -h }
+    case DIRECTION_8.BottomLeft:  return { x: -w, y: h }
+    case DIRECTION_8.BottomRight: return { x: w, y: h }
   }
 }
 
