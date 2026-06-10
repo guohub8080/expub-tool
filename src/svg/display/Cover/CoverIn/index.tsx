@@ -10,8 +10,9 @@ import type { I_CanvasBg } from "@svg/types"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate } from "@smil/index"
 import type { I_AbsRelKeyframe, I_TranslateValue } from "@smil/index"
-import { normalizeItems, getEntryOffset, getExitOffset, calcTotalDuration } from "./utils"
-import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
+import { normalizeItems, calcTotalDuration } from "../utils/normalizer"
+import { getEntryOffset, getExitOffset } from "../timeline/offsetCalculator"
+import type { I_CoverChildItem, I_NormalizedCoverItem } from "../types"
 
 /**
  * CoverIn — 层层覆盖滑入组件
@@ -215,7 +216,7 @@ const renderContent = (item: I_NormalizedCoverItem, w: number, h: number) => {
     <SvgEx viewBox={`0 0 ${w} ${h}`}
       style={{
         display: "block",
-        backgroundImage: svgURL(item.url!),
+        backgroundImage: svgURL(item.url as string),
         backgroundSize: "100% auto",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
