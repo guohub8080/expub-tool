@@ -1,6 +1,14 @@
 import { CoverIn, CoverOut } from 'expub-tool/svg'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
+const ColorBlock = ({ color, label }: { color: string; label: string }) => (
+  <svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block', backgroundColor: color }}>
+    <text x="150" y="160" textAnchor="middle" fill="white" fontSize="32" fontFamily="system-ui">
+      {label}
+    </text>
+  </svg>
+)
+
 const Demo = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
     <h3 style={{ margin: '0 0 8px' }}>{title}</h3>
@@ -117,6 +125,28 @@ export default function CoverPage() {
         />
       </Demo>
 
+      <Demo title="3 图 — jsx 模式（色块）">
+        <CoverIn
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { jsx: <ColorBlock color="#7c3aed" label="Purple" />, direction: 'B' },
+            { jsx: <ColorBlock color="#059669" label="Green" />, direction: 'L' },
+            { jsx: <ColorBlock color="#dc2626" label="Red" />, direction: 'TR' },
+          ]}
+        />
+      </Demo>
+
+      <Demo title="3 图 — url + jsx 混用">
+        <CoverIn
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { url: getWechat300x300(1), direction: 'B' },
+            { jsx: <ColorBlock color="#2563eb" label="Blue" />, direction: 'L' },
+            { url: getWechat300x300(3), direction: 'TR' },
+          ]}
+        />
+      </Demo>
+
       <h2>CoverOut — 层层覆盖滑出</h2>
 
       <Demo title="3 图 — 默认方向 (B)">
@@ -192,6 +222,28 @@ export default function CoverPage() {
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
             { url: getWechat300x300(1), direction: 'TR' },
+          ]}
+        />
+      </Demo>
+
+      <Demo title="3 图 — jsx 模式（色块）">
+        <CoverOut
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { jsx: <ColorBlock color="#7c3aed" label="Purple" />, direction: 'B' },
+            { jsx: <ColorBlock color="#059669" label="Green" />, direction: 'L' },
+            { jsx: <ColorBlock color="#dc2626" label="Red" />, direction: 'TR' },
+          ]}
+        />
+      </Demo>
+
+      <Demo title="3 图 — url + jsx 混用">
+        <CoverOut
+          canvasSize={{ w: 300, h: 300 }}
+          childItems={[
+            { url: getWechat300x300(1), direction: 'B' },
+            { jsx: <ColorBlock color="#2563eb" label="Blue" />, direction: 'L' },
+            { url: getWechat300x300(3), direction: 'TR' },
           ]}
         />
       </Demo>
