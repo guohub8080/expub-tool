@@ -57,6 +57,9 @@ export const getEntryOffset = (
     case DIRECTION_8.TopRight:  return { x: -w, y: h }
     case DIRECTION_8.BottomLeft:  return { x: w, y: -h }
     case DIRECTION_8.BottomRight: return { x: -w, y: -h }
+    default:
+      console.error('[Cover] getEntryOffset: unknown direction', direction)
+      return { x: 0, y: -h }
   }
 }
 
@@ -78,6 +81,9 @@ export const getExitOffset = (
     case DIRECTION_8.TopRight:  return { x: w, y: -h }
     case DIRECTION_8.BottomLeft:  return { x: -w, y: h }
     case DIRECTION_8.BottomRight: return { x: w, y: h }
+    default:
+      console.error('[Cover] getExitOffset: unknown direction', direction)
+      return { x: 0, y: h }
   }
 }
 
