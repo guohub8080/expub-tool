@@ -46,7 +46,7 @@ const CoverIn = (props: {
 
   // ── 首轮时长 = 图0 停留 + 图1..N-1 的(滑入+停留) ──
   const firstRoundDuration = items[0].stayDuration
-    + items.slice(1).reduce((sum, item) => sum + item.coverDuration + item.stayDuration, 0)
+    + items.slice(1).reduce((sum, item) => sum + item.switchDuration + item.stayDuration, 0)
 
   return (
     <SectionEx
@@ -156,10 +156,10 @@ const SlideOnceLayer = (props: {
   // 等待时长 = timeOffset + 前面所有首轮图的 (cover + stay)
   let waitDuration = timeOffset
   for (let i = 0; i < slideIndex; i++) {
-    waitDuration += firstRoundSlides[i].coverDuration + firstRoundSlides[i].stayDuration
+    waitDuration += firstRoundSlides[i].switchDuration + firstRoundSlides[i].stayDuration
   }
   const stayDuration = item.stayDuration
-  const afterDuration = firstRoundDuration - waitDuration - item.coverDuration - stayDuration
+  const afterDuration = firstRoundDuration - waitDuration - item.switchDuration - stayDuration
 
   const timeline: I_AbsRelKeyframe<Partial<I_TranslateValue>>[] = []
 
@@ -168,7 +168,7 @@ const SlideOnceLayer = (props: {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: waitDuration })
   }
   // 滑入
-  timeline.push({ toRel: slideRel, durationSeconds: item.coverDuration, keySplines: item.keySplines })
+  timeline.push({ toRel: slideRel, durationSeconds: item.switchDuration, keySplines: item.keySplines })
   // 停留
   if (stayDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: stayDuration })
@@ -216,9 +216,9 @@ const SlideLoopLayer = (props: {
   // 等待时长 = 前面所有图的 (cover + stay) 之和
   let waitDuration = 0
   for (let i = 0; i < index; i++) {
-    waitDuration += items[i].coverDuration + items[i].stayDuration
+    waitDuration += items[i].switchDuration + items[i].stayDuration
   }
-  const coveredDuration = loopDuration - waitDuration - item.coverDuration - item.stayDuration
+  const coveredDuration = loopDuration - waitDuration - item.switchDuration - item.stayDuration
 
   const timeline: I_AbsRelKeyframe<Partial<I_TranslateValue>>[] = []
 
@@ -227,7 +227,7 @@ const SlideLoopLayer = (props: {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: waitDuration })
   }
   // 滑入
-  timeline.push({ toRel: slideRel, durationSeconds: item.coverDuration, keySplines: item.keySplines })
+  timeline.push({ toRel: slideRel, durationSeconds: item.switchDuration, keySplines: item.keySplines })
   // 停留
   if (item.stayDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: item.stayDuration })

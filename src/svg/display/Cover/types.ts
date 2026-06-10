@@ -4,7 +4,7 @@ import type { T_Direction8 } from "@svg/types"
 export type { T_Direction8 } from "@svg/types"
 
 /** 默认滑入/滑出时长（秒） */
-export const DEFAULT_COVER_DURATION = 0.5
+export const DEFAULT_SWITCH_DURATION = 0.5
 /** 默认停留时长（秒） */
 export const DEFAULT_STAY_DURATION = 0.5
 /** 默认方向 */
@@ -21,7 +21,7 @@ export interface I_CoverChildItem {
   /** 自定义内容（与 url 二选一，优先级高于 url） */
   jsx?: ReactNode
   /** 滑入/滑出时长（秒），默认 0.5 */
-  coverDuration?: number
+  switchDuration?: number
   /** 停留时长（秒），默认 0.5 */
   stayDuration?: number
   /** 滑入/滑出方向，默认 "B" */
@@ -36,7 +36,7 @@ export interface I_CoverChildItem {
 export interface I_NormalizedCoverItem {
   url?: string
   jsx?: ReactNode
-  coverDuration: number
+  switchDuration: number
   stayDuration: number
   direction: T_Direction8
   keySplines: string

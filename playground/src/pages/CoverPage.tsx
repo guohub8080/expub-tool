@@ -36,14 +36,14 @@ export default function CoverPage() {
         <CoverIn
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), direction: 'B', coverDuration: 0.4, stayDuration: 0.3 },
-            { url: getWechat300x300(2), direction: 'TR', coverDuration: 0.4, stayDuration: 0.3 },
-            { url: getWechat300x300(3), direction: 'L', coverDuration: 0.4, stayDuration: 0.3 },
-            { url: getWechat300x300(4), direction: 'TL', coverDuration: 0.4, stayDuration: 0.3 },
-            { url: getWechat300x300(5), direction: 'T', coverDuration: 0.4, stayDuration: 0.3 },
-            { url: getWechat300x300(6), direction: 'BR', coverDuration: 0.4, stayDuration: 0.3 },
-            { url: getWechat300x300(7), direction: 'R', coverDuration: 0.4, stayDuration: 0.3 },
-            { url: getWechat300x300(8), direction: 'BL', coverDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x300(1), direction: 'B', switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x300(2), direction: 'TR', switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x300(3), direction: 'L', switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x300(4), direction: 'TL', switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x300(5), direction: 'T', switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x300(6), direction: 'BR', switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x300(7), direction: 'R', switchDuration: 0.4, stayDuration: 0.3 },
+            { url: getWechat300x300(8), direction: 'BL', switchDuration: 0.4, stayDuration: 0.3 },
           ]}
         />
       </div>

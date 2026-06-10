@@ -4,7 +4,7 @@ import { isDefined } from "@utils/fn/isDefined"
 import { DIRECTION_8 } from "@svg/types"
 import type { T_Direction8 } from "@svg/types"
 import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
-import { DEFAULT_COVER_DURATION, DEFAULT_STAY_DURATION, DEFAULT_DIRECTION, DEFAULT_KEY_SPLINES } from "./types"
+import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION, DEFAULT_DIRECTION, DEFAULT_KEY_SPLINES } from "./types"
 
 // ── normalizer ──
 
@@ -23,7 +23,7 @@ const fillDefaults = (item: I_CoverChildItem): I_NormalizedCoverItem => {
     url: item.url,
     jsx: item.jsx,
     useJsx,
-    coverDuration: defaultTo(item.coverDuration, DEFAULT_COVER_DURATION),
+    switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     direction: defaultTo(item.direction, DEFAULT_DIRECTION),
     keySplines: defaultTo(item.keySplines, DEFAULT_KEY_SPLINES),
@@ -85,5 +85,5 @@ export const getExitOffset = (
 
 /** 计算总周期时长 = Σ(coverDuration + stayDuration) */
 export const calcTotalDuration = (items: I_NormalizedCoverItem[]): number => {
-  return items.reduce((sum, item) => sum + item.coverDuration + item.stayDuration, 0)
+  return items.reduce((sum, item) => sum + item.switchDuration + item.stayDuration, 0)
 }

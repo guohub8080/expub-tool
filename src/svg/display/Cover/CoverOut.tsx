@@ -112,11 +112,11 @@ const CoverOutOnceItem = (props: {
   // 滑出开始时间 = 前面所有图的 (stay + cover) + 当前图的 stay
   let slideOutStartTime = 0
   for (let i = 0; i < index; i++) {
-    slideOutStartTime += items[i].stayDuration + items[i].coverDuration
+    slideOutStartTime += items[i].stayDuration + items[i].switchDuration
   }
   slideOutStartTime += item.stayDuration
 
-  const afterDuration = totalDuration - slideOutStartTime - item.coverDuration
+  const afterDuration = totalDuration - slideOutStartTime - item.switchDuration
 
   const timeline: I_AbsRelKeyframe<Partial<I_TranslateValue>>[] = []
 
@@ -125,7 +125,7 @@ const CoverOutOnceItem = (props: {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: slideOutStartTime })
   }
   // 2. 滑出段
-  timeline.push({ toRel: slideOut, durationSeconds: item.coverDuration, keySplines: item.keySplines })
+  timeline.push({ toRel: slideOut, durationSeconds: item.switchDuration, keySplines: item.keySplines })
   // 3. 保持到首轮结束
   if (afterDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: afterDuration })
@@ -167,11 +167,11 @@ const CoverOutLoopItem = (props: {
   // 滑出开始时间
   let slideOutStartTime = 0
   for (let i = 0; i < index; i++) {
-    slideOutStartTime += items[i].stayDuration + items[i].coverDuration
+    slideOutStartTime += items[i].stayDuration + items[i].switchDuration
   }
   slideOutStartTime += item.stayDuration
 
-  const waitDuration = totalDuration - slideOutStartTime - item.coverDuration
+  const waitDuration = totalDuration - slideOutStartTime - item.switchDuration
 
   const timeline: I_AbsRelKeyframe<Partial<I_TranslateValue>>[] = []
 
@@ -180,7 +180,7 @@ const CoverOutLoopItem = (props: {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: slideOutStartTime })
   }
   // 2. 滑出段
-  timeline.push({ toRel: slideOut, durationSeconds: item.coverDuration, keySplines: item.keySplines })
+  timeline.push({ toRel: slideOut, durationSeconds: item.switchDuration, keySplines: item.keySplines })
   // 3. 等待段：在屏外等待
   if (waitDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: waitDuration })
