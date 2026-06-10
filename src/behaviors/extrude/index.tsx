@@ -17,7 +17,7 @@
  * - genRectAnimate: 仅生成矩形高度 <animate> 元素
  * - genAnimateExtrudeAttrs: 生成宽度+矩形高度 <animate> 元素组合
  *
- * @legacy 使用 animateExtrude 替代
+ * @deprecated 使用 animateExtrude 替代
  */
 
 import React from 'react';
