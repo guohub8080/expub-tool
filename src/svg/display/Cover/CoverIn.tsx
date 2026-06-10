@@ -150,10 +150,8 @@ const SlideOnceLayer = (props: {
 }) => {
   const { item, slideIndex, firstRoundSlides, viewBoxW, viewBoxH, firstRoundDuration, timeOffset } = props
 
-  console.log('[SlideOnceLayer] item:', JSON.stringify(item))
   const entryPos = getEntryOffset(item.direction, viewBoxW, viewBoxH)
   const slideRel = getExitOffset(item.direction, viewBoxW, viewBoxH)
-  console.log('[SlideOnceLayer] direction:', item.direction, 'entryPos:', entryPos)
 
   // 等待时长 = timeOffset + 前面所有首轮图的 (cover + stay)
   let waitDuration = timeOffset
@@ -212,10 +210,8 @@ const SlideLoopLayer = (props: {
 }) => {
   const { item, index, items, viewBoxW, viewBoxH, loopDuration, firstRoundDuration } = props
 
-  console.log('[SlideLoopLayer] item:', JSON.stringify(item))
   const entryPos = getEntryOffset(item.direction, viewBoxW, viewBoxH)
   const slideRel = getExitOffset(item.direction, viewBoxW, viewBoxH)
-  console.log('[SlideLoopLayer] direction:', item.direction, 'entryPos:', entryPos)
 
   // 等待时长 = 前面所有图的 (cover + stay) 之和
   let waitDuration = 0
