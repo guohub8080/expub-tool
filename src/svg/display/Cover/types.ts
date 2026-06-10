@@ -1,14 +1,14 @@
 import type { ReactNode } from "react"
-import type { T_Direction4 } from "@svg/types"
+import type { T_Direction8 } from "@svg/types"
 
-export type { T_Direction4 } from "@svg/types"
+export type { T_Direction8 } from "@svg/types"
 
 /** 默认滑入/滑出时长（秒） */
 export const DEFAULT_COVER_DURATION = 0.5
 /** 默认停留时长（秒） */
 export const DEFAULT_STAY_DURATION = 0.5
 /** 默认方向 */
-export const DEFAULT_DIRECTION: T_Direction4 = "B"
+export const DEFAULT_DIRECTION: T_Direction8 = "B"
 /** 默认缓动曲线 (ease-in-out) */
 export const DEFAULT_KEY_SPLINES = "0.42 0 0.58 1"
 
@@ -25,7 +25,7 @@ export interface I_CoverChildItem {
   /** 停留时长（秒），默认 0.5 */
   stayDuration?: number
   /** 滑入/滑出方向，默认 "B" */
-  direction?: T_Direction4
+  direction?: T_Direction8
   /** 缓动曲线，默认 ease-in-out */
   keySplines?: string
 }
@@ -38,7 +38,7 @@ export interface I_NormalizedCoverItem {
   jsx?: ReactNode
   coverDuration: number
   stayDuration: number
-  direction: T_Direction4
+  direction: T_Direction8
   keySplines: string
   useJsx: boolean
 }

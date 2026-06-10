@@ -1,7 +1,7 @@
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { isDefined } from "@utils/fn/isDefined"
-import type { T_Direction4 } from "@svg/types"
+import type { T_Direction8 } from "@svg/types"
 import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
 import { DEFAULT_COVER_DURATION, DEFAULT_STAY_DURATION, DEFAULT_DIRECTION, DEFAULT_KEY_SPLINES } from "./types"
 
@@ -36,22 +36,26 @@ export const normalizeItems = (items?: I_CoverChildItem[]): I_NormalizedCoverIte
   return items.map(fillDefaults)
 }
 
-// ── offset calculator ──
+// ── offset calculator（8 方向） ──
 
 /**
  * 根据方向获取进入时的初始偏移（foreignObject 的 x/y 属性值）
  * 即图片在屏幕外的起始位置
  */
 export const getEntryOffset = (
-  direction: T_Direction4,
+  direction: T_Direction8,
   w: number,
   h: number,
 ): { x: number; y: number } => {
   switch (direction) {
-    case "L": return { x: w, y: 0 }       // 从左侧进入 → 初始在右边屏外
-    case "R": return { x: -w, y: 0 }      // 从右侧进入 → 初始在左边屏外
-    case "T": return { x: 0, y: h }       // 从上方进入 → 初始在下方屏外
-    case "B": return { x: 0, y: -h }      // 从下方进入 → 初始在上方屏外
+    case "L":  return { x: w, y: 0 }
+    case "R":  return { x: -w, y: 0 }
+    case "T":  return { x: 0, y: h }
+    case "B":  return { x: 0, y: -h }
+    case "TL": return { x: w, y: h }
+    case "TR": return { x: -w, y: h }
+    case "BL": return { x: w, y: -h }
+    case "BR": return { x: -w, y: -h }
   }
 }
 
@@ -60,15 +64,19 @@ export const getEntryOffset = (
  * 即从屏外位置滑到中心所需的相对位移
  */
 export const getExitOffset = (
-  direction: T_Direction4,
+  direction: T_Direction8,
   w: number,
   h: number,
 ): { x: number; y: number } => {
   switch (direction) {
-    case "L": return { x: -w, y: 0 }
-    case "R": return { x: w, y: 0 }
-    case "T": return { x: 0, y: -h }
-    case "B": return { x: 0, y: h }
+    case "L":  return { x: -w, y: 0 }
+    case "R":  return { x: w, y: 0 }
+    case "T":  return { x: 0, y: -h }
+    case "B":  return { x: 0, y: h }
+    case "TL": return { x: -w, y: -h }
+    case "TR": return { x: w, y: -h }
+    case "BL": return { x: -w, y: h }
+    case "BR": return { x: w, y: h }
   }
 }
 
