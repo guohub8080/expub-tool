@@ -34,7 +34,12 @@ export const normalizeItems = (items?: I_CoverChildItem[]): I_NormalizedCoverIte
   if (isNil(items) || items.length === 0) {
     throw new Error("`childItems` must not be empty.")
   }
-  return items.map(fillDefaults)
+  const normalized = items.map(fillDefaults)
+  // 1 图 → 复制成 2 张做循环
+  if (normalized.length === 1) {
+    return [normalized[0], { ...normalized[0] }]
+  }
+  return normalized
 }
 
 // ── offset calculator（8 方向） ──

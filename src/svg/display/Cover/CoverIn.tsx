@@ -8,7 +8,7 @@ import type { T_SpacingProps } from "@css-fn/spacing"
 import { resolveCanvasBg } from "@utils/svg/resolveCanvasBg"
 import type { I_CanvasBg } from "@svg/types"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
-import { transformTranslate, animateOpacity } from "@smil/index"
+import { transformTranslate } from "@smil/index"
 import type { I_AbsRelKeyframe, I_TranslateValue } from "@smil/index"
 import { normalizeItems, getEntryOffset, getExitOffset, calcTotalDuration } from "./utils"
 import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
@@ -19,15 +19,12 @@ import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
  * 多张图片依次从屏外滑入，覆盖当前画面，形成层层刷新效果。
  * 后渲染的 DOM 元素在 SVG z 轴上方，自然覆盖前一张图。
  *
- * 两阶段动画设计（与原版一致，保证首尾相接）：
+ * 结构：
+ *   底层静态图 0（无动画，始终在最底层）
+ *   阶段 1 — 首轮（一次性）：图 1..N-1 依次滑入覆盖
+ *   阶段 2 — 循环（无限）：所有图 0..N-1 循环滑入
  *
- *   阶段 1 — 首轮（repeatCount=1）：
- *     图 0 作为初始静态底图（淡出退场）
- *     图 1..N-1 依次滑入覆盖（一次性动画，fill=freeze）
- *
- *   阶段 2 — 循环（repeatCount=indefinite）：
- *     所有图（0..N-1）循环滑入，begin = firstRoundDuration
- *     阶段 1 结束时阶段 2 立即接管，视觉无缝衔接
+ * 静态图 0 在最底层，被动画层覆盖；循环重置时动画图 0 回到中心盖住静态图 0，无缝衔接。
  */
 const CoverIn = (props: {
   canvasSize: { w: number; h: number }
@@ -61,17 +58,14 @@ const CoverIn = (props: {
           style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }}
           width="100%"
         >
+          {/* 底层静态图 0：无动画，被动画层覆盖，循环边界时露出 */}
+          <g>
+            <foreignObject x={0} y={0} width={w} height={h}>
+              {renderContent(items[0], w, h)}
+            </foreignObject>
+          </g>
+
           {/* ══════ 阶段 1：首轮 ══════ */}
-
-          {/* 图 0 — 初始静态底图，首轮结束后淡出 */}
-          <InitialStaticLayer
-            item={items[0]}
-            viewBoxW={w}
-            viewBoxH={h}
-            firstRoundDuration={firstRoundDuration}
-          />
-
-          {/* 图 1..N-1 — 首轮依次滑入（一次性） */}
           {items.slice(1).map((item, i) => (
             <SlideOnceLayer
               key={`first-${i}`}
@@ -104,39 +98,6 @@ const CoverIn = (props: {
   )
 }
 
-// ── 阶段 1：初始静态底图 ──
-
-const InitialStaticLayer = (props: {
-  item: I_NormalizedCoverItem
-  viewBoxW: number
-  viewBoxH: number
-  firstRoundDuration: number
-}) => {
-  const { item, viewBoxW, viewBoxH, firstRoundDuration } = props
-  const fadeTime = item.stayDuration
-
-  const content = renderContent(item, viewBoxW, viewBoxH)
-
-  return (
-    <g>
-      <foreignObject x={0} y={0} width={viewBoxW} height={viewBoxH}>
-        {content}
-      </foreignObject>
-      {/* 首轮内：停留 → 淡出，一次性 */}
-      {animateOpacity({
-        initValue: 1,
-        timeline: [
-          { toAbs: 1, durationSeconds: fadeTime },
-          { toAbs: 0, durationSeconds: firstRoundDuration - fadeTime },
-        ],
-        begin: "0s",
-        loopCount: 1,
-        isFreeze: true,
-      })}
-    </g>
-  )
-}
-
 // ── 阶段 1：首轮滑入（一次性） ──
 
 const SlideOnceLayer = (props: {
@@ -153,7 +114,6 @@ const SlideOnceLayer = (props: {
   const entryPos = getEntryOffset(item.direction, viewBoxW, viewBoxH)
   const slideRel = getExitOffset(item.direction, viewBoxW, viewBoxH)
 
-  // 等待时长 = timeOffset + 前面所有首轮图的 (cover + stay)
   let waitDuration = timeOffset
   for (let i = 0; i < slideIndex; i++) {
     waitDuration += firstRoundSlides[i].switchDuration + firstRoundSlides[i].stayDuration
@@ -163,17 +123,13 @@ const SlideOnceLayer = (props: {
 
   const timeline: I_AbsRelKeyframe<Partial<I_TranslateValue>>[] = []
 
-  // 等待
   if (waitDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: waitDuration })
   }
-  // 滑入
   timeline.push({ toRel: slideRel, durationSeconds: item.switchDuration, keySplines: item.keySplines })
-  // 停留
   if (stayDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: stayDuration })
   }
-  // 保持到首轮结束
   if (afterDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: afterDuration })
   }
@@ -213,7 +169,6 @@ const SlideLoopLayer = (props: {
   const entryPos = getEntryOffset(item.direction, viewBoxW, viewBoxH)
   const slideRel = getExitOffset(item.direction, viewBoxW, viewBoxH)
 
-  // 等待时长 = 前面所有图的 (cover + stay) 之和
   let waitDuration = 0
   for (let i = 0; i < index; i++) {
     waitDuration += items[i].switchDuration + items[i].stayDuration
@@ -222,17 +177,13 @@ const SlideLoopLayer = (props: {
 
   const timeline: I_AbsRelKeyframe<Partial<I_TranslateValue>>[] = []
 
-  // 等待
   if (waitDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: waitDuration })
   }
-  // 滑入
   timeline.push({ toRel: slideRel, durationSeconds: item.switchDuration, keySplines: item.keySplines })
-  // 停留
   if (item.stayDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: item.stayDuration })
   }
-  // 被覆盖
   if (coveredDuration > 0) {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: coveredDuration })
   }
