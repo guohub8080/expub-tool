@@ -28,8 +28,6 @@ export interface I_ExtrudeConfig {
   }[]
   /** 动画开始时间，默认 "0s" */
   begin?: string
-  /** 计算模式，自动根据 keySplines 推断 */
-  calcMode?: 'spline' | 'linear' | 'discrete' | 'paced'
   /** 是否冻结最后一帧，默认 true */
   isFreeze?: boolean
   /** 循环次数，0 = indefinite */
@@ -54,7 +52,7 @@ export function animateExtrude(config: I_ExtrudeConfig) {
     initValue: '100%',
     timeline,
     begin: config.begin,
-    calcMode: defaultTo(config.calcMode, hasKeySplines ? 'spline' : 'linear'),
+    calcMode: hasKeySplines ? 'spline' : 'linear',
     isFreeze: defaultTo(config.isFreeze, true),
     loopCount: defaultTo(config.loopCount, 1),
     native: config.native,
