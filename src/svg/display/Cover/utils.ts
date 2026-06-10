@@ -48,19 +48,24 @@ export const getEntryOffset = (
   w: number,
   h: number,
 ): { x: number; y: number } => {
-  switch (direction) {
-    case DIRECTION_8.Left:      return { x: w, y: 0 }
-    case DIRECTION_8.Right:     return { x: -w, y: 0 }
-    case DIRECTION_8.Top:       return { x: 0, y: h }
-    case DIRECTION_8.Bottom:    return { x: 0, y: -h }
-    case DIRECTION_8.TopLeft:   return { x: w, y: h }
-    case DIRECTION_8.TopRight:  return { x: -w, y: h }
-    case DIRECTION_8.BottomLeft:  return { x: w, y: -h }
-    case DIRECTION_8.BottomRight: return { x: -w, y: -h }
-    default:
-      console.error('[Cover] getEntryOffset: unknown direction', direction)
-      return { x: 0, y: -h }
-  }
+  console.log('[getEntryOffset] direction:', JSON.stringify(direction), 'typeof:', typeof direction, 'w:', w, 'h:', h)
+  const result = (() => {
+    switch (direction) {
+      case DIRECTION_8.Left:      return { x: w, y: 0 }
+      case DIRECTION_8.Right:     return { x: -w, y: 0 }
+      case DIRECTION_8.Top:       return { x: 0, y: h }
+      case DIRECTION_8.Bottom:    return { x: 0, y: -h }
+      case DIRECTION_8.TopLeft:   return { x: w, y: h }
+      case DIRECTION_8.TopRight:  return { x: -w, y: h }
+      case DIRECTION_8.BottomLeft:  return { x: w, y: -h }
+      case DIRECTION_8.BottomRight: return { x: -w, y: -h }
+      default:
+        console.error('[Cover] getEntryOffset: unknown direction', direction)
+        return { x: 0, y: -h }
+    }
+  })()
+  console.log('[getEntryOffset] result:', JSON.stringify(result))
+  return result
 }
 
 /**

@@ -8,7 +8,6 @@ import { resolveCanvasBg } from "@utils/svg/resolveCanvasBg"
 import type { I_CanvasBg } from "@svg/types"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import { transformTranslate } from "@smil/index"
-import { animateOpacity } from "@smil/index"
 import type { I_AbsRelKeyframe, I_TranslateValue } from "@smil/index"
 import { normalizeItems, getExitOffset, calcTotalDuration } from "./utils"
 import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
@@ -21,9 +20,6 @@ import type { I_CoverChildItem, I_NormalizedCoverItem } from "./types"
  *
  * 动画周期内每张图的时间线：
  *   停留（中心可见） → 滑出（coverDuration） → 屏外等待
- *
- * Ghost 层：图 0 的副本，渲染在 DOM 最下方（z 轴最底层），
- * 在周期末尾短暂可见，确保最后一张图滑出后有画面填充。
  */
 const CoverOut = (props: {
   canvasSize: { w: number; h: number }
@@ -55,18 +51,6 @@ const CoverOut = (props: {
           style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }}
           width="100%"
         >
-          {/* Ghost 层：图 0 副本，在周期末尾短暂可见 */}
-          {N > 1 && (
-            <GhostLayer
-              item={items[0]}
-              items={items}
-              viewBoxW={w}
-              viewBoxH={h}
-              totalDuration={totalDuration}
-            />
-          )}
-
-          {/* 主循环层：所有图片（倒序渲染，图 0 在最上） */}
           {renderOrder.map(i => (
             <CoverOutItem
               key={i}
@@ -106,8 +90,6 @@ const CoverOutItem = (props: {
   }
   slideOutStartTime += item.stayDuration
 
-  // 可见段时长 = 滑出开始之前的停留
-  // 滑出段时长 = coverDuration
   // 等待段时长 = 总周期 - 可见 - 滑出
   const waitDuration = totalDuration - slideOutStartTime - item.coverDuration
 
@@ -131,18 +113,7 @@ const CoverOutItem = (props: {
     timeline.push({ toRel: { x: 0, y: 0 }, durationSeconds: waitDuration })
   }
 
-  const content = item.useJsx
-    ? item.jsx
-    : <SvgEx viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}
-        style={{
-          display: "block",
-          backgroundImage: svgURL(item.url!),
-          backgroundSize: "100% auto",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-        }}
-        width="100%"
-      />
+  const content = renderContent(item, viewBoxW, viewBoxH)
 
   return (
     <g>
@@ -161,58 +132,21 @@ const CoverOutItem = (props: {
   )
 }
 
-// ── Ghost 层 ──
+// ── 渲染内容 ──
 
-const GhostLayer = (props: {
-  item: I_NormalizedCoverItem
-  items: I_NormalizedCoverItem[]
-  viewBoxW: number
-  viewBoxH: number
-  totalDuration: number
-}) => {
-  const { item, items, viewBoxW, viewBoxH, totalDuration } = props
-  const N = items.length
-
-  // Ghost 出现时间 = 最后一张图开始滑出时
-  // = 总周期 - 最后一张图的 coverDuration
-  const lastCoverDuration = items[N - 1].coverDuration
-  const ghostAppearTime = totalDuration - lastCoverDuration
-
-  // Ghost 出现持续到周期结束
-  const ghostVisibleDuration = lastCoverDuration
-
-  // Ghost 隐藏时长 = 总周期 - 可见时长
-  const ghostHiddenDuration = totalDuration - ghostVisibleDuration
-
-  const content = item.useJsx
-    ? item.jsx
-    : <SvgEx viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}
-        style={{
-          display: "block",
-          backgroundImage: svgURL(item.url!),
-          backgroundSize: "100% auto",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-        }}
-        width="100%"
-      />
-
+const renderContent = (item: I_NormalizedCoverItem, w: number, h: number) => {
+  if (item.useJsx) return item.jsx
   return (
-    <g opacity={0}>
-      <foreignObject x={0} y={0} width={viewBoxW} height={viewBoxH}>
-        {content}
-      </foreignObject>
-      {animateOpacity({
-        initValue: 0,
-        timeline: [
-          { toAbs: 0, durationSeconds: ghostHiddenDuration },
-          { toAbs: 1, durationSeconds: ghostVisibleDuration },
-        ],
-        begin: "0s",
-        loopCount: 0,
-        isFreeze: true,
-      })}
-    </g>
+    <SvgEx viewBox={`0 0 ${w} ${h}`}
+      style={{
+        display: "block",
+        backgroundImage: svgURL(item.url!),
+        backgroundSize: "100% auto",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      }}
+      width="100%"
+    />
   )
 }
 
