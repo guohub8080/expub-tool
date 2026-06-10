@@ -28,11 +28,7 @@ export interface I_ExtrudeConfig {
   }[]
   /** 动画开始时间，默认 "0s" */
   begin?: string
-  /** 是否冻结最后一帧，默认 true */
-  isFreeze?: boolean
-  /** 循环次数，0 = indefinite */
-  loopCount?: number
-  /** 原生 SMIL 属性覆盖 */
+  /** 原生 SMIL 属性覆盖（fill/repeatCount/calcMode 等） */
   native?: I_AnimateAttributeConfig<string>['native']
 }
 
@@ -53,8 +49,8 @@ export function animateExtrude(config: I_ExtrudeConfig) {
     timeline,
     begin: config.begin,
     calcMode: hasKeySplines ? 'spline' : 'linear',
-    isFreeze: defaultTo(config.isFreeze, true),
-    loopCount: defaultTo(config.loopCount, 1),
+    isFreeze: true,
+    loopCount: 1,
     native: config.native,
   })
 }
