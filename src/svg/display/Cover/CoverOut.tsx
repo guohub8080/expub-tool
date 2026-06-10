@@ -57,6 +57,13 @@ const CoverOut = (props: {
           style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }}
           width="100%"
         >
+          {/* 底层静态图 0：当所有动画层滑走后，露出这张底图，形成无缝循环 */}
+          <g>
+            <foreignObject x={0} y={0} width={w} height={h}>
+              {renderContent(items[0], w, h)}
+            </foreignObject>
+          </g>
+
           {/* ══════ 阶段 1：首轮 ══════ */}
           {renderOrder.map(i => (
             <CoverOutOnceItem
