@@ -6,6 +6,7 @@ import { getEaseBezier } from "@smil/bezier/getEaseBezier";
 import { animateHeight } from '@smil/animate/height';
 import type { extrudeOptions } from './genWidthAnimate';
 
+/** @legacy 使用 animateExtrude 替代 */
 export const genAnimateExtrude = (options: extrudeOptions): {
   widthAnimate: React.ReactElement;
   rectAnimate: React.ReactElement;

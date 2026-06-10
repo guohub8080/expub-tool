@@ -1,5 +1,5 @@
-export { genAnimateExtrude, genWidthAnimate, genRectAnimate, genAnimateExtrudeAttrs } from "./extrude"
-export type { extrudeOptions, extrudeOptionsAttrs } from "./extrude"
+export { genAnimateExtrude, genWidthAnimate, genRectAnimate, genAnimateExtrudeAttrs, animateExtrude } from "./extrude"
+export type { extrudeOptions, extrudeOptionsAttrs, I_ExtrudeConfig } from "./extrude"
 
 export { animateSoftBlink } from "./blink/softBlink"
 export type { I_SoftBlinkConfig } from "./blink/softBlink"

@@ -16,6 +16,8 @@
  * - genWidthAnimate: 仅生成宽度 <animate> 元素
  * - genRectAnimate: 仅生成矩形高度 <animate> 元素
  * - genAnimateExtrudeAttrs: 生成宽度+矩形高度 <animate> 元素组合
+ *
+ * @legacy 使用 animateExtrude 替代
  */
 
 import React from 'react';
@@ -30,6 +32,9 @@ import SvgEx from "@html/basicEx/SvgEx";
 export { genWidthAnimate, type extrudeOptions as extrudeOptionsAttrs } from './genWidthAnimate';
 export { genRectAnimate } from './genRectAnimate';
 export { genAnimateExtrude as genAnimateExtrudeAttrs } from './genAnimateExtrude';
+
+export { animateExtrude } from './animateExtrude'
+export type { I_ExtrudeConfig } from './animateExtrude'
 
 export type extrudeOptions = {
   canvasWidth: number;
