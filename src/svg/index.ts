@@ -58,7 +58,6 @@ export type { I_ClickPopupProps } from "./click"
 export { ClickCascade } from "./click"
 export type { I_ClickCascadeProps, I_CascadeChildItem } from "./click"
 
-export { default as ExtrudeShowcase } from "./containers/ExtrudeShowcase"
 
 export { default as CoverIn } from "./display/Cover/CoverIn"
 export type { I_CoverChildItem } from "./display/Cover/types"
