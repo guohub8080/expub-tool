@@ -21,7 +21,7 @@ import type { T_Origin } from '@svg/types'
 import type { I_TimelineKeyframe } from '@smil/timeline/types'
 import type { I_TranslateValue } from '@smil/animateTransform/translate'
 import { normalizeItems } from './utils/normalizer'
-import { calcStepVector, calcCenterPosition, buildSlotLayout, toSwitchPhases } from './timeline/offsetCalculator'
+import { calcStepVector, calcCenterPosition, toSwitchPhases } from './timeline/offsetCalculator'
 import { buildCyclicTimelines } from '@utils/svg/buildCyclicTimelines'
 import type { I_AnyCarouselChildItem, I_NormalizedCarouselItem, I_NormalizedAnimChannel, I_NormalizedOriginChannel } from './types'
 import { DEFAULT_ANGLE, DEFAULT_ITEM_GAP } from './types'
@@ -43,7 +43,6 @@ const resolveOrigin = (origin: T_Origin, w: number, h: number): [number, number]
 
 // ── slot timeline 构建 ──
 
-/** 解析 stay 配置的目标值 */
 const resolveStayValue = (stay: I_NormalizedAnimChannel['stay'], centerValue: number): number => {
   if (stay === 'hold') return centerValue
   if ('value' in stay) return stay.value
@@ -54,10 +53,10 @@ const resolveStayValue = (stay: I_NormalizedAnimChannel['stay'], centerValue: nu
 }
 
 /**
- * 计算 slot 在某段的目标值（用于 scale / rotation / skew）
+ * 计算 slot 在某段的目标值
  *
  * activeIdx=0（初始中心）：initValue=centerValue，seg=0 缩回 sideValue
- * 其他 slot：在 enterSeg 到达 centerValue，staySeg 停留，exitSeg 缩回 sideValue
+ * 其他 slot：在 enterSeg 到达 centerValue，staySeg 停留，exitSeg 缩回
  */
 const calcSegTarget = (
   seg: number, activeIdx: number, N: number,
@@ -96,8 +95,11 @@ function buildSlotChannelTimeline(params: {
     const dur = isSwitch ? item.switchDuration : item.stayDuration
     const splines = isSwitch ? item.keySplines : undefined
 
-    const targetValue = calcSegTarget(seg, activeIdx, N, sideValue, centerValue, stay)
-    timeline.push({ toAbs: targetValue, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
+    timeline.push({
+      toAbs: calcSegTarget(seg, activeIdx, N, sideValue, centerValue, stay),
+      durationSeconds: dur,
+      ...(splines ? { keySplines: splines } : {}),
+    })
   }
 
   return timeline
@@ -134,9 +136,55 @@ function buildSlotTranslateTimeline(params: {
   return timeline
 }
 
-// ── opacity 辅助（直接用 <animate>） ──
+// ── slot 布局 ──
 
-/** 构建 opacity 的 keyTimes（基于实际 duration） */
+interface ISlotInfo {
+  itemIdx: number
+  x: number
+  y: number
+}
+
+/**
+ * 生成 N+5 个 slot（比 N+3 多 2 个副本，保证循环首尾 peek 一致）
+ *
+ * slot[1]..slot[N] 对应 items[0]..items[N-1]，依次到达中心位置
+ * slot[0]、slot[N+1]..slot[N+4] 为边界副本
+ */
+function buildSlotLayout(params: {
+  N: number
+  center: { x: number; y: number }
+  step: { x: number; y: number }
+  isReversed: boolean
+}): ISlotInfo[] {
+  const { N, center, step, isReversed } = params
+  const totalSlots = N + 5
+  const slots: ISlotInfo[] = []
+  const sign = isReversed ? -1 : 1
+
+  for (let i = 0; i < totalSlots; i++) {
+    const itemIdx = (i - 1 + N * 10) % N // slot[1] = items[0]
+    const offset = i - 1 // slot[1] offset = 0（中心）
+    slots.push({
+      itemIdx,
+      x: center.x - sign * offset * step.x,
+      y: center.y - sign * offset * step.y,
+    })
+  }
+
+  return slots
+}
+
+/**
+ * slot 是否为边界（不做动画，不生成 Ghost）
+ *
+ * N+5 布局：前 2 个 + 后 2 个为边界
+ */
+const isEdgeSlot = (si: number, totalSlots: number): boolean => {
+  return si < 2 || si >= totalSlots - 2
+}
+
+// ── opacity 辅助 ──
+
 function buildOpacityKeyTimes(N: number, items: I_NormalizedCarouselItem[]): string {
   const totalSegs = N * 2
   let totalDur = 0
@@ -144,12 +192,10 @@ function buildOpacityKeyTimes(N: number, items: I_NormalizedCarouselItem[]): str
   for (let seg = 0; seg < totalSegs; seg++) {
     const itemIdx = floor(seg / 2)
     const item = items[itemIdx % N]
-    const isSwitch = seg % 2 === 0
-    const dur = isSwitch ? item.switchDuration : item.stayDuration
+    const dur = seg % 2 === 0 ? item.switchDuration : item.stayDuration
     durs.push(dur)
     totalDur += dur
   }
-
   const times: string[] = ['0']
   let acc = 0
   for (let seg = 0; seg < totalSegs; seg++) {
@@ -159,7 +205,6 @@ function buildOpacityKeyTimes(N: number, items: I_NormalizedCarouselItem[]): str
   return times.join(';')
 }
 
-/** 构建 opacity 的 keySplines */
 function buildOpacityKeySplines(
   activeIdx: number, N: number, items: I_NormalizedCarouselItem[], channel: I_NormalizedAnimChannel,
 ): string {
@@ -172,37 +217,66 @@ function buildOpacityKeySplines(
   for (let seg = 0; seg < totalSegs; seg++) {
     const itemIdx = floor(seg / 2)
     const item = items[itemIdx % N]
-    const isSwitch = seg % 2 === 0
 
-    // 判断本段值是否有变化
     const cur = calcSegTarget(seg, activeIdx, N, sideValue, centerValue, channel.stay)
     const prev = seg === 0
-      ? (activeIdx === 0 ? centerValue : sideValue) // initValue
+      ? (activeIdx === 0 ? centerValue : sideValue)
       : calcSegTarget(seg - 1, activeIdx, N, sideValue, centerValue, channel.stay)
-    const isChanging = cur !== prev
 
-    splines.push(isChanging ? (item.keySplines || defaultSpline) : linearSpline)
+    splines.push(cur !== prev ? (item.keySplines || defaultSpline) : linearSpline)
   }
 
   return splines.join(';')
 }
 
-/** 构建 opacity 的 values */
 function buildOpacityValues(
   activeIdx: number, N: number, items: I_NormalizedCarouselItem[], channel: I_NormalizedAnimChannel,
 ): string {
   const { sideValue, centerValue, stay } = channel
   const totalSegs = N * 2
-  const values: string[] = []
-
-  // initValue
-  values.push(String(activeIdx === 0 ? centerValue : sideValue))
+  const values: string[] = [String(activeIdx === 0 ? centerValue : sideValue)]
 
   for (let seg = 0; seg < totalSegs; seg++) {
     values.push(String(calcSegTarget(seg, activeIdx, N, sideValue, centerValue, stay)))
   }
 
   return values.join(';')
+}
+
+/** 构建 Ghost 层的 opacity timeline（只在对应 slot 到达中心时可见） */
+function buildGhostOpacityValues(
+  activeIdx: number, N: number, items: I_NormalizedCarouselItem[],
+): string {
+  const totalSegs = N * 2
+  // initValue：初始中心（activeIdx=0）时为 1，否则为 0
+  const values: string[] = [String(activeIdx === 0 ? 1 : 0)]
+
+  for (let seg = 0; seg < totalSegs; seg++) {
+    // slot 在 enter+stay 段（到达中心期间）opacity=1，其余=0
+    if (activeIdx === 0) {
+      values.push(seg <= 1 ? '1' : '0')
+    } else {
+      const enterSeg = (activeIdx - 1) * 2
+      const staySeg = enterSeg + 1
+      values.push(seg === enterSeg || seg === staySeg ? '1' : '0')
+    }
+  }
+
+  return values.join(';')
+}
+
+function buildGhostOpacityKeySplines(
+  activeIdx: number, N: number, items: I_NormalizedCarouselItem[],
+): string {
+  const totalSegs = N * 2
+  const discreteSpline = "0 0 1 1"
+  const splines: string[] = []
+
+  for (let seg = 0; seg < totalSegs; seg++) {
+    splines.push(discreteSpline)
+  }
+
+  return splines.join(';')
 }
 
 // ── 渲染内容 ──
@@ -221,6 +295,151 @@ const renderContent = (item: I_NormalizedCarouselItem, w: number, h: number) => 
       width="100%"
     />
   )
+}
+
+/** 构建 slot 的动画层（scale / opacity / rotation / skewX / skewY） */
+const buildAnimLayers = (params: {
+  item: I_NormalizedCarouselItem
+  activeIdx: number
+  isInitCenter: boolean
+  N: number
+  items: I_NormalizedCarouselItem[]
+  itemW: number
+  itemH: number
+  totalDuration: number
+  content: React.ReactNode
+}): React.ReactNode => {
+  const { item, activeIdx, isInitCenter, N, items, itemW, itemH, totalDuration, content } = params
+  const { opacity, rotation, scale, skewX, skewY } = item
+  let result = content
+
+  // ── opacity ──
+  if (isDefined(opacity)) {
+    result = (
+      <g>
+        <animate
+          attributeName="opacity"
+          values={buildOpacityValues(activeIdx, N, items, opacity)}
+          keyTimes={buildOpacityKeyTimes(N, items)}
+          keySplines={buildOpacityKeySplines(activeIdx, N, items, opacity)}
+          dur={`${totalDuration}s`}
+          calcMode="spline"
+          repeatCount="indefinite"
+          begin="0s"
+          fill="freeze"
+        />
+        {result}
+      </g>
+    )
+  }
+
+  // ── rotation ──
+  if (isDefined(rotation)) {
+    const [ox, oy] = resolveOrigin(rotation.origin, itemW, itemH)
+    const rotTimeline = buildSlotChannelTimeline({ activeIdx, N, items, channel: rotation })
+    result = (
+      <g transform={`translate(${ox}, ${oy})`}>
+        <g>
+          {transformRotate({
+            initValue: isInitCenter ? rotation.centerValue : rotation.sideValue,
+            timeline: rotTimeline,
+            origin: [0, 0],
+            begin: '0s',
+            loopCount: 0,
+            isFreeze: true,
+            isAdditive: false,
+          })}
+          <g transform={`translate(${-ox}, ${-oy})`}>
+            {result}
+          </g>
+        </g>
+      </g>
+    )
+  }
+
+  // ── scale ──
+  if (isDefined(scale)) {
+    const [ox, oy] = resolveOrigin(scale.origin, itemW, itemH)
+    const scaleTimeline = buildSlotChannelTimeline({ activeIdx, N, items, channel: scale })
+    const translateTimeline = buildSlotTranslateTimeline({ activeIdx, N, items, scaleConfig: scale, itemW, itemH })
+    result = (
+      <g transform={`translate(${ox}, ${oy})`}>
+        <g>
+          {transformScaleRaw({
+            initValue: isInitCenter ? scale.centerValue : scale.sideValue,
+            timeline: scaleTimeline,
+            begin: '0s',
+            loopCount: 0,
+            isFreeze: true,
+            isAdditive: false,
+          })}
+          <g transform={`translate(${-ox}, ${-oy})`}>
+            <g>
+              {transformTranslate({
+                initValue: isInitCenter
+                  ? { x: -itemW * (scale.centerValue - 1) / 2, y: -itemH * (scale.centerValue - 1) / 2 }
+                  : { x: 0, y: 0 },
+                timeline: translateTimeline,
+                begin: '0s',
+                loopCount: 0,
+                isFreeze: true,
+                isAdditive: false,
+              })}
+              {result}
+            </g>
+          </g>
+        </g>
+      </g>
+    )
+  }
+
+  // ── skewY ──
+  if (isDefined(skewY)) {
+    const [ox, oy] = resolveOrigin(skewY.origin, itemW, itemH)
+    const skewTimeline = buildSlotChannelTimeline({ activeIdx, N, items, channel: skewY })
+    result = (
+      <g transform={`translate(${ox}, ${oy})`}>
+        <g>
+          {transformSkewY({
+            initValue: isInitCenter ? skewY.centerValue : skewY.sideValue,
+            timeline: skewTimeline,
+            begin: '0s',
+            loopCount: 0,
+            isFreeze: true,
+            isAdditive: false,
+          })}
+          <g transform={`translate(${-ox}, ${-oy})`}>
+            {result}
+          </g>
+        </g>
+      </g>
+    )
+  }
+
+  // ── skewX ──
+  if (isDefined(skewX)) {
+    const [ox, oy] = resolveOrigin(skewX.origin, itemW, itemH)
+    const skewTimeline = buildSlotChannelTimeline({ activeIdx, N, items, channel: skewX })
+    result = (
+      <g transform={`translate(${ox}, ${oy})`}>
+        <g>
+          {transformSkewX({
+            initValue: isInitCenter ? skewX.centerValue : skewX.sideValue,
+            timeline: skewTimeline,
+            begin: '0s',
+            loopCount: 0,
+            isFreeze: true,
+            isAdditive: false,
+          })}
+          <g transform={`translate(${-ox}, ${-oy})`}>
+            {result}
+          </g>
+        </g>
+      </g>
+    )
+  }
+
+  return result
 }
 
 // ── 主组件 ──
@@ -252,6 +471,7 @@ const AnyCarousel = (props: {
   const step = calcStepVector(angle, itemW, itemH, gap)
   const center = calcCenterPosition(viewBoxW, viewBoxH, itemW, itemH)
   const slots = buildSlotLayout({ N, center, step, isReversed })
+  const totalSlots = N + 5
   const { totalDuration } = buildCyclicTimelines(toSwitchPhases(items))
 
   // outerTranslate timeline
@@ -280,151 +500,66 @@ const AnyCarousel = (props: {
           width="100%"
         >
           <g>
+            {/* ══════ 普通 slot（含边界副本）══════ */}
             {slots.map((slot, si) => {
               const activeIdx = si - 1
-              const isEdge = si === 0 || si === slots.length - 1
+              const edge = isEdgeSlot(si, totalSlots)
               const isInitCenter = activeIdx === 0
               const item = items[slot.itemIdx]
 
-              let content: React.ReactNode = (
+              const baseContent = (
                 <foreignObject x={0} y={0} width={itemW} height={itemH}>
                   {renderContent(item, itemW, itemH)}
                 </foreignObject>
               )
 
-              if (!isEdge) {
-                const { opacity, rotation, scale, skewX, skewY } = item
-
-                // ── opacity ──
-                if (isDefined(opacity)) {
-                  content = (
-                    <g>
-                      <animate
-                        attributeName="opacity"
-                        values={buildOpacityValues(activeIdx, N, items, opacity)}
-                        keyTimes={buildOpacityKeyTimes(N, items)}
-                        keySplines={buildOpacityKeySplines(activeIdx, N, items, opacity)}
-                        dur={`${totalDuration}s`}
-                        calcMode="spline"
-                        repeatCount="indefinite"
-                        begin="0s"
-                        fill="freeze"
-                      />
-                      {content}
-                    </g>
-                  )
-                }
-
-                // ── rotation ──
-                if (isDefined(rotation)) {
-                  const [ox, oy] = resolveOrigin(rotation.origin, itemW, itemH)
-                  const rotTimeline = buildSlotChannelTimeline({ activeIdx, N, items, channel: rotation })
-                  content = (
-                    <g transform={`translate(${ox}, ${oy})`}>
-                      <g>
-                        {transformRotate({
-                          initValue: isInitCenter ? rotation.centerValue : rotation.sideValue,
-                          timeline: rotTimeline,
-                          origin: [0, 0],
-                          begin: '0s',
-                          loopCount: 0,
-                          isFreeze: true,
-                          isAdditive: false,
-                        })}
-                        <g transform={`translate(${-ox}, ${-oy})`}>
-                          {content}
-                        </g>
-                      </g>
-                    </g>
-                  )
-                }
-
-                // ── scale ──
-                if (isDefined(scale)) {
-                  const [ox, oy] = resolveOrigin(scale.origin, itemW, itemH)
-                  const scaleTimeline = buildSlotChannelTimeline({ activeIdx, N, items, channel: scale })
-                  const translateTimeline = buildSlotTranslateTimeline({ activeIdx, N, items, scaleConfig: scale, itemW, itemH })
-                  content = (
-                    <g transform={`translate(${ox}, ${oy})`}>
-                      <g>
-                        {transformScaleRaw({
-                          initValue: isInitCenter ? scale.centerValue : scale.sideValue,
-                          timeline: scaleTimeline,
-                          begin: '0s',
-                          loopCount: 0,
-                          isFreeze: true,
-                          isAdditive: false,
-                        })}
-                        <g transform={`translate(${-ox}, ${-oy})`}>
-                          <g>
-                            {transformTranslate({
-                              initValue: isInitCenter
-                                ? { x: -itemW * (scale.centerValue - 1) / 2, y: -itemH * (scale.centerValue - 1) / 2 }
-                                : { x: 0, y: 0 },
-                              timeline: translateTimeline,
-                              begin: '0s',
-                              loopCount: 0,
-                              isFreeze: true,
-                              isAdditive: false,
-                            })}
-                            {content}
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  )
-                }
-
-                // ── skewY ──
-                if (isDefined(skewY)) {
-                  const [ox, oy] = resolveOrigin(skewY.origin, itemW, itemH)
-                  const skewTimeline = buildSlotChannelTimeline({ activeIdx, N, items, channel: skewY })
-                  content = (
-                    <g transform={`translate(${ox}, ${oy})`}>
-                      <g>
-                        {transformSkewY({
-                          initValue: isInitCenter ? skewY.centerValue : skewY.sideValue,
-                          timeline: skewTimeline,
-                          begin: '0s',
-                          loopCount: 0,
-                          isFreeze: true,
-                          isAdditive: false,
-                        })}
-                        <g transform={`translate(${-ox}, ${-oy})`}>
-                          {content}
-                        </g>
-                      </g>
-                    </g>
-                  )
-                }
-
-                // ── skewX ──
-                if (isDefined(skewX)) {
-                  const [ox, oy] = resolveOrigin(skewX.origin, itemW, itemH)
-                  const skewTimeline = buildSlotChannelTimeline({ activeIdx, N, items, channel: skewX })
-                  content = (
-                    <g transform={`translate(${ox}, ${oy})`}>
-                      <g>
-                        {transformSkewX({
-                          initValue: isInitCenter ? skewX.centerValue : skewX.sideValue,
-                          timeline: skewTimeline,
-                          begin: '0s',
-                          loopCount: 0,
-                          isFreeze: true,
-                          isAdditive: false,
-                        })}
-                        <g transform={`translate(${-ox}, ${-oy})`}>
-                          {content}
-                        </g>
-                      </g>
-                    </g>
-                  )
-                }
-              }
+              const content = edge
+                ? baseContent
+                : buildAnimLayers({
+                    item, activeIdx, isInitCenter, N, items, itemW, itemH, totalDuration,
+                    content: baseContent,
+                  })
 
               return (
-                <g key={si} transform={`translate(${slot.x},${slot.y})`}>
+                <g key={`slot-${si}`} transform={`translate(${slot.x},${slot.y})`}>
                   {content}
+                </g>
+              )
+            })}
+
+            {/* ══════ Ghost 层（z 序最高，只在对应 slot 到达中心时可见）══════ */}
+            {slots.slice(1, N + 1).map((slot, gi) => {
+              const activeIdx = gi // slot[1] → activeIdx=0, slot[2] → activeIdx=1, ...
+              const isInitCenter = activeIdx === 0
+              const item = items[slot.itemIdx]
+
+              const baseContent = (
+                <foreignObject x={0} y={0} width={itemW} height={itemH}>
+                  {renderContent(item, itemW, itemH)}
+                </foreignObject>
+              )
+
+              const animatedContent = buildAnimLayers({
+                item, activeIdx, isInitCenter, N, items, itemW, itemH, totalDuration,
+                content: baseContent,
+              })
+
+              return (
+                <g key={`ghost-${gi}`} transform={`translate(${slot.x},${slot.y})`}>
+                  <g>
+                    <animate
+                      attributeName="opacity"
+                      values={buildGhostOpacityValues(activeIdx, N, items)}
+                      keyTimes={buildOpacityKeyTimes(N, items)}
+                      keySplines={buildGhostOpacityKeySplines(activeIdx, N, items)}
+                      dur={`${totalDuration}s`}
+                      calcMode="spline"
+                      repeatCount="indefinite"
+                      begin="0s"
+                      fill="freeze"
+                    />
+                    {animatedContent}
+                  </g>
                 </g>
               )
             })}
