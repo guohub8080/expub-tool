@@ -138,7 +138,7 @@ import { SnapSwipeViewXContainer, SnapSwipeViewYContainer } from "expub-tool/svg
 
 ```
 SnapSwipeViewContainer/
-├── README.md                      本文档
-├── SnapSwipeViewXContainer.tsx    横向吸附滑动组件
-└── SnapSwipeViewYContainer.tsx    纵向吸附滑动组件
+├── README.md          本文档
+├── ContainerX.tsx     横向吸附滑动组件
+└── ContainerY.tsx     纵向吸附滑动组件
 ```
