@@ -3,7 +3,7 @@ export type { T_ZeroHeightMode } from "./containers/ZeroHeightContainer"
 
 export { default as Container180 } from "./containers/Container180"
 
-export { default as SwipeViewXContainer } from "./containers/SwipeViewXContainer"
+export { default as SwipeViewXContainer } from "./containers/SwipeViewContainer/ContainerX"
 export { default as SnapSwipeViewXContainer } from "./containers/SnapSwipeViewContainer/ContainerX"
 export type { T_SnapAlign, T_CanvasSize, T_Direction4, T_Direction8, T_DirectionX, T_HotArea, I_CanvasBg, T_CanvasBgFit, T_CanvasBgPosition } from "./types"
 export { DIRECTION_4, DIRECTION_8, ORIGIN } from "./types"
@@ -31,7 +31,7 @@ export type { I_CoverFlowItemConfig } from "./display/CoverFlow/types"
 
 export { default as CoverFlowY } from "./display/CoverFlow/CoverFlowY"
 
-export { default as SwipeViewYContainer } from "./containers/SwipeViewYContainer"
+export { default as SwipeViewYContainer } from "./containers/SwipeViewContainer/ContainerY"
 export { default as SnapSwipeViewYContainer } from "./containers/SnapSwipeViewContainer/ContainerY"
 
 export { default as SpinZoomCarousel } from "./display/SpinZoomCarousel"
