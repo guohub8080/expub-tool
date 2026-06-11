@@ -113,8 +113,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
   /**
    * 递归构建所有层
    * - 第 1 层：无动画，直接渲染
-   * - 中间层：opacity=0 + 淡入动画 + 热区
-   * - 最后一层：无动画，静态内容（递归终点）
+   * - 其余层（含最后一层）：opacity=0 + 淡入动画 + 热区
    */
   const buildChain = (index: number): React.ReactNode => {
     if (index >= childItems.length) return null
@@ -122,10 +121,9 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
     if (isNil(item.url) && isNil(item.jsx)) return null
 
     const isFirst = index === 0
-    const isLast = index === childItems.length - 1
 
-    // 第一层或最后一层：无动画
-    if (isFirst || isLast) {
+    // 第一层：无动画，直接渲染
+    if (isFirst) {
       return (
         <>
           {renderContent(item)}
@@ -134,7 +132,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
       )
     }
 
-    // 中间层：淡入 + 热区
+    // 其余层：淡入 + 热区
     return (
       <g opacity={0}>
         {renderFadeIn(item)}
