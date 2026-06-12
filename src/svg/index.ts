@@ -65,4 +65,4 @@ export type { I_CoverChildItem } from "./display/Cover/types"
 export { default as CoverOut } from "./display/Cover/CoverOut"
 
 export { default as AnyCarousel } from "./display/AnyCarousel"
-export type { I_AnyCarouselChildItem, I_CarouselAnimChannel, I_CarouselOriginChannel } from "./display/AnyCarousel/types"
+export type { I_AnyCarouselChildItem, I_CarouselAnimChannel, I_CarouselOriginChannel, I_CarouselTranslateChannel } from "./display/AnyCarousel/types"

@@ -6,7 +6,7 @@ export type { T_Origin } from "@svg/types"
 
 // ── 默认值常量 ──
 
-/** 默认轨道角度（度），0 = 水平向右 */
+/** 默认轨道角度（度），0 = 水平（从左到右） */
 export const DEFAULT_ANGLE = 0
 /** 默认 slot 间距 */
 export const DEFAULT_ITEM_GAP = 0
@@ -17,7 +17,7 @@ export const DEFAULT_STAY_DURATION = 1.0
 /** 默认缓动曲线 (ease-in-out) */
 export const DEFAULT_KEY_SPLINES = "0.42 0 0.58 1"
 
-// ── 默认 identity 值（侧图和中心图一样 = 不生成动画） ──
+// ── 默认 identity 值 ──
 
 export const IDENTITY_SCALE = 1
 export const IDENTITY_OPACITY = 1
@@ -27,20 +27,11 @@ export const IDENTITY_SKEW = 0
 // ── 动画通道配置 ──
 
 /**
- * 普通动画通道（opacity 专用，无 origin）
+ * 普通动画通道（opacity 专用）
  *
- * 两个状态值：
- * - sideValue：slot 在侧边时的值
- * - centerValue：slot 在中心时的值
- *
- * enter 阶段自动从 sideValue → centerValue 插值
- * exit 阶段自动从 centerValue → sideValue 插值
- * hold 阶段保持 sideValue
- *
- * stay 阶段用户自定义：
- * - 不传：保持 centerValue
- * - 数字：保持在该值
- * - { timeline }：自定义动画（如呼吸、闪烁）
+ * - sideValue：item 不在中心时的值
+ * - centerValue：item 在中心时的值
+ * - stay：在中心停留期间的行为
  */
 export interface I_CarouselAnimChannel {
   /** 侧边状态值，默认 1 */
@@ -56,25 +47,32 @@ export interface I_CarouselAnimChannel {
   stay?: number | { timeline: I_TimelineKeyframe<number>[] }
 }
 
-/**
- * 带原点的动画通道（scale / rotation / skewX / skewY 专用）
- *
- * 在 I_CarouselAnimChannel 基础上增加 origin 支持，
- * 渲染时用嵌套 <g> 隔离 origin 的 translate→动画→translate-back。
- */
+/** 带原点的动画通道 */
 export interface I_CarouselOriginChannel extends I_CarouselAnimChannel {
   /** 变换原点，默认 'Center' */
   origin?: T_Origin
 }
 
-// ── 单项配置 ──
+// ── translate 配置 ──
 
 /**
- * AnyCarousel 单项配置
+ * translate 通道配置
  *
- * 每个 childItem 描述一张图/内容及其到达中心/回到侧边时的动画效果。
- * 轨道方向由组件级 props.angle 决定，不在此配置。
+ * 简单模式：自动根据 angle 计算 entry/exit 偏移
+ * 高级模式：自定义 initValue + timeline
+ * stay：中心停留期间的位移（如浮动效果）
  */
+export interface I_CarouselTranslateChannel {
+  /** off-screen 距离倍数，默认 1 */
+  distance?: number
+  /** entry/exit 缓动曲线 */
+  keySplines?: string
+  /** stay 阶段位移 */
+  stay?: { x: number; y: number } | { timeline: I_TimelineKeyframe<{ x: number; y: number }>[] }
+}
+
+// ── 单项配置 ──
+
 export interface I_AnyCarouselChildItem {
   /** 图片地址（与 jsx 二选一） */
   url?: string
@@ -87,11 +85,13 @@ export interface I_AnyCarouselChildItem {
   /** 缓动曲线，默认 ease-in-out */
   keySplines?: string
 
-  /** 缩放通道：centerValue=1.4 + sideValue=1 → CoverFlow 效果 */
+  /** 位移通道：自动沿主轴移动 */
+  translate?: I_CarouselTranslateChannel
+  /** 缩放通道 */
   scale?: I_CarouselOriginChannel
-  /** 透明度通道：centerValue=1 + sideValue=0.3 → 侧图半透明 */
+  /** 透明度通道 */
   opacity?: I_CarouselAnimChannel
-  /** 旋转通道：centerValue=0 + sideValue=180 → 侧图翻转 */
+  /** 旋转通道 */
   rotation?: I_CarouselOriginChannel
   /** skewX 通道 */
   skewX?: I_CarouselOriginChannel
@@ -101,19 +101,22 @@ export interface I_AnyCarouselChildItem {
 
 // ── 标准化后的类型 ──
 
-/** 标准化后的普通通道（所有字段已填充） */
 export interface I_NormalizedAnimChannel {
   sideValue: number
   centerValue: number
   stay: 'hold' | { value: number } | { timeline: I_TimelineKeyframe<number>[] }
 }
 
-/** 标准化后的带 origin 通道 */
 export interface I_NormalizedOriginChannel extends I_NormalizedAnimChannel {
   origin: T_Origin
 }
 
-/** 标准化后的单项配置 */
+export interface I_NormalizedTranslateChannel {
+  distance: number
+  keySplines: string
+  stay: 'hold' | { value: { x: number; y: number } } | { timeline: I_TimelineKeyframe<{ x: number; y: number }>[] }
+}
+
 export interface I_NormalizedCarouselItem {
   url?: string
   jsx?: ReactNode
@@ -121,6 +124,7 @@ export interface I_NormalizedCarouselItem {
   switchDuration: number
   stayDuration: number
   keySplines: string
+  translate: I_NormalizedTranslateChannel
   scale?: I_NormalizedOriginChannel
   opacity?: I_NormalizedAnimChannel
   rotation?: I_NormalizedOriginChannel

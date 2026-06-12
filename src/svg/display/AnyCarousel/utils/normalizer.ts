@@ -2,14 +2,14 @@ import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
 import { isDefined } from "@utils/fn/isDefined"
 import sum from "lodash/sum"
-import type { I_AnyCarouselChildItem, I_NormalizedCarouselItem, I_NormalizedAnimChannel, I_NormalizedOriginChannel } from "../types"
+import type { I_AnyCarouselChildItem, I_NormalizedCarouselItem, I_NormalizedAnimChannel, I_NormalizedOriginChannel, I_NormalizedTranslateChannel } from "../types"
 import {
   DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION, DEFAULT_KEY_SPLINES,
   IDENTITY_SCALE, IDENTITY_OPACITY, IDENTITY_ROTATION, IDENTITY_SKEW,
 } from "../types"
-import type { I_TimelineKeyframe } from "@smil/timeline/types"
 
-/** 标准化普通动画通道（opacity） */
+// ── 通道标准化 ──
+
 const normalizeAnimChannel = (
   channel: I_AnyCarouselChildItem['opacity'],
   identityValue: number,
@@ -28,31 +28,46 @@ const normalizeAnimChannel = (
     stay = { timeline: channel.stay.timeline }
   }
 
-  // 全部 identity 且无 stay 动画 → 不生成
-  if (sideValue === identityValue && centerValue === identityValue && stay === 'hold') {
-    return undefined
-  }
+  if (sideValue === identityValue && centerValue === identityValue && stay === 'hold') return undefined
 
   return { sideValue, centerValue, stay }
 }
 
-/** 标准化带 origin 的动画通道（scale / rotation / skewX / skewY） */
 const normalizeOriginChannel = (
   channel: I_AnyCarouselChildItem['scale'],
   identityValue: number,
 ): I_NormalizedOriginChannel | undefined => {
   if (isNil(channel)) return undefined
-
   const anim = normalizeAnimChannel(channel, identityValue)
   if (isNil(anim)) return undefined
+  return { ...anim, origin: defaultTo(channel.origin, 'Center') }
+}
+
+const normalizeTranslateChannel = (
+  channel: I_AnyCarouselChildItem['translate'],
+): I_NormalizedTranslateChannel => {
+  if (isNil(channel)) {
+    return { distance: 1, keySplines: DEFAULT_KEY_SPLINES, stay: 'hold' }
+  }
+
+  let stay: I_NormalizedTranslateChannel['stay']
+  if (isNil(channel.stay)) {
+    stay = 'hold'
+  } else if ('x' in channel.stay) {
+    stay = { value: channel.stay as { x: number; y: number } }
+  } else {
+    stay = { timeline: channel.stay.timeline }
+  }
 
   return {
-    ...anim,
-    origin: defaultTo(channel.origin, 'Center'),
+    distance: defaultTo(channel.distance, 1),
+    keySplines: defaultTo(channel.keySplines, DEFAULT_KEY_SPLINES),
+    stay,
   }
 }
 
-/** 校验 timeline 总时长不超过 phase duration */
+// ── 校验 ──
+
 const validateTimelineDurations = (items: I_NormalizedCarouselItem[]): void => {
   const totalDuration = items.reduce((s, item) => s + item.switchDuration + item.stayDuration, 0)
   const n = items.length
@@ -65,7 +80,6 @@ const validateTimelineDurations = (items: I_NormalizedCarouselItem[]): void => {
 
     const checks: { timeline: readonly { durationSeconds: number }[] | undefined; max: number; label: string }[] = []
 
-    // 各通道的 stay timeline 校验
     const channels: { config: I_NormalizedAnimChannel | undefined; name: string }[] = [
       { config: item.scale, name: 'scale' },
       { config: item.opacity, name: 'opacity' },
@@ -76,12 +90,13 @@ const validateTimelineDurations = (items: I_NormalizedCarouselItem[]): void => {
 
     for (const { config, name } of channels) {
       if (isDefined(config) && typeof config.stay !== 'string' && 'timeline' in config.stay) {
-        checks.push({
-          timeline: config.stay.timeline,
-          max: item.stayDuration,
-          label: `${name} stay`,
-        })
+        checks.push({ timeline: config.stay.timeline, max: item.stayDuration, label: `${name} stay` })
       }
+    }
+
+    // translate stay timeline
+    if (typeof item.translate.stay !== 'string' && 'timeline' in item.translate.stay) {
+      checks.push({ timeline: item.translate.stay.timeline, max: item.stayDuration, label: 'translate stay' })
     }
 
     for (const { timeline, max, label } of checks) {
@@ -95,9 +110,8 @@ const validateTimelineDurations = (items: I_NormalizedCarouselItem[]): void => {
   }
 }
 
-/**
- * 校验并填充单项配置的默认值
- */
+// ── fillDefaults ──
+
 const fillDefaults = (item: I_AnyCarouselChildItem): I_NormalizedCarouselItem => {
   if (isNil(item.url) && isNil(item.jsx)) {
     throw new Error("Each childItem must have either `url` or `jsx`.")
@@ -113,6 +127,7 @@ const fillDefaults = (item: I_AnyCarouselChildItem): I_NormalizedCarouselItem =>
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     keySplines: defaultTo(item.keySplines, DEFAULT_KEY_SPLINES),
+    translate: normalizeTranslateChannel(item.translate),
     scale: normalizeOriginChannel(item.scale, IDENTITY_SCALE),
     opacity: normalizeAnimChannel(item.opacity, IDENTITY_OPACITY),
     rotation: normalizeOriginChannel(item.rotation, IDENTITY_ROTATION),
@@ -121,13 +136,6 @@ const fillDefaults = (item: I_AnyCarouselChildItem): I_NormalizedCarouselItem =>
   }
 }
 
-/**
- * 标准化 childItems：
- * - 空/nil → throw
- * - 1 图 → 复制成 2 张做循环
- * - ≥ 2 图 → 逐个填充默认值
- * - 全部 identity 的通道自动剔除
- */
 export const normalizeItems = (items?: I_AnyCarouselChildItem[]): I_NormalizedCarouselItem[] => {
   if (isNil(items) || items.length === 0) {
     throw new Error("`childItems` must not be empty.")
