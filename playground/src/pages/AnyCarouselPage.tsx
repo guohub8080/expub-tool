@@ -40,12 +40,12 @@ export default function AnyCarouselPage() {
     <div>
       <h2>AnyCarousel — 通用轨道轮播</h2>
 
-      <CopyDemo title="水平 CoverFlow（angle=0, scale.centerValue=1.4）">
+      <CopyDemo title="水平轮播（angle=0, scale 1.4）">
         <AnyCarousel
-          canvasSize={{ w: 1000, h: 800 }}
+          canvasSize={{ w: 800, h: 600 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           angle={0}
-          itemGap={100}
+          itemGap={0}
           childItems={[
             { url: getWechat300x500(1), scale: { centerValue: 1.4 } },
             { url: getWechat300x500(2), scale: { centerValue: 1.4 } },
@@ -54,12 +54,11 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="垂直轮播（angle=90, scale.centerValue=1.4）">
+      <CopyDemo title="垂直轮播（angle=90, scale 1.4）">
         <AnyCarousel
-          canvasSize={{ w: 600, h: 1000 }}
+          canvasSize={{ w: 400, h: 800 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           angle={90}
-          itemGap={100}
           childItems={[
             { url: getWechat300x500(4), scale: { centerValue: 1.4 } },
             { url: getWechat300x500(5), scale: { centerValue: 1.4 } },
@@ -68,68 +67,63 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="对角线（angle=45, scale + opacity）">
+      <CopyDemo title="对角线（angle=135, scale + opacity）">
         <AnyCarousel
-          canvasSize={{ w: 1000, h: 800 }}
+          canvasSize={{ w: 800, h: 600 }}
           itemCanvasSize={{ w: 300, h: 500 }}
-          angle={45}
-          itemGap={80}
+          angle={135}
           childItems={[
-            { url: getWechat300x500(7), scale: { centerValue: 1.3 }, opacity: { centerValue: 1, sideValue: 0.5 } },
-            { url: getWechat300x500(8), scale: { centerValue: 1.3 }, opacity: { centerValue: 1, sideValue: 0.5 } },
-            { url: getWechat300x500(9), scale: { centerValue: 1.3 }, opacity: { centerValue: 1, sideValue: 0.5 } },
+            { url: getWechat300x500(7), scale: { centerValue: 1.3 }, opacity: { centerValue: 1, sideValue: 0.4 } },
+            { url: getWechat300x500(8), scale: { centerValue: 1.3 }, opacity: { centerValue: 1, sideValue: 0.4 } },
+            { url: getWechat300x500(9), scale: { centerValue: 1.3 }, opacity: { centerValue: 1, sideValue: 0.4 } },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="反向水平（angle=180, scale.centerValue=1.3）">
+      <CopyDemo title="纯透明度轮播（无缩放, angle=0）">
         <AnyCarousel
-          canvasSize={{ w: 1000, h: 800 }}
-          itemCanvasSize={{ w: 300, h: 500 }}
-          angle={180}
-          itemGap={80}
-          childItems={[
-            { url: getWechat300x500(1), scale: { centerValue: 1.3 } },
-            { url: getWechat300x500(2), scale: { centerValue: 1.3 } },
-            { url: getWechat300x500(3), scale: { centerValue: 1.3 } },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="纯透明度（无缩放，angle=0）">
-        <AnyCarousel
-          canvasSize={{ w: 1000, h: 800 }}
+          canvasSize={{ w: 800, h: 600 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           angle={0}
-          itemGap={40}
           childItems={[
-            { url: getWechat300x500(4), opacity: { centerValue: 1, sideValue: 0.2 } },
-            { url: getWechat300x500(5), opacity: { centerValue: 1, sideValue: 0.2 } },
-            { url: getWechat300x500(6), opacity: { centerValue: 1, sideValue: 0.2 } },
+            { url: getWechat300x500(1), opacity: { centerValue: 1, sideValue: 0.15 } },
+            { url: getWechat300x500(2), opacity: { centerValue: 1, sideValue: 0.15 } },
+            { url: getWechat300x500(3), opacity: { centerValue: 1, sideValue: 0.15 } },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="旋转入场（rotation.sideValue=15）">
+      <CopyDemo title="旋转轮播（rotation 侧图 15°, angle=0）">
         <AnyCarousel
-          canvasSize={{ w: 1000, h: 800 }}
+          canvasSize={{ w: 800, h: 600 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           angle={0}
-          itemGap={60}
           childItems={[
-            { url: getWechat300x500(7), rotation: { sideValue: 15, centerValue: 0 }, scale: { centerValue: 1.2 } },
-            { url: getWechat300x500(8), rotation: { sideValue: 15, centerValue: 0 }, scale: { centerValue: 1.2 } },
-            { url: getWechat300x500(9), rotation: { sideValue: 15, centerValue: 0 }, scale: { centerValue: 1.2 } },
+            { url: getWechat300x500(4), rotation: { sideValue: 15, centerValue: 0 }, scale: { centerValue: 1.2 } },
+            { url: getWechat300x500(5), rotation: { sideValue: 15, centerValue: 0 }, scale: { centerValue: 1.2 } },
+            { url: getWechat300x500(6), rotation: { sideValue: 15, centerValue: 0 }, scale: { centerValue: 1.2 } },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="skewY 3D 翻转感（skewY 侧图 20°, angle=0）">
+        <AnyCarousel
+          canvasSize={{ w: 800, h: 600 }}
+          itemCanvasSize={{ w: 300, h: 500 }}
+          angle={0}
+          childItems={[
+            { url: getWechat300x500(7), skewY: { sideValue: 20, centerValue: 0 }, scale: { centerValue: 1.2 } },
+            { url: getWechat300x500(8), skewY: { sideValue: 20, centerValue: 0 }, scale: { centerValue: 1.2 } },
+            { url: getWechat300x500(9), skewY: { sideValue: 20, centerValue: 0 }, scale: { centerValue: 1.2 } },
           ]}
         />
       </CopyDemo>
 
       <CopyDemo title="快速切换（switchDuration=0.3, stayDuration=0.5）">
         <AnyCarousel
-          canvasSize={{ w: 1000, h: 800 }}
+          canvasSize={{ w: 800, h: 600 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           angle={0}
-          itemGap={80}
           childItems={[
             { url: getWechat300x500(1), switchDuration: 0.3, stayDuration: 0.5, scale: { centerValue: 1.4 } },
             { url: getWechat300x500(2), switchDuration: 0.3, stayDuration: 0.5, scale: { centerValue: 1.4 } },
@@ -138,17 +132,30 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="4 图混搭（不同 scale/opacity/keySplines）">
+      <CopyDemo title="反向（isReversed, angle=0）">
         <AnyCarousel
-          canvasSize={{ w: 1000, h: 800 }}
+          canvasSize={{ w: 800, h: 600 }}
           itemCanvasSize={{ w: 300, h: 500 }}
           angle={0}
-          itemGap={80}
+          isReversed
           childItems={[
-            { url: getWechat300x500(4), scale: { centerValue: 1.5 }, opacity: { centerValue: 1, sideValue: 0.3 } },
-            { url: getWechat300x500(5), scale: { centerValue: 1.3 }, opacity: { centerValue: 1, sideValue: 0.5 }, switchDuration: 0.3 },
-            { url: getWechat300x500(6), scale: { centerValue: 1.4 }, opacity: { centerValue: 1, sideValue: 0.4 } },
-            { url: getWechat300x500(7), scale: { centerValue: 1.2 }, opacity: { centerValue: 1, sideValue: 0.6 }, switchDuration: 0.8 },
+            { url: getWechat300x500(4), scale: { centerValue: 1.4 } },
+            { url: getWechat300x500(5), scale: { centerValue: 1.4 } },
+            { url: getWechat300x500(6), scale: { centerValue: 1.4 } },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="4 图混搭（不同 scale/opacity/duration）">
+        <AnyCarousel
+          canvasSize={{ w: 800, h: 600 }}
+          itemCanvasSize={{ w: 300, h: 500 }}
+          angle={0}
+          childItems={[
+            { url: getWechat300x500(7), scale: { centerValue: 1.5 }, opacity: { centerValue: 1, sideValue: 0.3 } },
+            { url: getWechat300x500(8), scale: { centerValue: 1.3 }, opacity: { centerValue: 1, sideValue: 0.5 }, switchDuration: 0.3 },
+            { url: getWechat300x500(9), scale: { centerValue: 1.4 }, opacity: { centerValue: 1, sideValue: 0.4 } },
+            { url: getWechat300x500(1), scale: { centerValue: 1.2 }, opacity: { centerValue: 1, sideValue: 0.6 }, switchDuration: 0.8 },
           ]}
         />
       </CopyDemo>
