@@ -120,6 +120,7 @@ export default function AnyCarouselPage() {
           childItems={[
             {
               url: getWechat300x500(4),
+              stayDuration: 1.5,
               scale: {
                 sideValue: 0.78,
                 centerValue: 1,
@@ -131,6 +132,7 @@ export default function AnyCarouselPage() {
             },
             {
               url: getWechat300x500(5),
+              stayDuration: 1.5,
               scale: {
                 sideValue: 0.78,
                 centerValue: 1,
@@ -142,6 +144,7 @@ export default function AnyCarouselPage() {
             },
             {
               url: getWechat300x500(6),
+              stayDuration: 1.5,
               scale: {
                 sideValue: 0.78,
                 centerValue: 1,
