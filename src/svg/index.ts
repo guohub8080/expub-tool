@@ -65,4 +65,4 @@ export type { I_CoverChildItem } from "./display/Cover/types"
 export { default as CoverOut } from "./display/Cover/CoverOut"
 
 export { default as AnyCarousel } from "./display/AnyCarousel"
-export type { I_AnyCarouselItemConfig } from "./display/AnyCarousel/types"
+export type { I_AnyCarouselItemConfig, I_ChildTransform } from "./display/AnyCarousel/types"

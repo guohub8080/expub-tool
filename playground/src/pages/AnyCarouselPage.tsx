@@ -38,15 +38,15 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
 export default function AnyCarouselPage() {
   return (
     <div>
-      <h2>AnyCarousel — 单向 CoverFlow 轮播（任意角度）</h2>
+      <h2>AnyCarousel — 单向轮播（四角色 + 任意角度）</h2>
 
-      <CopyDemo title="向右（angle=0）">
+      <CopyDemo title="中心放大（angle=0，centerChildConfig.scale=1.4）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 500 }}
-          itemCanvasSize={{ w: 300, h: 400 }}
-          itemGap={100}
-          itemScale={1.4}
+          childCanvasSize={{ w: 300, h: 400 }}
+          childGap={100}
           angle={0}
+          centerChildConfig={{ scale: 1.4 }}
           childItems={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
@@ -58,10 +58,10 @@ export default function AnyCarouselPage() {
       <CopyDemo title="向左（angle=180）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 500 }}
-          itemCanvasSize={{ w: 300, h: 400 }}
-          itemGap={100}
-          itemScale={1.4}
+          childCanvasSize={{ w: 300, h: 400 }}
+          childGap={100}
           angle={180}
+          centerChildConfig={{ scale: 1.4 }}
           childItems={[
             { url: getWechat300x500(4) },
             { url: getWechat300x500(5) },
@@ -73,10 +73,10 @@ export default function AnyCarouselPage() {
       <CopyDemo title="向上（angle=90）">
         <AnyCarousel
           canvasSize={{ w: 400, h: 700 }}
-          itemCanvasSize={{ w: 300, h: 400 }}
-          itemGap={100}
-          itemScale={1.4}
+          childCanvasSize={{ w: 300, h: 400 }}
+          childGap={100}
           angle={90}
+          centerChildConfig={{ scale: 1.4 }}
           childItems={[
             { url: getWechat300x500(7) },
             { url: getWechat300x500(8) },
@@ -88,10 +88,10 @@ export default function AnyCarouselPage() {
       <CopyDemo title="对角线（angle=45）">
         <AnyCarousel
           canvasSize={{ w: 700, h: 500 }}
-          itemCanvasSize={{ w: 300, h: 400 }}
-          itemGap={120}
-          itemScale={1.4}
+          childCanvasSize={{ w: 300, h: 400 }}
+          childGap={120}
           angle={45}
+          centerChildConfig={{ scale: 1.4 }}
           childItems={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
@@ -100,13 +100,33 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="四角色全配置（coverflow：中心放大、侧图缩小倾斜半透、屏外隐藏）">
+        <AnyCarousel
+          canvasSize={{ w: 800, h: 500 }}
+          childCanvasSize={{ w: 300, h: 400 }}
+          childGap={60}
+          angle={0}
+          centerChildConfig={{ scale: 1.3, opacity: 1 }}
+          nextChildConfig={{ scale: 0.7, rotate: 25, skewY: 10, opacity: 0.6 }}
+          lastChildConfig={{ scale: 0.7, rotate: -25, skewY: -10, opacity: 0.6 }}
+          outWindowConfig={{ scale: 0.4, opacity: 0 }}
+          childItems={[
+            { url: getWechat300x500(1) },
+            { url: getWechat300x500(2) },
+            { url: getWechat300x500(3) },
+            { url: getWechat300x500(4) },
+            { url: getWechat300x500(5) },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="快速切换（switchDuration=0.3, stayDuration=0.5）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 500 }}
-          itemCanvasSize={{ w: 300, h: 400 }}
-          itemGap={100}
-          itemScale={1.4}
+          childCanvasSize={{ w: 300, h: 400 }}
+          childGap={100}
           angle={0}
+          centerChildConfig={{ scale: 1.4 }}
           childItems={[
             { url: getWechat300x500(7), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(8), switchDuration: 0.3, stayDuration: 0.5 },

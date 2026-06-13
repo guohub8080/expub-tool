@@ -1,4 +1,9 @@
-import type { I_AnyCarouselItemConfig, I_NormalizedItemConfig } from "../types";
+import type {
+  I_AnyCarouselItemConfig,
+  I_NormalizedItemConfig,
+  I_ChildTransform,
+  I_NormalizedChildTransform,
+} from "../types";
 import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types";
 import defaultTo from "lodash/defaultTo";
 import isNil from "lodash/isNil";
@@ -55,3 +60,12 @@ export const normalizeItems = (items?: I_AnyCarouselItemConfig[]): I_NormalizedI
 
   return normalized
 };
+
+/** 标准化角色变换配置 — 填充 5 通道默认值 */
+export const normalizeChildConfig = (cfg?: I_ChildTransform): I_NormalizedChildTransform => ({
+  scale: defaultTo(cfg?.scale, 1),
+  rotate: defaultTo(cfg?.rotate, 0),
+  skewX: defaultTo(cfg?.skewX, 0),
+  skewY: defaultTo(cfg?.skewY, 0),
+  opacity: defaultTo(cfg?.opacity, 1),
+})
