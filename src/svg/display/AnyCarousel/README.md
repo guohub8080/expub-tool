@@ -18,8 +18,7 @@ N+3 个 slot 横向排开（首尾各一个 ghost 副本，不做动画），外
 | `childItems` | `I_CoverFlowItemConfig[]` | — | 子项，≥1 |
 | `itemGap` | `number` | `100` | 相邻 slot 间距 |
 | `itemScale` | `number` | `1.4` | 中心放大比 |
-| `itemAlign` | `'top'\|'center'\|'bottom'` | `'center'` | 垂直对齐 |
-| `isReversed` | `boolean` | `false` | 反向（左进右出 ↔ 右进左出） |
+| `angle` | `number` | `0` | 流动方向角度（度），0=向右，90=向上，180=向左 |
 | `canvasBg` | `I_CanvasBg` | — | 画布背景 |
 | `spacing` | `T_SpacingProps` | — | 外间距 |
 

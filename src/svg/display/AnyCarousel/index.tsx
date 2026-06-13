@@ -21,6 +21,19 @@ import type { I_TranslateValue } from "@smil/animateTransform/translate"
 const DEFAULT_ITEM_GAP = 100
 /** 默认放大比 */
 const DEFAULT_ITEM_SCALE = 1.4
+/** 默认角度（度），0 = 向右 */
+const DEFAULT_ANGLE = 0
+
+/**
+ * 角度 → 方向单位向量
+ *
+ * 约定：0° = 向右 (+x)，90° = 向上。
+ * 因 SVG 的 y 轴朝下，"上"对应 -y，故 uy = -sin(θ)。
+ */
+const getAngleUnitVector = (angle: number): { x: number; y: number } => {
+  const rad = angle * Math.PI / 180
+  return { x: Math.cos(rad), y: -Math.sin(rad) }
+}
 
 const AnyCarousel = (props: {
   canvasSize: { w: number; h: number }
@@ -30,8 +43,8 @@ const AnyCarousel = (props: {
   itemCanvasSize: { w: number; h: number }
   itemGap?: number
   itemScale?: number
-  itemAlign?: 'top' | 'center' | 'bottom'
-  isReversed?: boolean
+  /** 流动方向角度（度），0 = 向右，90 = 向上，默认 0 */
+  angle?: number
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.childItems?.[0]
@@ -43,37 +56,46 @@ const AnyCarousel = (props: {
   const imageH = props.itemCanvasSize.h
   const gap = defaultTo(props.itemGap, DEFAULT_ITEM_GAP)
   const fullScale = defaultTo(props.itemScale, DEFAULT_ITEM_SCALE)
+  const angle = defaultTo(props.angle, DEFAULT_ANGLE)
 
   const items = normalizeItems(props.childItems)
   const N = items.length
-  const reverse = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === 'development'
 
-  const align = defaultTo(props.itemAlign, 'center')
-  const step = imageW + gap
-  const slotYMap = { top: 0, center: (viewBoxH - imageH) / 2, bottom: viewBoxH - imageH }
-  const scaleDyMap = { top: 0, center: -imageH * (fullScale - 1) / 2, bottom: -imageH * (fullScale - 1) }
-  const slotY = slotYMap[align]
-  const scaleDx = -imageW * (fullScale - 1) / 2
-  const scaleDy = scaleDyMap[align]
-  const centerX = (viewBoxW - imageW) / 2
+  // 流动方向单位向量（0°=右，90°=上）
+  const unit = getAngleUnitVector(angle)
 
-  // 正向：slot 从右到左排列，外层向右平移
-  // 反向：slot 从左到右排列，外层向左平移
-  const slots: { item: I_NormalizedItemConfig; x: number }[] = []
+  // 相邻 slot 间距：x 方向用 itemW+gap，y 方向用 itemH+gap，保证任意角度不重叠
+  const stepX = imageW + gap
+  const stepY = imageH + gap
+
+  // 中心 slot 落在 viewBox 正中
+  const centerX = (viewBoxW - imageW) / 2
+  const centerY = (viewBoxH - imageH) / 2
+
+  // 放大时保持视觉居中的平移补偿（与角度无关，item 局部坐标）
+  const scaleDx = -imageW * (fullScale - 1) / 2
+  const scaleDy = -imageH * (fullScale - 1) / 2
+
+  // slot 沿 -unit 方向（入口侧）排队：slot[1] = 中心，slot[2..] 依次往入口侧排
+  const slots: { item: I_NormalizedItemConfig; x: number; y: number }[] = []
   for (let i = 0; i < N + 3; i++) {
     const itemIdx = (i - 1 + N * 10) % N  // slot[1] 显示 items[0]
-    const x = reverse
-      ? centerX - step + i * step   // 从左 peek 向右排列
-      : centerX + step - i * step   // 从右 peek 向左排列
-    slots.push({ item: items[itemIdx], x })
+    const k = i - 1                       // 相对中心的步数
+    const x = centerX - k * stepX * unit.x
+    const y = centerY - k * stepY * unit.y
+    slots.push({ item: items[itemIdx], x, y })
   }
 
+  // 外层整体沿 +unit 方向平移：每轮推进一格
   const outerTimeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   for (let i = 0; i < N; i++) {
     const item = items[i]
-    const delta = (i + 1) * step
-    const target = reverse ? { x: -delta, y: 0 } : { x: delta, y: 0 }
+    const deltaK = i + 1
+    const target = {
+      x: deltaK * stepX * unit.x,
+      y: deltaK * stepY * unit.y,
+    }
     outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: item.keySplines })
     outerTimeline.push({ toAbs: target, durationSeconds: item.stayDuration })
   }
@@ -82,7 +104,7 @@ const AnyCarousel = (props: {
     <SectionEx
       {...(isDev ? { 'expubgo-label': 'any-carousel' } : {})}
       style={{
-        WebkitTouchCallout: "none", userSelect: "text", overflow: "hidden",
+        WebkitTouchCallout: "none", userSelect: "none", overflow: "hidden",
         textAlign: "center", lineHeight: 0, ...spacingResult
       }}
     >
@@ -94,12 +116,12 @@ const AnyCarousel = (props: {
             {slots.map((slot, si) => {
               // slot[1] 是初始中心位置，它在第 0 段放大
               // slot[2] 在第 1 段放大，slot[3] 在第 2 段...
-              // 首尾副本（si=0 和 si=N+1）不做动画
+              // 首尾副本（si=0 和 si=N+2）不做动画
               const activeIdx = si - 1
               const isEdge = si === 0 || si === slots.length - 1
               const isInitCenter = activeIdx === 0
               return (
-                <g key={si} transform={`translate(${slot.x},${slotY})`}>
+                <g key={si} transform={`translate(${slot.x},${slot.y})`}>
                   <g>
                     <g>
                       <foreignObject x={0} y={0} width={imageW} height={imageH}>

@@ -38,14 +38,15 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
 export default function AnyCarouselPage() {
   return (
     <div>
-      <h2>AnyCarousel — 单向 CoverFlow 轮播（CoverFlow 基座）</h2>
+      <h2>AnyCarousel — 单向 CoverFlow 轮播（任意角度）</h2>
 
-      <CopyDemo title="基础（正向，右进左出）">
+      <CopyDemo title="向右（angle=0）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 500 }}
           itemCanvasSize={{ w: 300, h: 400 }}
           itemGap={100}
           itemScale={1.4}
+          angle={0}
           childItems={[
             { url: getWechat300x500(1) },
             { url: getWechat300x500(2) },
@@ -54,17 +55,47 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="反向（isReversed）">
+      <CopyDemo title="向左（angle=180）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 500 }}
           itemCanvasSize={{ w: 300, h: 400 }}
           itemGap={100}
           itemScale={1.4}
-          isReversed
+          angle={180}
           childItems={[
             { url: getWechat300x500(4) },
             { url: getWechat300x500(5) },
             { url: getWechat300x500(6) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="向上（angle=90）">
+        <AnyCarousel
+          canvasSize={{ w: 400, h: 700 }}
+          itemCanvasSize={{ w: 300, h: 400 }}
+          itemGap={100}
+          itemScale={1.4}
+          angle={90}
+          childItems={[
+            { url: getWechat300x500(7) },
+            { url: getWechat300x500(8) },
+            { url: getWechat300x500(9) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="对角线（angle=45）">
+        <AnyCarousel
+          canvasSize={{ w: 700, h: 500 }}
+          itemCanvasSize={{ w: 300, h: 400 }}
+          itemGap={120}
+          itemScale={1.4}
+          angle={45}
+          childItems={[
+            { url: getWechat300x500(1) },
+            { url: getWechat300x500(2) },
+            { url: getWechat300x500(3) },
           ]}
         />
       </CopyDemo>
@@ -75,25 +106,11 @@ export default function AnyCarouselPage() {
           itemCanvasSize={{ w: 300, h: 400 }}
           itemGap={100}
           itemScale={1.4}
+          angle={0}
           childItems={[
             { url: getWechat300x500(7), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(8), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(9), switchDuration: 0.3, stayDuration: 0.5 },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="顶部对齐（itemAlign=top）">
-        <AnyCarousel
-          canvasSize={{ w: 800, h: 500 }}
-          itemCanvasSize={{ w: 300, h: 400 }}
-          itemGap={100}
-          itemScale={1.4}
-          itemAlign="top"
-          childItems={[
-            { url: getWechat300x500(1) },
-            { url: getWechat300x500(2) },
-            { url: getWechat300x500(3) },
           ]}
         />
       </CopyDemo>
