@@ -30,10 +30,11 @@ import { DEFAULT_CHILD_GAP, DEFAULT_ANGLE } from "./types"
 import { normalizeItems, normalizeChildConfig } from "./utils/normalizer"
 
 /**
- * 角度 → 方向单位向量
+ * 角度 → 内容流动方向单位向量
  *
- * 约定：0° = 向右 (+x)，90° = 向上。
- * 因 SVG 的 y 轴朝下，"上"对应 -y，故 uy = -sin(θ)。
+ * 约定：angle 即内容流动方向——0° = 向右流 (+x)，90° = 向上流，180° = 向左流。
+ * 内容整体沿此方向平移（flow = +angle 方向）。
+ * 因 SVG 的 y 轴朝下，"上"对应 -y，故 y = -sin(θ)。
  */
 const getAngleUnitVector = (angle: number): { x: number; y: number } => {
   const rad = angle * Math.PI / 180
@@ -45,11 +46,12 @@ const getAngleUnitVector = (angle: number): { x: number; y: number } => {
  *
  * 状态 S = 已推进的格数；slot 的相对位置 kEff = activeIdx - S：
  * - kEff == 0  → center（正中）
- * - kEff == +1 → next（+angle 入口侧，即将进入中心）
- * - kEff == -1 → last（-angle 出口侧，刚离开中心）
+ * - kEff == +1 → next（-angle 入口侧，即将进入中心）
+ * - kEff == -1 → last（+angle 出口侧，刚离开中心）
  * - 其余       → outWindow（屏外）
  *
- * 推进时 S 增加，kEff 减小：item 从 next(+angle) 滑入 center，再滑向 last(-angle)。
+ * 推进时 S 增加，kEff 减小：item 从 next(-angle) 滑入 center，再滑向 last(+angle)。
+ * 内容整体沿 +angle 方向流动（0°=向右，180°=向左）。
  */
 const roleOf = (activeIdx: number, state: number): T_ChildRole => {
   const k = activeIdx - state
@@ -102,13 +104,13 @@ const AnyCarousel = (props: {
   childGap?: number
   /** 中心角色（当前居中）变换配置 */
   centerChildConfig?: I_ChildTransform
-  /** last 角色（-angle 出口侧、刚离开中心）变换配置 */
+  /** last 角色（+angle 出口侧、刚离开中心）变换配置 */
   lastChildConfig?: I_ChildTransform
-  /** next 角色（+angle 入口侧、即将进入中心）变换配置 */
+  /** next 角色（-angle 入口侧、即将进入中心）变换配置 */
   nextChildConfig?: I_ChildTransform
   /** 屏外角色（超出 last/next 之外）变换配置，默认恒等 */
   outWindowConfig?: I_ChildTransform
-  /** 流动方向角度（度），0 = 向右，90 = 向上，默认 0 */
+  /** 流动方向角度（度），即内容流动方向：0 = 向右，90 = 向上，180 = 向左，默认 0 */
   angle?: number
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -155,28 +157,28 @@ const AnyCarousel = (props: {
   const centerY = (viewBoxH - imageH) / 2
 
   /**
-   * slot 排布：沿 +angle 方向（next/入口侧）排队，共 N+3 个 slot。
-   * slot[1] = 中心（activeIdx=0，显示 items[0]），slot[2..] 依次往 +angle 方向排，
-   * slot[0] 在 -angle 侧（初始的 last）。首尾 ghost 副本用于无缝循环。
+   * slot 排布：内容沿 +angle 方向流动，故 next/入口侧在 -angle 方向、last/出口侧在 +angle 方向，共 N+3 个 slot。
+   * slot[1] = 中心（activeIdx=0，显示 items[0]），slot[2..] 依次往 -angle 方向排（next），
+   * slot[0] 在 +angle 侧（初始的 last）。首尾 ghost 副本用于无缝循环。
    */
   const slots: { item: I_NormalizedItemConfig; activeIdx: number; x: number; y: number }[] = []
   for (let i = 0; i < N + 3; i++) {
     const itemIdx = (i - 1 + N * 10) % N      // slot[1] 显示 items[0]
     const activeIdx = i - 1                    // 该 slot 在第 activeIdx 个状态到达中心
-    const k = i - 1                            // 相对中心的步数（+angle 方向为正）
-    const x = centerX + k * stepX * unit.x
-    const y = centerY + k * stepY * unit.y
+    const k = i - 1                            // 相对中心的步数（k>0 = next 入口侧）
+    const x = centerX - k * stepX * unit.x
+    const y = centerY - k * stepY * unit.y
     slots.push({ item: items[itemIdx], activeIdx, x, y })
   }
 
-  // 外层整体沿 -unit 方向平移：每轮推进一格（内容向 -angle 滑，next 从 +angle 滑入中心）
+  // 外层整体沿 +unit 方向平移：每轮推进一格（内容向 +angle 流动，next 从 -angle 侧滑入中心）
   const outerTimeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   for (let i = 0; i < N; i++) {
     const item = items[i]
     const deltaK = i + 1
     const target = {
-      x: -deltaK * stepX * unit.x,
-      y: -deltaK * stepY * unit.y,
+      x: deltaK * stepX * unit.x,
+      y: deltaK * stepY * unit.y,
     }
     outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: item.keySplines })
     outerTimeline.push({ toAbs: target, durationSeconds: item.stayDuration })

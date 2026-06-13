@@ -40,7 +40,7 @@ export default function AnyCarouselPage() {
     <div>
       <h2>AnyCarousel — 单向轮播（四角色 + 任意角度）</h2>
 
-      <CopyDemo title="中心放大（angle=0，centerChildConfig.scale=1.4）">
+      <CopyDemo title="中心放大（angle=0 → 向右流）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 500 }}
           childCanvasSize={{ w: 300, h: 400 }}
@@ -55,7 +55,7 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="向左（angle=180）">
+      <CopyDemo title="向左（angle=180 → 向左流）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 500 }}
           childCanvasSize={{ w: 300, h: 400 }}
@@ -70,7 +70,7 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="向上（angle=90）">
+      <CopyDemo title="向上（angle=90 → 向上流）">
         <AnyCarousel
           canvasSize={{ w: 400, h: 700 }}
           childCanvasSize={{ w: 300, h: 400 }}
