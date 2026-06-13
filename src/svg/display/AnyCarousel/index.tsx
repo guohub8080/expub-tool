@@ -1,7 +1,7 @@
 import React from 'react'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
-import isPlainObject from 'lodash/isPlainObject'
+import { isDefined } from '@utils/fn/isDefined'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import svgURL from '@utils/svg/svgURL'
@@ -10,156 +10,173 @@ import type { T_SpacingProps } from '@css-fn/spacing'
 import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import type { I_CanvasBg } from '@svg/types'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
-import { transformTranslate } from '@smil/index'
-import { transformScaleRaw } from '@smil/index'
-import { transformRotate } from '@smil/index'
-import { transformSkewX } from '@smil/index'
-import { transformSkewY } from '@smil/index'
-import { isDefined } from '@utils/fn/isDefined'
-import type { T_Origin } from '@svg/types'
+import {
+  transformTranslate,
+  transformScale,
+  transformRotate,
+  transformSkewX,
+  transformSkewY,
+  animateOpacity,
+} from '@smil/index'
 import type { I_TimelineKeyframe } from '@smil/timeline/types'
 import type { I_TranslateValue } from '@smil/animateTransform/translate'
 import { normalizeItems } from './utils/normalizer'
-import { calcEntryOffset, calcExitOffset, toSwitchPhases } from './timeline/offsetCalculator'
-import { buildCyclicTimelines } from '@utils/svg/buildCyclicTimelines'
-import type { I_AnyCarouselChildItem, I_NormalizedCarouselItem, I_NormalizedAnimChannel, I_NormalizedOriginChannel, I_NormalizedTranslateChannel } from './types'
-import { DEFAULT_ANGLE, DEFAULT_ITEM_GAP } from './types'
+import { resolveRotationOrigin } from './utils/rotationOrigin'
+import { calcSlotPositions, calcExitOffset } from './timeline/offsetCalculator'
+import type {
+  I_AnyCarouselChildItem,
+  I_NormalizedCarouselItem,
+  I_NormalizedAnimChannel,
+  I_NormalizedOriginChannel,
+  I_NormalizedTranslateChannel,
+} from './types'
+import { DEFAULT_ANGLE } from './types'
 
-// ── origin 解析 ──
+// ── slot 位置计算 ──
 
-const resolveOrigin = (origin: T_Origin, w: number, h: number): [number, number] => {
-  if (isPlainObject(origin)) {
-    const { x, y } = origin as { x: number; y: number }
-    return [x, y]
+/**
+ * 计算 slot 在段边界处的位置
+ *
+ * 公式：enterBoundary(slotIndex, position) = (position === startPos) ? 0 : 2 × (itemCount + position - slotIndex)
+ * position(slotIndex, boundary) = max { position ≥ startPos | boundary ≥ enterBoundary(slotIndex, position) }
+ */
+const getSlotPosition = (slotIndex: number, itemCount: number, boundary: number): number => {
+  const startPos = Math.max(0, slotIndex - itemCount)
+  for (let pos = 3; pos >= startPos; pos--) {
+    const enterPos = (pos === startPos) ? 0 : 2 * (itemCount + pos - slotIndex)
+    if (boundary >= enterPos) return pos
   }
-  const grid: Record<string, [number, number]> = {
-    TopLeft: [0, 0], Top: [w / 2, 0], TopRight: [w, 0],
-    Left: [0, h / 2], Center: [w / 2, h / 2], Right: [w, h / 2],
-    BottomLeft: [0, h], Bottom: [w / 2, h], BottomRight: [w, h],
-  }
-  return grid[origin as string]
+  return startPos
 }
 
-// ── 通道 timeline 构建 ──
+// ── timeline 构建 ──
 
-const resolveStayValue = (stay: I_NormalizedAnimChannel['stay'], centerValue: number): number => {
-  if (stay === 'hold') return centerValue
-  if ('value' in stay) return stay.value
-  if ('timeline' in stay && stay.timeline.length > 0) return stay.timeline[stay.timeline.length - 1].toAbs
-  return centerValue
-}
-
-/** 构建 item 的 translate timeline（4 阶段） */
-function buildTranslateTimeline(params: {
-  entryDuration: number
-  stayDuration: number
-  exitDuration: number
-  holdDuration: number
-  entryOffset: { x: number; y: number }
-  exitOffset: { x: number; y: number }
-  translateConfig: I_NormalizedTranslateChannel
+interface I_SlotTimelineSegment {
+  durationSeconds: number
   keySplines: string
-}): I_TimelineKeyframe<Partial<I_TranslateValue>>[] {
-  const { entryDuration, stayDuration, exitDuration, holdDuration, entryOffset, exitOffset, translateConfig, keySplines } = params
-  const timeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
-  const spl = defaultTo(translateConfig.keySplines, keySplines)
-
-  // 1. entry：从 entryOffset 滑到中心
-  timeline.push({ toAbs: { x: 0, y: 0 }, durationSeconds: entryDuration, keySplines: spl })
-
-  // 2. stay
-  if (translateConfig.stay === 'hold') {
-    timeline.push({ toAbs: { x: 0, y: 0 }, durationSeconds: stayDuration })
-  } else if ('value' in translateConfig.stay) {
-    timeline.push({ toAbs: translateConfig.stay.value, durationSeconds: stayDuration })
-  } else {
-    for (const seg of translateConfig.stay.timeline) {
-      timeline.push({ toAbs: seg.toAbs, durationSeconds: seg.durationSeconds, keySplines: seg.keySplines })
-    }
-    // 如果 timeline 总时长 < stayDuration，补 hold
-    const total = translateConfig.stay.timeline.reduce((s, seg) => s + seg.durationSeconds, 0)
-    const remaining = stayDuration - total
-    if (remaining > 0) {
-      const lastVal = translateConfig.stay.timeline[translateConfig.stay.timeline.length - 1].toAbs
-      timeline.push({ toAbs: lastVal, durationSeconds: remaining })
-    }
-  }
-
-  // 3. exit：从中心滑到 exitOffset
-  timeline.push({ toAbs: exitOffset, durationSeconds: exitDuration, keySplines: spl })
-
-  // 4. hold：停在 exitOffset
-  if (holdDuration > 0) {
-    timeline.push({ toAbs: exitOffset, durationSeconds: holdDuration })
-  }
-
-  return timeline
+  isCenterHold: boolean
+  toPos: number
 }
 
-/** 构建单通道的 4 阶段 timeline（scale / opacity / rotation / skew） */
-function buildChannelTimeline(params: {
-  entryDuration: number
-  stayDuration: number
-  exitDuration: number
-  holdDuration: number
-  channel: I_NormalizedAnimChannel
-  keySplines: string
-}): I_TimelineKeyframe<number>[] {
-  const { entryDuration, stayDuration, exitDuration, holdDuration, channel, keySplines } = params
-  const { sideValue, centerValue, stay } = channel
-  const timeline: I_TimelineKeyframe<number>[] = []
+/** 枚举一个 slot 在完整周期内的所有 segment */
+const enumerateSlotSegments = (
+  slotIndex: number,
+  itemCount: number,
+  items: I_NormalizedCarouselItem[],
+): I_SlotTimelineSegment[] => {
+  const totalSegs = itemCount * 2
+  const segments: I_SlotTimelineSegment[] = []
 
-  // 1. entry：sideValue → centerValue
-  timeline.push({ toAbs: centerValue, durationSeconds: entryDuration, keySplines })
+  for (let seg = 0; seg < totalSegs; seg++) {
+    const rhythmItem = items[Math.floor(seg / 2) % itemCount]
+    const isSwitch = seg % 2 === 0
+    const toPos = getSlotPosition(slotIndex, itemCount, seg + 1)
+    const fromPos = getSlotPosition(slotIndex, itemCount, seg)
 
-  // 2. stay
-  const stayTarget = resolveStayValue(stay, centerValue)
+    segments.push({
+      durationSeconds: isSwitch ? rhythmItem.switchDuration : rhythmItem.stayDuration,
+      keySplines: rhythmItem.keySplines,
+      isCenterHold: fromPos === 2 && toPos === 2,
+      toPos,
+    })
+  }
+
+  return segments
+}
+
+/** 把 stay 配置展开到一段 center hold 时长内 */
+const expandStayTimeline = <T, >(
+  stay: { value: T } | { timeline: I_TimelineKeyframe<T>[] } | 'hold',
+  baseValue: T,
+  duration: number,
+  keySplines: string,
+): I_TimelineKeyframe<T>[] => {
   if (stay === 'hold') {
-    timeline.push({ toAbs: stayTarget, durationSeconds: stayDuration })
-  } else if ('value' in stay) {
-    timeline.push({ toAbs: stay.value, durationSeconds: stayDuration })
-  } else {
-    for (const seg of stay.timeline) {
-      timeline.push({ toAbs: seg.toAbs, durationSeconds: seg.durationSeconds, keySplines: seg.keySplines })
-    }
-    const total = stay.timeline.reduce((s, seg) => s + seg.durationSeconds, 0)
-    const remaining = stayDuration - total
-    if (remaining > 0) {
-      timeline.push({ toAbs: stay.timeline[stay.timeline.length - 1].toAbs, durationSeconds: remaining })
-    }
+    return [{ toAbs: baseValue, durationSeconds: duration }]
   }
 
-  // 3. exit：centerValue → sideValue
-  timeline.push({ toAbs: sideValue, durationSeconds: exitDuration, keySplines })
+  if ('value' in stay) {
+    return [{ toAbs: stay.value, durationSeconds: duration, keySplines }]
+  }
 
-  // 4. hold
-  if (holdDuration > 0) {
-    timeline.push({ toAbs: sideValue, durationSeconds: holdDuration })
+  const result: I_TimelineKeyframe<T>[] = []
+  let remaining = duration
+  for (const kf of stay.timeline) {
+    result.push({
+      toAbs: kf.toAbs,
+      durationSeconds: kf.durationSeconds,
+      keySplines: defaultTo(kf.keySplines, keySplines),
+    })
+    remaining -= kf.durationSeconds
+  }
+  if (remaining > 0) {
+    const lastToAbs = stay.timeline.length > 0 ? stay.timeline[stay.timeline.length - 1].toAbs : baseValue
+    result.push({ toAbs: lastToAbs, durationSeconds: remaining })
+  }
+  return result
+}
+
+/** 构建单个 slot 的数值通道 timeline */
+const buildSlotValueTimeline = <T, >(
+  segments: I_SlotTimelineSegment[],
+  valueAt: (pos: number) => T,
+  stay: { value: T } | { timeline: I_TimelineKeyframe<T>[] } | 'hold',
+  initValue: T,
+): I_TimelineKeyframe<T>[] => {
+  const timeline: I_TimelineKeyframe<T>[] = []
+
+  for (const seg of segments) {
+    if (seg.isCenterHold && stay !== 'hold') {
+      const centerValue = valueAt(2)
+      const expanded = expandStayTimeline(stay, centerValue, seg.durationSeconds, seg.keySplines)
+      timeline.push(...expanded)
+    } else {
+      timeline.push({ toAbs: valueAt(seg.toPos), durationSeconds: seg.durationSeconds, keySplines: seg.keySplines })
+    }
   }
 
   return timeline
 }
 
-/** 构建 scale 的 translate 补偿 timeline */
-function buildScaleTranslateTimeline(params: {
-  entryDuration: number
-  stayDuration: number
-  exitDuration: number
-  holdDuration: number
-  scaleConfig: I_NormalizedOriginChannel
-  itemW: number
-  itemH: number
-  keySplines: string
-}): I_TimelineKeyframe<Partial<I_TranslateValue>>[] {
-  const { entryDuration, stayDuration, exitDuration, holdDuration, scaleConfig, itemW, itemH, keySplines } = params
-  const { sideValue, centerValue, stay } = scaleConfig
+/** 构建单个 slot 的主 translate timeline（含 stay 叠加） */
+const buildSlotTranslateTimeline = (
+  segments: I_SlotTimelineSegment[],
+  positions: Partial<I_TranslateValue>[],
+  stay: I_NormalizedTranslateChannel['stay'],
+  initValue: Partial<I_TranslateValue>,
+): I_TimelineKeyframe<Partial<I_TranslateValue>>[] => {
   const timeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
 
-  const scaleEntry = buildChannelTimeline({ entryDuration, stayDuration, exitDuration, holdDuration, channel: scaleConfig, keySplines })
-
-  for (const seg of scaleEntry) {
-    const s = seg.toAbs
-    timeline.push({ toAbs: { x: -itemW * (s - 1) / 2, y: -itemH * (s - 1) / 2 }, durationSeconds: seg.durationSeconds, keySplines: seg.keySplines })
+  for (const seg of segments) {
+    if (seg.isCenterHold && stay !== 'hold') {
+      const centerValue = positions[2]
+      if ('value' in stay) {
+        timeline.push({
+          toAbs: { x: (centerValue.x ?? 0) + stay.value.x, y: (centerValue.y ?? 0) + stay.value.y },
+          durationSeconds: seg.durationSeconds,
+          keySplines: seg.keySplines,
+        })
+      } else {
+        let remaining = seg.durationSeconds
+        for (const kf of stay.timeline) {
+          timeline.push({
+            toAbs: { x: (centerValue.x ?? 0) + kf.toAbs.x, y: (centerValue.y ?? 0) + kf.toAbs.y },
+            durationSeconds: kf.durationSeconds,
+            keySplines: defaultTo(kf.keySplines, seg.keySplines),
+          })
+          remaining -= kf.durationSeconds
+        }
+        if (remaining > 0) {
+          const last = stay.timeline.length > 0 ? stay.timeline[stay.timeline.length - 1].toAbs : { x: 0, y: 0 }
+          timeline.push({
+            toAbs: { x: (centerValue.x ?? 0) + last.x, y: (centerValue.y ?? 0) + last.y },
+            durationSeconds: remaining,
+          })
+        }
+      }
+    } else {
+      timeline.push({ toAbs: positions[seg.toPos], durationSeconds: seg.durationSeconds, keySplines: seg.keySplines })
+    }
   }
 
   return timeline
@@ -183,198 +200,6 @@ const renderContent = (item: I_NormalizedCarouselItem, w: number, h: number) => 
   )
 }
 
-/** 构建单个 item 的全部动画层 */
-const buildAnimLayers = (params: {
-  item: I_NormalizedCarouselItem
-  itemW: number
-  itemH: number
-  entryOffset: { x: number; y: number }
-  exitOffset: { x: number; y: number }
-  entryDuration: number
-  stayDuration: number
-  exitDuration: number
-  holdDuration: number
-  begin: number
-  totalDuration: number
-}): React.ReactNode => {
-  const {
-    item, itemW, itemH, entryOffset, exitOffset,
-    entryDuration, stayDuration, exitDuration, holdDuration,
-    begin, totalDuration,
-  } = params
-
-  const content = (
-    <foreignObject x={0} y={0} width={itemW} height={itemH}>
-      {renderContent(item, itemW, itemH)}
-    </foreignObject>
-  )
-
-  let result: React.ReactNode = content
-  const { opacity, rotation, scale, skewX, skewY, translate: translateConfig } = item
-  const ks = item.keySplines
-
-  // ── translate：每个 item 自己的进出位移 ──
-  const translateTimeline = buildTranslateTimeline({
-    entryDuration, stayDuration, exitDuration, holdDuration,
-    entryOffset, exitOffset, translateConfig, keySplines: ks,
-  })
-  const translateInit = entryOffset
-  const translateAnim = transformTranslate({
-    initValue: translateInit,
-    timeline: translateTimeline,
-    begin: `${begin}s`,
-    loopCount: 0,
-    isFreeze: true,
-    isAdditive: false,
-  })
-
-  // ── opacity ──
-  if (isDefined(opacity)) {
-    const chTimeline = buildChannelTimeline({ entryDuration, stayDuration, exitDuration, holdDuration, channel: opacity, keySplines: ks })
-    // opacity 用 <animate> 而非 animateTransform
-    result = (
-      <g>
-        <animate
-          attributeName="opacity"
-          values={[opacity.sideValue, ...chTimeline.map(s => s.toAbs)].join(';')}
-          keyTimes={buildKeyTimes(chTimeline)}
-          keySplines={chTimeline.map(s => s.keySplines || '0 0 1 1').join(';')}
-          dur={`${totalDuration}s`}
-          calcMode="spline"
-          repeatCount="indefinite"
-          begin={`${begin}s`}
-          fill="freeze"
-        />
-        {content}
-      </g>
-    )
-  }
-
-  // ── rotation ──
-  if (isDefined(rotation)) {
-    const [ox, oy] = resolveOrigin(rotation.origin, itemW, itemH)
-    const chTimeline = buildChannelTimeline({ entryDuration, stayDuration, exitDuration, holdDuration, channel: rotation, keySplines: ks })
-    result = (
-      <g transform={`translate(${ox}, ${oy})`}>
-        <g>
-          {transformRotate({
-            initValue: rotation.sideValue,
-            timeline: chTimeline,
-            origin: [0, 0],
-            begin: `${begin}s`,
-            loopCount: 0,
-            isFreeze: true,
-            isAdditive: false,
-          })}
-          <g transform={`translate(${-ox}, ${-oy})`}>
-            {result}
-          </g>
-        </g>
-      </g>
-    )
-  }
-
-  // ── scale ──
-  if (isDefined(scale)) {
-    const [ox, oy] = resolveOrigin(scale.origin, itemW, itemH)
-    const chTimeline = buildChannelTimeline({ entryDuration, stayDuration, exitDuration, holdDuration, channel: scale, keySplines: ks })
-    const translateComp = buildScaleTranslateTimeline({ entryDuration, stayDuration, exitDuration, holdDuration, scaleConfig: scale, itemW, itemH, keySplines: ks })
-    result = (
-      <g transform={`translate(${ox}, ${oy})`}>
-        <g>
-          {transformScaleRaw({
-            initValue: scale.sideValue,
-            timeline: chTimeline,
-            begin: `${begin}s`,
-            loopCount: 0,
-            isFreeze: true,
-            isAdditive: false,
-          })}
-          <g transform={`translate(${-ox}, ${-oy})`}>
-            <g>
-              {transformTranslate({
-                initValue: { x: -itemW * (scale.sideValue - 1) / 2, y: -itemH * (scale.sideValue - 1) / 2 },
-                timeline: translateComp,
-                begin: `${begin}s`,
-                loopCount: 0,
-                isFreeze: true,
-                isAdditive: false,
-              })}
-              {result}
-            </g>
-          </g>
-        </g>
-      </g>
-    )
-  }
-
-  // ── skewY ──
-  if (isDefined(skewY)) {
-    const [ox, oy] = resolveOrigin(skewY.origin, itemW, itemH)
-    const chTimeline = buildChannelTimeline({ entryDuration, stayDuration, exitDuration, holdDuration, channel: skewY, keySplines: ks })
-    result = (
-      <g transform={`translate(${ox}, ${oy})`}>
-        <g>
-          {transformSkewY({
-            initValue: skewY.sideValue,
-            timeline: chTimeline,
-            begin: `${begin}s`,
-            loopCount: 0,
-            isFreeze: true,
-            isAdditive: false,
-          })}
-          <g transform={`translate(${-ox}, ${-oy})`}>
-            {result}
-          </g>
-        </g>
-      </g>
-    )
-  }
-
-  // ── skewX ──
-  if (isDefined(skewX)) {
-    const [ox, oy] = resolveOrigin(skewX.origin, itemW, itemH)
-    const chTimeline = buildChannelTimeline({ entryDuration, stayDuration, exitDuration, holdDuration, channel: skewX, keySplines: ks })
-    result = (
-      <g transform={`translate(${ox}, ${oy})`}>
-        <g>
-          {transformSkewX({
-            initValue: skewX.sideValue,
-            timeline: chTimeline,
-            begin: `${begin}s`,
-            loopCount: 0,
-            isFreeze: true,
-            isAdditive: false,
-          })}
-          <g transform={`translate(${-ox}, ${-oy})`}>
-            {result}
-          </g>
-        </g>
-      </g>
-    )
-  }
-
-  return (
-    <g>
-      {translateAnim}
-      {result}
-    </g>
-  )
-}
-
-// ── 辅助 ──
-
-function buildKeyTimes(timeline: I_TimelineKeyframe<number>[]): string {
-  const totalDur = timeline.reduce((s, seg) => s + seg.durationSeconds, 0)
-  const times: string[] = ['0']
-  let acc = 0
-  for (const seg of timeline) {
-    acc += seg.durationSeconds
-    times.push((acc / totalDur).toFixed(6))
-  }
-  return times.join(';')
-}
-
 // ── 主组件 ──
 
 const AnyCarousel = (props: {
@@ -394,24 +219,157 @@ const AnyCarousel = (props: {
   const canvas = defaultTo(props.itemCanvasSize, props.canvasSize)
   const { w: itemW, h: itemH } = canvas
   const angle = defaultTo(props.angle, DEFAULT_ANGLE)
-  const gap = defaultTo(props.itemGap, DEFAULT_ITEM_GAP)
   const isReversed = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === 'development'
 
-  const items = normalizeItems(props.childItems)
-  const N = items.length
   const actualAngle = isReversed ? angle + 180 : angle
 
-  // 每个 item 的 entry/exit 偏移
-  const getOffsets = (item: I_NormalizedCarouselItem) => {
-    const dist = item.translate.distance
-    return {
-      entryOffset: calcEntryOffset(actualAngle, itemW, itemH, gap, dist),
-      exitOffset: calcExitOffset(actualAngle, itemW, itemH, gap, dist),
-    }
-  }
+  const items = normalizeItems(props.childItems)
+  const N = items.length
+  const totalSlots = N + 3
 
-  const { totalDuration, itemTimelines, ghostTimeline } = buildCyclicTimelines(toSwitchPhases(items))
+  const gap = defaultTo(props.itemGap, 0)
+  const positions = calcSlotPositions(actualAngle, itemW, itemH, gap)
+  const exitOffset = calcExitOffset(actualAngle, viewBoxW, viewBoxH, itemW, itemH, gap)
+  const fullPositions = [...positions]
+  fullPositions[3] = exitOffset
+
+  const contentOffsetX = -itemW / 2
+  const contentOffsetY = -itemH / 2
+
+  // ── 渲染单个 slot ──
+  const renderSlot = (slotIndex: number) => {
+    const itemIdx = (N + 1 - slotIndex + N * 10) % N
+    const item = items[itemIdx]
+    const startPos = Math.max(0, slotIndex - N)
+    const segments = enumerateSlotSegments(slotIndex, N, items)
+
+    const translateTimeline = buildSlotTranslateTimeline(
+      segments,
+      fullPositions,
+      item.translate.stay,
+      fullPositions[startPos],
+    )
+
+    const valueAtForChannel = (channel: I_NormalizedAnimChannel | undefined, pos: number): number => {
+      if (isNil(channel)) return 1
+      if (pos === 2) return channel.centerValue
+      if (pos === 3) return channel.exitValue
+      return channel.sideValue
+    }
+
+    const scaleTimeline = isNil(item.scale) ? undefined : buildSlotValueTimeline(
+      segments,
+      pos => valueAtForChannel(item.scale, pos),
+      item.scale.stay,
+      valueAtForChannel(item.scale, startPos),
+    )
+
+    const opacityTimeline = isNil(item.opacity) ? undefined : buildSlotValueTimeline(
+      segments,
+      pos => valueAtForChannel(item.opacity, pos),
+      item.opacity.stay,
+      valueAtForChannel(item.opacity, startPos),
+    )
+
+    const rotationTimeline = isNil(item.rotation) ? undefined : buildSlotValueTimeline(
+      segments,
+      pos => valueAtForChannel(item.rotation, pos),
+      item.rotation.stay,
+      valueAtForChannel(item.rotation, startPos),
+    )
+
+    const skewXTimeline = isNil(item.skewX) ? undefined : buildSlotValueTimeline(
+      segments,
+      pos => valueAtForChannel(item.skewX, pos),
+      item.skewX.stay,
+      valueAtForChannel(item.skewX, startPos),
+    )
+
+    const skewYTimeline = isNil(item.skewY) ? undefined : buildSlotValueTimeline(
+      segments,
+      pos => valueAtForChannel(item.skewY, pos),
+      item.skewY.stay,
+      valueAtForChannel(item.skewY, startPos),
+    )
+
+    const rotationOrigin = isNil(item.rotation)
+      ? undefined
+      : resolveRotationOrigin({ origin: item.rotation.origin, cardWidth: itemW, cardHeight: itemH })
+
+    const scaleOrigin = isNil(item.scale)
+      ? undefined
+      : resolveRotationOrigin({ origin: item.scale.origin, cardWidth: itemW, cardHeight: itemH })
+
+    return (
+      <g key={slotIndex}>
+        {transformTranslate({
+          initValue: fullPositions[startPos],
+          timeline: translateTimeline,
+          begin: '0s',
+          loopCount: 0,
+          isFreeze: true,
+          isAdditive: false,
+        })}
+        <g>
+          {isDefined(opacityTimeline) && animateOpacity({
+            initValue: valueAtForChannel(item.opacity, startPos),
+            timeline: opacityTimeline,
+            begin: '0s',
+            loopCount: 0,
+            isFreeze: true,
+          })}
+          <g>
+            {isDefined(scaleTimeline) && isDefined(scaleOrigin) && transformScale({
+              initValue: valueAtForChannel(item.scale, startPos),
+              timeline: scaleTimeline,
+              origin: scaleOrigin,
+              begin: '0s',
+              loopCount: 0,
+              isFreeze: true,
+              isAdditive: false,
+            })}
+            <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
+              <g>
+                {isDefined(skewXTimeline) && transformSkewX({
+                  initValue: valueAtForChannel(item.skewX, startPos),
+                  timeline: skewXTimeline,
+                  begin: '0s',
+                  loopCount: 0,
+                  isFreeze: true,
+                  isAdditive: false,
+                })}
+                <g>
+                  {isDefined(skewYTimeline) && transformSkewY({
+                    initValue: valueAtForChannel(item.skewY, startPos),
+                    timeline: skewYTimeline,
+                    begin: '0s',
+                    loopCount: 0,
+                    isFreeze: true,
+                    isAdditive: false,
+                  })}
+                  <g>
+                    {isDefined(rotationTimeline) && isDefined(rotationOrigin) && transformRotate({
+                      initValue: valueAtForChannel(item.rotation, startPos),
+                      timeline: rotationTimeline,
+                      origin: rotationOrigin,
+                      begin: '0s',
+                      loopCount: 0,
+                      isFreeze: true,
+                      isAdditive: false,
+                    })}
+                    <foreignObject x={0} y={0} width={itemW} height={itemH}>
+                      {renderContent(item, itemW, itemH)}
+                    </foreignObject>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    )
+  }
 
   return (
     <SectionEx
@@ -426,45 +384,14 @@ const AnyCarousel = (props: {
           style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }}
           width="100%"
         >
-          <g transform={`translate(${(viewBoxW - itemW) / 2}, ${(viewBoxH - itemH) / 2})`}>
+          <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
             <g visibility="hidden">
               <set attributeName="visibility" to="visible" begin="0.01s" fill="freeze" />
-
-              {items.map((item, i) => {
-                const tl = itemTimelines[i]
-                const { entryOffset, exitOffset } = getOffsets(item)
-
-                return (
-                  <g key={i}>
-                    {buildAnimLayers({
-                      item, itemW, itemH, entryOffset, exitOffset,
-                      entryDuration: tl.entryDuration,
-                      stayDuration: tl.stayDuration,
-                      exitDuration: tl.exitDuration,
-                      holdDuration: tl.holdDuration,
-                      begin: tl.begin,
-                      totalDuration,
-                    })}
-                  </g>
-                )
-              })}
-
-              {/* Ghost layer：item 0 的副本，解决 z-order 问题 */}
-              {ghostTimeline && (
-                <g>
-                  {buildAnimLayers({
-                    item: items[0], itemW, itemH,
-                    entryOffset: getOffsets(items[0]).entryOffset,
-                    exitOffset: getOffsets(items[0]).exitOffset,
-                    entryDuration: ghostTimeline.entryDuration,
-                    stayDuration: 0,
-                    exitDuration: 0,
-                    holdDuration: ghostTimeline.holdDuration,
-                    begin: ghostTimeline.begin,
-                    totalDuration,
-                  })}
-                </g>
-              )}
+              {/* center slot 最后渲染，确保 center item 始终在最上层 */}
+              {Array.from({ length: totalSlots }, (_, i) => i)
+                .filter(i => i !== N + 1)
+                .concat([N + 1])
+                .map(i => renderSlot(i))}
             </g>
           </g>
         </SvgEx>

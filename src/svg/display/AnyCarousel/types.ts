@@ -17,8 +17,7 @@ export const DEFAULT_STAY_DURATION = 1.0
 /** 默认缓动曲线 (ease-in-out) */
 export const DEFAULT_KEY_SPLINES = "0.42 0 0.58 1"
 
-// ── 默认 identity 值 ──
-
+/** 默认 identity 值 */
 export const IDENTITY_SCALE = 1
 export const IDENTITY_OPACITY = 1
 export const IDENTITY_ROTATION = 0
@@ -29,17 +28,23 @@ export const IDENTITY_SKEW = 0
 /**
  * 普通动画通道（opacity 专用）
  *
- * - sideValue：item 不在中心时的值
- * - centerValue：item 在中心时的值
- * - stay：在中心停留期间的行为
+ * 在 stack/slot 模型下，值按 4 个 slot 位置插值：
+ * - backValue: 位于 back slot 时的值
+ * - midValue:  位于 mid slot 时的值
+ * - centerValue: 位于 center slot 时的值
+ * - exitValue: 位于 exit slot 时的值（退场前最后一刻）
+ *
+ * 若只传 sideValue / centerValue，则 back/mid 用 sideValue，exit 自动沿用 centerValue（或 sideValue）。
  */
 export interface I_CarouselAnimChannel {
-  /** 侧边状态值，默认 1 */
+  /** 侧边（back / mid）状态值，默认 identity */
   sideValue?: number
-  /** 中心状态值，默认 1 */
+  /** 中心状态值，默认 identity */
   centerValue?: number
+  /** 退场状态值；不传则默认 = centerValue */
+  exitValue?: number
   /**
-   * stay 阶段行为：
+   * stay 阶段行为（仅 center slot 生效）：
    * - 不传：保持 centerValue
    * - 数字：保持在该值
    * - { timeline }：自定义动画
@@ -58,15 +63,11 @@ export interface I_CarouselOriginChannel extends I_CarouselAnimChannel {
 /**
  * translate 通道配置
  *
- * 简单模式：自动根据 angle 计算 entry/exit 偏移
- * 高级模式：自定义 initValue + timeline
- * stay：中心停留期间的位移（如浮动效果）
+ * 主轨道位置由组件根据 angle + itemGap 自动计算。
+ * 这里只配置叠加在主轨道之上的独立动画：
+ * - stay: 在 center slot 停留期间的位移（如浮动效果）
  */
 export interface I_CarouselTranslateChannel {
-  /** off-screen 距离倍数，默认 1 */
-  distance?: number
-  /** entry/exit 缓动曲线 */
-  keySplines?: string
   /** stay 阶段位移 */
   stay?: { x: number; y: number } | { timeline: I_TimelineKeyframe<{ x: number; y: number }>[] }
 }
@@ -85,7 +86,7 @@ export interface I_AnyCarouselChildItem {
   /** 缓动曲线，默认 ease-in-out */
   keySplines?: string
 
-  /** 位移通道：自动沿主轴移动 */
+  /** 位移通道：仅用于叠加在主轨道之上的 stay 阶段自定义位移 */
   translate?: I_CarouselTranslateChannel
   /** 缩放通道 */
   scale?: I_CarouselOriginChannel
@@ -104,6 +105,7 @@ export interface I_AnyCarouselChildItem {
 export interface I_NormalizedAnimChannel {
   sideValue: number
   centerValue: number
+  exitValue: number
   stay: 'hold' | { value: number } | { timeline: I_TimelineKeyframe<number>[] }
 }
 
@@ -112,8 +114,6 @@ export interface I_NormalizedOriginChannel extends I_NormalizedAnimChannel {
 }
 
 export interface I_NormalizedTranslateChannel {
-  distance: number
-  keySplines: string
   stay: 'hold' | { value: { x: number; y: number } } | { timeline: I_TimelineKeyframe<{ x: number; y: number }>[] }
 }
 
@@ -131,3 +131,15 @@ export interface I_NormalizedCarouselItem {
   skewX?: I_NormalizedOriginChannel
   skewY?: I_NormalizedOriginChannel
 }
+
+// ── slot 位置类型 ──
+
+/** slot 在 stack 中的 4 个位置 */
+export type T_SlotPosition = 0 | 1 | 2 | 3
+
+export const SLOT_POSITION = {
+  Back: 0,
+  Mid: 1,
+  Center: 2,
+  Exit: 3,
+} as const

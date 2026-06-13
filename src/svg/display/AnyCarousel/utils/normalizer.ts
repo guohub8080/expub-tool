@@ -18,6 +18,7 @@ const normalizeAnimChannel = (
 
   const sideValue = defaultTo(channel.sideValue, identityValue)
   const centerValue = defaultTo(channel.centerValue, identityValue)
+  const exitValue = defaultTo(channel.exitValue, centerValue)
 
   let stay: I_NormalizedAnimChannel['stay']
   if (isNil(channel.stay)) {
@@ -28,9 +29,9 @@ const normalizeAnimChannel = (
     stay = { timeline: channel.stay.timeline }
   }
 
-  if (sideValue === identityValue && centerValue === identityValue && stay === 'hold') return undefined
+  if (sideValue === identityValue && centerValue === identityValue && exitValue === identityValue && stay === 'hold') return undefined
 
-  return { sideValue, centerValue, stay }
+  return { sideValue, centerValue, exitValue, stay }
 }
 
 const normalizeOriginChannel = (
@@ -47,7 +48,7 @@ const normalizeTranslateChannel = (
   channel: I_AnyCarouselChildItem['translate'],
 ): I_NormalizedTranslateChannel => {
   if (isNil(channel)) {
-    return { distance: 1, keySplines: DEFAULT_KEY_SPLINES, stay: 'hold' }
+    return { stay: 'hold' }
   }
 
   let stay: I_NormalizedTranslateChannel['stay']
@@ -59,11 +60,7 @@ const normalizeTranslateChannel = (
     stay = { timeline: channel.stay.timeline }
   }
 
-  return {
-    distance: defaultTo(channel.distance, 1),
-    keySplines: defaultTo(channel.keySplines, DEFAULT_KEY_SPLINES),
-    stay,
-  }
+  return { stay }
 }
 
 // ── 校验 ──
@@ -74,11 +71,7 @@ const validateTimelineDurations = (items: I_NormalizedCarouselItem[]): void => {
 
   for (let i = 0; i < n; i++) {
     const item = items[i]
-    const entryDuration = item.switchDuration
-    const exitDuration = items[(i + 1) % n].switchDuration
-    const holdDuration = totalDuration - entryDuration - item.stayDuration - exitDuration
-
-    const checks: { timeline: readonly { durationSeconds: number }[] | undefined; max: number; label: string }[] = []
+    const stayDuration = item.stayDuration
 
     const channels: { config: I_NormalizedAnimChannel | undefined; name: string }[] = [
       { config: item.scale, name: 'scale' },
@@ -90,21 +83,18 @@ const validateTimelineDurations = (items: I_NormalizedCarouselItem[]): void => {
 
     for (const { config, name } of channels) {
       if (isDefined(config) && typeof config.stay !== 'string' && 'timeline' in config.stay) {
-        checks.push({ timeline: config.stay.timeline, max: item.stayDuration, label: `${name} stay` })
+        const total = sum(config.stay.timeline.map(s => s.durationSeconds))
+        if (total > stayDuration) {
+          throw new Error(`Item ${i + 1} ${name} stay timeline total (${total}s) must not exceed ${stayDuration}s.`)
+        }
       }
     }
 
     // translate stay timeline
     if (typeof item.translate.stay !== 'string' && 'timeline' in item.translate.stay) {
-      checks.push({ timeline: item.translate.stay.timeline, max: item.stayDuration, label: 'translate stay' })
-    }
-
-    for (const { timeline, max, label } of checks) {
-      if (isDefined(timeline)) {
-        const total = sum(timeline.map(s => s.durationSeconds))
-        if (total > max) {
-          throw new Error(`Item ${i + 1} ${label} timeline total (${total}s) must not exceed ${max}s.`)
-        }
+      const total = sum(item.translate.stay.timeline.map(s => s.durationSeconds))
+      if (total > stayDuration) {
+        throw new Error(`Item ${i + 1} translate stay timeline total (${total}s) must not exceed ${stayDuration}s.`)
       }
     }
   }
