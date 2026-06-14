@@ -55,6 +55,8 @@ interface I_StackCarouselYProps {
   canvasSize: { w: number; h: number }
   /** 中心卡牌显示尺寸（viewBox 坐标），即用户看到的卡牌大小 */
   mainChildItemSize: { w: number; h: number }
+  /** 中心 child 正中心在画布中的坐标（viewBox 坐标），默认 viewBox 几何中心 */
+  mainChildCenter?: { x: number; y: number }
   /** 图片/内容配置数组，至少 1 项 */
   childItems?: I_StackCarouselItem[]
   /** back/mid 缩放比例 [back, mid]，center 恒为 1.0，默认 [0.78, 0.89] */
@@ -108,6 +110,14 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const contentOffsetX = -cardW / 2
   const contentOffsetY = -cardH / 2
 
+  // mainChildCenter 换算成相对 viewBox 几何中心的整体偏移，挂到外层 <g>（不动 slot 数学）
+  const mainOffset = isDefined(props.mainChildCenter)
+    ? { x: props.mainChildCenter.x - viewBoxW / 2, y: props.mainChildCenter.y - viewBoxH / 2 }
+    : { x: 0, y: 0 }
+  const mainOffsetTransform = (mainOffset.x !== 0 || mainOffset.y !== 0)
+    ? `translate(${mainOffset.x},${mainOffset.y})`
+    : undefined
+
   return (
     <SectionEx
       {...(isDev ? { "expubgo-label": "stack-carousel-y" } : {})}
@@ -132,7 +142,8 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
             </foreignObject>
           </g>
 
-          <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
+          <g transform={mainOffsetTransform}>
+            <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
             {Array.from({ length: totalSlots }, (_, slotIndex) => {
               const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
@@ -233,6 +244,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
                 </g>
               )
             })}
+            </g>
           </g>
         </SvgEx>
       </section>
