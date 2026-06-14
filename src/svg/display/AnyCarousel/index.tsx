@@ -163,7 +163,7 @@ const wrapWithPivot = (inner: ReactNode, pivotSeq: T_PointSeq, anim: ReactNode):
   )
 }
 
-const AnyCarousel = (props: {
+export interface I_AnyCarouselProps {
   canvasSize: { w: number; h: number }
   spacing?: T_SpacingProps
   childItems?: I_AnyCarouselItemConfig[]
@@ -190,7 +190,9 @@ const AnyCarousel = (props: {
   mainChildCenter?: { x: number; y: number }
   /** 外层 slide（整体推进 / 内容流动）的缓动曲线，缺省用框架默认 ease-in-out */
   globalSlideKeySplines?: string
-}) => {
+}
+
+const AnyCarousel = (props: I_AnyCarouselProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.childItems?.[0]
   if (isNil(firstPic?.url) && isNil(firstPic?.item)) return null

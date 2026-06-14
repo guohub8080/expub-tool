@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { AnyCarousel } from 'expub-tool/svg'
+import { AnyCarousel, CubeCarouselX } from 'expub-tool/svg'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
@@ -180,25 +180,17 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="拟 SkewSlide cube（skewY 绕底边 pivot + Y 交叉补偿，3 面无缝循环）">
-        <AnyCarousel
+      <CopyDemo title="CubeCarouselX（skewAngle=15，translate 自动算；默认 ease-in-out / 画布居中）">
+        <CubeCarouselX
           canvasSize={{ w: 240, h: 160 }}
-          mainChildCenter={{ x: 120, y: 120 }}
-          globalSlideKeySplines="0 0 1 1"
           childCanvasSize={{ w: 80, h: 80 }}
-          childGap={0}
-          angle={0}
-          centerChildConfig={{ skewY: { value: 0, keySplines: '0 0 1 1' }, translate: { y: 0, keySplines: '0 0 1 1' } }}
-          nextChildConfig={{ skewY: { value: -15, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 11, keySplines: '0 0 1 1' } }}
-          lastChildConfig={{ skewY: { value: 15, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 11, keySplines: '0 0 1 1' } }}
-          nextOutWindowConfig={{ skewY: { value: -30, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 45, keySplines: '0 0 1 1' } }}
-          lastOutWindowConfig={{ skewY: { value: 30, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 45, keySplines: '0 0 1 1' } }}
+          skewAngle={15}
           childItems={[
-            { url: getWechat300x300(1), stayDuration: 0 },
-            { url: getWechat300x300(2), stayDuration: 0 },
-            { url: getWechat300x300(3), stayDuration: 0 },
-            { url: getWechat300x300(4), stayDuration: 0 },
-            { url: getWechat300x300(5), stayDuration: 0 },
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
           ]}
         />
       </CopyDemo>

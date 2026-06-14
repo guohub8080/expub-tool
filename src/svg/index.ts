@@ -66,3 +66,6 @@ export { default as CoverOut } from "./display/Cover/CoverOut"
 
 export { default as AnyCarousel } from "./display/AnyCarousel"
 export type { I_AnyCarouselItemConfig, I_ChildTransform } from "./display/AnyCarousel/types"
+
+export { default as CubeCarouselX } from "./display/AnyCarousel/CubeCarouselX"
+export type { I_CubeCarouselXProps } from "./display/AnyCarousel/CubeCarouselX"
