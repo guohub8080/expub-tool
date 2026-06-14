@@ -188,10 +188,10 @@ export default function AnyCarouselPage() {
           childCanvasSize={{ w: 80, h: 80 }}
           childGap={0}
           angle={0}
-          nextChildConfig={{ skewY: { value: -15, childCanvasPivot: 'Bottom' }, translate: { y: 11 } }}
-          lastChildConfig={{ skewY: { value: 15, childCanvasPivot: 'Bottom' }, translate: { y: 11 } }}
-          nextOutWindowConfig={{ skewY: { value: -30, childCanvasPivot: 'Bottom' }, translate: { y: 45 } }}
-          lastOutWindowConfig={{ skewY: { value: 30, childCanvasPivot: 'Bottom' }, translate: { y: 45 } }}
+          nextChildConfig={{ skewY: { value: -15, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 11, keySplines: '0 0 1 1' } }}
+          lastChildConfig={{ skewY: { value: 15, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 11, keySplines: '0 0 1 1' } }}
+          nextOutWindowConfig={{ skewY: { value: -30, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 45, keySplines: '0 0 1 1' } }}
+          lastOutWindowConfig={{ skewY: { value: 30, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 45, keySplines: '0 0 1 1' } }}
           childItems={[
             { url: getWechat300x300(1), stayDuration: 0 },
             { url: getWechat300x300(2), stayDuration: 0 },
