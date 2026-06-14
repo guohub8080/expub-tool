@@ -4,7 +4,7 @@ import type { T_NativeAnimateTransform } from '@smil/types'
 export interface I_ScaleConfig {
   initValue?: number
   timeline: I_TimelineKeyframe<number>[]
-  origin: [number, number]
+  pivot: [number, number]
   begin?: string
   calcMode?: 'spline' | 'linear' | 'discrete' | 'paced'
   isFreeze?: boolean

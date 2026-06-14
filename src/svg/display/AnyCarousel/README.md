@@ -42,14 +42,14 @@ next —— center —— last —— outWindow ...
 | `skewX` | `number` | `0` | X 方向倾斜（度） |
 | `skewY` | `number` | `0` | Y 方向倾斜（度） |
 | `opacity` | `number` | `1` | 不透明度 0-1 |
-| `scaleOrigin` | `T_Origin` | `Center` | scale 变换原点（相对 childCanvas） |
-| `rotateOrigin` | `T_Origin` | `Center` | rotate 变换原点（相对 childCanvas） |
-| `skewXOrigin` | `T_Origin` | `Center` | skewX 变换原点（相对 childCanvas） |
-| `skewYOrigin` | `T_Origin` | `Center` | skewY 变换原点（相对 childCanvas） |
+| `scalePivot` | `T_Pivot` | `Center` | scale 变换原点（相对 childCanvas） |
+| `rotatePivot` | `T_Pivot` | `Center` | rotate 变换原点（相对 childCanvas） |
+| `skewXPivot` | `T_Pivot` | `Center` | skewX 变换原点（相对 childCanvas） |
+| `skewYPivot` | `T_Pivot` | `Center` | skewY 变换原点（相对 childCanvas） |
 
 每个 config 的所有通道可选；只在某通道「跨角色存在非恒等值」时才渲染对应的 `animateTransform` / `animate`，保持输出精简。
 
-### T_Origin（变换原点）
+### T_Pivot（变换原点）
 
 九宫格预设或自定义坐标（相对 childCanvas，内容中心为原点）：
 
@@ -61,18 +61,18 @@ BottomLeft Bottom  BottomRight
 
 也可传 `{ x, y }` 自定义像素坐标（内容中心为 0,0，如 `{ x: 0, y: -200 }`）。
 
-### 每通道每角色 origin
+### 每通道每角色 pivot
 
-四个 `*Origin` 字段写在 `I_ChildTransform` 里，故**每个角色可配不同 origin**——例如 coverflow 让侧图绕「靠近中心的内侧边」fan 出去：
+四个 `*Pivot` 字段写在 `I_ChildTransform` 里，故**每个角色可配不同 pivot**——例如 coverflow 让侧图绕「靠近中心的内侧边」fan 出去：
 
 ```ts
-nextChildConfig={{ scale: 0.7, rotate: 25, rotateOrigin: 'Right', scaleOrigin: 'Right' }}  // 左侧图绕右边
-lastChildConfig={{ scale: 0.7, rotate: -25, rotateOrigin: 'Left', scaleOrigin: 'Left' }}   // 右侧图绕左边
+nextChildConfig={{ scale: 0.7, rotate: 25, rotatePivot: 'Right', scalePivot: 'Right' }}  // 左侧图绕右边
+lastChildConfig={{ scale: 0.7, rotate: -25, rotatePivot: 'Left', scalePivot: 'Left' }}   // 右侧图绕左边
 ```
 
-实现上分通道处理（一个 slot 跨多角色，origin 需随角色变）：
-- **rotate**：origin 逐关键帧（`rotate(angle cx cy)` 每帧 cx/cy 可不同）→ 几乎免费，无额外 DOM。
-- **scale / skewX / skewY**：用「pivot 补偿」按 origin 偏移，分三档省 DOM——全 Center 不补偿；全角色相同非 Center 走静态 `translate(+p)→anim→translate(-p)`（+0 anim）；逐角色不同走动画 pivot（pivot-in / pivot-out 两条 translate，逐帧与主 anim 同步，+2 anim）。纯 translate 不涉及隐式 origin，微信 WebView 叠加安全。
+实现上分通道处理（一个 slot 跨多角色，pivot 需随角色变）：
+- **rotate**：pivot 逐关键帧（`rotate(angle cx cy)` 每帧 cx/cy 可不同）→ 几乎免费，无额外 DOM。
+- **scale / skewX / skewY**：用「pivot 补偿」按 pivot 偏移，分三档省 DOM——全 Center 不补偿；全角色相同非 Center 走静态 `translate(+p)→anim→translate(-p)`（+0 anim）；逐角色不同走动画 pivot（pivot-in / pivot-out 两条 translate，逐帧与主 anim 同步，+2 anim）。纯 translate 不涉及隐式 pivot，微信 WebView 叠加安全。
 
 ## I_AnyCarouselItemConfig
 
@@ -87,7 +87,7 @@ lastChildConfig={{ scale: 0.7, rotate: -25, rotateOrigin: 'Left', scaleOrigin: '
 ## 实现要点
 
 - N+3 个 slot 以中心为界向 ±angle 两侧排开（next 在 −angle 入口侧、last 在 +angle 出口侧；首尾各一个 ghost 副本保证无缝循环），外层 `<g>` 用一条 `transformTranslate`（`isAdditive`）整体沿 +angle 平移，让 slot 依次滑过中心。
-- 每个 slot 的内容中心置于本地原点，使 scale / rotate / skewX / skewY 自然围绕中心作用。origin 非 Center 时由 `wrapWithPivot` 做 pivot 补偿（见下文「每通道每角色 origin」）。每个 `animateTransform` 独占一个 `<g>`（符合 SMIL 嵌套规则）。
+- 每个 slot 的内容中心置于本地原点，使 scale / rotate / skewX / skewY 自然围绕中心作用。pivot 非 Center 时由 `wrapWithPivot` 做 pivot 补偿（见下文「每通道每角色 pivot」）。每个 `animateTransform` 独占一个 `<g>`（符合 SMIL 嵌套规则）。
 - 每个 slot × 每个通道一条 timeline：`initValue` 取状态 0 的角色值，每段 `toAbs` 取段末状态的角色值；节奏由 `switchDuration` / `stayDuration` 驱动（偶数段=switch、奇数段=stay）。
 - 循环靠 slot 排布的周期性 + 外层平移的周期性天然无缝（itemIdx = activeIdx mod N）。
 

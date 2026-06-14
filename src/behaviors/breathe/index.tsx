@@ -4,7 +4,7 @@ export interface I_BreatheConfig {
   fromScale?: number
   toScale?: number
   onceBreatheDurationSeconds?: number
-  origin: [number, number]
+  pivot: [number, number]
   keySplines?: string
   begin?: string
   loopCount?: number
@@ -15,7 +15,7 @@ export function transformBreathe(config: I_BreatheConfig) {
     fromScale = 1,
     toScale = 1.1,
     onceBreatheDurationSeconds = 2,
-    origin,
+    pivot,
     keySplines = '0.42 0 0.58 1',
     begin,
     loopCount = 0,
@@ -25,7 +25,7 @@ export function transformBreathe(config: I_BreatheConfig) {
 
   return transformScale({
     initValue: fromScale,
-    origin,
+    pivot,
     timeline: [
       { toAbs: toScale, durationSeconds: half, keySplines },
       { toAbs: fromScale, durationSeconds: half, keySplines },

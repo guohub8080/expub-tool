@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { T_Origin } from "@svg/types"
+import type { T_Pivot } from "@svg/types"
 
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 0.5
@@ -16,9 +16,9 @@ export const DEFAULT_ANGLE = 0
  * 用于 centerChildConfig / lastChildConfig / nextChildConfig / outWindowConfig。
  * 所有通道可选，缺省为恒等值（scale=1、rotate=0、skewX=0、skewY=0、opacity=1）。
  *
- * origin 为各通道变换原点（相对 childCanvas），缺省 Center。
- * 不同角色可配不同 origin（如 coverflow：next 绕 Right、last 绕 Left）——
- * rotate 逐关键帧 origin 几乎免费；scale/skew 逐角色不同时走「动画 pivot」补偿。
+ * pivot 为各通道变换原点（相对 childCanvas），缺省 Center。
+ * 不同角色可配不同 pivot（如 coverflow：next 绕 Right、last 绕 Left）——
+ * rotate 逐关键帧 pivot 几乎免费；scale/skew 逐角色不同时走「动画 pivot」补偿。
  */
 export interface I_ChildTransform {
   /** 缩放比，默认 1 */
@@ -32,13 +32,13 @@ export interface I_ChildTransform {
   /** 不透明度 0-1，默认 1 */
   opacity?: number;
   /** scale 的变换原点（相对 childCanvas），默认 Center */
-  scaleOrigin?: T_Origin;
+  scalePivot?: T_Pivot;
   /** rotate 的变换原点（相对 childCanvas），默认 Center */
-  rotateOrigin?: T_Origin;
+  rotatePivot?: T_Pivot;
   /** skewX 的变换原点（相对 childCanvas），默认 Center */
-  skewXOrigin?: T_Origin;
+  skewXPivot?: T_Pivot;
   /** skewY 的变换原点（相对 childCanvas），默认 Center */
-  skewYOrigin?: T_Origin;
+  skewYPivot?: T_Pivot;
 }
 
 /** 标准化后的角色变换配置 — 5 通道 + 4 原点均已填充默认值（原点解析为相对内容中心的 {x,y}） */
@@ -48,14 +48,14 @@ export interface I_NormalizedChildTransform {
   skewX: number;
   skewY: number;
   opacity: number;
-  scaleOrigin: I_OriginPoint;
-  rotateOrigin: I_OriginPoint;
-  skewXOrigin: I_OriginPoint;
-  skewYOrigin: I_OriginPoint;
+  scalePivot: I_PivotPoint;
+  rotatePivot: I_PivotPoint;
+  skewXPivot: I_PivotPoint;
+  skewYPivot: I_PivotPoint;
 }
 
 /** 解析后的原点坐标（相对内容中心） */
-export interface I_OriginPoint {
+export interface I_PivotPoint {
   x: number;
   y: number;
 }

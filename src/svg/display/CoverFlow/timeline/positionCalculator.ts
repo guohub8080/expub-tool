@@ -21,9 +21,9 @@ export const calculateLayout = (
 
   const sideY = imageH * (1 - sideScale) / 2
 
-  const origin: [number, number] = [imageW / 2, imageH / 2]
+  const pivot: [number, number] = [imageW / 2, imageH / 2]
 
-  return { viewBoxW, viewBoxH, centerX, leftX, rightX, sideY, origin }
+  return { viewBoxW, viewBoxH, centerX, leftX, rightX, sideY, pivot }
 }
 
 /** 右侧 peek 位置 */

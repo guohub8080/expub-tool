@@ -158,12 +158,12 @@ const CycleItem = (props: {
     })
     if (isDefined(scaleAnimConfig)) {
       // 用嵌套 <g> 隔离 translate→scale→translate-back，
-      // 而不是在同一个 <g> 上用 additive="sum"（微信 WebView 对非 Center origin 叠加不准）
+      // 而不是在同一个 <g> 上用 additive="sum"（微信 WebView 对非 Center pivot 叠加不准）
       content = (
-        <g transform={`translate(${scaleAnimConfig.originX}, ${scaleAnimConfig.originY})`}>
+        <g transform={`translate(${scaleAnimConfig.pivotX}, ${scaleAnimConfig.pivotY})`}>
           <g>
             {scaleAnimConfig.scaleAnim}
-            <g transform={`translate(${-scaleAnimConfig.originX}, ${-scaleAnimConfig.originY})`}>
+            <g transform={`translate(${-scaleAnimConfig.pivotX}, ${-scaleAnimConfig.pivotY})`}>
               {content}
             </g>
           </g>
@@ -182,10 +182,10 @@ const CycleItem = (props: {
     })
     if (isDefined(skewAnimConfig)) {
       content = (
-        <g transform={`translate(${skewAnimConfig.originX}, ${skewAnimConfig.originY})`}>
+        <g transform={`translate(${skewAnimConfig.pivotX}, ${skewAnimConfig.pivotY})`}>
           <g>
             {skewAnimConfig.skewAnim}
-            <g transform={`translate(${-skewAnimConfig.originX}, ${-skewAnimConfig.originY})`}>
+            <g transform={`translate(${-skewAnimConfig.pivotX}, ${-skewAnimConfig.pivotY})`}>
               {content}
             </g>
           </g>
@@ -204,10 +204,10 @@ const CycleItem = (props: {
     })
     if (isDefined(skewAnimConfig)) {
       content = (
-        <g transform={`translate(${skewAnimConfig.originX}, ${skewAnimConfig.originY})`}>
+        <g transform={`translate(${skewAnimConfig.pivotX}, ${skewAnimConfig.pivotY})`}>
           <g>
             {skewAnimConfig.skewAnim}
-            <g transform={`translate(${-skewAnimConfig.originX}, ${-skewAnimConfig.originY})`}>
+            <g transform={`translate(${-skewAnimConfig.pivotX}, ${-skewAnimConfig.pivotY})`}>
               {content}
             </g>
           </g>

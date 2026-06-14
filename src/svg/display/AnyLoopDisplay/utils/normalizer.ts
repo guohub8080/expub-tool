@@ -4,14 +4,14 @@ import { isDefined } from '@utils/fn/isDefined'
 import { hasKey } from '@utils/fn/hasKey'
 import sum from "lodash/sum"
 import { DIRECTION_8 } from "@svg/types"
-import type { T_Direction8, T_Origin, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig, I_EntryTranslateConfig, I_StayTranslateConfig } from "@svg/types"
+import type { T_Direction8, T_Pivot, I_RotationConfig, I_EntryScaleConfig, I_EntryOpacityConfig, I_EntrySkewConfig, I_StayAnimConfig, I_EntryTranslateConfig, I_StayTranslateConfig } from "@svg/types"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_AnyLoopDisplayChildItem } from "../types"
 
 export const DEFAULT_STAY_DURATION = 2
 export const DEFAULT_SWITCH_DURATION = 2
 const DEFAULT_DIRECTION: T_Direction8 = DIRECTION_8.Top
-export const DEFAULT_TRANSFORM_ORIGIN: T_Origin = 'Center'
+export const DEFAULT_TRANSFORM_PIVOT: T_Pivot = 'Center'
 
 /**
  * 标准化后的旋转配置
@@ -21,7 +21,7 @@ export const DEFAULT_TRANSFORM_ORIGIN: T_Origin = 'Center'
  * - 高级模式：有 timeline，CycleItem 直接使用用户自定义的多段动画
  */
 export interface I_NormalizedRotationConfig {
-  childCanvasOrigin: T_Origin
+  childCanvasPivot: T_Pivot
   /** 起始旋转角度，简单模式下来自 angle，高级模式下来自 initValue */
   initValue: number
   /** 缓动曲线，仅简单模式生效 */
@@ -38,7 +38,7 @@ export interface I_NormalizedRotationConfig {
  * - 高级模式：有 timeline，CycleItem 直接使用用户自定义的多段动画
  */
 export interface I_NormalizedScaleConfig {
-  childCanvasOrigin: T_Origin
+  childCanvasPivot: T_Pivot
   /** 起始缩放值，简单模式下来自 from，高级模式下来自 initValue */
   initValue: number
   /** 缓动曲线，仅简单模式生效 */
@@ -71,7 +71,7 @@ export interface I_NormalizedOpacityConfig {
  * - 高级模式：有 timeline，CycleItem 直接使用用户自定义的多段动画
  */
 export interface I_NormalizedSkewConfig {
-  childCanvasOrigin: T_Origin
+  childCanvasPivot: T_Pivot
   /** 起始斜切角度（度），简单模式下来自 from，高级模式下来自 initValue */
   initValue: number
   /** 缓动曲线，仅简单模式生效 */
@@ -131,7 +131,7 @@ const normalizeRotation = (rotation: I_RotationConfig | undefined): I_Normalized
   const hasTimeline = isDefined(rotation.timeline)
 
   return {
-    childCanvasOrigin: defaultTo(rotation.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
+    childCanvasPivot: defaultTo(rotation.childCanvasPivot, DEFAULT_TRANSFORM_PIVOT),
     initValue: hasTimeline ? defaultTo(rotation.initValue, 0) : defaultTo(rotation.angle, 0),
     keySplines: hasTimeline ? undefined : rotation.keySplines,
     timeline: hasTimeline ? rotation.timeline : undefined,
@@ -151,7 +151,7 @@ const normalizeScale = (scale: I_EntryScaleConfig | undefined): I_NormalizedScal
   const hasTimeline = isDefined(scale.timeline)
 
   return {
-    childCanvasOrigin: defaultTo(scale.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
+    childCanvasPivot: defaultTo(scale.childCanvasPivot, DEFAULT_TRANSFORM_PIVOT),
     initValue: hasTimeline ? defaultTo(scale.initValue, 1) : defaultTo(scale.from, 1),
     keySplines: hasTimeline ? undefined : scale.keySplines,
     timeline: hasTimeline ? scale.timeline : undefined,
@@ -190,7 +190,7 @@ const normalizeSkew = (skew: I_EntrySkewConfig | undefined): I_NormalizedSkewCon
   const hasTimeline = isDefined(skew.timeline)
 
   return {
-    childCanvasOrigin: defaultTo(skew.childCanvasOrigin, DEFAULT_TRANSFORM_ORIGIN),
+    childCanvasPivot: defaultTo(skew.childCanvasPivot, DEFAULT_TRANSFORM_PIVOT),
     initValue: hasTimeline ? defaultTo(skew.initValue, 0) : defaultTo(skew.from, 0),
     keySplines: hasTimeline ? undefined : skew.keySplines,
     timeline: hasTimeline ? skew.timeline : undefined,

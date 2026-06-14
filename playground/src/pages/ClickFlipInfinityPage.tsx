@@ -95,13 +95,13 @@ export default function ClickFlipInfinityPage() {
 
 									{/* 呼吸光圈 */}
 									<g transform="translate(150, 180)">
-										{transformBreathe({ origin: [0, 0], fromScale: 0.8, toScale: 1.2, onceBreatheDurationSeconds: 1.5, begin: '0s' })}
+										{transformBreathe({ pivot: [0, 0], fromScale: 0.8, toScale: 1.2, onceBreatheDurationSeconds: 1.5, begin: '0s' })}
 										<circle cx={0} cy={0} r={50} fill="rgba(255,255,255,0.15)" />
 									</g>
 
 									{/* 呼吸角标 */}
 									<g transform="translate(230, 40)">
-										{transformBreathe({ origin: [0, 0], fromScale: 0.9, toScale: 1.1, onceBreatheDurationSeconds: 2, begin: '0.3s' })}
+										{transformBreathe({ pivot: [0, 0], fromScale: 0.9, toScale: 1.1, onceBreatheDurationSeconds: 2, begin: '0.3s' })}
 										<rect x={-24} y={-12} width={48} height={24} rx={12} fill="#ef4444" />
 										<text x={0} y={5} textAnchor="middle" fill="#fff" fontSize={11} fontWeight="bold" fontFamily="sans-serif">
 											NEW
@@ -132,7 +132,7 @@ export default function ClickFlipInfinityPage() {
 
 									{/* 中心图标区 */}
 									<g transform="translate(150, 160)">
-										{transformBreathe({ origin: [0, 0], fromScale: 0.85, toScale: 1.15, onceBreatheDurationSeconds: 1.8, begin: '0s' })}
+										{transformBreathe({ pivot: [0, 0], fromScale: 0.85, toScale: 1.15, onceBreatheDurationSeconds: 1.8, begin: '0s' })}
 										<rect x={-50} y={-50} width={100} height={100} rx={20} fill="rgba(255,255,255,0.2)" />
 										<text x={0} y={8} textAnchor="middle" fill="#fff" fontSize={40} fontFamily="sans-serif">
 											★

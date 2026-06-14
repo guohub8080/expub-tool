@@ -29,7 +29,7 @@ export type { I_SkewSlideCarouselChildItem } from '../types'
  * 外层 translate 整体推动切换，模拟 cube 旋转效果。
  *
  * 核心对齐原理（来自 README）：
- * - skew origin 在底边中心 (faceW/2, contentH)
+ * - skew pivot 在底边中心 (faceW/2, contentH)
  * - translate 步进距离 = faceW，保证面与面无缝衔接
  * - skew 状态下需要 Y 方向交叉轴补偿 = contentH/2 * tan(angle)
  * - skew 和 translate 是同一个 3D 旋转的两个 2D 投影，必须严格同步
@@ -38,7 +38,7 @@ export type { I_SkewSlideCarouselChildItem } from '../types'
  *   <g translate(slotX, slotY)>        ← 静态定位（面在画布中的 X 位置 + 垂直居中）
  *     <g>                              ← Y 补偿动画层（skew 时有 yOff，正面时 0）
  *       <animateTransform translate/>
- *       <g translate(originX, originY)> ← skew origin 定位
+ *       <g translate(pivotX, pivotY)> ← skew pivot 定位
  *         <g>                          ← skewY 动画层
  *           <animateTransform skewY/>
  *           <g translate(-cW/2, -cH)>  ← 内容反向定位
@@ -85,9 +85,9 @@ const SkewSlideCarouselX = (props: {
   const entryAngle = isReversed ? skewAngle : -skewAngle
   const exitAngle = isReversed ? -skewAngle : skewAngle
 
-  // ── skew origin：底边中心 ──
-  const originX = faceW / 2
-  const originY = contentH
+  // ── skew pivot：底边中心 ──
+  const pivotX = faceW / 2
+  const pivotY = contentH
 
   // ── normalize items（保证至少 3 张） ──
   const items = normalizeItems(props.childItems)
@@ -144,8 +144,8 @@ const SkewSlideCarouselX = (props: {
                 slotY={centerY}
                 contentW={contentW}
                 contentH={contentH}
-                originX={originX}
-                originY={originY}
+                pivotX={pivotX}
+                pivotY={pivotY}
                 entryAngle={entryAngle}
                 exitAngle={exitAngle}
                 yOff={yOff}
@@ -177,8 +177,8 @@ const SkewSlotItem = (props: {
   slotY: number
   contentW: number
   contentH: number
-  originX: number
-  originY: number
+  pivotX: number
+  pivotY: number
   entryAngle: number
   exitAngle: number
   yOff: number
@@ -188,7 +188,7 @@ const SkewSlotItem = (props: {
 }) => {
   const {
     item, slotX, slotY, contentW, contentH,
-    originX, originY, entryAngle, exitAngle, yOff,
+    pivotX, pivotY, entryAngle, exitAngle, yOff,
     si, N, items,
   } = props
   const isEdge = si === 0 || si === N + 2
@@ -221,7 +221,7 @@ const SkewSlotItem = (props: {
           isFreeze: true,
           isAdditive: false,
         })}
-        <g transform={`translate(${originX}, ${originY})`}>
+        <g transform={`translate(${pivotX}, ${pivotY})`}>
           <g>
             {!isEdge && transformSkewY({
               initValue: initSkew,

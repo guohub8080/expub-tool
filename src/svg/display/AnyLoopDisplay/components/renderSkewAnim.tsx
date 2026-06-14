@@ -3,10 +3,10 @@ import defaultTo from "lodash/defaultTo"
 import { transformSkewX, transformSkewY } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { buildSkewPhaseSegments, buildStaySegments } from "../utils/phaseSegmentBuilders"
-import { getRotationOrigin } from "@utils/svg/getRotationOrigin"
+import { getRotationPivot } from "@utils/svg/getRotationPivot"
 import { DEFAULT_EASE, combinePhaseSegments } from "./buildFullSegments"
 
-/** 生成单轴 skew animateTransform（支持 timeline 模式 + stay 配置 + origin） */
+/** 生成单轴 skew animateTransform（支持 timeline 模式 + stay 配置 + pivot） */
 export const renderSkewAxisAnim = ({
   axis,
   entrySkew, exitSkew, staySkew,
@@ -24,19 +24,19 @@ export const renderSkewAxisAnim = ({
   nextSwitchDuration: number
   holdDuration: number
   begin: number
-}): { originX: number; originY: number; skewAnim: React.ReactElement | null } | null => {
+}): { pivotX: number; pivotY: number; skewAnim: React.ReactElement | null } | null => {
   if (isNil(entrySkew) && isNil(exitSkew) && isNil(staySkew)) return null
 
   const animInitValue = defaultTo(entrySkew?.initValue, 0)
   const exitTargetValue = defaultTo(exitSkew?.initValue, 0)
   const ease = defaultTo(entrySkew?.keySplines, defaultTo(exitSkew?.keySplines, DEFAULT_EASE))
 
-  const skewOrigin = getRotationOrigin({
-    origin: defaultTo(entrySkew?.childCanvasOrigin, defaultTo(exitSkew?.childCanvasOrigin, 'Center')),
+  const skewPivot = getRotationPivot({
+    pivot: defaultTo(entrySkew?.childCanvasPivot, defaultTo(exitSkew?.childCanvasPivot, 'Center')),
     contentWidth,
     contentHeight,
   })
-  const [originX, originY] = skewOrigin
+  const [pivotX, pivotY] = skewPivot
 
   const entrySegs = buildSkewPhaseSegments({ skewConfig: entrySkew, phaseDuration: switchDuration, simpleTargetValue: 0, defaultEase: ease })
   const lastEntryValue = entrySegs.length > 0 ? entrySegs[entrySegs.length - 1].toAbs : 0
@@ -47,5 +47,5 @@ export const renderSkewAxisAnim = ({
 
   const skewConfig = { initValue: animInitValue, timeline: segs, begin: `${begin}s`, loopCount: 0, isFreeze: true, isAdditive: false }
   const skewAnim = axis === 'Y' ? transformSkewY(skewConfig) : transformSkewX(skewConfig)
-  return { originX, originY, skewAnim }
+  return { pivotX, pivotY, skewAnim }
 }

@@ -1,4 +1,4 @@
-import { AnyLoopDisplay, ORIGIN } from 'expub-tool/svg'
+import { AnyLoopDisplay, PIVOT } from 'expub-tool/svg'
 import { getEaseBezier } from 'expub-tool/smil'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
@@ -280,9 +280,9 @@ export default function AnyLoopDisplayPage() {
                   ],
                 },
                 rotation: { angle: 360 },
-                scale: { childCanvasOrigin: ORIGIN.Center, from: 0.3 },
+                scale: { childCanvasPivot: PIVOT.Center, from: 0.3 },
               },
-              exit: { translate: { direction: 'R' }, rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.3 } },
+              exit: { translate: { direction: 'R' }, rotation: { angle: -360 }, scale: { childCanvasPivot: PIVOT.Center, from: 0.3 } },
               stayDuration: 1.5, switchDuration: 2.5,
             },
             {
@@ -296,9 +296,9 @@ export default function AnyLoopDisplayPage() {
                   ],
                 },
                 rotation: { angle: -360 },
-                scale: { childCanvasOrigin: ORIGIN.Center, from: 0.3 },
+                scale: { childCanvasPivot: PIVOT.Center, from: 0.3 },
               },
-              exit: { translate: { direction: 'L' }, rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.3 } },
+              exit: { translate: { direction: 'L' }, rotation: { angle: 360 }, scale: { childCanvasPivot: PIVOT.Center, from: 0.3 } },
               stayDuration: 1.5, switchDuration: 2.5,
             },
           ]}
@@ -333,27 +333,27 @@ export default function AnyLoopDisplayPage() {
 
       {/* ── scale ── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — scale 0→1 入场，1→0 出场，origin Center</h3>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — scale 0→1 入场，1→0 出场，pivot Center</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { translate: { direction: 'R' }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(3), entry: { translate: { direction: 'B' }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(4), entry: { translate: { direction: 'L' }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, exit: { scale: { childCanvasOrigin: ORIGIN.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, scale: { childCanvasPivot: PIVOT.Center, from: 0 } }, exit: { scale: { childCanvasPivot: PIVOT.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'R' }, scale: { childCanvasPivot: PIVOT.Center, from: 0 } }, exit: { scale: { childCanvasPivot: PIVOT.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { translate: { direction: 'B' }, scale: { childCanvasPivot: PIVOT.Center, from: 0 } }, exit: { scale: { childCanvasPivot: PIVOT.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { translate: { direction: 'L' }, scale: { childCanvasPivot: PIVOT.Center, from: 0 } }, exit: { scale: { childCanvasPivot: PIVOT.Center, from: 0 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
 
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>4 图 — scale 0.1→1 入场，1→3 放大退场，origin TopLeft</h3>
+        <h3 style={{ margin: '0 0 8px' }}>4 图 — scale 0.1→1 入场，1→3 放大退场，pivot TopLeft</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           childItems={[
-            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { translate: { direction: 'B' }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(3), entry: { translate: { direction: 'T' }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
-            { url: getWechat300x300(4), entry: { translate: { direction: 'B' }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'T' }, scale: { childCanvasPivot: PIVOT.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasPivot: PIVOT.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'B' }, scale: { childCanvasPivot: PIVOT.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasPivot: PIVOT.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(3), entry: { translate: { direction: 'T' }, scale: { childCanvasPivot: PIVOT.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasPivot: PIVOT.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
+            { url: getWechat300x300(4), entry: { translate: { direction: 'B' }, scale: { childCanvasPivot: PIVOT.TopLeft, from: 0.1 } }, exit: { scale: { childCanvasPivot: PIVOT.TopLeft, from: 3 } }, stayDuration: 1.5, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -370,7 +370,7 @@ export default function AnyLoopDisplayPage() {
               entry: {
                 translate: { direction: 'T' },
                 scale: {
-                  childCanvasOrigin: ORIGIN.Center,
+                  childCanvasPivot: PIVOT.Center,
                   initValue: 0.1,
                   timeline: [
                     { durationSeconds: 1.8, toAbs: 1.3, keySplines: getEaseBezier({ isOut: true }) },
@@ -385,7 +385,7 @@ export default function AnyLoopDisplayPage() {
               entry: {
                 translate: { direction: 'B' },
                 scale: {
-                  childCanvasOrigin: ORIGIN.Center,
+                  childCanvasPivot: PIVOT.Center,
                   initValue: 0.1,
                   timeline: [
                     { durationSeconds: 1.8, toAbs: 1.3, keySplines: getEaseBezier({ isOut: true }) },
@@ -407,8 +407,8 @@ export default function AnyLoopDisplayPage() {
           childCanvas={{ x: 30, y: 30, w: 240, h: 240 }}
           canvasBg={{ color: "#ede9fe" }}
           childItems={[
-            { url: getWechat300x300(1), entry: { translate: { direction: 'TL' }, skewX: { from: 30 }, scale: { childCanvasOrigin: ORIGIN.BottomRight, from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
-            { url: getWechat300x300(2), entry: { translate: { direction: 'BR' }, skewX: { from: -30 }, scale: { childCanvasOrigin: ORIGIN.TopLeft, from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(1), entry: { translate: { direction: 'TL' }, skewX: { from: 30 }, scale: { childCanvasPivot: PIVOT.BottomRight, from: 0.1 }, rotation: { angle: 180 } }, stayDuration: 2, switchDuration: 2.5 },
+            { url: getWechat300x300(2), entry: { translate: { direction: 'BR' }, skewX: { from: -30 }, scale: { childCanvasPivot: PIVOT.TopLeft, from: 0.1 }, rotation: { angle: -180 } }, stayDuration: 2, switchDuration: 2.5 },
           ]}
         />
       </div>
@@ -453,7 +453,7 @@ export default function AnyLoopDisplayPage() {
               entry: {
                 translate: { direction: 'T' },
                 rotation: {
-                  childCanvasOrigin: ORIGIN.Center,
+                  childCanvasPivot: PIVOT.Center,
                   initValue: 720,
                   timeline: [
                     { durationSeconds: 1.5, toAbs: -180, keySplines: getEaseBezier({ isOut: true }) },
@@ -468,7 +468,7 @@ export default function AnyLoopDisplayPage() {
               entry: {
                 translate: { direction: 'B' },
                 rotation: {
-                  childCanvasOrigin: ORIGIN.Center,
+                  childCanvasPivot: PIVOT.Center,
                   initValue: -720,
                   timeline: [
                     { durationSeconds: 1.5, toAbs: 180, keySplines: getEaseBezier({ isOut: true }) },
@@ -506,16 +506,16 @@ export default function AnyLoopDisplayPage() {
           childItems={[
             {
               url: getWechat300x300(1),
-              entry: { translate: { direction: 'T' }, rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              entry: { translate: { direction: 'T' }, rotation: { angle: 360 }, scale: { childCanvasPivot: PIVOT.Center, from: 0.5 } },
               stay: { rotation: 45, scale: 1.1 },
-              exit: { rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              exit: { rotation: { angle: -360 }, scale: { childCanvasPivot: PIVOT.Center, from: 0.5 } },
               stayDuration: 3, switchDuration: 2,
             },
             {
               url: getWechat300x300(2),
-              entry: { translate: { direction: 'B' }, rotation: { angle: -360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              entry: { translate: { direction: 'B' }, rotation: { angle: -360 }, scale: { childCanvasPivot: PIVOT.Center, from: 0.5 } },
               stay: { rotation: -45, scale: 1.1 },
-              exit: { rotation: { angle: 360 }, scale: { childCanvasOrigin: ORIGIN.Center, from: 0.5 } },
+              exit: { rotation: { angle: 360 }, scale: { childCanvasPivot: PIVOT.Center, from: 0.5 } },
               stayDuration: 3, switchDuration: 2,
             },
           ]}
@@ -612,7 +612,7 @@ export default function AnyLoopDisplayPage() {
             entry: {
               translate: { direction: 'B' },
               scale: {
-                childCanvasOrigin: ORIGIN.Center,
+                childCanvasPivot: PIVOT.Center,
                 initValue: 0.3,
                 timeline: [
                   { durationSeconds: 1.2, toAbs: 1.2, keySplines: getEaseBezier({ isOut: true }) },
@@ -638,14 +638,14 @@ export default function AnyLoopDisplayPage() {
 
       {/* ── Skew Cube 效果（模拟 SkewSlideCarouselX）── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
-        <h3 style={{ margin: '0 0 8px' }}>3 图 — Skew Cube（origin=Bottom + Y 补偿 + hold opacity=0）</h3>
+        <h3 style={{ margin: '0 0 8px' }}>3 图 — Skew Cube（pivot=Bottom + Y 补偿 + hold opacity=0）</h3>
         <AnyLoopDisplay
           canvasSize={{ w: 300, h: 300 }}
           canvasBg={{ color: "#fef3c7" }}
           childItems={[
-            { url: getWechat300x300(1), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasOrigin: ORIGIN.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasOrigin: ORIGIN.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 0, switchDuration: 2 },
-            { url: getWechat300x300(2), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasOrigin: ORIGIN.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasOrigin: ORIGIN.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 0, switchDuration: 2 },
-            { url: getWechat300x300(3), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasOrigin: ORIGIN.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasOrigin: ORIGIN.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 0, switchDuration: 2 },
+            { url: getWechat300x300(1), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasPivot: PIVOT.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasPivot: PIVOT.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 0, switchDuration: 2 },
+            { url: getWechat300x300(2), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasPivot: PIVOT.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasPivot: PIVOT.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 0, switchDuration: 2 },
+            { url: getWechat300x300(3), entry: { translate: { initValue: { x: 300, y: -40 }, timeline: [{ durationSeconds: 2, toAbs: { x: 0, y: 0 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: -15, childCanvasPivot: PIVOT.Bottom } }, exit: { translate: { timeline: [{ durationSeconds: 2, toAbs: { x: -300, y: -40 }, keySplines: "0.42 0 0.58 1" }] }, skewY: { from: 15, childCanvasPivot: PIVOT.Bottom } }, hold: { opacity: { timeline: [{ durationSeconds: 0.01, toAbs: 0 }] } }, stayDuration: 0, switchDuration: 2 },
           ]}
         />
       </div>

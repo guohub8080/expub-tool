@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { T_Direction8, T_Origin, I_SkewConfig, I_RotationConfig } from "@svg/types"
+import type { T_Direction8, T_Pivot, I_SkewConfig, I_RotationConfig } from "@svg/types"
 
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 1

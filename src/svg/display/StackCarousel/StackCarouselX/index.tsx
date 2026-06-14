@@ -24,7 +24,7 @@ import type { I_StackCarouselItem, I_NormalizedStackItem } from "../types"
 import { normalizeItems } from "../utils/normalizer"
 import { buildSlotTimelines } from "../timeline/slotTimeline"
 import type { I_PositionConfig, I_SlotExitConfig } from "../timeline/slotTimeline"
-import { resolveRotationOrigin } from "../utils/rotationOrigin"
+import { resolveRotationPivot } from "../utils/rotationPivot"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 const DEFAULT_BACK_OFFSET = 162
@@ -156,9 +156,9 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
                 rotateTimeline,
               } = buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitConfig: slotExitConfig })
 
-              const rotationOrigin = isDefined(item.exit.rotation)
-                ? resolveRotationOrigin({
-                    origin: defaultTo(item.exit.rotation.childCanvasOrigin, "Center"),
+              const rotationPivot = isDefined(item.exit.rotation)
+                ? resolveRotationPivot({
+                    pivot: defaultTo(item.exit.rotation.childCanvasPivot, "Center"),
                     cardWidth: cardW,
                     cardHeight: cardH,
                   })
@@ -189,11 +189,11 @@ const StackCarouselX = (props: I_StackCarouselXProps) => {
 
               const buildRotateAnim = () => {
                 if (isNil(rotateTimeline)) return null
-                if (isNil(rotationOrigin)) return null
+                if (isNil(rotationPivot)) return null
                 return transformRotate({
                   initValue: 0,
                   timeline: rotateTimeline,
-                  origin: rotationOrigin,
+                  pivot: rotationPivot,
                   begin: "0s",
                   loopCount: 0,
                   isFreeze: true,

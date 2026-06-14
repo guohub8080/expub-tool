@@ -4,7 +4,7 @@ import defaultTo from "lodash/defaultTo"
 import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateOpacity, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
-import { getRotationOrigin } from "@utils/svg/getRotationOrigin"
+import { getRotationPivot } from "@utils/svg/getRotationPivot"
 import { buildTranslatePhaseSegments, buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments, buildSkewPhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 
@@ -127,8 +127,8 @@ const GhostLayer = (props: {
   const buildGhostRotateAnim = () => {
     if (isNil(firstItem.entry.rotation)) return null
     const entryRotation = firstItem.entry.rotation
-    const rotationOrigin = getRotationOrigin({
-      origin: entryRotation.childCanvasOrigin,
+    const rotationPivot = getRotationPivot({
+      pivot: entryRotation.childCanvasPivot,
       contentWidth,
       contentHeight,
     })
@@ -151,7 +151,7 @@ const GhostLayer = (props: {
     return transformRotate({
       initValue: entryRotation.initValue,
       timeline,
-      origin: rotationOrigin,
+      pivot: rotationPivot,
       begin: `${ghostHoldDuration}s`,
       loopCount: 0,
       isFreeze: true,
@@ -164,8 +164,8 @@ const GhostLayer = (props: {
   const buildGhostScaleAnimConfig = () => {
     if (isNil(firstItem.entry.scale)) return null
     const entryScale = firstItem.entry.scale
-    const scaleOrigin = getRotationOrigin({
-      origin: entryScale.childCanvasOrigin,
+    const scalePivot = getRotationPivot({
+      pivot: entryScale.childCanvasPivot,
       contentWidth,
       contentHeight,
     })
@@ -186,8 +186,8 @@ const GhostLayer = (props: {
     ]
 
     return {
-      originX: scaleOrigin[0],
-      originY: scaleOrigin[1],
+      pivotX: scalePivot[0],
+      pivotY: scalePivot[1],
       scaleAnim: transformScaleRaw({
         initValue: entryScale.initValue,
         timeline,
@@ -248,10 +248,10 @@ const GhostLayer = (props: {
   if (isDefined(ghostScaleAnimConfig)) {
     // 嵌套 <g> 隔离 translate→scale→translate-back，与 CycleItem 一致
     ghostContent = (
-      <g transform={`translate(${ghostScaleAnimConfig.originX}, ${ghostScaleAnimConfig.originY})`}>
+      <g transform={`translate(${ghostScaleAnimConfig.pivotX}, ${ghostScaleAnimConfig.pivotY})`}>
         <g>
           {ghostScaleAnimConfig.scaleAnim}
-          <g transform={`translate(${-ghostScaleAnimConfig.originX}, ${-ghostScaleAnimConfig.originY})`}>
+          <g transform={`translate(${-ghostScaleAnimConfig.pivotX}, ${-ghostScaleAnimConfig.pivotY})`}>
             {ghostContent}
           </g>
         </g>

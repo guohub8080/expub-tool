@@ -61,7 +61,7 @@ export default function ClickCascadePage() {
 								<svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block' }}>
 									<rect width={300} height={300} fill="#6366f1" />
 									<g>
-										{transformBreathe({ origin: [150, 150], onceBreatheDurationSeconds: 2, fromScale: 0.9, toScale: 1.1 })}
+										{transformBreathe({ pivot: [150, 150], onceBreatheDurationSeconds: 2, fromScale: 0.9, toScale: 1.1 })}
 										<circle cx={150} cy={150} r={60} fill="#a5b4fc" />
 									</g>
 								</svg>

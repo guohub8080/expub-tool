@@ -13,8 +13,8 @@ export function transformRotate(config: I_RotateConfig) {
   const {
     initValue = 0,
     timeline,
-    origin,
-    origins,
+    pivot,
+    pivots,
     begin,
     calcMode,
     isFreeze = false,
@@ -51,14 +51,14 @@ export function transformRotate(config: I_RotateConfig) {
   const result = buildTimeline({ initValue, timeline: fullKeyframes })
 
   // 3. 组装 values："angle cx cy" 格式
-  //    origins 逐帧给定（AnyCarousel 跨角色场景）；否则用常量 origin（默认 [0,0]）
+  //    pivots 逐帧给定（AnyCarousel 跨角色场景）；否则用常量 pivot（默认 [0,0]）
   const angleValues = result.values.split(';')
-  const resolveOrigin = (i: number): [number, number] => {
-    if (isDefined(origins) && i < origins.length) return origins[i]
-    return defaultTo(origin, [0, 0])
+  const resolvePivot = (i: number): [number, number] => {
+    if (isDefined(pivots) && i < pivots.length) return pivots[i]
+    return defaultTo(pivot, [0, 0])
   }
   const values = angleValues.map((a, i) => {
-    const [cx, cy] = resolveOrigin(i)
+    const [cx, cy] = resolvePivot(i)
     return `${a} ${cx} ${cy}`
   }).join(';')
 

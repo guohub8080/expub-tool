@@ -35,14 +35,14 @@ export const DIRECTION_8 = {
 export type T_DirectionX = "L" | "R"
 
 /** 九宫格预设位置 或 自定义坐标 */
-export type T_Origin =
+export type T_Pivot =
   | 'TopLeft' | 'Top' | 'TopRight'
   | 'Left'   | 'Center' | 'Right'
   | 'BottomLeft' | 'Bottom' | 'BottomRight'
   | { x: number; y: number }
 
-/** T_Origin 常量，避免硬编码字符串 */
-export const ORIGIN = {
+/** T_Pivot 常量，避免硬编码字符串 */
+export const PIVOT = {
   TopLeft: 'TopLeft',
   Top: 'Top',
   TopRight: 'TopRight',
@@ -85,7 +85,7 @@ export interface I_SkewConfig {
  */
 export interface I_EntrySkewConfig {
   /** 斜切原点（相对于 childCanvas），默认 Center */
-  childCanvasOrigin?: T_Origin
+  childCanvasPivot?: T_Pivot
 
   // ── 简单模式 ──
   /**
@@ -110,7 +110,7 @@ export interface I_EntrySkewConfig {
  * 支持两种模式：
  *
  * 1. 简单模式：只传 angle，组件自动生成 angle→0（entry）或 0→angle（exit）的动画
- *    { angle: 360, childCanvasOrigin: ORIGIN.Center }
+ *    { angle: 360, childCanvasPivot: PIVOT.Center }
  *
  * 2. 高级模式：传 initValue + timeline，完全自定义动画路径
  *    { initValue: 720, timeline: [{ durationSeconds: 1, to: 0 }, { durationSeconds: 1.5, to: -360 }] }
@@ -118,7 +118,7 @@ export interface I_EntrySkewConfig {
  */
 export interface I_RotationConfig {
   /** 旋转中心（相对于 childCanvas），默认 Center */
-  childCanvasOrigin?: T_Origin
+  childCanvasPivot?: T_Pivot
 
   // ── 简单模式 ──
   /**
@@ -143,7 +143,7 @@ export interface I_RotationConfig {
  * 支持两种模式：
  *
  * 1. 简单模式：只传 from，组件自动生成 from→1（entry）或 1→from（exit）的动画
- *    { from: 0.1, childCanvasOrigin: ORIGIN.TopLeft }
+ *    { from: 0.1, childCanvasPivot: PIVOT.TopLeft }
  *
  * 2. 高级模式：传 initValue + timeline，完全自定义动画路径
  *    { initValue: 0.1, timeline: [{ durationSeconds: 1, to: 1.5 }, { durationSeconds: 1.5, to: 1 }] }
@@ -151,7 +151,7 @@ export interface I_RotationConfig {
  */
 export interface I_EntryScaleConfig {
   /** 缩放中心（相对于 childCanvas），默认 Center */
-  childCanvasOrigin?: T_Origin
+  childCanvasPivot?: T_Pivot
 
   // ── 简单模式 ──
   /**

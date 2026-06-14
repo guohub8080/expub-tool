@@ -3,7 +3,7 @@ import defaultTo from "lodash/defaultTo"
 import { transformRotate } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { buildRotationPhaseSegments, buildStaySegments } from "../utils/phaseSegmentBuilders"
-import { getRotationOrigin } from "@utils/svg/getRotationOrigin"
+import { getRotationPivot } from "@utils/svg/getRotationPivot"
 import { DEFAULT_EASE, combinePhaseSegments } from "./buildFullSegments"
 
 /** 生成 rotate animateTransform（支持 timeline 模式 + stay 配置） */
@@ -27,8 +27,8 @@ export const renderRotateAnim = ({
   const animInitValue = defaultTo(entryRotation?.initValue, 0)
   const exitTargetValue = defaultTo(exitRotation?.initValue, 0)
 
-  const rotationOrigin = getRotationOrigin({
-    origin: defaultTo(entryRotation?.childCanvasOrigin, defaultTo(exitRotation?.childCanvasOrigin, 'Center')),
+  const rotationPivot = getRotationPivot({
+    pivot: defaultTo(entryRotation?.childCanvasPivot, defaultTo(exitRotation?.childCanvasPivot, 'Center')),
     contentWidth,
     contentHeight,
   })
@@ -45,7 +45,7 @@ export const renderRotateAnim = ({
   return transformRotate({
     initValue: animInitValue,
     timeline: segs,
-    origin: rotationOrigin,
+    pivot: rotationPivot,
     begin: `${begin}s`,
     loopCount: 0,
     isFreeze: true,

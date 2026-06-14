@@ -1,5 +1,5 @@
 import isPlainObject from "lodash/isPlainObject"
-import type { T_Origin } from "@svg/types"
+import type { T_Pivot } from "@svg/types"
 
 /**
  * 根据九宫格位置返回变换原点坐标（相对内容中心）。
@@ -12,25 +12,25 @@ import type { T_Origin } from "@svg/types"
  *
  * 自定义 { x, y } 坐标直接返回。通用工具，AnyCarousel / AnyLoopDisplay 共用。
  */
-export const getRotationOrigin = ({
-  origin,
+export const getRotationPivot = ({
+  pivot,
   contentWidth,
   contentHeight,
 }: {
   /** 九宫格位置或自定义坐标 */
-  origin: T_Origin
+  pivot: T_Pivot
   /** 内容区域宽度 */
   contentWidth: number
   /** 内容区域高度 */
   contentHeight: number
 }): [number, number] => {
   // 自定义坐标直接返回
-  if (isPlainObject(origin)) {
-    const { x, y } = origin as { x: number; y: number }
+  if (isPlainObject(pivot)) {
+    const { x, y } = pivot as { x: number; y: number }
     return [x, y]
   }
 
-  // 九宫格预设（origin 此时一定是 string）
+  // 九宫格预设（pivot 此时一定是 string）
   const halfWidth = contentWidth / 2
   const halfHeight = contentHeight / 2
   const grid: Record<string, [number, number]> = {
@@ -38,5 +38,5 @@ export const getRotationOrigin = ({
     Left: [-halfWidth, 0],                Center: [0, 0],            Right: [halfWidth, 0],
     BottomLeft: [-halfWidth, halfHeight], Bottom: [0, halfHeight],   BottomRight: [halfWidth, halfHeight],
   }
-  return grid[origin as string]
+  return grid[pivot as string]
 }

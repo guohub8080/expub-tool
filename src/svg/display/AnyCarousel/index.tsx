@@ -25,7 +25,7 @@ import type {
   I_NormalizedItemConfig,
   I_ChildTransform,
   I_NormalizedChildTransform,
-  I_OriginPoint,
+  I_PivotPoint,
   T_ChildRole,
 } from "./types"
 import { DEFAULT_CHILD_GAP, DEFAULT_ANGLE } from "./types"
@@ -64,7 +64,7 @@ const roleOf = (activeIdx: number, state: number): T_ChildRole => {
 }
 
 /**
- * 为某 slot 的单个通道构建 timeline（值序列或 origin 序列，泛型 T）
+ * 为某 slot 的单个通道构建 timeline（值序列或 pivot 序列，泛型 T）
  *
  * - initValue = 状态 0（初始帧）该角色的通道值
  * - 每段 toAbs = 段末对应状态的该角色通道值（switch 段过渡到新角色，stay 段保持）
@@ -96,25 +96,25 @@ const buildChannelTimeline = <T,>(
   return { initValue, timeline }
 }
 
-/** origin 序列（initValue + 每段末值） */
-type T_PointSeq = { initValue: I_OriginPoint; timeline: I_TimelineKeyframe<I_OriginPoint>[] }
+/** pivot 序列（initValue + 每段末值） */
+type T_PointSeq = { initValue: I_PivotPoint; timeline: I_TimelineKeyframe<I_PivotPoint>[] }
 
-/** 把 origin 序列展开为逐关键帧 [x,y] 数组（供 transformRotate 的 origins，长度 = timeline.length + 1） */
-const originSeqToRotateOrigins = (seq: T_PointSeq): [number, number][] =>
+/** 把 pivot 序列展开为逐关键帧 [x,y] 数组（供 transformRotate 的 pivots，长度 = timeline.length + 1） */
+const pivotSeqToRotatePivots = (seq: T_PointSeq): [number, number][] =>
   [seq.initValue, ...seq.timeline.map(k => k.toAbs)].map(p => [p.x, p.y])
 
 /**
- * 用「pivot 补偿」把一个变换动画（scale/skewX/skewY）的 origin 从默认的内容中心挪到 seq 指定的点。
+ * 用「pivot 补偿」把一个变换动画（scale/skewX/skewY）的 pivot 从默认的内容中心挪到 seq 指定的点。
  * 分三档省 DOM：
- * - 全 Center（[0,0]）：不补偿，<g>{inner}{anim}</g>（等价于原先无 origin）
+ * - 全 Center（[0,0]）：不补偿，<g>{inner}{anim}</g>（等价于原先无 pivot）
  * - 全相同非 Center：静态 translate(+p) → anim → translate(-p)（+0 anim，微信 WebView 友好）
  * - 逐角色不同：动画 pivot（pivot-in translate → anim → pivot-out translate，逐帧同步，+2 anim）
  *
- * 纯 translate 不涉及隐式 origin，additive/replace 均无微信叠加问题；这里每个 pivot <g> 只挂一条 anim，
+ * 纯 translate 不涉及隐式 pivot，additive/replace 均无微信叠加问题；这里每个 pivot <g> 只挂一条 anim，
  * 用 isAdditive:false（replace）最稳。
  */
-const wrapWithPivot = (inner: ReactNode, originSeq: T_PointSeq, anim: ReactNode): ReactNode => {
-  const points: I_OriginPoint[] = [originSeq.initValue, ...originSeq.timeline.map(k => k.toAbs)]
+const wrapWithPivot = (inner: ReactNode, pivotSeq: T_PointSeq, anim: ReactNode): ReactNode => {
+  const points: I_PivotPoint[] = [pivotSeq.initValue, ...pivotSeq.timeline.map(k => k.toAbs)]
 
   const allCenter = points.every(p => p.x === 0 && p.y === 0)
   if (allCenter) {
@@ -134,14 +134,14 @@ const wrapWithPivot = (inner: ReactNode, originSeq: T_PointSeq, anim: ReactNode)
     )
   }
 
-  // 逐角色不同 origin：动画 pivot，逐帧与 anim 的 keyTimes 同步
+  // 逐角色不同 pivot：动画 pivot，逐帧与 anim 的 keyTimes 同步
   const negSeq: T_PointSeq = {
-    initValue: { x: -originSeq.initValue.x, y: -originSeq.initValue.y },
-    timeline: originSeq.timeline.map(k => ({ ...k, toAbs: { x: -k.toAbs.x, y: -k.toAbs.y } })),
+    initValue: { x: -pivotSeq.initValue.x, y: -pivotSeq.initValue.y },
+    timeline: pivotSeq.timeline.map(k => ({ ...k, toAbs: { x: -k.toAbs.x, y: -k.toAbs.y } })),
   }
   return (
     <g>
-      {transformTranslate({ initValue: originSeq.initValue, timeline: originSeq.timeline, begin: '0s', loopCount: 0, isFreeze: true, isAdditive: false })}
+      {transformTranslate({ initValue: pivotSeq.initValue, timeline: pivotSeq.timeline, begin: '0s', loopCount: 0, isFreeze: true, isAdditive: false })}
       <g>
         {anim}
         <g>
@@ -188,7 +188,7 @@ const AnyCarousel = (props: {
   const N = items.length
   const isDev = ExPubGoConfig().mode === 'development'
 
-  // 4 角色变换配置（标准化，origin 以 childCanvas 尺寸为基准解析）
+  // 4 角色变换配置（标准化，pivot 以 childCanvas 尺寸为基准解析）
   const roleConfigs: Record<T_ChildRole, I_NormalizedChildTransform> = {
     center: normalizeChildConfig(props.centerChildConfig, imageW, imageH),
     last: normalizeChildConfig(props.lastChildConfig, imageW, imageH),
@@ -288,19 +288,19 @@ const AnyCarousel = (props: {
 
               // 变换层：由内到外依次包裹 skewY → skewX → rotate → scale
               // （外层后作用：内容先居中 → 倾斜 → 旋转 → 缩放 → 落位）
-              // scale/skew 用 wrapWithPivot 按该通道 origin 补偿；rotate 用逐关键帧 origin
+              // scale/skew 用 wrapWithPivot 按该通道 pivot 补偿；rotate 用逐关键帧 pivot
               let tree: ReactNode = content
               if (skewYActive) {
                 tree = wrapWithPivot(
                   tree,
-                  channel(c => c.skewYOrigin),
+                  channel(c => c.skewYPivot),
                   transformSkewY({ ...channel(c => c.skewY), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }
               if (skewXActive) {
                 tree = wrapWithPivot(
                   tree,
-                  channel(c => c.skewXOrigin),
+                  channel(c => c.skewXPivot),
                   transformSkewX({ ...channel(c => c.skewX), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }
@@ -310,7 +310,7 @@ const AnyCarousel = (props: {
                     {tree}
                     {transformRotate({
                       ...channel(c => c.rotate),
-                      origins: originSeqToRotateOrigins(channel(c => c.rotateOrigin)),
+                      pivots: pivotSeqToRotatePivots(channel(c => c.rotatePivot)),
                       begin: '0s',
                       loopCount: 0,
                       isAdditive: false,
@@ -322,7 +322,7 @@ const AnyCarousel = (props: {
               if (scaleActive) {
                 tree = wrapWithPivot(
                   tree,
-                  channel(c => c.scaleOrigin),
+                  channel(c => c.scalePivot),
                   transformScaleRaw({ ...channel(c => c.scale), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }

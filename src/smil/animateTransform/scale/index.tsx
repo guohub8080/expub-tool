@@ -14,7 +14,7 @@ export function transformScale(config: I_ScaleConfig) {
   const {
     initValue = 1,
     timeline,
-    origin,
+    pivot,
     begin,
     calcMode,
     isFreeze = false,
@@ -23,7 +23,7 @@ export function transformScale(config: I_ScaleConfig) {
     restart,
   } = config
 
-  const [cx, cy] = origin
+  const [cx, cy] = pivot
 
   // 1. 构建完整 scale 序列（to 省略时保持上一帧）
   const scaleValues: number[] = [initValue]

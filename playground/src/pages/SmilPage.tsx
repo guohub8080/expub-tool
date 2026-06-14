@@ -90,7 +90,7 @@ export default function SmilPage() {
       </Section>
 
       {/* transformScale */}
-      <Section title="transformScale — pulse with origin">
+      <Section title="transformScale — pulse with pivot">
         <svg width={120} height={120} viewBox="0 0 120 120">
           <rect x={10} y={10} width={100} height={100} rx={8} fill="#10b981">
             {transformScale({
@@ -99,7 +99,7 @@ export default function SmilPage() {
                 { toAbs: 1.2, durationSeconds: 0.6, keySpline: EASE_OUT },
                 { toAbs: 1, durationSeconds: 0.6, keySpline: EASE_IN },
               ],
-              origin: [60, 60],
+              pivot: [60, 60],
               loopCount: 'indefinite',
             })}
           </rect>
@@ -107,7 +107,7 @@ export default function SmilPage() {
       </Section>
 
       {/* transformScaleRaw */}
-      <Section title="transformScaleRaw — bare scale (no origin)">
+      <Section title="transformScaleRaw — bare scale (no pivot)">
         <svg width={120} height={120} viewBox="0 0 120 120">
           <rect x={10} y={10} width={100} height={100} rx={8} fill="#f59e0b">
             {transformScaleRaw({
@@ -131,7 +131,7 @@ export default function SmilPage() {
               timeline: [
                 { toAbs: 360, durationSeconds: 3 },
               ],
-              origin: [60, 60],
+              pivot: [60, 60],
               loopCount: 'indefinite',
             })}
           </rect>

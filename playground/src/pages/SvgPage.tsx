@@ -96,7 +96,7 @@ const BreatheCircleItem = ({ url }: { url: string }) => (
   <svg viewBox="0 0 300 500" style={{ width: '100%', display: 'block', backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', backgroundImage: `url(${url})` }}>
     <g transform="translate(135, 450)">
       <circle cx="15" cy="15" r="15" fill="white" opacity="0.6">
-        {transformBreathe({ origin: [15, 15], fromScale: 1, toScale: 1.3 })}
+        {transformBreathe({ pivot: [15, 15], fromScale: 1, toScale: 1.3 })}
       </circle>
     </g>
   </svg>

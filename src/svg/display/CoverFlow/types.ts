@@ -67,5 +67,5 @@ export interface I_Layout {
   /** 侧图垂直居中 y */
   sideY: number;
   /** 缩放原点 */
-  origin: [number, number];
+  pivot: [number, number];
 }

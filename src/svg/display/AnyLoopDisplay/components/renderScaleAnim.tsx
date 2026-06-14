@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import { transformScaleRaw } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { buildScalePhaseSegments, buildStaySegments } from "../utils/phaseSegmentBuilders"
-import { getRotationOrigin } from "@utils/svg/getRotationOrigin"
+import { getRotationPivot } from "@utils/svg/getRotationPivot"
 import { DEFAULT_EASE, combinePhaseSegments } from "./buildFullSegments"
 
 /**
@@ -28,18 +28,18 @@ export const buildScaleAnimConfig = ({
   nextSwitchDuration: number
   holdDuration: number
   begin: number
-}): { originX: number; originY: number; scaleAnim: ReactNode } | null => {
+}): { pivotX: number; pivotY: number; scaleAnim: ReactNode } | null => {
   if (isNil(entryScale) && isNil(exitScale) && isNil(stayScale)) return null
 
   const animInitValue = defaultTo(entryScale?.initValue, 1)
 
-  const scaleOrigin = getRotationOrigin({
-    origin: defaultTo(entryScale?.childCanvasOrigin, defaultTo(exitScale?.childCanvasOrigin, 'Center')),
+  const scalePivot = getRotationPivot({
+    pivot: defaultTo(entryScale?.childCanvasPivot, defaultTo(exitScale?.childCanvasPivot, 'Center')),
     contentWidth,
     contentHeight,
   })
 
-  const [originX, originY] = scaleOrigin
+  const [pivotX, pivotY] = scalePivot
   const ease = defaultTo(entryScale?.keySplines, defaultTo(exitScale?.keySplines, DEFAULT_EASE))
 
   const entrySegs = buildScalePhaseSegments({ scaleConfig: entryScale, phaseDuration: switchDuration, simpleTargetValue: 1, defaultEase: ease })
@@ -52,8 +52,8 @@ export const buildScaleAnimConfig = ({
   const segs = combinePhaseSegments(entrySegs, staySegs, exitSegs, exitTargetValue, holdDuration, ease)
 
   return {
-    originX,
-    originY,
+    pivotX,
+    pivotY,
     scaleAnim: transformScaleRaw({
       initValue: animInitValue,
       timeline: segs,
