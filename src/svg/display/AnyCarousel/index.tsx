@@ -185,6 +185,8 @@ const AnyCarousel = (props: {
   lastOutWindowConfig?: I_ChildTransform
   /** 流动方向角度（度），即内容流动方向：0 = 向右，90 = 向上，180 = 向左，默认 0 */
   angle?: number
+  /** 中心 child 的中心在画布中的坐标（viewBox 坐标），默认 viewBox 几何中心 */
+  mainChildCenter?: { x: number; y: number }
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.childItems?.[0]
@@ -231,8 +233,10 @@ const AnyCarousel = (props: {
   const step = imageW * Math.abs(unit.x) + imageH * Math.abs(unit.y) + gap
 
   // 中心 slot 左上角坐标（中心 item 居中于 viewBox）
-  const centerX = (viewBoxW - imageW) / 2
-  const centerY = (viewBoxH - imageH) / 2
+  // 中心 child 的中心坐标（默认 viewBox 几何中心）；整个 slot 布局以此为基准
+  const mainChildCenter = defaultTo(props.mainChildCenter, { x: viewBoxW / 2, y: viewBoxH / 2 })
+  const centerX = mainChildCenter.x - imageW / 2
+  const centerY = mainChildCenter.y - imageH / 2
 
   /**
    * slot 排布：内容沿 +angle 方向流动，故 next/入口侧在 -angle 方向、last/出口侧在 +angle 方向，共 N+3 个 slot。
