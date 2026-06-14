@@ -192,11 +192,11 @@ export default function AnyCarouselPage() {
           nextOutWindowConfig={{ skewY: { value: -30, childCanvasPivot: 'Bottom' }, translate: { y: 45 } }}
           lastOutWindowConfig={{ skewY: { value: 30, childCanvasPivot: 'Bottom' }, translate: { y: 45 } }}
           childItems={[
-            { url: getWechat300x300(1) },
-            { url: getWechat300x300(2) },
-            { url: getWechat300x300(3) },
-            { url: getWechat300x300(4) },
-            { url: getWechat300x300(5) },
+            { url: getWechat300x300(1), stayDuration: 0 },
+            { url: getWechat300x300(2), stayDuration: 0 },
+            { url: getWechat300x300(3), stayDuration: 0 },
+            { url: getWechat300x300(4), stayDuration: 0 },
+            { url: getWechat300x300(5), stayDuration: 0 },
           ]}
         />
       </CopyDemo>
