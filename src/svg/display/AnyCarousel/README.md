@@ -41,17 +41,19 @@ next —— center —— last —— outWindow ...
 | `rotate` | `T_Channel` | `0` | 旋转角度（度） |
 | `skewX` | `T_Channel` | `0` | X 方向倾斜（度） |
 | `skewY` | `T_Channel` | `0` | Y 方向倾斜（度） |
+| `translate` | `I_TranslateChannel` | `{0,0}` | 该角色内容平移偏移（相对 slot 基准，如 skew 的 Y 交叉补偿） |
 | `opacity` | `number` | `1` | 不透明度 0-1（无支点，保持数字） |
 
 ```ts
 // 通道 = 数字简写 或 object
 type T_Channel = number | { value: number; childCanvasPivot?: T_Pivot; keySplines?: string }
+// translate 是 2D（无支点、无数字简写），独立 object
+type I_TranslateChannel = { x?: number; y?: number; keySplines?: string }
 ```
 
 - **简写**：`scale: 1.3`（数字，等价于 `{ value: 1.3 }`）
 - **object**：`{ value, childCanvasPivot?, keySplines? }`——把值、支点、缓动绑在一起
-
-每个 config 的所有通道可选；只在某通道「跨角色存在非恒等值」时才渲染对应的 `animateTransform` / `animate`，保持输出精简。
+- **translate**：`{ x?, y?, keySplines? }`——该角色内容的额外平移偏移（相对 slot 基准位置），最外层 per-slot 应用，用于如 skew 绕底边时的 Y 交叉补偿。每个 config 的所有通道可选；只在某通道「跨角色存在非恒等值」时才渲染对应的 `animateTransform` / `animate`，保持输出精简。
 
 ### T_Pivot（变换支点）
 

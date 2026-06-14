@@ -107,6 +107,9 @@ export const normalizeChildConfig = (
     rotate: rotate.value, rotatePivot: rotate.pivot, ...(rotate.keySplines ? { rotateKeySplines: rotate.keySplines } : {}),
     skewX: skewX.value, skewXPivot: skewX.pivot, ...(skewX.keySplines ? { skewXKeySplines: skewX.keySplines } : {}),
     skewY: skewY.value, skewYPivot: skewY.pivot, ...(skewY.keySplines ? { skewYKeySplines: skewY.keySplines } : {}),
+    translateX: defaultTo(cfg?.translate?.x, 0),
+    translateY: defaultTo(cfg?.translate?.y, 0),
+    ...(isDefined(cfg?.translate?.keySplines) ? { translateKeySplines: cfg!.translate!.keySplines } : {}),
     opacity: defaultTo(cfg?.opacity, 1),
   }
 }

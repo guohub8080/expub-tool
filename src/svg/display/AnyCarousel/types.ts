@@ -23,6 +23,16 @@ export interface I_ChannelConfig {
   keySplines?: string
 }
 
+/** 平移通道（2D，无支点）：相对 slot 基准位置的偏移 */
+export interface I_TranslateChannel {
+  /** X 方向偏移（像素），缺省 0 */
+  x?: number
+  /** Y 方向偏移（像素），缺省 0 */
+  y?: number
+  /** 过渡到该角色时的缓动曲线；缺省用 ease-in-out */
+  keySplines?: string
+}
+
 /**
  * 单个角色的变换配置
  *
@@ -42,6 +52,8 @@ export interface I_ChildTransform {
   skewX?: T_Channel;
   /** Y 方向倾斜角度（度），默认 0 */
   skewY?: T_Channel;
+  /** 该角色的内容平移偏移（相对 slot 基准位置），缺省 {0,0}；如 skew 的 Y 交叉补偿 */
+  translate?: I_TranslateChannel;
   /** 不透明度 0-1，默认 1（无支点，保持数字） */
   opacity?: number;
 }
@@ -53,6 +65,10 @@ export interface I_NormalizedChildTransform {
   skewX: number;
   skewY: number;
   opacity: number;
+  /** 该角色的 X 平移偏移（相对 slot 基准），缺省 0 */
+  translateX: number;
+  /** 该角色的 Y 平移偏移（相对 slot 基准），缺省 0 */
+  translateY: number;
   scalePivot: I_PivotPoint;
   rotatePivot: I_PivotPoint;
   skewXPivot: I_PivotPoint;
@@ -62,6 +78,7 @@ export interface I_NormalizedChildTransform {
   rotateKeySplines?: string;
   skewXKeySplines?: string;
   skewYKeySplines?: string;
+  translateKeySplines?: string;
 }
 
 /** 解析后的支点坐标（相对内容中心） */

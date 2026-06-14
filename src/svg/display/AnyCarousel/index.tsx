@@ -211,6 +211,7 @@ const AnyCarousel = (props: {
   const skewXActive = allCfgs.some(c => c.skewX !== 0)
   const skewYActive = allCfgs.some(c => c.skewY !== 0)
   const opacityActive = allCfgs.some(c => c.opacity !== 1)
+  const translateActive = allCfgs.some(c => c.translateX !== 0 || c.translateY !== 0)
   const hasTransform = scaleActive || rotateActive || skewXActive || skewYActive
 
   // 流动方向单位向量（0°=右，90°=上）
@@ -337,6 +338,21 @@ const AnyCarousel = (props: {
                   tree,
                   channel(c => c.scalePivot),
                   transformScaleRaw({ ...channel(c => c.scale, c => c.scaleKeySplines), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
+                )
+              }
+              // translate 最外层：整个已变形的内容再做 per-role 平移偏移（如 skew 的 Y 交叉补偿）
+              if (translateActive) {
+                tree = (
+                  <g>
+                    {transformTranslate({
+                      ...channel(c => ({ x: c.translateX, y: c.translateY }), c => c.translateKeySplines),
+                      begin: '0s',
+                      loopCount: 0,
+                      isFreeze: true,
+                      isAdditive: false,
+                    })}
+                    {tree}
+                  </g>
                 )
               }
 
