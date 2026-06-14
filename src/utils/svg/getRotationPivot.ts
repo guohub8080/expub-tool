@@ -2,7 +2,7 @@ import isPlainObject from "lodash/isPlainObject"
 import type { T_Pivot } from "@svg/types"
 
 /**
- * 根据九宫格位置返回变换原点坐标（相对内容中心）。
+ * 根据九宫格位置返回变换支点坐标（相对内容中心）。
  *
  * 坐标系以内容中心为原点，contentWidth/contentHeight 为内容区域尺寸：
  *

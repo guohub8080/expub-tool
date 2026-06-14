@@ -11,12 +11,12 @@ export const DEFAULT_CHILD_GAP = 100
 export const DEFAULT_ANGLE = 0
 
 /**
- * 单个角色的变换配置（5 通道 + 4 通道原点）
+ * 单个角色的变换配置（5 通道 + 4 通道支点）
  *
  * 用于 centerChildConfig / lastChildConfig / nextChildConfig / outWindowConfig。
  * 所有通道可选，缺省为恒等值（scale=1、rotate=0、skewX=0、skewY=0、opacity=1）。
  *
- * pivot 为各通道变换原点（相对 childCanvas），缺省 Center。
+ * pivot 为各通道变换支点（相对 childCanvas），缺省 Center。
  * 不同角色可配不同 pivot（如 coverflow：next 绕 Right、last 绕 Left）——
  * rotate 逐关键帧 pivot 几乎免费；scale/skew 逐角色不同时走「动画 pivot」补偿。
  */
@@ -31,17 +31,17 @@ export interface I_ChildTransform {
   skewY?: number;
   /** 不透明度 0-1，默认 1 */
   opacity?: number;
-  /** scale 的变换原点（相对 childCanvas），默认 Center */
+  /** scale 的变换支点（相对 childCanvas），默认 Center */
   scalePivot?: T_Pivot;
-  /** rotate 的变换原点（相对 childCanvas），默认 Center */
+  /** rotate 的变换支点（相对 childCanvas），默认 Center */
   rotatePivot?: T_Pivot;
-  /** skewX 的变换原点（相对 childCanvas），默认 Center */
+  /** skewX 的变换支点（相对 childCanvas），默认 Center */
   skewXPivot?: T_Pivot;
-  /** skewY 的变换原点（相对 childCanvas），默认 Center */
+  /** skewY 的变换支点（相对 childCanvas），默认 Center */
   skewYPivot?: T_Pivot;
 }
 
-/** 标准化后的角色变换配置 — 5 通道 + 4 原点均已填充默认值（原点解析为相对内容中心的 {x,y}） */
+/** 标准化后的角色变换配置 — 5 通道 + 4 支点均已填充默认值（支点解析为相对内容中心的 {x,y}） */
 export interface I_NormalizedChildTransform {
   scale: number;
   rotate: number;
@@ -54,7 +54,7 @@ export interface I_NormalizedChildTransform {
   skewYPivot: I_PivotPoint;
 }
 
-/** 解析后的原点坐标（相对内容中心） */
+/** 解析后的支点坐标（相对内容中心） */
 export interface I_PivotPoint {
   x: number;
   y: number;

@@ -33,7 +33,7 @@ next —— center —— last —— outWindow ...
 | `canvasBg` | `I_CanvasBg` | — | 画布背景 |
 | `spacing` | `T_SpacingProps` | — | 外间距 |
 
-## I_ChildTransform（5 通道 + 4 通道原点）
+## I_ChildTransform（5 通道 + 4 通道支点）
 
 | 字段 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -42,14 +42,14 @@ next —— center —— last —— outWindow ...
 | `skewX` | `number` | `0` | X 方向倾斜（度） |
 | `skewY` | `number` | `0` | Y 方向倾斜（度） |
 | `opacity` | `number` | `1` | 不透明度 0-1 |
-| `scalePivot` | `T_Pivot` | `Center` | scale 变换原点（相对 childCanvas） |
-| `rotatePivot` | `T_Pivot` | `Center` | rotate 变换原点（相对 childCanvas） |
-| `skewXPivot` | `T_Pivot` | `Center` | skewX 变换原点（相对 childCanvas） |
-| `skewYPivot` | `T_Pivot` | `Center` | skewY 变换原点（相对 childCanvas） |
+| `scalePivot` | `T_Pivot` | `Center` | scale 变换支点（相对 childCanvas） |
+| `rotatePivot` | `T_Pivot` | `Center` | rotate 变换支点（相对 childCanvas） |
+| `skewXPivot` | `T_Pivot` | `Center` | skewX 变换支点（相对 childCanvas） |
+| `skewYPivot` | `T_Pivot` | `Center` | skewY 变换支点（相对 childCanvas） |
 
 每个 config 的所有通道可选；只在某通道「跨角色存在非恒等值」时才渲染对应的 `animateTransform` / `animate`，保持输出精简。
 
-### T_Pivot（变换原点）
+### T_Pivot（变换支点）
 
 九宫格预设或自定义坐标（相对 childCanvas，内容中心为原点）：
 

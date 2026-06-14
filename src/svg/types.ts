@@ -84,7 +84,7 @@ export interface I_SkewConfig {
  *    timeline 总时长必须 ≤ 对应 entry/exit 的 duration，剩余时间 hold 在最后值
  */
 export interface I_EntrySkewConfig {
-  /** 斜切原点（相对于 childCanvas），默认 Center */
+  /** 斜切支点（相对于 childCanvas），默认 Center */
   childCanvasPivot?: T_Pivot
 
   // ── 简单模式 ──

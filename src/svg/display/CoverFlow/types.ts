@@ -66,6 +66,6 @@ export interface I_Layout {
   rightX: number;
   /** 侧图垂直居中 y */
   sideY: number;
-  /** 缩放原点 */
+  /** 缩放支点 */
   pivot: [number, number];
 }
