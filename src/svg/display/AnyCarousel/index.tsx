@@ -185,7 +185,7 @@ const AnyCarousel = (props: {
   lastOutWindowConfig?: I_ChildTransform
   /** 流动方向角度（度），即内容流动方向：0 = 向右，90 = 向上，180 = 向左，默认 0 */
   angle?: number
-  /** 中心 child 的中心在画布中的坐标（viewBox 坐标），默认 viewBox 几何中心 */
+  /** 中心 child 正中心在画布中的坐标（viewBox 坐标）；整个 slot 布局以此为基准，默认 viewBox 几何中心 */
   mainChildCenter?: { x: number; y: number }
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
