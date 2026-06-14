@@ -9,7 +9,6 @@ export { default as useImgSize } from "./hooks/useImgSize"
 export { default as svgURL } from "./svg/svgURL"
 export { validateWechatSvg, WHITELIST_DATA } from "./svg/validateWechatSvg"
 export type { IssueSeverity, ValidationIssue, ValidationResult } from "./svg/validateWechatSvg"
-export { getRotationOrigin } from "./svg/getRotationOrigin"
 
 // DOM utilities
 export { getElementBounds, getOriginNumByText } from "./dom/getElementBounds"
