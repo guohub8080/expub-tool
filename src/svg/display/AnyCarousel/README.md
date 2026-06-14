@@ -13,7 +13,7 @@ next —— center —— last —— outWindow ...
 
 - 推进时整体沿 +angle 平移：**next 从 −angle 侧滑入 center**，center 滑向 last(+angle) 侧。
 - `next` = 即将进入中心的下一个（入口侧，−angle）；`last` = 刚离开中心的上一个（出口侧，+angle）。
-- 屏外（超出 last/next 之外）= `outWindow`，默认恒等。
+- 屏外（超出 last/next 之外）= `outWindow`，分两侧：`nextOutWindow`（next 之外）与 `lastOutWindow`（last 之外），各可单独配置（未传回退 `outWindowConfig`），默认恒等。
 
 中心 item 居中：`centerX = (canvasSize.w - childCanvasSize.w) / 2`。peek（侧图露出量）由 `childCanvasSize` + `childGap` + `canvasSize` 几何自动决定，无专门参数。
 
@@ -28,7 +28,9 @@ next —— center —— last —— outWindow ...
 | `centerChildConfig` | `I_ChildTransform` | 恒等 | 中心角色变换 |
 | `lastChildConfig` | `I_ChildTransform` | 恒等 | last 角色（+angle 出口侧）变换 |
 | `nextChildConfig` | `I_ChildTransform` | 恒等 | next 角色（−angle 入口侧）变换 |
-| `outWindowConfig` | `I_ChildTransform` | 恒等 | 屏外角色变换 |
+| `outWindowConfig` | `I_ChildTransform` | 恒等 | 屏外角色（两侧公共默认）变换 |
+| `nextOutWindowConfig` | `I_ChildTransform` | 回退 `outWindowConfig` | next 侧屏外（更远 −angle）变换；覆盖公共默认，用于 cube 等需两侧反向弯曲的场景 |
+| `lastOutWindowConfig` | `I_ChildTransform` | 回退 `outWindowConfig` | last 侧屏外（更远 +angle）变换；覆盖公共默认 |
 | `angle` | `number` | `0` | 流动方向角度（度），即内容流动方向：0=向右，90=向上，180=向左 |
 | `canvasBg` | `I_CanvasBg` | — | 画布背景 |
 | `spacing` | `T_SpacingProps` | — | 外间距 |

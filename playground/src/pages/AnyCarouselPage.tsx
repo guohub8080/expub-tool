@@ -180,15 +180,16 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="拟 SkewSlide cube（skewY 绕底边 pivot + Y 交叉补偿，3 面可见）">
+      <CopyDemo title="拟 SkewSlide cube（skewY 绕底边 pivot + Y 交叉补偿，3 面无缝循环）">
         <AnyCarousel
           canvasSize={{ w: 300, h: 300 }}
           childCanvasSize={{ w: 80, h: 80 }}
           childGap={0}
           angle={0}
-          nextChildConfig={{ skewY: { value: -15, childCanvasPivot: 'Bottom' }, translate: { y: -11 } }}
-          lastChildConfig={{ skewY: { value: 15, childCanvasPivot: 'Bottom' }, translate: { y: -11 } }}
-          outWindowConfig={{ opacity: 0 }}
+          nextChildConfig={{ skewY: { value: -15, childCanvasPivot: 'Bottom' }, translate: { y: 11 } }}
+          lastChildConfig={{ skewY: { value: 15, childCanvasPivot: 'Bottom' }, translate: { y: 11 } }}
+          nextOutWindowConfig={{ skewY: { value: -30, childCanvasPivot: 'Bottom' }, translate: { y: 23 }, opacity: 0 }}
+          lastOutWindowConfig={{ skewY: { value: 30, childCanvasPivot: 'Bottom' }, translate: { y: 23 }, opacity: 0 }}
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },

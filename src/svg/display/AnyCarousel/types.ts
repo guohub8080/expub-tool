@@ -88,7 +88,7 @@ export interface I_PivotPoint {
 }
 
 /** slot 在某个状态下所扮演的角色 */
-export type T_ChildRole = 'center' | 'last' | 'next' | 'outWindow'
+export type T_ChildRole = 'center' | 'last' | 'next' | 'nextOutWindow' | 'lastOutWindow'
 
 /**
  * 用户传入的单项配置

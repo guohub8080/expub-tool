@@ -64,7 +64,8 @@ const roleOf = (activeIdx: number, state: number): T_ChildRole => {
   if (k === 0) return 'center'
   if (k === 1) return 'next'
   if (k === -1) return 'last'
-  return 'outWindow'
+  // |k| ≥ 2：按侧拆分，便于 cube 等场景让两侧 outWindow 朝各自方向继续弯曲
+  return k > 0 ? 'nextOutWindow' : 'lastOutWindow'
 }
 
 /**
@@ -176,8 +177,12 @@ const AnyCarousel = (props: {
   lastChildConfig?: I_ChildTransform
   /** next 角色（-angle 入口侧、即将进入中心）变换配置 */
   nextChildConfig?: I_ChildTransform
-  /** 屏外角色（超出 last/next 之外）变换配置，默认恒等 */
+  /** 屏外角色（超出 last/next 之外）变换配置，两侧公共默认 */
   outWindowConfig?: I_ChildTransform
+  /** next 侧屏外（next 之外、更远 -angle）变换配置，覆盖 outWindowConfig；用于 cube 等需两侧反向弯曲的场景 */
+  nextOutWindowConfig?: I_ChildTransform
+  /** last 侧屏外（last 之外、更远 +angle）变换配置，覆盖 outWindowConfig */
+  lastOutWindowConfig?: I_ChildTransform
   /** 流动方向角度（度），即内容流动方向：0 = 向右，90 = 向上，180 = 向左，默认 0 */
   angle?: number
 }) => {
@@ -197,11 +202,13 @@ const AnyCarousel = (props: {
   const isDev = ExPubGoConfig().mode === 'development'
 
   // 4 角色变换配置（标准化，pivot 以 childCanvas 尺寸为基准解析）
+  // nextOutWindow/lastOutWindow 未传时回退 outWindowConfig（对称场景只写一个）
   const roleConfigs: Record<T_ChildRole, I_NormalizedChildTransform> = {
     center: normalizeChildConfig(props.centerChildConfig, imageW, imageH),
     last: normalizeChildConfig(props.lastChildConfig, imageW, imageH),
     next: normalizeChildConfig(props.nextChildConfig, imageW, imageH),
-    outWindow: normalizeChildConfig(props.outWindowConfig, imageW, imageH),
+    nextOutWindow: normalizeChildConfig(defaultTo(props.nextOutWindowConfig, props.outWindowConfig), imageW, imageH),
+    lastOutWindow: normalizeChildConfig(defaultTo(props.lastOutWindowConfig, props.outWindowConfig), imageW, imageH),
   }
 
   // 检测哪些通道有非恒等值（决定是否渲染对应 animateTransform / animate）
