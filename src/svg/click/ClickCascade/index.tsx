@@ -63,10 +63,10 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
     const splines = defaultTo(item.keySplines, EASE_IN_OUT)
     const holdKeyTime = fadeDur / (fadeDur + HOLD_DURATION)
 
-    const hx = defaultTo(item.hotArea?.x, 0)
-    const hy = defaultTo(item.hotArea?.y, 0)
-    const hw = defaultTo(item.hotArea?.w, W)
-    const hh = defaultTo(item.hotArea?.h, H)
+    const hotAreaX = defaultTo(item.hotArea?.x, 0)
+    const hotAreaY = defaultTo(item.hotArea?.y, 0)
+    const hotAreaWidth = defaultTo(item.hotArea?.w, W)
+    const hotAreaHeight = defaultTo(item.hotArea?.h, H)
 
     return (
       <>
@@ -92,7 +92,7 @@ const ClickCascade = (props: I_ClickCascadeProps) => {
           values={`${outOfView} 0`}
         />
         <rect
-          x={hx} y={hy} width={hw} height={hh}
+          x={hotAreaX} y={hotAreaY} width={hotAreaWidth} height={hotAreaHeight}
           opacity={0} fill="transparent"
           style={{ pointerEvents: 'visible' }}
         >
