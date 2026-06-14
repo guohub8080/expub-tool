@@ -19,7 +19,7 @@ export interface I_ChannelConfig {
   value: number
   /** 变换支点（相对 childCanvas），缺省 Center */
   childCanvasPivot?: T_Pivot
-  /** 过渡到该角色时该通道的缓动曲线；缺省回退到 item.keySplines */
+  /** 过渡到该角色时该通道的缓动曲线；缺省用 easeInOutSine */
   keySplines?: string
 }
 
