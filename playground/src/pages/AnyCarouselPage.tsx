@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { AnyCarousel } from 'expub-tool/svg'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
+import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null)
@@ -175,6 +176,25 @@ export default function AnyCarouselPage() {
             { url: getWechat300x500(7), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(8), switchDuration: 0.3, stayDuration: 0.5 },
             { url: getWechat300x500(9), switchDuration: 0.3, stayDuration: 0.5 },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="拟 SkewSlide cube（skewY 绕底边 pivot，3 面可见）">
+        <AnyCarousel
+          canvasSize={{ w: 300, h: 300 }}
+          childCanvasSize={{ w: 80, h: 80 }}
+          childGap={0}
+          angle={0}
+          nextChildConfig={{ skewY: { value: -15, childCanvasPivot: 'Bottom' } }}
+          lastChildConfig={{ skewY: { value: 15, childCanvasPivot: 'Bottom' } }}
+          outWindowConfig={{ opacity: 0 }}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
           ]}
         />
       </CopyDemo>
