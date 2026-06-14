@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import SectionEx from "@html/basicEx/SectionEx"
 import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
 import type { I_CanvasBg } from '@svg/types'
@@ -24,6 +25,7 @@ import type {
   I_NormalizedItemConfig,
   I_ChildTransform,
   I_NormalizedChildTransform,
+  I_OriginPoint,
   T_ChildRole,
 } from "./types"
 import { DEFAULT_CHILD_GAP, DEFAULT_ANGLE } from "./types"
@@ -62,22 +64,23 @@ const roleOf = (activeIdx: number, state: number): T_ChildRole => {
 }
 
 /**
- * 为某 slot 的单个通道构建 timeline
+ * 为某 slot 的单个通道构建 timeline（值序列或 origin 序列，泛型 T）
  *
  * - initValue = 状态 0（初始帧）该角色的通道值
  * - 每段 toAbs = 段末对应状态的该角色通道值（switch 段过渡到新角色，stay 段保持）
  *
  * 段 s（s=0..2N-1）：偶数段=switch，奇数段=stay；段末状态 = floor(s/2)+1。
+ * 同一 slot 用相同 seg 迭代驱动不同 getValue，得到的各通道 timeline 天然逐帧同步。
  */
-const buildChannelTimeline = (
+const buildChannelTimeline = <T,>(
   activeIdx: number,
   N: number,
   items: I_NormalizedItemConfig[],
   roleConfigs: Record<T_ChildRole, I_NormalizedChildTransform>,
-  getValue: (cfg: I_NormalizedChildTransform) => number,
-): { initValue: number; timeline: I_TimelineKeyframe<number>[] } => {
+  getValue: (cfg: I_NormalizedChildTransform) => T,
+): { initValue: T; timeline: I_TimelineKeyframe<T>[] } => {
   const initValue = getValue(roleConfigs[roleOf(activeIdx, 0)])
-  const timeline: I_TimelineKeyframe<number>[] = []
+  const timeline: I_TimelineKeyframe<T>[] = []
   const totalSegs = N * 2
 
   for (let seg = 0; seg < totalSegs; seg++) {
@@ -91,6 +94,63 @@ const buildChannelTimeline = (
   }
 
   return { initValue, timeline }
+}
+
+/** origin 序列（initValue + 每段末值） */
+type T_PointSeq = { initValue: I_OriginPoint; timeline: I_TimelineKeyframe<I_OriginPoint>[] }
+
+/** 把 origin 序列展开为逐关键帧 [x,y] 数组（供 transformRotate 的 origins，长度 = timeline.length + 1） */
+const originSeqToRotateOrigins = (seq: T_PointSeq): [number, number][] =>
+  [seq.initValue, ...seq.timeline.map(k => k.toAbs)].map(p => [p.x, p.y])
+
+/**
+ * 用「pivot 补偿」把一个变换动画（scale/skewX/skewY）的 origin 从默认的内容中心挪到 seq 指定的点。
+ * 分三档省 DOM：
+ * - 全 Center（[0,0]）：不补偿，<g>{inner}{anim}</g>（等价于原先无 origin）
+ * - 全相同非 Center：静态 translate(+p) → anim → translate(-p)（+0 anim，微信 WebView 友好）
+ * - 逐角色不同：动画 pivot（pivot-in translate → anim → pivot-out translate，逐帧同步，+2 anim）
+ *
+ * 纯 translate 不涉及隐式 origin，additive/replace 均无微信叠加问题；这里每个 pivot <g> 只挂一条 anim，
+ * 用 isAdditive:false（replace）最稳。
+ */
+const wrapWithPivot = (inner: ReactNode, originSeq: T_PointSeq, anim: ReactNode): ReactNode => {
+  const points: I_OriginPoint[] = [originSeq.initValue, ...originSeq.timeline.map(k => k.toAbs)]
+
+  const allCenter = points.every(p => p.x === 0 && p.y === 0)
+  if (allCenter) {
+    return <g>{inner}{anim}</g>
+  }
+
+  const first = points[0]
+  const constant = points.every(p => p.x === first.x && p.y === first.y)
+  if (constant) {
+    return (
+      <g transform={`translate(${first.x},${first.y})`}>
+        <g>
+          {anim}
+          <g transform={`translate(${-first.x},${-first.y})`}>{inner}</g>
+        </g>
+      </g>
+    )
+  }
+
+  // 逐角色不同 origin：动画 pivot，逐帧与 anim 的 keyTimes 同步
+  const negSeq: T_PointSeq = {
+    initValue: { x: -originSeq.initValue.x, y: -originSeq.initValue.y },
+    timeline: originSeq.timeline.map(k => ({ ...k, toAbs: { x: -k.toAbs.x, y: -k.toAbs.y } })),
+  }
+  return (
+    <g>
+      {transformTranslate({ initValue: originSeq.initValue, timeline: originSeq.timeline, begin: '0s', loopCount: 0, isFreeze: true, isAdditive: false })}
+      <g>
+        {anim}
+        <g>
+          {transformTranslate({ initValue: negSeq.initValue, timeline: negSeq.timeline, begin: '0s', loopCount: 0, isFreeze: true, isAdditive: false })}
+          {inner}
+        </g>
+      </g>
+    </g>
+  )
 }
 
 const AnyCarousel = (props: {
@@ -128,12 +188,12 @@ const AnyCarousel = (props: {
   const N = items.length
   const isDev = ExPubGoConfig().mode === 'development'
 
-  // 4 角色变换配置（标准化）
+  // 4 角色变换配置（标准化，origin 以 childCanvas 尺寸为基准解析）
   const roleConfigs: Record<T_ChildRole, I_NormalizedChildTransform> = {
-    center: normalizeChildConfig(props.centerChildConfig),
-    last: normalizeChildConfig(props.lastChildConfig),
-    next: normalizeChildConfig(props.nextChildConfig),
-    outWindow: normalizeChildConfig(props.outWindowConfig),
+    center: normalizeChildConfig(props.centerChildConfig, imageW, imageH),
+    last: normalizeChildConfig(props.lastChildConfig, imageW, imageH),
+    next: normalizeChildConfig(props.nextChildConfig, imageW, imageH),
+    outWindow: normalizeChildConfig(props.outWindowConfig, imageW, imageH),
   }
 
   // 检测哪些通道有非恒等值（决定是否渲染对应 animateTransform / animate）
@@ -199,8 +259,8 @@ const AnyCarousel = (props: {
           <g>
             {slots.map((slot, si) => {
               const { item, activeIdx, x, y } = slot
-              const channel = (getValue: (c: I_NormalizedChildTransform) => number) =>
-                buildChannelTimeline(activeIdx, N, items, roleConfigs, getValue)
+              const channel = <T,>(getValue: (c: I_NormalizedChildTransform) => T) =>
+                buildChannelTimeline<T>(activeIdx, N, items, roleConfigs, getValue)
 
               // 内容（最内层）：内容中心置于本地原点，使各 transform 自然围绕中心作用
               const content = (
@@ -228,37 +288,42 @@ const AnyCarousel = (props: {
 
               // 变换层：由内到外依次包裹 skewY → skewX → rotate → scale
               // （外层后作用：内容先居中 → 倾斜 → 旋转 → 缩放 → 落位）
-              let tree = content
+              // scale/skew 用 wrapWithPivot 按该通道 origin 补偿；rotate 用逐关键帧 origin
+              let tree: ReactNode = content
               if (skewYActive) {
-                tree = (
-                  <g>
-                    {tree}
-                    {transformSkewY({ ...channel(c => c.skewY), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true })}
-                  </g>
+                tree = wrapWithPivot(
+                  tree,
+                  channel(c => c.skewYOrigin),
+                  transformSkewY({ ...channel(c => c.skewY), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }
               if (skewXActive) {
-                tree = (
-                  <g>
-                    {tree}
-                    {transformSkewX({ ...channel(c => c.skewX), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true })}
-                  </g>
+                tree = wrapWithPivot(
+                  tree,
+                  channel(c => c.skewXOrigin),
+                  transformSkewX({ ...channel(c => c.skewX), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }
               if (rotateActive) {
                 tree = (
                   <g>
                     {tree}
-                    {transformRotate({ ...channel(c => c.rotate), origin: [0, 0], begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true })}
+                    {transformRotate({
+                      ...channel(c => c.rotate),
+                      origins: originSeqToRotateOrigins(channel(c => c.rotateOrigin)),
+                      begin: '0s',
+                      loopCount: 0,
+                      isAdditive: false,
+                      isFreeze: true,
+                    })}
                   </g>
                 )
               }
               if (scaleActive) {
-                tree = (
-                  <g>
-                    {tree}
-                    {transformScaleRaw({ ...channel(c => c.scale), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true })}
-                  </g>
+                tree = wrapWithPivot(
+                  tree,
+                  channel(c => c.scaleOrigin),
+                  transformScaleRaw({ ...channel(c => c.scale), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }
 

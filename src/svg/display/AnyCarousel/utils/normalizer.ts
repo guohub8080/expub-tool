@@ -3,12 +3,15 @@ import type {
   I_NormalizedItemConfig,
   I_ChildTransform,
   I_NormalizedChildTransform,
+  I_OriginPoint,
 } from "../types";
 import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types";
+import { ORIGIN } from "@svg/types";
 import defaultTo from "lodash/defaultTo";
 import isNil from "lodash/isNil";
 import { isDefined } from "@utils/fn/isDefined";
 import { getEaseBezier } from "@smil/bezier";
+import { getRotationOrigin } from "@utils/svg/getRotationOrigin";
 
 /** 默认缓动曲线：ease-in-out */
 export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
@@ -61,11 +64,37 @@ export const normalizeItems = (items?: I_AnyCarouselItemConfig[]): I_NormalizedI
   return normalized
 };
 
-/** 标准化角色变换配置 — 填充 5 通道默认值 */
-export const normalizeChildConfig = (cfg?: I_ChildTransform): I_NormalizedChildTransform => ({
+/** 将九宫格/自定义 origin 解析为相对内容中心的 {x,y} */
+const resolveOrigin = (
+  origin: I_ChildTransform['scaleOrigin'],
+  contentWidth: number,
+  contentHeight: number,
+): I_OriginPoint => {
+  const [x, y] = getRotationOrigin({
+    origin: defaultTo(origin, ORIGIN.Center),
+    contentWidth,
+    contentHeight,
+  })
+  return { x, y }
+}
+
+/**
+ * 标准化角色变换配置 — 填充 5 通道默认值，并把 4 个 origin 解析为相对内容中心的 {x,y}
+ *
+ * contentWidth/contentHeight = childCanvas 尺寸，origin 以此为基准。
+ */
+export const normalizeChildConfig = (
+  cfg: I_ChildTransform | undefined,
+  contentWidth: number,
+  contentHeight: number,
+): I_NormalizedChildTransform => ({
   scale: defaultTo(cfg?.scale, 1),
   rotate: defaultTo(cfg?.rotate, 0),
   skewX: defaultTo(cfg?.skewX, 0),
   skewY: defaultTo(cfg?.skewY, 0),
   opacity: defaultTo(cfg?.opacity, 1),
+  scaleOrigin: resolveOrigin(cfg?.scaleOrigin, contentWidth, contentHeight),
+  rotateOrigin: resolveOrigin(cfg?.rotateOrigin, contentWidth, contentHeight),
+  skewXOrigin: resolveOrigin(cfg?.skewXOrigin, contentWidth, contentHeight),
+  skewYOrigin: resolveOrigin(cfg?.skewYOrigin, contentWidth, contentHeight),
 })

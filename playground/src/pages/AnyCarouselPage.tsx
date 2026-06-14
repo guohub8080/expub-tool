@@ -120,6 +120,26 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="每角色 origin（coverflow fan：next 绕 Right、last 绕 Left）">
+        <AnyCarousel
+          canvasSize={{ w: 800, h: 500 }}
+          childCanvasSize={{ w: 300, h: 400 }}
+          childGap={60}
+          angle={0}
+          centerChildConfig={{ scale: 1.3 }}
+          nextChildConfig={{ scale: 0.7, rotate: 25, rotateOrigin: 'Right', scaleOrigin: 'Right', opacity: 0.6 }}
+          lastChildConfig={{ scale: 0.7, rotate: -25, rotateOrigin: 'Left', scaleOrigin: 'Left', opacity: 0.6 }}
+          outWindowConfig={{ scale: 0.4, opacity: 0 }}
+          childItems={[
+            { url: getWechat300x500(1) },
+            { url: getWechat300x500(2) },
+            { url: getWechat300x500(3) },
+            { url: getWechat300x500(4) },
+            { url: getWechat300x500(5) },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="快速切换（switchDuration=0.3, stayDuration=0.5）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 500 }}

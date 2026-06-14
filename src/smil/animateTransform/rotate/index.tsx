@@ -14,6 +14,7 @@ export function transformRotate(config: I_RotateConfig) {
     initValue = 0,
     timeline,
     origin,
+    origins,
     begin,
     calcMode,
     isFreeze = false,
@@ -21,8 +22,6 @@ export function transformRotate(config: I_RotateConfig) {
     isAdditive = true,
     restart,
   } = config
-
-  const [cx, cy] = origin
 
   // 1. 构建角度序列
   const angles: number[] = [initValue]
@@ -52,8 +51,16 @@ export function transformRotate(config: I_RotateConfig) {
   const result = buildTimeline({ initValue, timeline: fullKeyframes })
 
   // 3. 组装 values："angle cx cy" 格式
+  //    origins 逐帧给定（AnyCarousel 跨角色场景）；否则用常量 origin（默认 [0,0]）
   const angleValues = result.values.split(';')
-  const values = angleValues.map(a => `${a} ${cx} ${cy}`).join(';')
+  const resolveOrigin = (i: number): [number, number] => {
+    if (isDefined(origins) && i < origins.length) return origins[i]
+    return defaultTo(origin, [0, 0])
+  }
+  const values = angleValues.map((a, i) => {
+    const [cx, cy] = resolveOrigin(i)
+    return `${a} ${cx} ${cy}`
+  }).join(';')
 
   // 4. 公共属性
   const hasKeySplines = timeline.some(seg => seg.keySplines)
