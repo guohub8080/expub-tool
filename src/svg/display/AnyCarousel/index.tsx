@@ -17,7 +17,7 @@ import {
   transformSkewY,
 } from "@smil/index"
 import { animateOpacity } from "@smil/index"
-import { getSineBezier } from "@smil/bezier"
+import { getEaseBezier } from "@smil/bezier"
 import svgURL from "@utils/svg/svgURL"
 import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
@@ -32,8 +32,8 @@ import type {
 import { DEFAULT_CHILD_GAP, DEFAULT_ANGLE } from "./types"
 import { normalizeItems, normalizeChildConfig } from "./utils/normalizer"
 
-/** 通道缺省缓动：easeInOutSine（channel keySplines 未指定时使用） */
-const DEFAULT_CHANNEL_KEY_SPLINES = getSineBezier()
+/** 默认缓动曲线：ease-in-out（channel keySplines 未指定时使用） */
+const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true })
 
 /**
  * 角度 → 内容流动方向单位向量
@@ -94,9 +94,9 @@ const buildChannelTimeline = <T,>(
     const dur = isSwitch ? item.switchDuration : item.stayDuration
     const state = floor(seg / 2) + 1
     const role = roleOf(activeIdx, state)
-    // switch 段缓动：优先取该角色该通道的 keySplines，缺省回退 easeInOutSine
+    // switch 段缓动：优先取该角色该通道的 keySplines，缺省回退 ease-in-out
     const channelKeySplines = getKeySplines?.(roleConfigs[role])
-    const splines = isSwitch ? defaultTo(channelKeySplines, DEFAULT_CHANNEL_KEY_SPLINES) : undefined
+    const splines = isSwitch ? defaultTo(channelKeySplines, DEFAULT_KEY_SPLINES) : undefined
     const value = getValue(roleConfigs[role])
     timeline.push({ toAbs: value, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
   }
@@ -250,7 +250,7 @@ const AnyCarousel = (props: {
       x: deltaK * step * unit.x,
       y: deltaK * step * unit.y,
     }
-    outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: DEFAULT_CHANNEL_KEY_SPLINES })
+    outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: DEFAULT_KEY_SPLINES })
     outerTimeline.push({ toAbs: target, durationSeconds: item.stayDuration })
   }
 

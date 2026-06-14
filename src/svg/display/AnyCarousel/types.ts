@@ -19,7 +19,7 @@ export interface I_ChannelConfig {
   value: number
   /** 变换支点（相对 childCanvas），缺省 Center */
   childCanvasPivot?: T_Pivot
-  /** 过渡到该角色时该通道的缓动曲线；缺省用 easeInOutSine */
+  /** 过渡到该角色时该通道的缓动曲线；缺省用 ease-in-out */
   keySplines?: string
 }
 
@@ -57,7 +57,7 @@ export interface I_NormalizedChildTransform {
   rotatePivot: I_PivotPoint;
   skewXPivot: I_PivotPoint;
   skewYPivot: I_PivotPoint;
-  /** scale 通道过渡到本角色时的缓动；undefined 表示用 easeInOutSine */
+  /** scale 通道过渡到本角色时的缓动；undefined 表示用 ease-in-out */
   scaleKeySplines?: string;
   rotateKeySplines?: string;
   skewXKeySplines?: string;

@@ -81,7 +81,7 @@ lastChildConfig={{
 ```
 
 - `childCanvasPivot`：该通道在该角色的变换支点，缺省 Center。
-- `keySplines`：**过渡到该角色**时该通道的缓动曲线；缺省用 easeInOutSine（`getSineBezier()` = `0.445 0.05 0.55 0.95`）。
+- `keySplines`：**过渡到该角色**时该通道的缓动曲线；缺省用 ease-in-out（`getEaseBezier({ isIn: true, isOut: true })`）。
 
 实现上分通道处理（一个 slot 跨多角色，pivot 需随角色变）：
 - **rotate**：pivot 逐关键帧（`rotate(angle cx cy)` 每帧 cx/cy 可不同）→ 几乎免费，无额外 DOM。
