@@ -31,12 +31,12 @@ export const getRotationOrigin = ({
   }
 
   // 九宫格预设（origin 此时一定是 string）
-  const hw = contentWidth / 2
-  const hh = contentHeight / 2
+  const halfWidth = contentWidth / 2
+  const halfHeight = contentHeight / 2
   const grid: Record<string, [number, number]> = {
-    TopLeft: [-hw, -hh],    Top: [0, -hh],      TopRight: [hw, -hh],
-    Left: [-hw, 0],         Center: [0, 0],      Right: [hw, 0],
-    BottomLeft: [-hw, hh],  Bottom: [0, hh],     BottomRight: [hw, hh],
+    TopLeft: [-halfWidth, -halfHeight],   Top: [0, -halfHeight],     TopRight: [halfWidth, -halfHeight],
+    Left: [-halfWidth, 0],                Center: [0, 0],            Right: [halfWidth, 0],
+    BottomLeft: [-halfWidth, halfHeight], Bottom: [0, halfHeight],   BottomRight: [halfWidth, halfHeight],
   }
   return grid[origin as string]
 }
