@@ -188,6 +188,8 @@ const AnyCarousel = (props: {
   angle?: number
   /** 中心 child 正中心在画布中的坐标（viewBox 坐标）；整个 slot 布局以此为基准，默认 viewBox 几何中心 */
   mainChildCenter?: { x: number; y: number }
+  /** 外层 slide（整体推进 / 内容流动）的缓动曲线，缺省用框架默认 ease-in-out */
+  globalSlideKeySplines?: string
 }) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.childItems?.[0]
@@ -269,7 +271,7 @@ const AnyCarousel = (props: {
       x: deltaK * step * unit.x,
       y: deltaK * step * unit.y,
     }
-    outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: DEFAULT_KEY_SPLINES })
+    outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: defaultTo(props.globalSlideKeySplines, DEFAULT_KEY_SPLINES) })
     outerTimeline.push({ toAbs: target, durationSeconds: item.stayDuration })
   }
 

@@ -184,6 +184,7 @@ export default function AnyCarouselPage() {
         <AnyCarousel
           canvasSize={{ w: 240, h: 160 }}
           mainChildCenter={{ x: 120, y: 120 }}
+          globalSlideKeySplines="0 0 1 1"
           childCanvasSize={{ w: 80, h: 80 }}
           childGap={0}
           angle={0}
