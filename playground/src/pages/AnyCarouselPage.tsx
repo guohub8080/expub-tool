@@ -144,35 +144,15 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="每角色 pivot（coverflow fan：next 绕 Right、last 绕 Left）">
+      <CopyDemo title="每角色 pivot（coverflow fan：next 绕 Right、last 绕 Left，全不透明看遮挡）">
         <AnyCarousel
           canvasSize={{ w: 800, h: 700 }}
           childCanvasSize={{ w: 300, h: 500 }}
           childGap={60}
           angle={0}
           centerChildConfig={{ scale: 1.3 }}
-          nextChildConfig={{ scale: 0.7, rotate: 25, rotatePivot: 'Right', scalePivot: 'Right', opacity: 0.6 }}
-          lastChildConfig={{ scale: 0.7, rotate: -25, rotatePivot: 'Left', scalePivot: 'Left', opacity: 0.6 }}
-          outWindowConfig={{ scale: 0.4, opacity: 0 }}
-          childItems={[
-            { url: getWechat300x500(1) },
-            { url: getWechat300x500(2) },
-            { url: getWechat300x500(3) },
-            { url: getWechat300x500(4) },
-            { url: getWechat300x500(5) },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="遮挡关系（全不透明：观察 slot 渲染顺序——后渲染的压先渲染的）">
-        <AnyCarousel
-          canvasSize={{ w: 800, h: 700 }}
-          childCanvasSize={{ w: 300, h: 500 }}
-          childGap={60}
-          angle={0}
-          centerChildConfig={{ scale: 1.3 }}
-          nextChildConfig={{ scale: 0.7, rotate: 25, skewY: 10 }}
-          lastChildConfig={{ scale: 0.7, rotate: -25, skewY: -10 }}
+          nextChildConfig={{ scale: 0.7, rotate: 25, rotatePivot: 'Right', scalePivot: 'Right' }}
+          lastChildConfig={{ scale: 0.7, rotate: -25, rotatePivot: 'Left', scalePivot: 'Left' }}
           outWindowConfig={{ scale: 0.4 }}
           childItems={[
             { url: getWechat300x500(1) },
