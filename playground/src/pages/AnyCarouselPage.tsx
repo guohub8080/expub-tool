@@ -182,7 +182,7 @@ export default function AnyCarouselPage() {
 
       <CopyDemo title="拟 SkewSlide cube（skewY 绕底边 pivot + Y 交叉补偿，3 面无缝循环）">
         <AnyCarousel
-          canvasSize={{ w: 300, h: 300 }}
+          canvasSize={{ w: 240, h: 160 }}
           childCanvasSize={{ w: 80, h: 80 }}
           childGap={0}
           angle={0}
