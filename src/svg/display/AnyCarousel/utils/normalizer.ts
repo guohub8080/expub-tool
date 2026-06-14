@@ -37,10 +37,13 @@ const fillDefaults = (item: I_AnyCarouselItemConfig): I_NormalizedItemConfig => 
 /**
  * 标准化配置数组
  *
- * 至少需要 3 张图才能同时显示左peek+中心+右peek：
- * - 1 张 → 复制到 3 张
- * - 2 张 → 复制第一张补成 3 张
- * - ≥3 张 → 直接使用
+ * 为避免同一张图在多个可见位置（2 out + last + center + next = 5）同时出现造成视觉错乱，
+ * N 必须 ≥ 5；不足时按 ceil(5/N) 复制补足：
+ * - 1 张 → 5 份（×5）
+ * - 2 张 → 6 份（×3）
+ * - 3 张 → 6 份（×2）
+ * - 4 张 → 8 份（×2）
+ * - ≥5 张 → 直接使用
  */
 export const normalizeItems = (items?: I_AnyCarouselItemConfig[]): I_NormalizedItemConfig[] => {
   if (isNil(items) || items.length === 0) {
@@ -48,16 +51,14 @@ export const normalizeItems = (items?: I_AnyCarouselItemConfig[]): I_NormalizedI
   }
 
   const normalized = items.map(fillDefaults)
+  const N = normalized.length
+  if (N >= 5) return normalized
 
-  if (normalized.length === 1) {
-    return [normalized[0], normalized[0], normalized[0]]
-  }
-
-  if (normalized.length === 2) {
-    return [normalized[0], normalized[1], normalized[0]]
-  }
-
-  return normalized
+  // 不足 5 张：按 ceil(5/N) 整组复制，确保 N ≥ 5
+  const copies = Math.ceil(5 / N)
+  const result: I_NormalizedItemConfig[] = []
+  for (let c = 0; c < copies; c++) result.push(...normalized)
+  return result
 };
 
 /** 解析后的单通道：值 + 支点（相对内容中心）+ 缓动 */
