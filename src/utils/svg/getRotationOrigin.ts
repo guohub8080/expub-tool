@@ -10,9 +10,7 @@ import type { T_Origin } from "@svg/types"
  *   Left=(-w/2, 0)         Center=(0, 0)       Right=(w/2, 0)
  *   BottomLeft=(-w/2, h/2) Bottom=(0, h/2)     BottomRight=(w/2, h/2)
  *
- * 自定义 { x, y } 坐标直接返回。
- *
- * 注：AnyLoopDisplay 有同名实现（组件间禁止互相导入，各自维护一份，保持组件内自洽）。
+ * 自定义 { x, y } 坐标直接返回。通用工具，AnyCarousel / AnyLoopDisplay 共用。
  */
 export const getRotationOrigin = ({
   origin,

@@ -4,7 +4,7 @@ import defaultTo from "lodash/defaultTo"
 import { transformTranslate, transformSkewX, transformSkewY, transformRotate, transformScaleRaw, animateOpacity, animateVisibility } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import type { I_GhostTimeline } from "@utils/svg/buildCyclicTimelines"
-import { getRotationOrigin } from "../timeline/offsetCalculator"
+import { getRotationOrigin } from "@utils/svg/getRotationOrigin"
 import { buildTranslatePhaseSegments, buildRotationPhaseSegments, buildScalePhaseSegments, buildOpacityPhaseSegments, buildSkewPhaseSegments } from "../utils/phaseSegmentBuilders"
 import { renderChildItemContent } from "./ChildItemContent"
 

@@ -3,7 +3,7 @@ import defaultTo from "lodash/defaultTo"
 import { transformRotate } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { buildRotationPhaseSegments, buildStaySegments } from "../utils/phaseSegmentBuilders"
-import { getRotationOrigin } from "../timeline/offsetCalculator"
+import { getRotationOrigin } from "@utils/svg/getRotationOrigin"
 import { DEFAULT_EASE, combinePhaseSegments } from "./buildFullSegments"
 
 /** 生成 rotate animateTransform（支持 timeline 模式 + stay 配置） */

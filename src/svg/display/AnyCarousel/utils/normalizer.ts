@@ -11,7 +11,7 @@ import defaultTo from "lodash/defaultTo";
 import isNil from "lodash/isNil";
 import { isDefined } from "@utils/fn/isDefined";
 import { getEaseBezier } from "@smil/bezier";
-import { getRotationOrigin } from "./getRotationOrigin";
+import { getRotationOrigin } from "@utils/svg/getRotationOrigin";
 
 /** 默认缓动曲线：ease-in-out */
 export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });

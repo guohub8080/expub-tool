@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import { transformScaleRaw } from "@smil/index"
 import type { I_NormalizedChildItem } from "../utils/normalizer"
 import { buildScalePhaseSegments, buildStaySegments } from "../utils/phaseSegmentBuilders"
-import { getRotationOrigin } from "../timeline/offsetCalculator"
+import { getRotationOrigin } from "@utils/svg/getRotationOrigin"
 import { DEFAULT_EASE, combinePhaseSegments } from "./buildFullSegments"
 
 /**
