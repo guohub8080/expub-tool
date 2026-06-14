@@ -85,9 +85,9 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="对角线（angle=45）">
+      <CopyDemo title="对角线（angle=45，slots 严格沿真实 45° 排列）">
         <AnyCarousel
-          canvasSize={{ w: 700, h: 700 }}
+          canvasSize={{ w: 900, h: 900 }}
           childCanvasSize={{ w: 300, h: 500 }}
           childGap={120}
           angle={45}
@@ -98,6 +98,30 @@ export default function AnyCarouselPage() {
             { url: getWechat300x500(3) },
           ]}
         />
+      </CopyDemo>
+
+      <CopyDemo title="childGap 间距对比（gap = 相邻 child 沿流向的影子边到边空隙）">
+        {[0, 120, 240].map((g) => (
+          <div key={g} style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>
+              gap = {g}
+              {g === 0 ? '（影子贴边：轴向即贴边，侧图大块露出）' : ''}
+              {g === 240 ? '（侧图几乎只剩一缝）' : ''}
+            </div>
+            <AnyCarousel
+              canvasSize={{ w: 800, h: 600 }}
+              childCanvasSize={{ w: 300, h: 500 }}
+              childGap={g}
+              angle={0}
+              centerChildConfig={{ scale: 1.2 }}
+              childItems={[
+                { url: getWechat300x500(1) },
+                { url: getWechat300x500(2) },
+                { url: getWechat300x500(3) },
+              ]}
+            />
+          </div>
+        ))}
       </CopyDemo>
 
       <CopyDemo title="四角色全配置（coverflow：中心放大、侧图缩小倾斜半透、屏外隐藏）">
