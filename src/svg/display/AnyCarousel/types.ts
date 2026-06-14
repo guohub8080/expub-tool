@@ -57,7 +57,7 @@ export interface I_NormalizedChildTransform {
   rotatePivot: I_PivotPoint;
   skewXPivot: I_PivotPoint;
   skewYPivot: I_PivotPoint;
-  /** scale 通道过渡到本角色时的缓动；undefined 表示回退 item.keySplines */
+  /** scale 通道过渡到本角色时的缓动；undefined 表示用 easeInOutSine */
   scaleKeySplines?: string;
   rotateKeySplines?: string;
   skewXKeySplines?: string;
@@ -85,8 +85,6 @@ export interface I_AnyCarouselItemConfig {
   switchDuration?: number;
   /** 中心停留时长（秒），默认 1.0 */
   stayDuration?: number;
-  /** 缓动曲线，默认 ease-in-out */
-  keySplines?: string;
 }
 
 /**
@@ -95,7 +93,6 @@ export interface I_AnyCarouselItemConfig {
 export interface I_NormalizedItemConfig extends I_AnyCarouselItemConfig {
   switchDuration: number;
   stayDuration: number;
-  keySplines: string;
   /** 标记 item 模式 */
   useItem: boolean;
 }

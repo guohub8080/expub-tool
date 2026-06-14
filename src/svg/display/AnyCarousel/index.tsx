@@ -250,7 +250,7 @@ const AnyCarousel = (props: {
       x: deltaK * step * unit.x,
       y: deltaK * step * unit.y,
     }
-    outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: item.keySplines })
+    outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: DEFAULT_CHANNEL_KEY_SPLINES })
     outerTimeline.push({ toAbs: target, durationSeconds: item.stayDuration })
   }
 

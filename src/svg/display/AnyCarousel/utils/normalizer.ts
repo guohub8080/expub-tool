@@ -11,11 +11,7 @@ import { PIVOT } from "@svg/types";
 import defaultTo from "lodash/defaultTo";
 import isNil from "lodash/isNil";
 import { isDefined } from "@utils/fn/isDefined";
-import { getEaseBezier } from "@smil/bezier";
 import { getRotationPivot } from "@utils/svg/getRotationPivot";
-
-/** 默认缓动曲线：ease-in-out */
-export const DEFAULT_KEY_SPLINES = getEaseBezier({ isIn: true, isOut: true });
 
 /** 内部函数，填充单项配置的默认值并校验 */
 const fillDefaults = (item: I_AnyCarouselItemConfig): I_NormalizedItemConfig => {
@@ -35,7 +31,6 @@ const fillDefaults = (item: I_AnyCarouselItemConfig): I_NormalizedItemConfig => 
     useItem,
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
-    keySplines: defaultTo(item.keySplines, DEFAULT_KEY_SPLINES)
   }
 }
 

@@ -95,7 +95,6 @@ lastChildConfig={{
 | `item` | `ReactNode` | — | 自定义内容（优先级高于 `url`） |
 | `switchDuration` | `number` | `0.5` | 切换时长（秒） |
 | `stayDuration` | `number` | `1.0` | 中心停留时长（秒） |
-| `keySplines` | `string` | ease-in-out | 缓动曲线 |
 
 ## 实现要点
 
