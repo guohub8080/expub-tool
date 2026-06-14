@@ -151,8 +151,8 @@ export default function AnyCarouselPage() {
           childGap={60}
           angle={0}
           centerChildConfig={{ scale: 1.3 }}
-          nextChildConfig={{ scale: 0.7, rotate: 25, rotatePivot: 'Right', scalePivot: 'Right' }}
-          lastChildConfig={{ scale: 0.7, rotate: -25, rotatePivot: 'Left', scalePivot: 'Left' }}
+          nextChildConfig={{ scale: { value: 0.7, childCanvasPivot: 'Right' }, rotate: { value: 25, childCanvasPivot: 'Right', keySplines: '0.42 0 0.58 1' } }}
+          lastChildConfig={{ scale: { value: 0.7, childCanvasPivot: 'Left' }, rotate: { value: -25, childCanvasPivot: 'Left', keySplines: '0.42 0 0.58 1' } }}
           outWindowConfig={{ scale: 0.4 }}
           childItems={[
             { url: getWechat300x500(1) },

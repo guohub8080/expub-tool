@@ -78,6 +78,7 @@ const buildChannelTimeline = <T,>(
   items: I_NormalizedItemConfig[],
   roleConfigs: Record<T_ChildRole, I_NormalizedChildTransform>,
   getValue: (cfg: I_NormalizedChildTransform) => T,
+  getKeySplines?: (cfg: I_NormalizedChildTransform) => string | undefined,
 ): { initValue: T; timeline: I_TimelineKeyframe<T>[] } => {
   const initValue = getValue(roleConfigs[roleOf(activeIdx, 0)])
   const timeline: I_TimelineKeyframe<T>[] = []
@@ -87,9 +88,12 @@ const buildChannelTimeline = <T,>(
     const item = items[floor(seg / 2) % N]
     const isSwitch = seg % 2 === 0
     const dur = isSwitch ? item.switchDuration : item.stayDuration
-    const splines = isSwitch ? item.keySplines : undefined
     const state = floor(seg / 2) + 1
-    const value = getValue(roleConfigs[roleOf(activeIdx, state)])
+    const role = roleOf(activeIdx, state)
+    // switch 段缓动：优先取该角色该通道的 keySplines，缺省回退 item.keySplines
+    const channelKeySplines = getKeySplines?.(roleConfigs[role])
+    const splines = isSwitch ? defaultTo(channelKeySplines, item.keySplines) : undefined
+    const value = getValue(roleConfigs[role])
     timeline.push({ toAbs: value, durationSeconds: dur, ...(splines ? { keySplines: splines } : {}) })
   }
 
@@ -261,8 +265,11 @@ const AnyCarousel = (props: {
           <g>
             {slots.map((slot, si) => {
               const { item, activeIdx, x, y } = slot
-              const channel = <T,>(getValue: (c: I_NormalizedChildTransform) => T) =>
-                buildChannelTimeline<T>(activeIdx, N, items, roleConfigs, getValue)
+              const channel = <T,>(
+                getValue: (c: I_NormalizedChildTransform) => T,
+                getKeySplines?: (c: I_NormalizedChildTransform) => string | undefined,
+              ) =>
+                buildChannelTimeline<T>(activeIdx, N, items, roleConfigs, getValue, getKeySplines)
 
               // 内容（最内层）：内容中心置于本地原点，使各 transform 自然围绕中心作用
               const content = (
@@ -296,14 +303,14 @@ const AnyCarousel = (props: {
                 tree = wrapWithPivot(
                   tree,
                   channel(c => c.skewYPivot),
-                  transformSkewY({ ...channel(c => c.skewY), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
+                  transformSkewY({ ...channel(c => c.skewY, c => c.skewYKeySplines), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }
               if (skewXActive) {
                 tree = wrapWithPivot(
                   tree,
                   channel(c => c.skewXPivot),
-                  transformSkewX({ ...channel(c => c.skewX), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
+                  transformSkewX({ ...channel(c => c.skewX, c => c.skewXKeySplines), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }
               if (rotateActive) {
@@ -311,7 +318,7 @@ const AnyCarousel = (props: {
                   <g>
                     {tree}
                     {transformRotate({
-                      ...channel(c => c.rotate),
+                      ...channel(c => c.rotate, c => c.rotateKeySplines),
                       pivots: pivotSeqToRotatePivots(channel(c => c.rotatePivot)),
                       begin: '0s',
                       loopCount: 0,
@@ -325,7 +332,7 @@ const AnyCarousel = (props: {
                 tree = wrapWithPivot(
                   tree,
                   channel(c => c.scalePivot),
-                  transformScaleRaw({ ...channel(c => c.scale), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
+                  transformScaleRaw({ ...channel(c => c.scale, c => c.scaleKeySplines), begin: '0s', loopCount: 0, isAdditive: false, isFreeze: true }),
                 )
               }
 

@@ -10,38 +10,43 @@ export const DEFAULT_CHILD_GAP = 100
 /** 默认流动方向角度（度），0 = 向右 */
 export const DEFAULT_ANGLE = 0
 
+/** 单个变换通道：简写数字 或 object（绑定支点 / 缓动） */
+export type T_Channel = number | I_ChannelConfig
+
+/** 变换通道的 object 形式 */
+export interface I_ChannelConfig {
+  /** 通道值（scale 比 / rotate、skew 角度） */
+  value: number
+  /** 变换支点（相对 childCanvas），缺省 Center */
+  childCanvasPivot?: T_Pivot
+  /** 过渡到该角色时该通道的缓动曲线；缺省回退到 item.keySplines */
+  keySplines?: string
+}
+
 /**
- * 单个角色的变换配置（5 通道 + 4 通道支点）
+ * 单个角色的变换配置
  *
  * 用于 centerChildConfig / lastChildConfig / nextChildConfig / outWindowConfig。
- * 所有通道可选，缺省为恒等值（scale=1、rotate=0、skewX=0、skewY=0、opacity=1）。
+ * scale / rotate / skewX / skewY 既可传数字（简写），也可传 object 绑定支点与缓动；
+ * 缺省为恒等值（scale=1、rotate=0、skewX=0、skewY=0、opacity=1）。
  *
- * pivot 为各通道变换支点（相对 childCanvas），缺省 Center。
- * 不同角色可配不同 pivot（如 coverflow：next 绕 Right、last 绕 Left）——
+ * 支点 per-role：不同角色可配不同 childCanvasPivot（如 coverflow：next 绕 Right、last 绕 Left）。
  * rotate 逐关键帧 pivot 几乎免费；scale/skew 逐角色不同时走「动画 pivot」补偿。
  */
 export interface I_ChildTransform {
   /** 缩放比，默认 1 */
-  scale?: number;
+  scale?: T_Channel;
   /** 旋转角度（度），默认 0 */
-  rotate?: number;
+  rotate?: T_Channel;
   /** X 方向倾斜角度（度），默认 0 */
-  skewX?: number;
+  skewX?: T_Channel;
   /** Y 方向倾斜角度（度），默认 0 */
-  skewY?: number;
-  /** 不透明度 0-1，默认 1 */
+  skewY?: T_Channel;
+  /** 不透明度 0-1，默认 1（无支点，保持数字） */
   opacity?: number;
-  /** scale 的变换支点（相对 childCanvas），默认 Center */
-  scalePivot?: T_Pivot;
-  /** rotate 的变换支点（相对 childCanvas），默认 Center */
-  rotatePivot?: T_Pivot;
-  /** skewX 的变换支点（相对 childCanvas），默认 Center */
-  skewXPivot?: T_Pivot;
-  /** skewY 的变换支点（相对 childCanvas），默认 Center */
-  skewYPivot?: T_Pivot;
 }
 
-/** 标准化后的角色变换配置 — 5 通道 + 4 支点均已填充默认值（支点解析为相对内容中心的 {x,y}） */
+/** 标准化后的角色变换配置 — 通道值、支点（解析为相对内容中心 {x,y}）、缓动均已填充 */
 export interface I_NormalizedChildTransform {
   scale: number;
   rotate: number;
@@ -52,6 +57,11 @@ export interface I_NormalizedChildTransform {
   rotatePivot: I_PivotPoint;
   skewXPivot: I_PivotPoint;
   skewYPivot: I_PivotPoint;
+  /** scale 通道过渡到本角色时的缓动；undefined 表示回退 item.keySplines */
+  scaleKeySplines?: string;
+  rotateKeySplines?: string;
+  skewXKeySplines?: string;
+  skewYKeySplines?: string;
 }
 
 /** 解析后的支点坐标（相对内容中心） */

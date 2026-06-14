@@ -33,19 +33,23 @@ next —— center —— last —— outWindow ...
 | `canvasBg` | `I_CanvasBg` | — | 画布背景 |
 | `spacing` | `T_SpacingProps` | — | 外间距 |
 
-## I_ChildTransform（5 通道 + 4 通道支点）
+## I_ChildTransform
 
 | 字段 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `scale` | `number` | `1` | 缩放比 |
-| `rotate` | `number` | `0` | 旋转角度（度） |
-| `skewX` | `number` | `0` | X 方向倾斜（度） |
-| `skewY` | `number` | `0` | Y 方向倾斜（度） |
-| `opacity` | `number` | `1` | 不透明度 0-1 |
-| `scalePivot` | `T_Pivot` | `Center` | scale 变换支点（相对 childCanvas） |
-| `rotatePivot` | `T_Pivot` | `Center` | rotate 变换支点（相对 childCanvas） |
-| `skewXPivot` | `T_Pivot` | `Center` | skewX 变换支点（相对 childCanvas） |
-| `skewYPivot` | `T_Pivot` | `Center` | skewY 变换支点（相对 childCanvas） |
+| `scale` | `T_Channel` | `1` | 缩放比 |
+| `rotate` | `T_Channel` | `0` | 旋转角度（度） |
+| `skewX` | `T_Channel` | `0` | X 方向倾斜（度） |
+| `skewY` | `T_Channel` | `0` | Y 方向倾斜（度） |
+| `opacity` | `number` | `1` | 不透明度 0-1（无支点，保持数字） |
+
+```ts
+// 通道 = 数字简写 或 object
+type T_Channel = number | { value: number; childCanvasPivot?: T_Pivot; keySplines?: string }
+```
+
+- **简写**：`scale: 1.3`（数字，等价于 `{ value: 1.3 }`）
+- **object**：`{ value, childCanvasPivot?, keySplines? }`——把值、支点、缓动绑在一起
 
 每个 config 的所有通道可选；只在某通道「跨角色存在非恒等值」时才渲染对应的 `animateTransform` / `animate`，保持输出精简。
 
@@ -61,14 +65,23 @@ BottomLeft Bottom  BottomRight
 
 也可传 `{ x, y }` 自定义像素坐标（内容中心为 0,0，如 `{ x: 0, y: -200 }`）。
 
-### 每通道每角色 pivot
+### 每通道每角色 pivot / keySplines
 
-四个 `*Pivot` 字段写在 `I_ChildTransform` 里，故**每个角色可配不同 pivot**——例如 coverflow 让侧图绕「靠近中心的内侧边」fan 出去：
+`scale / rotate / skewX / skewY` 写在 `I_ChildTransform`（每角色一份）里，故**每个角色可配不同 pivot 和缓动**——例如 coverflow 让侧图绕「靠近中心的内侧边」fan 出去：
 
 ```ts
-nextChildConfig={{ scale: 0.7, rotate: 25, rotatePivot: 'Right', scalePivot: 'Right' }}  // 左侧图绕右边
-lastChildConfig={{ scale: 0.7, rotate: -25, rotatePivot: 'Left', scalePivot: 'Left' }}   // 右侧图绕左边
+nextChildConfig={{
+  scale:  { value: 0.7, childCanvasPivot: 'Right' },
+  rotate: { value: 25, childCanvasPivot: 'Right', keySplines: '0.42 0 0.58 1' },
+}}  // 左侧图绕右边 fan，rotate 用 ease-in-out 缓动
+lastChildConfig={{
+  scale:  { value: 0.7, childCanvasPivot: 'Left' },
+  rotate: { value: -25, childCanvasPivot: 'Left' },
+}}   // 右侧图绕左边
 ```
+
+- `childCanvasPivot`：该通道在该角色的变换支点，缺省 Center。
+- `keySplines`：**过渡到该角色**时该通道的缓动曲线；缺省回退到 `item.keySplines`。
 
 实现上分通道处理（一个 slot 跨多角色，pivot 需随角色变）：
 - **rotate**：pivot 逐关键帧（`rotate(angle cx cy)` 每帧 cx/cy 可不同）→ 几乎免费，无额外 DOM。

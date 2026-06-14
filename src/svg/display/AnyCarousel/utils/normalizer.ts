@@ -4,6 +4,7 @@ import type {
   I_ChildTransform,
   I_NormalizedChildTransform,
   I_PivotPoint,
+  T_Channel,
 } from "../types";
 import { DEFAULT_SWITCH_DURATION, DEFAULT_STAY_DURATION } from "../types";
 import { PIVOT } from "@svg/types";
@@ -64,22 +65,36 @@ export const normalizeItems = (items?: I_AnyCarouselItemConfig[]): I_NormalizedI
   return normalized
 };
 
-/** 将九宫格/自定义 pivot 解析为相对内容中心的 {x,y} */
-const resolvePivot = (
-  pivot: I_ChildTransform['scalePivot'],
+/** 解析后的单通道：值 + 支点（相对内容中心）+ 缓动 */
+type T_ResolvedChannel = { value: number; pivot: I_PivotPoint; keySplines?: string }
+
+const CENTER_PIVOT: I_PivotPoint = { x: 0, y: 0 }
+
+/**
+ * 把通道配置（数字简写 或 object）解析为 { value, pivot, keySplines }。
+ *
+ * - 数字：value = 该数，pivot = Center，无 keySplines。
+ * - object：value = .value，pivot 由 childCanvasPivot 解析（缺省 Center），keySplines 透传。
+ * - undefined：value = defaultValue（恒等），pivot = Center。
+ */
+const resolveChannel = (
+  c: T_Channel | undefined,
+  defaultValue: number,
   contentWidth: number,
   contentHeight: number,
-): I_PivotPoint => {
+): T_ResolvedChannel => {
+  if (isNil(c)) return { value: defaultValue, pivot: CENTER_PIVOT }
+  if (typeof c === 'number') return { value: c, pivot: CENTER_PIVOT }
   const [x, y] = getRotationPivot({
-    pivot: defaultTo(pivot, PIVOT.Center),
+    pivot: defaultTo(c.childCanvasPivot, PIVOT.Center),
     contentWidth,
     contentHeight,
   })
-  return { x, y }
+  return { value: c.value, pivot: { x, y }, ...(isDefined(c.keySplines) ? { keySplines: c.keySplines } : {}) }
 }
 
 /**
- * 标准化角色变换配置 — 填充 5 通道默认值，并把 4 个 pivot 解析为相对内容中心的 {x,y}
+ * 标准化角色变换配置 — 4 个通道拆出 value/pivot/keySplines，opacity 单独处理
  *
  * contentWidth/contentHeight = childCanvas 尺寸，pivot 以此为基准。
  */
@@ -87,14 +102,16 @@ export const normalizeChildConfig = (
   cfg: I_ChildTransform | undefined,
   contentWidth: number,
   contentHeight: number,
-): I_NormalizedChildTransform => ({
-  scale: defaultTo(cfg?.scale, 1),
-  rotate: defaultTo(cfg?.rotate, 0),
-  skewX: defaultTo(cfg?.skewX, 0),
-  skewY: defaultTo(cfg?.skewY, 0),
-  opacity: defaultTo(cfg?.opacity, 1),
-  scalePivot: resolvePivot(cfg?.scalePivot, contentWidth, contentHeight),
-  rotatePivot: resolvePivot(cfg?.rotatePivot, contentWidth, contentHeight),
-  skewXPivot: resolvePivot(cfg?.skewXPivot, contentWidth, contentHeight),
-  skewYPivot: resolvePivot(cfg?.skewYPivot, contentWidth, contentHeight),
-})
+): I_NormalizedChildTransform => {
+  const scale = resolveChannel(cfg?.scale, 1, contentWidth, contentHeight)
+  const rotate = resolveChannel(cfg?.rotate, 0, contentWidth, contentHeight)
+  const skewX = resolveChannel(cfg?.skewX, 0, contentWidth, contentHeight)
+  const skewY = resolveChannel(cfg?.skewY, 0, contentWidth, contentHeight)
+  return {
+    scale: scale.value, scalePivot: scale.pivot, ...(scale.keySplines ? { scaleKeySplines: scale.keySplines } : {}),
+    rotate: rotate.value, rotatePivot: rotate.pivot, ...(rotate.keySplines ? { rotateKeySplines: rotate.keySplines } : {}),
+    skewX: skewX.value, skewXPivot: skewX.pivot, ...(skewX.keySplines ? { skewXKeySplines: skewX.keySplines } : {}),
+    skewY: skewY.value, skewYPivot: skewY.pivot, ...(skewY.keySplines ? { skewYKeySplines: skewY.keySplines } : {}),
+    opacity: defaultTo(cfg?.opacity, 1),
+  }
+}
