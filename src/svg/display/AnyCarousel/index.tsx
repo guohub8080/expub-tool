@@ -208,9 +208,11 @@ const AnyCarousel = (props: {
   // 流动方向单位向量（0°=右，90°=上）
   const unit = getAngleUnitVector(angle)
 
-  // 相邻 slot 步距：x 方向用 imageW+gap，y 方向用 imageH+gap
-  const stepX = imageW + gap
-  const stepY = imageH + gap
+  // 相邻 slot 步距（中心到中心，沿流向）：盒子在流向轴上的投影长 + gap。
+  // 投影长 = imageW·|cosθ| + imageH·|sinθ|（盒子沿流向的影子）。
+  // gap=0 → 影子相接：轴向即贴边；斜向留一条对角细缝，永不重叠。
+  // 单一 step×unit 使 slots 严格沿真实角度排列（非正方形画布也不歪斜）。
+  const step = imageW * Math.abs(unit.x) + imageH * Math.abs(unit.y) + gap
 
   // 中心 slot 左上角坐标（中心 item 居中于 viewBox）
   const centerX = (viewBoxW - imageW) / 2
@@ -226,8 +228,8 @@ const AnyCarousel = (props: {
     const itemIdx = (i - 1 + N * 10) % N      // slot[1] 显示 items[0]
     const activeIdx = i - 1                    // 该 slot 在第 activeIdx 个状态到达中心
     const k = i - 1                            // 相对中心的步数（k>0 = next 入口侧）
-    const x = centerX - k * stepX * unit.x
-    const y = centerY - k * stepY * unit.y
+    const x = centerX - k * step * unit.x
+    const y = centerY - k * step * unit.y
     slots.push({ item: items[itemIdx], activeIdx, x, y })
   }
 
@@ -237,8 +239,8 @@ const AnyCarousel = (props: {
     const item = items[i]
     const deltaK = i + 1
     const target = {
-      x: deltaK * stepX * unit.x,
-      y: deltaK * stepY * unit.y,
+      x: deltaK * step * unit.x,
+      y: deltaK * step * unit.y,
     }
     outerTimeline.push({ toAbs: target, durationSeconds: item.switchDuration, keySplines: item.keySplines })
     outerTimeline.push({ toAbs: target, durationSeconds: item.stayDuration })
