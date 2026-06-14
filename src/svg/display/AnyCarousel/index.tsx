@@ -234,9 +234,15 @@ const AnyCarousel = (props: {
 
   // 中心 slot 左上角坐标（中心 item 居中于 viewBox）
   // 中心 child 的中心坐标（默认 viewBox 几何中心）；整个 slot 布局以此为基准
-  const mainChildCenter = defaultTo(props.mainChildCenter, { x: viewBoxW / 2, y: viewBoxH / 2 })
-  const centerX = mainChildCenter.x - imageW / 2
-  const centerY = mainChildCenter.y - imageH / 2
+  const centerX = (viewBoxW - imageW) / 2
+  const centerY = (viewBoxH - imageH) / 2
+  // 整体平移：mainChildCenter 指定中心 child 正中心位置，换算成相对 viewBox 几何中心的 translate，挂到外层 <g>
+  const mainOffset = isDefined(props.mainChildCenter)
+    ? { x: props.mainChildCenter.x - viewBoxW / 2, y: props.mainChildCenter.y - viewBoxH / 2 }
+    : { x: 0, y: 0 }
+  const mainOffsetTransform = (mainOffset.x !== 0 || mainOffset.y !== 0)
+    ? `translate(${mainOffset.x},${mainOffset.y})`
+    : undefined
 
   /**
    * slot 排布：内容沿 +angle 方向流动，故 next/入口侧在 -angle 方向、last/出口侧在 +angle 方向，共 N+3 个 slot。
@@ -278,7 +284,7 @@ const AnyCarousel = (props: {
         <SvgEx viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}
           style={{ display: "block", margin: "0 auto", ...resolveCanvasBg(props.canvasBg) }}
           width="100%">
-          <g>
+          <g transform={mainOffsetTransform}>
             {slots.map((slot, si) => {
               const { item, activeIdx, x, y } = slot
               const channel = <T,>(
