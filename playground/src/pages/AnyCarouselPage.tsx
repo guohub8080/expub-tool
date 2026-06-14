@@ -42,8 +42,8 @@ export default function AnyCarouselPage() {
 
       <CopyDemo title="中心放大（angle=0 → 向右流）">
         <AnyCarousel
-          canvasSize={{ w: 800, h: 500 }}
-          childCanvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 800, h: 700 }}
+          childCanvasSize={{ w: 300, h: 500 }}
           childGap={100}
           angle={0}
           centerChildConfig={{ scale: 1.4 }}
@@ -57,8 +57,8 @@ export default function AnyCarouselPage() {
 
       <CopyDemo title="向左（angle=180 → 向左流）">
         <AnyCarousel
-          canvasSize={{ w: 800, h: 500 }}
-          childCanvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 800, h: 700 }}
+          childCanvasSize={{ w: 300, h: 500 }}
           childGap={100}
           angle={180}
           centerChildConfig={{ scale: 1.4 }}
@@ -72,8 +72,8 @@ export default function AnyCarouselPage() {
 
       <CopyDemo title="向上（angle=90 → 向上流）">
         <AnyCarousel
-          canvasSize={{ w: 400, h: 700 }}
-          childCanvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 500, h: 900 }}
+          childCanvasSize={{ w: 300, h: 500 }}
           childGap={100}
           angle={90}
           centerChildConfig={{ scale: 1.4 }}
@@ -87,8 +87,8 @@ export default function AnyCarouselPage() {
 
       <CopyDemo title="对角线（angle=45）">
         <AnyCarousel
-          canvasSize={{ w: 700, h: 500 }}
-          childCanvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 700, h: 700 }}
+          childCanvasSize={{ w: 300, h: 500 }}
           childGap={120}
           angle={45}
           centerChildConfig={{ scale: 1.4 }}
@@ -102,8 +102,8 @@ export default function AnyCarouselPage() {
 
       <CopyDemo title="四角色全配置（coverflow：中心放大、侧图缩小倾斜半透、屏外隐藏）">
         <AnyCarousel
-          canvasSize={{ w: 800, h: 500 }}
-          childCanvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 800, h: 700 }}
+          childCanvasSize={{ w: 300, h: 500 }}
           childGap={60}
           angle={0}
           centerChildConfig={{ scale: 1.3, opacity: 1 }}
@@ -122,8 +122,8 @@ export default function AnyCarouselPage() {
 
       <CopyDemo title="每角色 pivot（coverflow fan：next 绕 Right、last 绕 Left）">
         <AnyCarousel
-          canvasSize={{ w: 800, h: 500 }}
-          childCanvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 800, h: 700 }}
+          childCanvasSize={{ w: 300, h: 500 }}
           childGap={60}
           angle={0}
           centerChildConfig={{ scale: 1.3 }}
@@ -142,8 +142,8 @@ export default function AnyCarouselPage() {
 
       <CopyDemo title="快速切换（switchDuration=0.3, stayDuration=0.5）">
         <AnyCarousel
-          canvasSize={{ w: 800, h: 500 }}
-          childCanvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 800, h: 700 }}
+          childCanvasSize={{ w: 300, h: 500 }}
           childGap={100}
           angle={0}
           centerChildConfig={{ scale: 1.4 }}
