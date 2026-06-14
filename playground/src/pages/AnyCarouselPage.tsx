@@ -188,6 +188,7 @@ export default function AnyCarouselPage() {
           childCanvasSize={{ w: 80, h: 80 }}
           childGap={0}
           angle={0}
+          centerChildConfig={{ skewY: { value: 0, keySplines: '0 0 1 1' }, translate: { y: 0, keySplines: '0 0 1 1' } }}
           nextChildConfig={{ skewY: { value: -15, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 11, keySplines: '0 0 1 1' } }}
           lastChildConfig={{ skewY: { value: 15, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 11, keySplines: '0 0 1 1' } }}
           nextOutWindowConfig={{ skewY: { value: -30, childCanvasPivot: 'Bottom', keySplines: '0 0 1 1' }, translate: { y: 45, keySplines: '0 0 1 1' } }}
