@@ -66,8 +66,8 @@ export interface I_StackCarouselProps {
   showStackNum?: number
   /** 逐层旋转覆盖；数组首项=tail、末项=center，每项 { rotate?: 度 } */
   showStackConfig?: I_StackLayerConfig[]
-  /** 深度分布（等差间距）：0=均等；正数 gap 从 tail→center 递增（tail 密集），负数递减（tail 拉开）。
-   *  数值 ≈ 每步 gap 相对均等值的递增百分比（10 ≈ 每步 +10%）。scale 跟随位置 */
+  /** 深度分布：0=线性均等；[0,+100] 向 center 聚拢（+100 除 tail 外全贴 center）；
+   *  [-100,0] 向 tail 聚拢（-100 除 center 外全贴 tail）。幂次过渡，小值平滑。scale 跟随位置 */
   depthLaw?: number
   /** 栈中所有层 rotate + center stayRotate 共用的旋转中心（child 局部，九宫格或 {x,y}），缺省 "Center"。
    *  统一一个 pivot，避免层/stayRotate pivot 不一致导致的位置跳变 */
