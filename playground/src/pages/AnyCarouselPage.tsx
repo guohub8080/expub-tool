@@ -211,6 +211,21 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="CubeCarouselX skewAngle={-15}（反方向卷曲，流向不变）">
+        <CubeCarouselX
+          canvasSize={{ w: 240, h: 160 }}
+          childCanvasSize={{ w: 80, h: 80 }}
+          skewAngle={-15}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="CubeCarouselY（纵向立方体，skewAngle=15）">
         <CubeCarouselY
           canvasSize={{ w: 160, h: 240 }}

@@ -27,7 +27,8 @@ export type I_CubeCarouselYProps = Omit<
  * - t1（next/last，与 center 接缝对齐）= (h/2)·tan(skewAngle)
  * - t2（nextOut/lastOut，与 next/last 接缝对齐）= h·tan(skewAngle) + (h/2)·tan(2·skewAngle)
  *
- * skew 值：next/last = ±skewAngle，out = ±2·skewAngle；pivot 都在 Left。
+ * skew 值：next = +skewAngle、last = -skewAngle（out 翻倍），与 X 的符号相反
+ * （skewY→skewX 在 90° 镜像下角度反号）；pivot 都在 Left。
  * 强制 angle=90（纵向流）、childGap=0（面无缝）。
  * `isReversed`：翻 angle（90↔270）+ 翻 skew 符号 → 立方体反向转动；translate 不变
  * （skew 符号与接缝角同时翻转、互相抵消，接缝仍对齐）。
@@ -47,10 +48,10 @@ export const CubeCarouselY = ({ skewAngle = 15, isReversed = false, childCanvasS
       angle={isReversed ? 270 : 90}
       childGap={0}
       centerChildConfig={cubeChannel(0, 0)}
-      nextChildConfig={cubeChannel(sign * -skewAngle, t1)}
-      lastChildConfig={cubeChannel(sign * skewAngle, t1)}
-      nextOutWindowConfig={cubeChannel(sign * -2 * skewAngle, t2)}
-      lastOutWindowConfig={cubeChannel(sign * 2 * skewAngle, t2)}
+      nextChildConfig={cubeChannel(sign * skewAngle, t1)}
+      lastChildConfig={cubeChannel(sign * -skewAngle, t1)}
+      nextOutWindowConfig={cubeChannel(sign * 2 * skewAngle, t2)}
+      lastOutWindowConfig={cubeChannel(sign * -2 * skewAngle, t2)}
     />
   )
 }
