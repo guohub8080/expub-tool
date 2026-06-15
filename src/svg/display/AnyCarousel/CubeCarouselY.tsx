@@ -1,10 +1,10 @@
 import AnyCarousel, { type I_AnyCarouselProps } from "./index"
 import type { I_ChildTransform } from "./types"
 
-/** 单个角色的 cube 配置：skewX 绕左边 + translate（X 交叉补偿）。全线性缓动（匀速，避免边缘往返） */
+/** 单个角色的 cube 配置：skewX 绕左边 + translate（X 交叉补偿）。缓动用 AnyCarousel 默认（ease-in-out） */
 const cubeChannel = (skewValue: number, translateX: number): I_ChildTransform => ({
-  skewX: { value: skewValue, childCanvasPivot: "Left", keySplines: "0 0 1 1" },
-  translate: { x: translateX, keySplines: "0 0 1 1" },
+  skewX: { value: skewValue, childCanvasPivot: "Left" },
+  translate: { x: translateX },
 })
 
 export type I_CubeCarouselYProps = Omit<
