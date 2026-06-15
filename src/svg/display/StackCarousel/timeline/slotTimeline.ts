@@ -125,11 +125,6 @@ export function buildSlotTimelines({
   // rotate 逐帧 pivot（transformRotate 的 pivots 长度 = timeline 段数 + 1，initValue 帧在前）
   const rotatePivotFrames: [number, number][] = [posConfig.rotatePivots[startPosition]]
 
-  // 跟踪上一段 position：区分「推进到 center」（nextPosition=center 但 prevPosition≠center）
-  // 与「静止在 center」（两者都=center）。只有静止段才用 per-item stayRotate，
-  // 推进段用层值，避免卡牌在推进过程中绕 pivot 旋转产生位移（stay 阶段移动 bug）。
-  let prevPosition = startPosition
-
   for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++) {
     const itemIndex = Math.floor(segmentIndex / 2)
     const item = items[itemIndex % itemCount]
@@ -160,9 +155,9 @@ export function buildSlotTimelines({
       })
     }
 
-    // rotate：层间按 posConfig.rotateValues 插值；静止在 center（非推进到 center）才用 per-item stayRotate
-    const isCenterStaying = nextPosition === centerPosition && prevPosition === centerPosition
-    const layerRotate = isCenterStaying ? centerRotate : posConfig.rotateValues[nextPosition]
+    // rotate：层间按 posConfig.rotateValues 插值；center 位用 per-item stayRotate
+    const isCenterPosition = nextPosition === centerPosition
+    const layerRotate = isCenterPosition ? centerRotate : posConfig.rotateValues[nextPosition]
 
     // 退场 rotate：有 exit.rotation 过渡到其角度；否则维持当前角度（上一段 toAbs，循环首段用 initRotate）
     const resolveExitRotate = (): number => {
@@ -178,15 +173,14 @@ export function buildSlotTimelines({
       durationSeconds: segmentDuration,
       keySplines: rotateSplines,
     })
-    // rotate 逐帧 pivot：退场段用 exit.rotation 的 pivot；层间段用层 pivot（center 静止段用 per-item）
-    const layerPivot = isCenterStaying ? centerRotatePivot : posConfig.rotatePivots[nextPosition]
+    // rotate 逐帧 pivot：退场段用 exit.rotation 的 pivot；层间段用层 pivot（center 位用 per-item）
+    const layerPivot = isCenterPosition ? centerRotatePivot : posConfig.rotatePivots[nextPosition]
     const exitPivot = resolveRotationPivot({
       pivot: defaultTo(exitConfig.rotation?.childCanvasPivot, "Center"),
       cardWidth: cardW,
       cardHeight: cardH,
     })
     rotatePivotFrames.push(isExit ? exitPivot : layerPivot)
-    prevPosition = nextPosition
   }
 
   return {
