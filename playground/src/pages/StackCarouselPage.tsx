@@ -138,29 +138,29 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
-        title="B · depthLaw={-30}（轻微堆积 tail）"
-        note={`depthLaw={-30}   ← 中间层略向 tail 挤，小调小偏（线性混合）`}
+        title="B · depthLaw={-10}（极轻微堆积 tail）"
+        note={`depthLaw={-10}   ← 中间层略向 tail 挤，很轻微`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
-          depthLaw={-30}
+          depthLaw={-10}
           childItems={layerImages}
         />
       </CopyDemo>
 
       <CopyDemo
-        title="C · depthLaw={+30}（轻微堆积 center）"
-        note={`depthLaw={+30}   ← 中间层略向 center 挤（与 B 反向）`}
+        title="C · depthLaw={+10}（极轻微堆积 center）"
+        note={`depthLaw={+10}   ← 中间层略向 center 挤（与 B 反向）`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
-          depthLaw={30}
+          depthLaw={10}
           childItems={layerImages}
         />
       </CopyDemo>
