@@ -112,6 +112,50 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="showStackConfig 逐层定制 — tail 近的贴更紧（progress 越靠近 1 越偏向 tail）">
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackConfig={[
+            { scale: 0.2, progress: 1 },                  // tail
+            { progress: 0.92 },                           // 紧贴 tail
+            { progress: 0.78 },                           // 次紧
+            { progress: 0.55 },                           // 拉开
+            { scale: 1, progress: 0 },                    // center
+          ]}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="showStackConfig 逐层缩放 — tail 一侧突然变小（scale 覆盖幂律）">
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackConfig={[
+            { scale: 0.2 },                               // tail
+            { scale: 0.25 },                              // 突然很小
+            { scale: 0.4 },
+            { scale: 0.65 },
+            { scale: 1 },                                 // center
+          ]}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="八方向退场 (L/R/T/B/TL/TR/BL/BR)">
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}

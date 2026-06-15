@@ -15,7 +15,7 @@ import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import { DIRECTION_8 } from "@svg/types"
 import type { I_CanvasBg, T_Direction8 } from "@svg/types"
-import type { I_StackCarouselItem, I_NormalizedStackItem, I_MainChildConfig, I_TailChildConfig } from "./types"
+import type { I_StackCarouselItem, I_NormalizedStackItem, I_MainChildConfig, I_TailChildConfig, I_StackLayerConfig } from "./types"
 import {
   MIN_SHOW_STACK_NUM,
   MAX_SHOW_STACK_NUM,
@@ -31,7 +31,7 @@ import type { I_SlotExitConfig } from "./timeline/slotTimeline"
 import { resolveRotationPivot } from "./utils/rotationPivot"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
-export type { I_StackCarouselItem, I_ExitConfig, I_MainChildConfig, I_TailChildConfig } from "./types"
+export type { I_StackCarouselItem, I_ExitConfig, I_MainChildConfig, I_TailChildConfig, I_StackLayerConfig } from "./types"
 export type { I_SkewConfig, I_RotationConfig, T_Direction8 } from "@svg/types"
 
 const getExitTranslate = (
@@ -61,8 +61,11 @@ export interface I_StackCarouselProps {
   /** 最远端卡牌：缩放 + 位置；与 mainChild 两点连线决定叠层方向与深度。
    *  缺省时向右水平延伸（与历史 StackCarouselX 默认一致） */
   tailChild?: I_TailChildConfig
-  /** 可见叠层数，默认 3；范围 [2, 8] 闭区间，越界抛错 */
+  /** 可见叠层数，默认 3；范围 [2, 8] 闭区间，越界抛错。被 showStackConfig 优先覆盖 */
   showStackNum?: number
+  /** 逐层覆盖配置；传则按此逐层定制 scale/位置，长度即层数（覆盖 showStackNum）。
+   *  数组首项 = tail（最远端），末项 = center（焦点）。缺省字段走自动公式 */
+  showStackConfig?: I_StackLayerConfig[]
   /** 图片/内容配置数组，至少 1 项 */
   childItems?: I_StackCarouselItem[]
   /** 画布背景 */
@@ -82,10 +85,17 @@ const StackCarousel = (props: I_StackCarouselProps) => {
   const cardH = props.mainChild.h
   const isDev = ExPubGoConfig().mode === "development"
 
-  // 可见叠层数：默认 3，范围 [2, 8] 闭区间，越界抛错
-  const showStackNum = defaultTo(props.showStackNum, DEFAULT_SHOW_STACK_NUM)
+  // 可见叠层数：showStackConfig 优先（数组长度即层数），否则取 showStackNum（默认 3）
+  // 范围 [2, 8] 闭区间，越界抛错
+  const showStackNum = isDefined(props.showStackConfig)
+    ? props.showStackConfig.length
+    : defaultTo(props.showStackNum, DEFAULT_SHOW_STACK_NUM)
   if (showStackNum < MIN_SHOW_STACK_NUM || showStackNum > MAX_SHOW_STACK_NUM) {
     throw new Error(`[StackCarousel] showStackNum must be in [${MIN_SHOW_STACK_NUM}, ${MAX_SHOW_STACK_NUM}], got ${showStackNum}.`)
+  }
+  if (isDefined(props.showStackConfig) && props.showStackConfig.length !== showStackNum) {
+    // 上面刚取过 length，这里防御性校验
+    throw new Error(`[StackCarousel] showStackConfig length (${props.showStackConfig.length}) must match showStackNum (${showStackNum}).`)
   }
 
   // mainChild 中心（缺省 viewBox 几何中心）
@@ -108,8 +118,8 @@ const StackCarousel = (props: I_StackCarouselProps) => {
 
   const defaultExitDistance = Math.sqrt(cardW * cardW + cardH * cardH) * 1.2
 
-  // 各层 translate / scale：局部空间内 main→tail 两点插值（恒定 peek 分布）
-  const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH })
+  // 各层 translate / scale：showStackConfig 逐层覆盖；否则恒定 peek + 幂律 scale（自动）
+  const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH, layers: props.showStackConfig })
 
   const contentOffsetX = -cardW / 2
   const contentOffsetY = -cardH / 2

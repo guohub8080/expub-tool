@@ -38,7 +38,8 @@ import { StackCarousel } from "expub-tool/svg"
 | `canvasSize` | `{ w, h }` | 必填 | SVG 画布尺寸（viewBox） |
 | `mainChild` | `I_MainChildConfig` | 必填 | 焦点卡牌：基准尺寸 + 中心位置，scale 恒为 1 |
 | `tailChild` | `I_TailChildConfig` | 向右延伸 | 最远端卡牌：缩放 + 中心位置；与 mainChild 两点连线决定方向与深度 |
-| `showStackNum` | `number` | `3` | 可见叠层数，范围 [2, 8] 闭区间，越界抛错 |
+| `showStackNum` | `number` | `3` | 可见叠层数，范围 [2, 8] 闭区间，越界抛错。被 `showStackConfig` 优先覆盖 |
+| `showStackConfig` | `I_StackLayerConfig[]` | — | 逐层覆盖配置；传则数组长度即层数（覆盖 `showStackNum`）。首项=tail（最远端）、末项=center（焦点）；缺省字段走自动公式（scale 幂律、位置恒定 peek） |
 | `childItems` | `I_StackCarouselItem[]` | 必填 | 图片/内容配置数组，至少 1 项 |
 | `canvasBg` | `I_CanvasBg` | — | 画布背景 |
 | `spacing` | `T_SpacingProps` | — | 外层 margin-top 间距 |
@@ -59,6 +60,17 @@ import { StackCarousel } from "expub-tool/svg"
 | `scale` | `number` | `0.78` | 最远端缩放 |
 | `centerX` | `number` | mainCenterX + 162 | 最远端正中心 X（viewBox 坐标） |
 | `centerY` | `number` | mainCenterY | 最远端正中心 Y（viewBox 坐标） |
+
+### I_StackLayerConfig
+
+逐层覆盖配置（`showStackConfig` 数组元素）。首项=tail（最远端）、末项=center（焦点）。
+
+| 字段 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `scale` | `number` | 幂律 `tailScale ^ depthRatio` | 该层缩放；覆盖自动等比缩放 |
+| `progress` | `number` | 恒定 peek 反推 | 该层中心沿方向轴归一化进度：0=mainChild（center 端）、1=tailChild（tail 端）；覆盖自动露边恒定分布 |
+
+两端锚点契约恒成立：center 层落 `mainChild.center`、tail 层落 `tailChild.center`。中间层不传则 scale 走幂律、位置走恒定 peek（露边相等）；想让 tail 近的贴更紧，给中间几层 `progress` 略大于自动值（使中心更靠近 tail）。
 
 ### I_StackCarouselItem
 
@@ -86,8 +98,8 @@ import { StackCarousel } from "expub-tool/svg"
 
 - **方向**：`direction = tailChild.center − mainChild.center`，局部空间内 mainChild 在原点。
 - **层数**：`showStackNum`（n），层 i（i=0 最远端 tail，i=n−1 焦点 center）。
-- **缩放**：等比，`scale(i) = tailChild.scale ^ t`（t = 1 − i/(n−1)，tail=tailChild.scale，center=1）。
-- **位置**：恒定 peek 分布，每张露出等宽边。peek `P = [D − projHalf·(1−tailChild.scale)]/(n−1)`（D=|direction|，projHalf 为卡牌沿方向轴投影半宽 `(w·|ux|+h·|uy|)/2`），两端锚点精确命中。tail 太近时 P 可能为负，卡牌会糊一块。
+- **缩放**：等比，`scale(i) = tailChild.scale ^ t`（t = 1 − i/(n−1)，tail=tailChild.scale，center=1）。`showStackConfig[i].scale` 可逐层覆盖。
+- **位置**：默认恒定 peek 分布，每张露出等宽边。peek `P = [D − projHalf·(1−tailChild.scale)]/(n−1)`（D=|direction|，projHalf 为卡牌沿方向轴投影半宽 `(w·|ux|+h·|uy|)/2`），两端锚点精确命中。tail 太近时 P 可能为负，卡牌会糊一块。`showStackConfig[i].progress`（0=center、1=tail）可逐层覆盖中心落点，覆盖后露边不再恒定，但两端锚点仍精确命中。
 - **退场**：卡片从 center 朝「远离 tail」方向飞出（即 mainChild − tailChild 方向，吸附到最近的八方向），可被单项 `exit.direction` 覆盖。
 
 ## 注意

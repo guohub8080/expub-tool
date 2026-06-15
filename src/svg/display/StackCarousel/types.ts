@@ -96,3 +96,17 @@ export interface I_TailChildConfig {
   /** 最远端正中心 Y（viewBox 坐标） */
   centerY: number
 }
+
+/**
+ * 单层叠层的覆盖配置（用于 showStackConfig 逐层定制）
+ *
+ * 两端锚点契约：center 层（最后一项）落 mainChild.center、tail 层（第一项）落
+ * tailChild.center。中间层缺省字段走自动公式，传值则逐层覆盖。
+ */
+export interface I_StackLayerConfig {
+  /** 该层缩放；缺省走幂律 scale(i) = tailScale ^ depthRatio（tail=tailScale，center=1） */
+  scale?: number
+  /** 该层中心沿方向轴的归一化进度：0 = mainChild（center 端），1 = tailChild（tail 端）。
+   *  缺省走恒定 peek 分布（露边相等）；传值则直接按进度定位中心，露边不再恒定。 */
+  progress?: number
+}
