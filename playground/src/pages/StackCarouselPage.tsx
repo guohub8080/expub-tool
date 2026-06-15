@@ -121,7 +121,7 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      {/* —— showStackConfig 教学：同一套几何（斜向 5 层），只变 config —— */}
+      {/* —— depthLaw 教学：一个数字控制 scale + 位置的深度曲线 —— */}
 
       {/* —— depthLaw 教学：一个数字控制 scale + 位置的深度曲线 —— */}
 
@@ -183,18 +183,19 @@ export default function StackCarouselPage() {
 
       <CopyDemo
         title="G · rotate 扇形展开（tail 侧转得狠，center 不转，pivot 默认中心）"
-        note={`rotate = [25, 15, 8, 3, 0]   ← tail→center，pivot 默认 "Center"（绕卡片中心自转）`}
+        note={`showStackConfig rotate = [25, 15, 8, 3, 0]   ← tail→center，pivot 默认 "Center"（绕卡片中心自转）`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackNum={5}
           showStackConfig={[
-            { scale: 0.2,  rotate: 25 },
-            { scale: 0.35, rotate: 15 },
-            { scale: 0.55, rotate: 8 },
-            { scale: 0.8,  rotate: 3 },
-            { scale: 1,    rotate: 0 },
+            { rotate: 25 },
+            { rotate: 15 },
+            { rotate: 8 },
+            { rotate: 3 },
+            { rotate: 0 },
           ]}
           childItems={layerImages}
         />
@@ -208,13 +209,14 @@ export default function StackCarouselPage() {
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackNum={5}
           stackRotatePivot="BottomRight"
           showStackConfig={[
-            { scale: 0.2,  rotate: 30 },
-            { scale: 0.35, rotate: 18 },
-            { scale: 0.55, rotate: 9 },
-            { scale: 0.8,  rotate: 3 },
-            { scale: 1,    rotate: 0 },
+            { rotate: 30 },
+            { rotate: 18 },
+            { rotate: 9 },
+            { rotate: 3 },
+            { rotate: 0 },
           ]}
           childItems={layerImages}
         />
