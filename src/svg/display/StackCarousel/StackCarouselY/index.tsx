@@ -19,9 +19,11 @@ import max from "lodash/max"
 import min from "lodash/min"
 import type { T_Direction8 } from "@svg/types"
 import type { I_StackCarouselItem, I_NormalizedStackItem } from "../types"
+import { MIN_STACK_NUM, MAX_STACK_NUM, DEFAULT_STACK_NUM } from "../types"
 import { normalizeItems } from "../utils/normalizer"
+import { buildPosConfig } from "../utils/stackLayout"
 import { buildSlotTimelines } from "../timeline/slotTimeline"
-import type { I_PositionConfig, I_SlotExitConfig } from "../timeline/slotTimeline"
+import type { I_SlotExitConfig } from "../timeline/slotTimeline"
 import { resolveRotationPivot } from "../utils/rotationPivot"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 import { ItemImage } from "../shared/ItemImage"
@@ -63,6 +65,8 @@ interface I_StackCarouselYProps {
   childItemScales?: [number, number]
   /** back 位置偏移量（px），mid 自动取一半，默认 162 */
   backOffset?: number
+  /** 可见叠层数，默认 3；范围 [2, 8] 闭区间，越界抛错。stackNum≠3 时各层等距偏移、缩放按 mid 公比几何递减 */
+  stackNum?: number
   /** 画布背景色，默认 #FFFFFF */
   canvasBg?: I_CanvasBg
   /** 反向：叠层偏移在下方 */
@@ -82,13 +86,18 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   const cardH = props.mainChildItemSize.h
   const scales = defaultTo(props.childItemScales, DEFAULT_SCALES)
   const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
-  const midOffset = backOffset / 2
   const reversed = defaultTo(props.isReversed, false)
   const isDev = ExPubGoConfig().mode === "development"
 
-  const items = normalizeItems({ items: props.childItems, defaultExitDirection: DIRECTION_8.Right })
+  // 可见叠层数：默认 3（与历史一致），范围 [2, 8] 闭区间，越界抛错
+  const stackNum = defaultTo(props.stackNum, DEFAULT_STACK_NUM)
+  if (stackNum < MIN_STACK_NUM || stackNum > MAX_STACK_NUM) {
+    throw new Error(`[StackCarouselY] stackNum must be in [${MIN_STACK_NUM}, ${MAX_STACK_NUM}], got ${stackNum}.`)
+  }
+
+  const items = normalizeItems({ items: props.childItems, defaultExitDirection: DIRECTION_8.Right, minCount: stackNum })
   const itemCount = items.length
-  const totalSlots = itemCount + 3
+  const totalSlots = itemCount + stackNum
 
   // 纵向叠层：偏移在 Y 轴
   // 正向：叠层向上(-backOffset)
@@ -97,15 +106,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
 
   const defaultExitDistance = Math.sqrt(cardW * cardW + cardH * cardH) * 1.2
 
-  const posConfig: I_PositionConfig = {
-    translateValues: [
-      { x: 0, y: sign * -backOffset },   // back
-      { x: 0, y: sign * -midOffset },    // mid
-      { x: 0, y: 0 },                    // center
-      { x: 0, y: 0 },                    // exit（占位，实际由 exitConfig 覆盖）
-    ],
-    scaleValues: [scales[0], scales[1], 1, 1],
-  }
+  const posConfig = buildPosConfig({ stackNum, scales, backOffset, sign, axis: "y" })
 
   const contentOffsetX = -cardW / 2
   const contentOffsetY = -cardH / 2
@@ -145,7 +146,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
           <g transform={mainOffsetTransform}>
             <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
             {Array.from({ length: totalSlots }, (_, slotIndex) => {
-              const itemIdx = (itemCount + 2 - slotIndex + itemCount * 10) % itemCount
+              const itemIdx = (itemCount + stackNum - 1 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
               const exitTranslate = getExitTranslate(item.exit.direction, defaultTo(item.exit.distance, defaultExitDistance))
               const slotExitConfig: I_SlotExitConfig = {
@@ -159,7 +160,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
                 translateTimeline, scaleTimeline,
                 skewTimeline, skewType,
                 rotateTimeline,
-              } = buildSlotTimelines({ slotIndex, itemCount, items, posConfig, exitConfig: slotExitConfig })
+              } = buildSlotTimelines({ slotIndex, itemCount, stackNum, items, posConfig, exitConfig: slotExitConfig })
 
               const rotationPivot = isDefined(item.exit.rotation)
                 ? resolveRotationPivot({

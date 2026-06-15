@@ -8,11 +8,11 @@ import type { I_SkewConfig, I_RotationConfig } from "@svg/types"
 import type { I_NormalizedStackItem, I_NormalizedExitConfig } from "../types"
 
 /**
- * 位置定义：0=back, 1=mid, 2=center, 3=exit
+ * 位置定义：0..stackNum-1 为可见叠层（0=最深 back，stackNum-1=center），stackNum 为 exit
  *
- * 每个 slot 在动画周期中按 back→mid→center→exit 顺序推进
+ * 每个 slot 在动画周期中按 back → … → center → exit 顺序推进
  */
-export type T_SlotPosition = 0 | 1 | 2 | 3
+export type T_SlotPosition = number
 
 /**
  * 各位置对应的 translate / scale 值配置
@@ -37,14 +37,18 @@ export interface I_SlotExitConfig {
  *
  * 公式：enterBoundary(slotIndex, position) = (position === startPos) ? 0 : 2 × (itemCount + position - slotIndex)
  * position(slotIndex, boundary) = max { position ≥ startPos | boundary ≥ enterBoundary(slotIndex, position) }
+ *
+ * stackNum 为可见叠层数，exit 位 = stackNum
  */
-function getPosition({ slotIndex, itemCount, boundary }: {
+function getPosition({ slotIndex, itemCount, stackNum, boundary }: {
   slotIndex: number
   itemCount: number
+  /** 可见叠层数（exit 位 = stackNum） */
+  stackNum: number
   boundary: number
 }): number {
   const startPos = max([0, slotIndex - itemCount])
-  for (let pos = 3; pos >= startPos; pos--) {
+  for (let pos = stackNum; pos >= startPos; pos--) {
     const enterPos = (pos === startPos) ? 0 : 2 * (itemCount + pos - slotIndex)
     if (boundary >= enterPos) return pos
   }
@@ -59,14 +63,17 @@ function getPosition({ slotIndex, itemCount, boundary }: {
 export function buildSlotTimelines({
   slotIndex,
   itemCount,
+  stackNum,
   items,
   posConfig,
   exitConfig,
 }: {
-  /** slot 索引（0 ~ itemCount+2） */
+  /** slot 索引（0 ~ itemCount + stackNum - 1） */
   slotIndex: number
   /** 唯一图片数量 */
   itemCount: number
+  /** 可见叠层数（exit 位 = stackNum） */
+  stackNum: number
   /** 标准化后的配置数组 */
   items: I_NormalizedStackItem[]
   /** 位置值配置（exit 位的 translate/scale 会被 exitConfig 覆盖） */
@@ -96,8 +103,8 @@ export function buildSlotTimelines({
     const dur = isSwitch ? item.switchDuration : item.stayDuration
     const splines = item.keySplines
 
-    const nextPos = getPosition({ slotIndex, itemCount, boundary: seg + 1 })
-    const isExit = nextPos === 3
+    const nextPos = getPosition({ slotIndex, itemCount, stackNum, boundary: seg + 1 })
+    const isExit = nextPos === stackNum
 
     translateTimeline.push({
       toAbs: isExit ? exitConfig.translate : posConfig.translateValues[nextPos],

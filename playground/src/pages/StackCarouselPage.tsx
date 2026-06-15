@@ -112,6 +112,35 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="stackNum=2 — 仅 back + center 两层">
+        <StackCarouselX
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
+          stackNum={2}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="stackNum=5 — 五层等距扇形（缩放几何递减）">
+        <StackCarouselX
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
+          stackNum={5}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="反向 + 退场缩放 + 偏移">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}

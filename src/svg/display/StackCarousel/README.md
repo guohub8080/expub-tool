@@ -1,6 +1,6 @@
 # StackCarouselX
 
-横向叠层卡牌轮播组件。卡牌分三层深度堆叠（back / mid / center），自动循环推进，支持点击跳转链接。
+横向叠层卡牌轮播组件。卡牌按深度堆叠（back → … → center），自动循环推进，支持点击跳转链接。可见层数可通过 `stackNum`（2~8）调整，默认 3 层（back / mid / center）。
 
 ## 用法
 
@@ -45,5 +45,6 @@ import { StackCarouselX } from "expub-tool/svg"
 
 ## 注意
 
-- `pics` 少于 3 项时自动补齐：1 项复制为 3 项，2 项补第 1 项为第 3 项。
+- `stackNum` 可见叠层数，默认 3；范围 [2, 8] 闭区间，越界抛错。`stackNum=3` 时各层 scale/offset 与历史实现像素级一致；`stackNum≠3` 时各层等距偏移（gap = backOffset/(stackNum-1)）、缩放按 mid 公比几何递减。
+- `pics` 少于 `stackNum` 项时自动按整组复制补齐（ceil(stackNum/N)）。
 - 动画周期 = N × (switchDuration + stayDuration)，每张图片在 center 位停留后飞出。

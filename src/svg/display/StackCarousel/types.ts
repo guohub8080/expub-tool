@@ -6,6 +6,13 @@ export const DEFAULT_SWITCH_DURATION = 1
 /** 默认停留时长（秒） */
 export const DEFAULT_STAY_DURATION = 1
 
+/** 可见叠层数下限（闭区间） */
+export const MIN_STACK_NUM = 2
+/** 可见叠层数上限（闭区间） */
+export const MAX_STACK_NUM = 8
+/** 默认可见叠层数（与历史实现一致：back / mid / center） */
+export const DEFAULT_STACK_NUM = 3
+
 /** 退场配置 */
 export interface I_ExitConfig {
   /** 退场方向，X 默认 "L"，Y 默认 "R" */
