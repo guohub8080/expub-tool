@@ -194,6 +194,20 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
+        title="F · depthLaw={-100}（极端：除 center 外全贴 tail）"
+        note={`depthLaw={-100}   ← 所有卡（除 center）堆到 tail，一堆小卡 + 一个大 center`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackNum={5}
+          depthLaw={-100}
+          childItems={layerImages}
+        />
+      </CopyDemo>
+
+      <CopyDemo
         title="G · rotate 扇形展开（tail 侧转得狠，center 不转，pivot 默认中心）"
         note={`showStackConfig rotate = [25, 15, 8, 3, 0]   ← tail→center，pivot 默认 "Center"（绕卡片中心自转）`}
       >
