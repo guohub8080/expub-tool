@@ -8,7 +8,6 @@ import CollapsibleBoxPage from './pages/CollapsibleBoxPage'
 import AnyPushPage from './pages/AnyPushPage'
 import CoverFlowPage from './pages/CoverFlowPage'
 import SpinZoomCarouselPage from './pages/SpinZoomCarouselPage'
-import SkewSlideCarouselPage from './pages/SkewSlideCarouselPage'
 import AnyLoopDisplayPage from './pages/AnyLoopDisplayPage'
 import StackCarouselPage from './pages/StackCarouselPage'
 import ClickFlipInfinityPage from './pages/ClickFlipInfinityPage'
@@ -28,7 +27,6 @@ const links = [
   { to: '/cover', label: 'Cover' },
   { to: '/any-carousel', label: 'Carousel' },
   { to: '/spin-zoom', label: 'SpinZoom' },
-  { to: '/skew-slide', label: 'SkewSlide' },
   { to: '/any-loop-display', label: 'AnyLoopDisplay' },
   { to: '/stack-carousel', label: 'StackCarousel' },
   { to: '/click-flip', label: 'Flip∞' },
@@ -84,7 +82,6 @@ export default function App() {
           <Route path="/cover" element={<CoverPage />} />
           <Route path="/any-carousel" element={<AnyCarouselPage />} />
           <Route path="/spin-zoom" element={<SpinZoomCarouselPage />} />
-          <Route path="/skew-slide" element={<SkewSlideCarouselPage />} />
           <Route path="/any-loop-display" element={<AnyLoopDisplayPage />} />
           <Route path="/stack-carousel" element={<StackCarouselPage />} />
           <Route path="/click-flip" element={<ClickFlipInfinityPage />} />

@@ -35,8 +35,6 @@ export { default as SwipeViewYContainer } from "./containers/SwipeViewContainer/
 export { default as SnapSwipeViewYContainer } from "./containers/SnapSwipeViewContainer/ContainerY"
 
 export { default as SpinZoomCarousel } from "./display/SpinZoomCarousel"
-export { default as SkewSlideCarousel } from "./display/SkewSlideCarousel/SkewSlideCarouselX"
-export type { I_SkewSlideCarouselChildItem } from "./display/SkewSlideCarousel/types"
 
 export { default as AnyLoopDisplay } from "./display/AnyLoopDisplay"
 export type { I_AnyLoopDisplayChildItem } from "./display/AnyLoopDisplay"

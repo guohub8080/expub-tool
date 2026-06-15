@@ -636,7 +636,7 @@ export default function AnyLoopDisplayPage() {
         />
       </div>
 
-      {/* ── Skew Cube 效果（模拟 SkewSlideCarouselX）── */}
+      {/* ── Skew Cube 效果（绕底边斜切 + Y 交叉补偿）── */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 600 }}>
         <h3 style={{ margin: '0 0 8px' }}>3 图 — Skew Cube（pivot=Bottom + Y 补偿 + hold opacity=0）</h3>
         <AnyLoopDisplay
