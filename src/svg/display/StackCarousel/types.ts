@@ -18,9 +18,6 @@ export const DEFAULT_TAIL_OFFSET = 162
 /** tailChild 缺省时的最远端缩放，与历史 back 层一致 */
 export const DEFAULT_TAIL_SCALE = 0.78
 
-/** 叠层间距分布：even 恒定 peek（默认）| linear 等距中心 */
-export type T_StackSpacing = 'linear' | 'even'
-
 /** 退场配置 */
 export interface I_ExitConfig {
   /** 退场方向，默认沿「远离 tail」方向（叠层反向） */
