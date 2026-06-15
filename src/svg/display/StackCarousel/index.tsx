@@ -9,7 +9,7 @@ import isNil from "lodash/isNil"
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
-import { transformTranslate, transformScaleRaw, animateVisibility } from "@smil/index"
+import { transformTranslate, transformScaleRaw } from "@smil/index"
 import { transformSkewX } from "@smil/animateTransform/skewX"
 import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
@@ -27,7 +27,6 @@ import { normalizeItems } from "./utils/normalizer"
 import { buildPosConfig } from "./utils/stackLayout"
 import { directionFromVector } from "./utils/exitDirection"
 import { computeExitDistance } from "./utils/exitDistance"
-import { resolveRotationPivot } from "./utils/rotationPivot"
 import { buildSlotTimelines } from "./timeline/slotTimeline"
 import type { I_SlotExitConfig } from "./timeline/slotTimeline"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
@@ -116,26 +115,12 @@ const StackCarousel = (props: I_StackCarouselProps) => {
   const items = normalizeItems({ items: props.childItems, defaultExitDirection, minCount: showStackNum })
   const itemCount = items.length
   const totalSlots = itemCount + showStackNum
-  // 一个完整轮播周期 = N × (switch + stay)，用于循环边界 visibility 动画
-  const totalDuration = items.reduce((sum, item) => sum + item.switchDuration + item.stayDuration, 0)
 
   // 各层 translate / scale：showStackConfig 逐层覆盖；否则恒定 peek + 幂律 scale（自动）
   const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH, layers: props.showStackConfig })
 
   const contentOffsetX = -cardW / 2
   const contentOffsetY = -cardH / 2
-
-  // ── ghost：items[0] 副本，循环边界（seg9 末→seg0 初）在 center 显示，填补 items[0]
-  // 推进 slot 循环重置跳 tail 造成的 center 空隙（slot4 走→slot9 到之间），实现无缝衔接。
-  // center 位 = 局部原点（main 中心），scale 1，rotate = items[0].stayRotate。
-  const ghostFadeDuration = 0.1
-  const firstItem = items[0]
-  const ghostStayRotate = defaultTo(firstItem.stayRotate, 0)
-  const ghostRotatePivot = resolveRotationPivot({
-    pivot: defaultTo(firstItem.stayRotatePivot, "Center"),
-    cardWidth: cardW,
-    cardHeight: cardH,
-  })
 
   return (
     <SectionEx
@@ -187,7 +172,6 @@ const StackCarousel = (props: I_StackCarouselProps) => {
                 translateTimeline, scaleTimeline,
                 skewTimeline, skewType,
                 rotateTimeline, rotatePivotFrames,
-                hasLoopJump,
               } = buildSlotTimelines({ slotIndex, itemCount, showStackNum, items, posConfig, exitConfig: slotExitConfig, cardW, cardH, slotItemIndex: itemIndex })
 
               const buildSkewAnim = () => {
@@ -228,26 +212,8 @@ const StackCarousel = (props: I_StackCarouselProps) => {
                 })
               }
 
-              // hasLoopJump slot（items[0] 推进 slot）：循环重置前一小段 visibility hidden，
-              // 使其从 center 跳回 tail 时不可见（避免副本闪跳）。center 空隙由 ghost 填补。
-              const loopFadeDuration = 0.1
-              const buildLoopJumpVisibility = () => {
-                if (!hasLoopJump) return null
-                return animateVisibility({
-                  initValue: "visible",
-                  timeline: [
-                    { durationSeconds: totalDuration - loopFadeDuration, toAbs: "visible" },
-                    { durationSeconds: loopFadeDuration, toAbs: "hidden" },
-                  ],
-                  begin: "0s",
-                  loopCount: 0,
-                  isFreeze: true,
-                })
-              }
-
               return (
                 <g key={slotIndex}>
-                  {buildLoopJumpVisibility()}
                   {transformTranslate({
                     initValue: initTranslate,
                     timeline: translateTimeline,
@@ -283,29 +249,6 @@ const StackCarousel = (props: I_StackCarouselProps) => {
                 </g>
               )
             })}
-            {/* ghost：items[0] 副本，循环边界在 center 显示，填补推进 slot 跳 tail 的空隙。
-                visibility 在循环边界（seg9 末 + seg0 初）visible，中间 hidden。
-                translate=center（局部原点）、scale=1、rotate=stayRotate 全程静态。 */}
-            <g key="ghost" visibility="hidden">
-              {animateVisibility({
-                initValue: "hidden",
-                timeline: [
-                  { durationSeconds: ghostFadeDuration, toAbs: "visible" },
-                  { durationSeconds: totalDuration - 2 * ghostFadeDuration, toAbs: "hidden" },
-                  { durationSeconds: ghostFadeDuration, toAbs: "visible" },
-                ],
-                begin: "0s",
-                loopCount: 0,
-                isFreeze: true,
-              })}
-              <g transform={`rotate(${ghostStayRotate} ${ghostRotatePivot[0]} ${ghostRotatePivot[1]})`}>
-                <g transform={`translate(${contentOffsetX}, ${contentOffsetY})`}>
-                  <foreignObject x={0} y={0} width={cardW} height={cardH}>
-                    <ItemImage item={firstItem} imageW={cardW} imageH={cardH} />
-                  </foreignObject>
-                </g>
-              </g>
-            </g>
           </g>
         </SvgEx>
       </section>

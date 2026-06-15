@@ -123,7 +123,10 @@ export function buildSlotTimelines({
   const rotateTimeline: I_TimelineKeyframe<number>[] = []
 
   // rotate 逐帧 pivot（transformRotate 的 pivots 长度 = timeline 段数 + 1，initValue 帧在前）
-  const rotatePivotFrames: [number, number][] = [posConfig.rotatePivots[startPosition]]
+  // center 初始 slot 的 initValue 帧 pivot 必须用 per-item centerRotatePivot（与 seg0 一致），
+  // 否则 rotate 角度恒定下 pivot 跳变（Center→stayRotatePivot）会让卡牌位置在 seg0 内跳
+  const initRotatePivot = startPosition === centerPosition ? centerRotatePivot : posConfig.rotatePivots[startPosition]
+  const rotatePivotFrames: [number, number][] = [initRotatePivot]
 
   for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++) {
     const itemIndex = Math.floor(segmentIndex / 2)
@@ -183,11 +186,6 @@ export function buildSlotTimelines({
     rotatePivotFrames.push(isExit ? exitPivot : layerPivot)
   }
 
-  // 末尾到达 center 的 slot（数学上即 items[0] 的推进 slot）：循环重置时 translate 从 center
-  // 瞬间跳回 tail（startPosition），副本在画布内可见跳变。标记后由 index.tsx 加 visibility 隐藏。
-  const lastPosition = getPosition({ slotIndex, itemCount, showStackNum, boundary: segmentCount })
-  const hasLoopJump = lastPosition === centerPosition
-
   return {
     initTranslate,
     initScale,
@@ -198,6 +196,5 @@ export function buildSlotTimelines({
     skewType: exitConfig.skew?.type,
     rotateTimeline,
     rotatePivotFrames,
-    hasLoopJump,
   }
 }
