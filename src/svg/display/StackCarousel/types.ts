@@ -50,6 +50,11 @@ export interface I_StackCarouselItem {
   stayDuration?: number
   /** 缓动曲线，默认 ease-in-out */
   keySplines?: string
+  /** 该卡在 center（mainChild）位停留时的旋转角度（度），默认 0。
+   *  center 位旋转纯 per-item，不走 showStackConfig 全局层 */
+  stayRotate?: number
+  /** 该卡 center 停留旋转的 pivot（child 局部，九宫格或 {x,y}），默认 "Center" */
+  stayRotatePivot?: T_Pivot
 }
 
 /** 标准化后的退场配置 */
@@ -73,6 +78,9 @@ export interface I_NormalizedStackItem {
   switchDuration: number
   stayDuration: number
   keySplines: string
+  /** center 位停留旋转（度），undefined = 不旋转（沿用 0） */
+  stayRotate?: number
+  stayRotatePivot?: T_Pivot
 }
 
 /** 中心（焦点）卡牌：基准尺寸 + 位置，scale 恒为 1 */

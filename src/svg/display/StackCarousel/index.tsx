@@ -26,6 +26,7 @@ import {
 import { normalizeItems } from "./utils/normalizer"
 import { buildPosConfig } from "./utils/stackLayout"
 import { directionFromVector } from "./utils/exitDirection"
+import { computeExitDistance } from "./utils/exitDistance"
 import { buildSlotTimelines } from "./timeline/slotTimeline"
 import type { I_SlotExitConfig } from "./timeline/slotTimeline"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
@@ -115,8 +116,6 @@ const StackCarousel = (props: I_StackCarouselProps) => {
   const itemCount = items.length
   const totalSlots = itemCount + showStackNum
 
-  const defaultExitDistance = Math.sqrt(cardW * cardW + cardH * cardH) * 1.2
-
   // 各层 translate / scale：showStackConfig 逐层覆盖；否则恒定 peek + 幂律 scale（自动）
   const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH, layers: props.showStackConfig })
 
@@ -154,7 +153,14 @@ const StackCarousel = (props: I_StackCarouselProps) => {
               // center slot (slotIndex=itemCount+showStackNum-1) 显示 items[0]，向前依次排列
               const itemIndex = (itemCount + showStackNum - 1 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIndex]
-              const exitTranslate = getExitTranslate(item.exit.direction, defaultTo(item.exit.distance, defaultExitDistance))
+              // 退场距离：用户传了 exit.distance 用用户的；否则按方向精确算移出 viewBox 的最小距离
+              const exitDistance = defaultTo(item.exit.distance, computeExitDistance({
+                direction: item.exit.direction,
+                mainCenterX, mainCenterY,
+                viewBoxW, viewBoxH,
+                cardHalfW: cardW / 2, cardHalfH: cardH / 2,
+              }))
+              const exitTranslate = getExitTranslate(item.exit.direction, exitDistance)
               const slotExitConfig: I_SlotExitConfig = {
                 translate: exitTranslate,
                 skew: item.exit.skew,
@@ -166,7 +172,7 @@ const StackCarousel = (props: I_StackCarouselProps) => {
                 translateTimeline, scaleTimeline,
                 skewTimeline, skewType,
                 rotateTimeline, rotatePivotFrames,
-              } = buildSlotTimelines({ slotIndex, itemCount, showStackNum, items, posConfig, exitConfig: slotExitConfig, cardW, cardH })
+              } = buildSlotTimelines({ slotIndex, itemCount, showStackNum, items, posConfig, exitConfig: slotExitConfig, cardW, cardH, slotItemIndex: itemIndex })
 
               const buildSkewAnim = () => {
                 if (isNil(skewTimeline)) return null

@@ -74,6 +74,7 @@ export function buildSlotTimelines({
   exitConfig,
   cardW,
   cardH,
+  slotItemIndex,
 }: {
   /** slot 索引（0 ~ itemCount + showStackNum - 1） */
   slotIndex: number
@@ -91,13 +92,25 @@ export function buildSlotTimelines({
   cardW: number
   /** 卡牌基准高（解析退场 rotate pivot） */
   cardH: number
+  /** 本 slot 固定显示的 item 在 items 中的索引（center 位 stayRotate 取自此 item） */
+  slotItemIndex: number
 }) {
   const startPosition = max([0, slotIndex - itemCount])
   const segmentCount = itemCount * 2
+  const centerPosition = showStackNum - 1
+
+  // center 位旋转纯 per-item：取本 slot 固定卡的 stayRotate / stayRotatePivot
+  const slotItem = items[slotItemIndex]
+  const centerRotate = defaultTo(slotItem.stayRotate, 0)
+  const centerRotatePivot = resolveRotationPivot({
+    pivot: defaultTo(slotItem.stayRotatePivot, "Center"),
+    cardWidth: cardW,
+    cardHeight: cardH,
+  })
 
   const initTranslate = posConfig.translateValues[startPosition]
   const initScale = posConfig.scaleValues[startPosition]
-  const initRotate = posConfig.rotateValues[startPosition]
+  const initRotate = startPosition === centerPosition ? centerRotate : posConfig.rotateValues[startPosition]
 
   const hasSkew = isDefined(exitConfig.skew)
   const hasRotation = isDefined(exitConfig.rotation)
@@ -142,19 +155,21 @@ export function buildSlotTimelines({
       })
     }
 
-    // rotate：层间按 posConfig.rotateValues 插值；退场时维持当前层角度（无 exit.rotation），
-    // 或过渡到 exit.rotation.angle（有 exit.rotation）。rotate 与 translate/scale 同段、同步
+    // rotate：层间按 posConfig.rotateValues 插值；center 位用 per-item stayRotate；
+    // 退场时维持当前角度（无 exit.rotation）或过渡到 exit.rotation.angle（有 exit.rotation）。
+    const isCenterPosition = nextPosition === centerPosition
+    const layerRotate = isCenterPosition ? centerRotate : posConfig.rotateValues[nextPosition]
     rotateTimeline.push({
       toAbs: isExit
         ? (hasRotation ? defaultTo(exitConfig.rotation!.angle, 0) : rotateTimeline.length > 0 ? (rotateTimeline[rotateTimeline.length - 1].toAbs as number) : initRotate)
-        : posConfig.rotateValues[nextPosition],
+        : layerRotate,
       durationSeconds: segmentDuration,
       keySplines: isExit && hasRotation ? defaultTo(rotationSplines, splines) : splines,
     })
     rotatePivotFrames.push(
       isExit
         ? resolveRotationPivot({ pivot: defaultTo(exitConfig.rotation?.childCanvasPivot, "Center"), cardWidth: cardW, cardHeight: cardH })
-        : posConfig.rotatePivots[nextPosition]
+        : (isCenterPosition ? centerRotatePivot : posConfig.rotatePivots[nextPosition])
     )
   }
 

@@ -269,6 +269,62 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo
+        title="I · stayRotate — 每张卡 center 位旋转不同（per-item，非全局）"
+        note={`childItems[i].stayRotate = [-6, 4, -3, 8, 0]   ← 每张卡到 center 时各自倾斜`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackNum={5}
+          childItems={[
+            { url: getWechat300x300(1), stayRotate: -6 },
+            { url: getWechat300x300(2), stayRotate: 4 },
+            { url: getWechat300x300(3), stayRotate: -3 },
+            { url: getWechat300x300(4), stayRotate: 8 },
+            { url: getWechat300x300(5), stayRotate: 0 },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo
+        title="J · stayRotate + rotatePivot 自定义（绕右下角倾斜）"
+        note={`stayRotate = [12, -10, 6, -8, 0]  +  stayRotatePivot: "BottomRight"   ← 绕右下角倾斜`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackNum={5}
+          childItems={[
+            { url: getWechat300x300(1), stayRotate: 12,  stayRotatePivot: "BottomRight" },
+            { url: getWechat300x300(2), stayRotate: -10, stayRotatePivot: "BottomRight" },
+            { url: getWechat300x300(3), stayRotate: 6,   stayRotatePivot: "BottomRight" },
+            { url: getWechat300x300(4), stayRotate: -8,  stayRotatePivot: "BottomRight" },
+            { url: getWechat300x300(5), stayRotate: 0,   stayRotatePivot: "BottomRight" },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo
+        title="K · mainChild 偏移右上 + 退场距离自动补偿（卡牌不残留画布）"
+        note={`mainChild.center = (880, 200) 偏右上，tail 在左下 → 退场朝右上飞，距离自动算够移出 viewBox`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 600, h: 600, centerX: 880, centerY: 200 }}
+          tailChild={{ scale: 0.25, centerX: 200, centerY: 880 }}
+          showStackNum={4}
+          childItems={[
+            { url: getWechat300x300(1), switchDuration: 0.6, stayDuration: 1 },
+            { url: getWechat300x300(2), switchDuration: 0.6, stayDuration: 1 },
+            { url: getWechat300x300(3), switchDuration: 0.6, stayDuration: 1 },
+            { url: getWechat300x300(4), switchDuration: 0.6, stayDuration: 1 },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="八方向退场 (L/R/T/B/TL/TR/BL/BR)">
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}

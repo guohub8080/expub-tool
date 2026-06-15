@@ -69,7 +69,7 @@ import { StackCarousel } from "expub-tool/svg"
 |---|---|---|---|
 | `scale` | `number` | 幂律 `tailScale ^ depthRatio` | 该层缩放；覆盖自动等比缩放 |
 | `progress` | `number` | 恒定 peek 反推 | 该层中心沿方向轴归一化进度：0=mainChild（center 端）、1=tailChild（tail 端）；覆盖自动露边恒定分布 |
-| `rotate` | `number` | `0` | 该层旋转角度（度）。卡片循环推进时与 translate/scale 同步层间插值；与 `exit.rotation` 独立 |
+| `rotate` | `number` | `0` | 该层旋转角度（度）。卡片循环推进时与 translate/scale 同步层间插值；与 `exit.rotation` 独立。**注意**：center 层（数组末项）的 rotate 对 center 位无效——center 位旋转走 per-item `stayRotate` |
 | `rotatePivot` | `T_Pivot` | `"Center"` | 该层旋转中心（child 局部，九宫格或 `{x,y}`） |
 
 两端锚点契约恒成立：center 层落 `mainChild.center`、tail 层落 `tailChild.center`。中间层不传则 scale 走幂律、位置走恒定 peek（露边相等）；想让 tail 近的贴更紧，给中间几层 `progress` 略大于自动值（使中心更靠近 tail）。
@@ -85,6 +85,8 @@ import { StackCarousel } from "expub-tool/svg"
 | `switchDuration` | `number` | `1` | 切换动画时长（秒） |
 | `stayDuration` | `number` | `1` | 停留时长（秒） |
 | `keySplines` | `string` | ease-in-out | SMIL keySplines 缓动曲线 |
+| `stayRotate` | `number` | `0` | 该卡在 center（mainChild）位停留时的旋转角度（度）。center 位旋转纯 per-item，不走 showStackConfig 全局层 |
+| `stayRotatePivot` | `T_Pivot` | `"Center"` | 该卡 center 停留旋转中心（child 局部，九宫格或 `{x,y}`） |
 
 ### I_ExitConfig
 
@@ -102,8 +104,8 @@ import { StackCarousel } from "expub-tool/svg"
 - **层数**：`showStackNum`（n），层 i（i=0 最远端 tail，i=n−1 焦点 center）。
 - **缩放**：等比，`scale(i) = tailChild.scale ^ t`（t = 1 − i/(n−1)，tail=tailChild.scale，center=1）。`showStackConfig[i].scale` 可逐层覆盖。
 - **位置**：默认恒定 peek 分布，每张露出等宽边。peek `P = [D − projHalf·(1−tailChild.scale)]/(n−1)`（D=|direction|，projHalf 为卡牌沿方向轴投影半宽 `(w·|ux|+h·|uy|)/2`），两端锚点精确命中。tail 太近时 P 可能为负，卡牌会糊一块。`showStackConfig[i].progress`（0=center、1=tail）可逐层覆盖中心落点，覆盖后露边不再恒定，但两端锚点仍精确命中。
-- **旋转**：默认每层 `rotate=0`（不转）。`showStackConfig[i].rotate`（度）逐层设值后，卡片循环推进时 rotate 与 translate/scale 同步层间插值（如 tail 层 30°、center 层 0°，从 tail 推到 center 角度渐变）。pivot 默认 `"Center"`（child 几何中心），可逐层用 `rotatePivot` 覆盖。退场时维持退场前所在层的角度飞出，仅当该 item 显式配了 `exit.rotation` 才过渡到退场角度。
-- **退场**：卡片从 center 朝「远离 tail」方向飞出（即 mainChild − tailChild 方向，吸附到最近的八方向），可被单项 `exit.direction` 覆盖。
+- **旋转**：默认每层 `rotate=0`（不转）。`showStackConfig[i].rotate`（度）逐层设值后，卡片循环推进时 rotate 与 translate/scale 同步层间插值（如 tail 层 30°、次层 15°、center 位 0°，从 tail 推到 center 角度渐变）。pivot 默认 `"Center"`（child 几何中心），可逐层用 `rotatePivot` 覆盖。**center 位旋转例外**：纯 per-item，走 `childItems[i].stayRotate`（默认 0），`showStackConfig` 末项的 rotate 对 center 位无效。退场时维持退场前所在角度飞出，仅当该 item 显式配了 `exit.rotation` 才过渡到退场角度。
+- **退场**：卡片从 center 朝「远离 tail」方向飞出（即 mainChild − tailChild 方向，吸附到最近的八方向），可被单项 `exit.direction` 覆盖。退场距离默认按 `mainChild.center` 位置 + 退场方向精确计算「完全移出 viewBox 的最小距离」（补偿 mainChild 偏离画布中心时对角线估计不够的情形，不纳入 exit scale、恒按 scale=1），可被单项 `exit.distance` 覆盖。
 
 ## 注意
 

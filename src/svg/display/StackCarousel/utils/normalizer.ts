@@ -36,6 +36,8 @@ const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Directi
     switchDuration: defaultTo(item.switchDuration, DEFAULT_SWITCH_DURATION),
     stayDuration: defaultTo(item.stayDuration, DEFAULT_STAY_DURATION),
     keySplines: defaultTo(item.keySplines, DEFAULT_KEY_SPLINES),
+    stayRotate: item.stayRotate,
+    stayRotatePivot: item.stayRotatePivot,
   }
 }
 
