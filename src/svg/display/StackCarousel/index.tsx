@@ -15,7 +15,7 @@ import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import { DIRECTION_8 } from "@svg/types"
 import type { I_CanvasBg, T_Direction8 } from "@svg/types"
-import type { I_StackCarouselItem, I_NormalizedStackItem, I_MainChildConfig, I_TailChildConfig } from "./types"
+import type { I_StackCarouselItem, I_NormalizedStackItem, I_MainChildConfig, I_TailChildConfig, T_StackSpacing } from "./types"
 import {
   MIN_SHOW_STACK_NUM,
   MAX_SHOW_STACK_NUM,
@@ -31,7 +31,7 @@ import type { I_SlotExitConfig } from "./timeline/slotTimeline"
 import { resolveRotationPivot } from "./utils/rotationPivot"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
-export type { I_StackCarouselItem, I_ExitConfig, I_MainChildConfig, I_TailChildConfig } from "./types"
+export type { I_StackCarouselItem, I_ExitConfig, I_MainChildConfig, I_TailChildConfig, T_StackSpacing } from "./types"
 export type { I_SkewConfig, I_RotationConfig, T_Direction8 } from "@svg/types"
 
 const getExitTranslate = (
@@ -64,6 +64,8 @@ export interface I_StackCarouselProps {
   tailChild?: I_TailChildConfig
   /** 可见叠层数，默认 3；范围 [2, 8] 闭区间，越界抛错 */
   showStackNum?: number
+  /** 叠层间距分布：'even'（默认，恒定 peek，每张露出等宽边）| 'linear'（等距中心，peek 不均） */
+  stackSpacing?: T_StackSpacing
   /** 图片/内容配置数组，至少 1 项 */
   childItems?: I_StackCarouselItem[]
   /** 画布背景 */
@@ -89,6 +91,9 @@ const StackCarousel = (props: I_StackCarouselProps) => {
     throw new Error(`[StackCarousel] showStackNum must be in [${MIN_SHOW_STACK_NUM}, ${MAX_SHOW_STACK_NUM}], got ${showStackNum}.`)
   }
 
+  // 叠层间距分布：默认 even（恒定 peek），避免内层被 center 盖住
+  const stackSpacing = defaultTo(props.stackSpacing, 'even')
+
   // mainChild 中心（缺省 viewBox 几何中心）
   const mainCenterX = defaultTo(props.mainChild.centerX, viewBoxW / 2)
   const mainCenterY = defaultTo(props.mainChild.centerY, viewBoxH / 2)
@@ -110,7 +115,7 @@ const StackCarousel = (props: I_StackCarouselProps) => {
   const defaultExitDistance = Math.sqrt(cardW * cardW + cardH * cardH) * 1.2
 
   // 各层 translate / scale：局部空间内 main→tail 两点插值
-  const posConfig = buildPosConfig({ showStackNum, tailScale, direction })
+  const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH, spacing: stackSpacing })
 
   const contentOffsetX = -cardW / 2
   const contentOffsetY = -cardH / 2

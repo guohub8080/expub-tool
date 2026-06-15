@@ -42,7 +42,7 @@ export { default as AnyLoopDisplay } from "./display/AnyLoopDisplay"
 export type { I_AnyLoopDisplayChildItem } from "./display/AnyLoopDisplay"
 
 export { default as StackCarousel } from "./display/StackCarousel"
-export type { I_StackCarouselItem, I_MainChildConfig, I_TailChildConfig } from "./display/StackCarousel"
+export type { I_StackCarouselItem, I_MainChildConfig, I_TailChildConfig, T_StackSpacing } from "./display/StackCarousel"
 
 export { ClickFlipInfinity } from "./click"
 export type { I_ClickFlipInfinityProps, I_FaceContent } from "./click"

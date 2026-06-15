@@ -67,12 +67,29 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="斜向叠层 — tailChild 在右下 (980,900)、scale 0.2，showStackNum=5">
+      <CopyDemo title="斜向叠层 — tailChild 在右下 (980,900)、scale 0.2，showStackNum=5（even：恒定 peek）">
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="同上配置 — stackSpacing='linear'（对比：peek 不均、内层被 center 盖住）">
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackNum={5}
+          stackSpacing="linear"
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
