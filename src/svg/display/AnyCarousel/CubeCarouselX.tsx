@@ -1,9 +1,10 @@
 import AnyCarousel, { type I_AnyCarouselProps } from "./index"
 import type { I_ChildTransform } from "./types"
 
-/** 单个角色的 cube 配置：skewY 绕底边 + translate（Y 交叉补偿）。缓动用 AnyCarousel 默认（ease-in-out） */
+/** 单个角色的 cube 配置：skewY 绕底边 + translate（Y 交叉补偿）。
+ *  skew 走线性缓动（匀速，避免边缘往返），translate 保持默认 ease-in-out */
 const cubeChannel = (skewValue: number, translateY: number): I_ChildTransform => ({
-  skewY: { value: skewValue, childCanvasPivot: "Bottom" },
+  skewY: { value: skewValue, childCanvasPivot: "Bottom", keySplines: "0 0 1 1" },
   translate: { y: translateY },
 })
 
