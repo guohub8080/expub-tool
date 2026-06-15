@@ -180,11 +180,11 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="CubeCarouselX（skewAngle=15，translate 自动算；默认 ease-in-out / 画布居中）">
+      <CopyDemo title="CubeCarouselX（skewAngle=10，translate 自动算；默认 ease-in-out / 画布居中）">
         <CubeCarouselX
           canvasSize={{ w: 240, h: 160 }}
           childCanvasSize={{ w: 80, h: 80 }}
-          skewAngle={15}
+          skewAngle={10}
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
@@ -199,7 +199,7 @@ export default function AnyCarouselPage() {
         <CubeCarouselX
           canvasSize={{ w: 240, h: 160 }}
           childCanvasSize={{ w: 80, h: 80 }}
-          skewAngle={15}
+          skewAngle={10}
           isReversed
           childItems={[
             { url: getWechat300x300(1) },
@@ -211,11 +211,11 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="CubeCarouselX skewAngle={-15}（反方向卷曲，流向不变）">
+      <CopyDemo title="CubeCarouselX skewAngle={-10}（反方向卷曲，流向不变）">
         <CubeCarouselX
           canvasSize={{ w: 240, h: 160 }}
           childCanvasSize={{ w: 80, h: 80 }}
-          skewAngle={-15}
+          skewAngle={-10}
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
@@ -226,11 +226,11 @@ export default function AnyCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="CubeCarouselY（纵向立方体，skewAngle=15）">
+      <CopyDemo title="CubeCarouselY（纵向立方体，skewAngle=10）">
         <CubeCarouselY
           canvasSize={{ w: 160, h: 240 }}
           childCanvasSize={{ w: 80, h: 80 }}
-          skewAngle={15}
+          skewAngle={10}
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
@@ -245,7 +245,7 @@ export default function AnyCarouselPage() {
         <CubeCarouselY
           canvasSize={{ w: 160, h: 240 }}
           childCanvasSize={{ w: 80, h: 80 }}
-          skewAngle={15}
+          skewAngle={10}
           isReversed
           childItems={[
             { url: getWechat300x300(1) },
