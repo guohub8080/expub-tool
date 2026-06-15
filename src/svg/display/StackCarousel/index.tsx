@@ -66,8 +66,8 @@ export interface I_StackCarouselProps {
   showStackNum?: number
   /** 逐层旋转覆盖；数组首项=tail、末项=center，每项 { rotate?: 度 } */
   showStackConfig?: I_StackLayerConfig[]
-  /** 深度分布规律（幂次）：同时控制 scale 和位置沿 tail→center 的曲线。默认 1（线性，露边相等）。
-   *  >1 tail 侧压缩（透视感），<1 tail 侧拉开 */
+  /** 深度分布：0=完全线性（均匀）；[-100,0] 堆积 tail（center 除外），[0,+100] 堆积 center（tail 除外）。
+   *  scale 跟随位置（堆积处变小/变大）。线性混合控制（blend=|d|/100），±100 为极端堆积 */
   depthLaw?: number
   /** 栈中所有层 rotate + center stayRotate 共用的旋转中心（child 局部，九宫格或 {x,y}），缺省 "Center"。
    *  统一一个 pivot，避免层/stayRotate pivot 不一致导致的位置跳变 */

@@ -17,8 +17,8 @@ export const DEFAULT_SHOW_STACK_NUM = 3
 export const DEFAULT_TAIL_OFFSET = 162
 /** tailChild 缺省时的最远端缩放，与历史 back 层一致 */
 export const DEFAULT_TAIL_SCALE = 0.78
-/** 默认深度规律（幂次）：1 = 线性（露边相等），>1 tail 压缩，<1 tail 拉开 */
-export const DEFAULT_DEPTH_LAW = 1
+/** 默认深度分布：0 = 完全线性（均匀）；[-100,0] 堆积 tail，[0,+100] 堆积 center */
+export const DEFAULT_DEPTH_LAW = 0
 
 /** 退场配置 */
 export interface I_ExitConfig {
