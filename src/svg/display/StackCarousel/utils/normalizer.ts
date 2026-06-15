@@ -42,7 +42,10 @@ const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Directi
 /**
  * 标准化配置数组
  *
- * 至少需要 3 张图：1→复制3，2→补成3，≥3→直接用
+ * 至少需要 3 张（back/mid/center 三层）避免同图多层错乱，不足时按 ceil(3/N) 整组复制：
+ * - 1 张 → 3 份（×3）
+ * - 2 张 → 4 份（×2）
+ * - ≥3 张 → 直接使用
  */
 export const normalizeItems = ({ items, defaultExitDirection }: {
   items?: I_StackCarouselItem[]
@@ -52,11 +55,12 @@ export const normalizeItems = ({ items, defaultExitDirection }: {
     throw new Error("`pics` must not be empty. StackCarousel requires at least 1 item.")
   }
   const normalized = items.map(item => fillDefaults(item, defaultExitDirection))
-  if (normalized.length === 1) {
-    return [normalized[0], normalized[0], normalized[0]]
-  }
-  if (normalized.length === 2) {
-    return [normalized[0], normalized[1], normalized[0]]
-  }
-  return normalized
+  const N = normalized.length
+  if (N >= 3) return normalized
+
+  // 不足 3 张：按 ceil(3/N) 整组复制，确保 N ≥ 3
+  const copies = Math.ceil(3 / N)
+  const result: I_NormalizedStackItem[] = []
+  for (let c = 0; c < copies; c++) result.push(...normalized)
+  return result
 }
