@@ -1,11 +1,11 @@
 import React from "react"
+import { isDefined } from '@utils/fn/isDefined'
+import { ItemImage } from "./shared/ItemImage"
 import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
-import type { I_CanvasBg } from '@svg/types'
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import defaultTo from "lodash/defaultTo"
 import isNil from "lodash/isNil"
-import { isDefined } from '@utils/fn/isDefined'
 import { SPACING_ZERO, spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
@@ -14,23 +14,25 @@ import { transformSkewX } from "@smil/animateTransform/skewX"
 import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import { DIRECTION_8 } from "@svg/types"
-
-import max from "lodash/max"
-import min from "lodash/min"
-import type { T_Direction8 } from "@svg/types"
-import type { I_StackCarouselItem, I_NormalizedStackItem } from "../types"
-import { MIN_STACK_NUM, MAX_STACK_NUM, DEFAULT_STACK_NUM } from "../types"
-import { normalizeItems } from "../utils/normalizer"
-import { buildPosConfig } from "../utils/stackLayout"
-import { buildSlotTimelines } from "../timeline/slotTimeline"
-import type { I_SlotExitConfig } from "../timeline/slotTimeline"
-import { resolveRotationPivot } from "../utils/rotationPivot"
+import type { I_CanvasBg, T_Direction8 } from "@svg/types"
+import type { I_StackCarouselItem, I_NormalizedStackItem, I_MainChildConfig, I_TailChildConfig } from "./types"
+import {
+  MIN_SHOW_STACK_NUM,
+  MAX_SHOW_STACK_NUM,
+  DEFAULT_SHOW_STACK_NUM,
+  DEFAULT_TAIL_OFFSET,
+  DEFAULT_TAIL_SCALE,
+} from "./types"
+import { normalizeItems } from "./utils/normalizer"
+import { buildPosConfig } from "./utils/stackLayout"
+import { directionFromVector } from "./utils/exitDirection"
+import { buildSlotTimelines } from "./timeline/slotTimeline"
+import type { I_SlotExitConfig } from "./timeline/slotTimeline"
+import { resolveRotationPivot } from "./utils/rotationPivot"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
-import { ItemImage } from "../shared/ItemImage"
 
-const DEFAULT_BACK_OFFSET = 162
-/** back/mid 默认缩放比例（叠层深度效果，center 恒为 1.0） */
-const DEFAULT_SCALES: [number, number] = [0.78, 0.89]
+export type { I_StackCarouselItem, I_ExitConfig, I_MainChildConfig, I_TailChildConfig } from "./types"
+export type { I_SkewConfig, I_RotationConfig, T_Direction8 } from "@svg/types"
 
 const getExitTranslate = (
   direction: T_Direction8,
@@ -52,76 +54,70 @@ const getExitTranslate = (
   }
 }
 
-interface I_StackCarouselYProps {
+export interface I_StackCarouselProps {
   /** SVG 画布尺寸（viewBox） */
   canvasSize: { w: number; h: number }
-  /** 中心卡牌显示尺寸（viewBox 坐标），即用户看到的卡牌大小 */
-  mainChildItemSize: { w: number; h: number }
-  /** 中心 child 正中心在画布中的坐标（viewBox 坐标），默认 viewBox 几何中心 */
-  mainChildCenter?: { x: number; y: number }
+  /** 中心（焦点）卡牌：基准尺寸 + 位置，scale 恒为 1 */
+  mainChild: I_MainChildConfig
+  /** 最远端卡牌：缩放 + 位置；与 mainChild 两点连线决定叠层方向与深度。
+   *  缺省时向右水平延伸（与历史 StackCarouselX 默认一致） */
+  tailChild?: I_TailChildConfig
+  /** 可见叠层数，默认 3；范围 [2, 8] 闭区间，越界抛错 */
+  showStackNum?: number
   /** 图片/内容配置数组，至少 1 项 */
   childItems?: I_StackCarouselItem[]
-  /** back/mid 缩放比例 [back, mid]，center 恒为 1.0，默认 [0.78, 0.89] */
-  childItemScales?: [number, number]
-  /** back 位置偏移量（px），mid 自动取一半，默认 162 */
-  backOffset?: number
-  /** 可见叠层数，默认 3；范围 [2, 8] 闭区间，越界抛错。stackNum≠3 时各层等距偏移、缩放按 mid 公比几何递减 */
-  stackNum?: number
-  /** 画布背景色，默认 #FFFFFF */
+  /** 画布背景 */
   canvasBg?: I_CanvasBg
-  /** 反向：叠层偏移在下方 */
-  isReversed?: boolean
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
 }
 
-const StackCarouselY = (props: I_StackCarouselYProps) => {
+const StackCarousel = (props: I_StackCarouselProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const firstPic = props.childItems?.[0]
   if (isNil(firstPic?.url) && isNil(firstPic?.jsx)) return null
 
   const viewBoxW = props.canvasSize.w
   const viewBoxH = props.canvasSize.h
-  const cardW = props.mainChildItemSize.w
-  const cardH = props.mainChildItemSize.h
-  const scales = defaultTo(props.childItemScales, DEFAULT_SCALES)
-  const backOffset = defaultTo(props.backOffset, DEFAULT_BACK_OFFSET)
-  const reversed = defaultTo(props.isReversed, false)
+  const cardW = props.mainChild.w
+  const cardH = props.mainChild.h
   const isDev = ExPubGoConfig().mode === "development"
 
-  // 可见叠层数：默认 3（与历史一致），范围 [2, 8] 闭区间，越界抛错
-  const stackNum = defaultTo(props.stackNum, DEFAULT_STACK_NUM)
-  if (stackNum < MIN_STACK_NUM || stackNum > MAX_STACK_NUM) {
-    throw new Error(`[StackCarouselY] stackNum must be in [${MIN_STACK_NUM}, ${MAX_STACK_NUM}], got ${stackNum}.`)
+  // 可见叠层数：默认 3，范围 [2, 8] 闭区间，越界抛错
+  const showStackNum = defaultTo(props.showStackNum, DEFAULT_SHOW_STACK_NUM)
+  if (showStackNum < MIN_SHOW_STACK_NUM || showStackNum > MAX_SHOW_STACK_NUM) {
+    throw new Error(`[StackCarousel] showStackNum must be in [${MIN_SHOW_STACK_NUM}, ${MAX_SHOW_STACK_NUM}], got ${showStackNum}.`)
   }
 
-  const items = normalizeItems({ items: props.childItems, defaultExitDirection: DIRECTION_8.Right, minCount: stackNum })
-  const itemCount = items.length
-  const totalSlots = itemCount + stackNum
+  // mainChild 中心（缺省 viewBox 几何中心）
+  const mainCenterX = defaultTo(props.mainChild.centerX, viewBoxW / 2)
+  const mainCenterY = defaultTo(props.mainChild.centerY, viewBoxH / 2)
 
-  // 纵向叠层：偏移在 Y 轴
-  // 正向：叠层向上(-backOffset)
-  // 反向：叠层向下(+backOffset)
-  const sign = reversed ? -1 : 1
+  // tailChild：缺省向右水平延伸（历史 StackCarouselX 默认）
+  const tailScale = defaultTo(props.tailChild?.scale, DEFAULT_TAIL_SCALE)
+  const tailCenterX = defaultTo(props.tailChild?.centerX, mainCenterX + DEFAULT_TAIL_OFFSET)
+  const tailCenterY = defaultTo(props.tailChild?.centerY, mainCenterY)
+
+  // 方向向量 d = tail − main（局部空间，main 在原点）
+  const direction = { x: tailCenterX - mainCenterX, y: tailCenterY - mainCenterY }
+  // 默认退场方向：卡片从 center 朝「远离 tail」飞出（main − tail 方向）
+  const defaultExitDirection = directionFromVector(-direction.x, -direction.y)
+
+  const items = normalizeItems({ items: props.childItems, defaultExitDirection, minCount: showStackNum })
+  const itemCount = items.length
+  const totalSlots = itemCount + showStackNum
 
   const defaultExitDistance = Math.sqrt(cardW * cardW + cardH * cardH) * 1.2
 
-  const posConfig = buildPosConfig({ stackNum, scales, backOffset, sign, axis: "y" })
+  // 各层 translate / scale：局部空间内 main→tail 两点插值
+  const posConfig = buildPosConfig({ showStackNum, tailScale, direction })
 
   const contentOffsetX = -cardW / 2
   const contentOffsetY = -cardH / 2
 
-  // mainChildCenter 换算成相对 viewBox 几何中心的整体偏移，挂到外层 <g>（不动 slot 数学）
-  const mainOffset = isDefined(props.mainChildCenter)
-    ? { x: props.mainChildCenter.x - viewBoxW / 2, y: props.mainChildCenter.y - viewBoxH / 2 }
-    : { x: 0, y: 0 }
-  const mainOffsetTransform = (mainOffset.x !== 0 || mainOffset.y !== 0)
-    ? `translate(${mainOffset.x},${mainOffset.y})`
-    : undefined
-
   return (
     <SectionEx
-      {...(isDev ? { "expubgo-label": "stack-carousel-y" } : {})}
+      {...(isDev ? { "expubgo-label": "stack-carousel" } : {})}
       style={{
         boxSizing: "border-box",
         display: "block",
@@ -137,16 +133,18 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
           viewBox={`0 0 ${viewBoxW} ${viewBoxH}`}
           style={{ display: "block", width: "100%" }}
         >
+          {/* 背景层 */}
           <g>
             <foreignObject x={0} y={0} width={viewBoxW} height={viewBoxH}>
               <svg viewBox={`0 0 ${viewBoxW} ${viewBoxH}`} style={{ ...resolveCanvasBg(props.canvasBg), width: "100%" }} />
             </foreignObject>
           </g>
 
-          <g transform={mainOffsetTransform}>
-            <g transform={`translate(${viewBoxW / 2}, ${viewBoxH / 2})`}>
+          {/* 外层 g：局部原点摆到 mainChild 中心（内部坐标系 main 在原点，tail 在 direction） */}
+          <g transform={`translate(${mainCenterX}, ${mainCenterY})`}>
             {Array.from({ length: totalSlots }, (_, slotIndex) => {
-              const itemIdx = (itemCount + stackNum - 1 - slotIndex + itemCount * 10) % itemCount
+              // center slot (slotIndex=itemCount+showStackNum-1) 显示 items[0]，向前依次排列
+              const itemIdx = (itemCount + showStackNum - 1 - slotIndex + itemCount * 10) % itemCount
               const item = items[itemIdx]
               const exitTranslate = getExitTranslate(item.exit.direction, defaultTo(item.exit.distance, defaultExitDistance))
               const slotExitConfig: I_SlotExitConfig = {
@@ -160,7 +158,7 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
                 translateTimeline, scaleTimeline,
                 skewTimeline, skewType,
                 rotateTimeline,
-              } = buildSlotTimelines({ slotIndex, itemCount, stackNum, items, posConfig, exitConfig: slotExitConfig })
+              } = buildSlotTimelines({ slotIndex, itemCount, showStackNum, items, posConfig, exitConfig: slotExitConfig })
 
               const rotationPivot = isDefined(item.exit.rotation)
                 ? resolveRotationPivot({
@@ -245,7 +243,6 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
                 </g>
               )
             })}
-            </g>
           </g>
         </SvgEx>
       </section>
@@ -253,4 +250,4 @@ const StackCarouselY = (props: I_StackCarouselYProps) => {
   )
 }
 
-export default StackCarouselY
+export default StackCarousel

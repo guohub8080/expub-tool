@@ -42,7 +42,7 @@ const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Directi
 /**
  * 标准化配置数组
  *
- * 至少需要 minCount 张（= 可见叠层数 stackNum）避免同图多层错乱，不足时按 ceil(minCount/N) 整组复制：
+ * 至少需要 minCount 张（= 可见叠层数 showStackNum）避免同图多层错乱，不足时按 ceil(minCount/N) 整组复制：
  * - 1 张、minCount=3 → 3 份（×3）
  * - 2 张、minCount=3 → 4 份（×2）
  * - N ≥ minCount → 直接使用
@@ -50,11 +50,11 @@ const fillDefaults = (item: I_StackCarouselItem, defaultExitDirection: T_Directi
 export const normalizeItems = ({ items, defaultExitDirection, minCount = 3 }: {
   items?: I_StackCarouselItem[]
   defaultExitDirection: T_Direction8
-  /** 至少需要的独立项数（= 可见叠层数 stackNum），不足时整组复制补齐 */
+  /** 至少需要的独立项数（= 可见叠层数 showStackNum），不足时整组复制补齐 */
   minCount?: number
 }): I_NormalizedStackItem[] => {
   if (isNil(items) || items.length === 0) {
-    throw new Error("`pics` must not be empty. StackCarousel requires at least 1 item.")
+    throw new Error("`childItems` must not be empty. StackCarousel requires at least 1 item.")
   }
   const normalized = items.map(item => fillDefaults(item, defaultExitDirection))
   const N = normalized.length

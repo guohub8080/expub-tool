@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { T_Direction8, T_Pivot, I_SkewConfig, I_RotationConfig } from "@svg/types"
+import type { T_Direction8, I_SkewConfig, I_RotationConfig } from "@svg/types"
 
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 1
@@ -7,17 +7,22 @@ export const DEFAULT_SWITCH_DURATION = 1
 export const DEFAULT_STAY_DURATION = 1
 
 /** 可见叠层数下限（闭区间） */
-export const MIN_STACK_NUM = 2
+export const MIN_SHOW_STACK_NUM = 2
 /** 可见叠层数上限（闭区间） */
-export const MAX_STACK_NUM = 8
-/** 默认可见叠层数（与历史实现一致：back / mid / center） */
-export const DEFAULT_STACK_NUM = 3
+export const MAX_SHOW_STACK_NUM = 8
+/** 默认可见叠层数 */
+export const DEFAULT_SHOW_STACK_NUM = 3
+
+/** tailChild 缺省时的水平偏移（px，向右），与历史 StackCarouselX 默认一致 */
+export const DEFAULT_TAIL_OFFSET = 162
+/** tailChild 缺省时的最远端缩放，与历史 back 层一致 */
+export const DEFAULT_TAIL_SCALE = 0.78
 
 /** 退场配置 */
 export interface I_ExitConfig {
-  /** 退场方向，X 默认 "L"，Y 默认 "R" */
+  /** 退场方向，默认沿「远离 tail」方向（叠层反向） */
   direction?: T_Direction8
-  /** 退场移动距离，默认 viewBoxW/viewBoxH（有 skew/rotation 时可能需要加大） */
+  /** 退场移动距离，默认 √(w²+h²)×1.2（确保完全移出画布） */
   distance?: number
   /** 退场斜切，不传则退出无斜切 */
   skew?: I_SkewConfig
@@ -68,4 +73,26 @@ export interface I_NormalizedStackItem {
   switchDuration: number
   stayDuration: number
   keySplines: string
+}
+
+/** 中心（焦点）卡牌：基准尺寸 + 位置，scale 恒为 1 */
+export interface I_MainChildConfig {
+  /** 卡牌基准宽（scale=1 时的 viewBox 尺寸） */
+  w: number
+  /** 卡牌基准高 */
+  h: number
+  /** 中心卡牌正中心 X（viewBox 坐标），默认 viewBox 几何中心 */
+  centerX?: number
+  /** 中心卡牌正中心 Y（viewBox 坐标），默认 viewBox 几何中心 */
+  centerY?: number
+}
+
+/** 最远端卡牌：缩放 + 位置；与 mainChild 两点连线决定叠层方向与深度 */
+export interface I_TailChildConfig {
+  /** 最远端缩放（如 0.2） */
+  scale: number
+  /** 最远端正中心 X（viewBox 坐标） */
+  centerX: number
+  /** 最远端正中心 Y（viewBox 坐标） */
+  centerY: number
 }

@@ -61,7 +61,7 @@ export type T_HotArea = {
   h: number
 }
 
-/** 斜切配置（StackCarouselX 使用） */
+/** 斜切配置（StackCarousel 使用） */
 export interface I_SkewConfig {
   /** skewX 或 skewY，决定斜切轴方向 */
   type: 'X' | 'Y'

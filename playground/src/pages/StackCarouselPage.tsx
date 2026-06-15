@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { DIRECTION_8 } from 'expub-tool/svg'
-import { StackCarouselX, StackCarouselY } from 'expub-tool/svg'
+import { StackCarousel } from 'expub-tool/svg'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
 const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
@@ -39,12 +39,12 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
 export default function StackCarouselPage() {
   return (
     <div>
-      <h2>StackCarouselX — 横向叠层轮播</h2>
+      <h2>StackCarousel — 两点定方向的叠层轮播</h2>
 
-      <CopyDemo title="4 图 — 默认参数">
-        <StackCarouselX
+      <CopyDemo title="默认（水平）— tailChild 缺省向右延伸，4 图">
+        <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
+          mainChild={{ w: 900, h: 900 }}
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
@@ -54,11 +54,10 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="mainChildCenter 偏移（中心从 540,540 上移到 540,300）">
-        <StackCarouselX
+      <CopyDemo title="mainChild 偏移（中心从 540,540 上移到 540,300）">
+        <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
-          mainChildCenter={{ x: 540, y: 300 }}
+          mainChild={{ w: 900, h: 900, centerX: 540, centerY: 300 }}
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
@@ -68,10 +67,55 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="8 图 — 八方向退场 (L/R/T/B/TL/TR/BL/BR)">
-        <StackCarouselX
+      <CopyDemo title="斜向叠层 — tailChild 在右下 (760,720)、scale 0.2，showStackNum=5">
+        <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
+          mainChild={{ w: 900, h: 900, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 760, centerY: 720 }}
+          showStackNum={5}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="纵向叠层 — tailChild 在下方、scale 0.3，showStackNum=4">
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 900, h: 900, centerX: 540, centerY: 420 }}
+          tailChild={{ scale: 0.3, centerX: 540, centerY: 720 }}
+          showStackNum={4}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="showStackNum=2 — 仅 tail + center 两层">
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 900, h: 900 }}
+          showStackNum={2}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="八方向退场 (L/R/T/B/TL/TR/BL/BR)">
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 900, h: 900 }}
           childItems={[
             { url: getWechat300x300(1), switchDuration: 0.6, stayDuration: 1, exit: { direction: DIRECTION_8.Left } },
             { url: getWechat300x300(2), switchDuration: 0.6, stayDuration: 1, exit: { direction: DIRECTION_8.Right } },
@@ -85,10 +129,10 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="5 图 — 四面八方退场 + 长短不一的停留">
-        <StackCarouselX
+      <CopyDemo title="四面八方退场 + 长短不一的停留">
+        <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
+          mainChild={{ w: 900, h: 900 }}
           childItems={[
             { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2.5, exit: { direction: DIRECTION_8.Left } },
             { url: getWechat300x300(2), switchDuration: 1.2, stayDuration: 0.3, exit: { direction: DIRECTION_8.Right } },
@@ -99,67 +143,10 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="小卡牌 600×600 — 四周留白大">
-        <StackCarouselX
-          canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 600, h: 600 }}
-          childItems={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exit: { direction: DIRECTION_8.Left } },
-            { url: getWechat300x300(2), switchDuration: 0.8, stayDuration: 1, exit: { direction: DIRECTION_8.Right } },
-            { url: getWechat300x300(3), switchDuration: 0.6, stayDuration: 2, exit: { direction: DIRECTION_8.Top } },
-            { url: getWechat300x300(4), switchDuration: 1, stayDuration: 0.5, exit: { direction: DIRECTION_8.Bottom } },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="stackNum=2 — 仅 back + center 两层">
-        <StackCarouselX
-          canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
-          stackNum={2}
-          childItems={[
-            { url: getWechat300x300(1) },
-            { url: getWechat300x300(2) },
-            { url: getWechat300x300(3) },
-            { url: getWechat300x300(4) },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="stackNum=5 — 五层等距扇形（缩放几何递减）">
-        <StackCarouselX
-          canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
-          stackNum={5}
-          childItems={[
-            { url: getWechat300x300(1) },
-            { url: getWechat300x300(2) },
-            { url: getWechat300x300(3) },
-            { url: getWechat300x300(4) },
-            { url: getWechat300x300(5) },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="反向 + 退场缩放 + 偏移">
-        <StackCarouselX
-          canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
-          backOffset={200}
-          isReversed
-          childItems={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exit: { direction: DIRECTION_8.Left, scale: 0.6 } },
-            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exit: { direction: DIRECTION_8.Right, scale: 1.3 } },
-            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 2,   exit: { direction: DIRECTION_8.Left, scale: 0.4 } },
-            { url: getWechat300x300(4), switchDuration: 0.3, stayDuration: 3,   exit: { direction: DIRECTION_8.Right, scale: 1.5 } },
-          ]}
-        />
-      </CopyDemo>
-
       <CopyDemo title="退场 skew + rotate + scale">
-        <StackCarouselX
+        <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
+          mainChild={{ w: 900, h: 900 }}
           childItems={[
             { url: getWechat300x300(1), switchDuration: 0.6, stayDuration: 1, exit: { direction: DIRECTION_8.Left, skew: { type: "Y", angle: 15 }, scale: 0.8 } },
             { url: getWechat300x300(2), switchDuration: 0.8, stayDuration: 1, exit: { direction: DIRECTION_8.Right, rotation: { pivot: "TopRight", angle: 25 }, scale: 1.2 } },
@@ -169,31 +156,16 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <h2 style={{ marginTop: 32 }}>StackCarouselY — 纵向叠层轮播</h2>
-
-      <CopyDemo title="5 图纵向 — 四面八方退场 + 长短停留">
-        <StackCarouselY
+      <CopyDemo title="反向水平叠层 — tailChild 在左侧，退场默认朝右">
+        <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
+          mainChild={{ w: 900, h: 900, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.4, centerX: 360, centerY: 540 }}
           childItems={[
-            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 2,   exit: { direction: DIRECTION_8.Left } },
-            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exit: { direction: DIRECTION_8.Right } },
-            { url: getWechat300x300(3), switchDuration: 0.3, stayDuration: 3,   exit: { direction: DIRECTION_8.Top } },
-            { url: getWechat300x300(4), switchDuration: 0.8, stayDuration: 1,   exit: { direction: DIRECTION_8.Bottom } },
-            { url: getWechat300x300(5), switchDuration: 1.2, stayDuration: 0.2, exit: { direction: DIRECTION_8.Left } },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="纵向反向 + 极端时间差">
-        <StackCarouselY
-          canvasSize={{ w: 1080, h: 1080 }}
-          mainChildItemSize={{ w: 900, h: 900 }}
-          isReversed
-          childItems={[
-            { url: getWechat300x300(6), switchDuration: 0.2, stayDuration: 3.5, exit: { direction: DIRECTION_8.Left } },
-            { url: getWechat300x300(7), switchDuration: 1.5, stayDuration: 0.3, exit: { direction: DIRECTION_8.Right } },
-            { url: getWechat300x300(8), switchDuration: 0.6, stayDuration: 1.5, exit: { direction: DIRECTION_8.Right } },
+            { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exit: { scale: 0.6 } },
+            { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exit: { scale: 1.3 } },
+            { url: getWechat300x300(3), switchDuration: 0.8, stayDuration: 2,   exit: { scale: 0.4 } },
+            { url: getWechat300x300(4), switchDuration: 0.3, stayDuration: 3,   exit: { scale: 1.5 } },
           ]}
         />
       </CopyDemo>
