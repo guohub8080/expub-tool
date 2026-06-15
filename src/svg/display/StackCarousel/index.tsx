@@ -28,7 +28,6 @@ import { buildPosConfig } from "./utils/stackLayout"
 import { directionFromVector } from "./utils/exitDirection"
 import { buildSlotTimelines } from "./timeline/slotTimeline"
 import type { I_SlotExitConfig } from "./timeline/slotTimeline"
-import { resolveRotationPivot } from "./utils/rotationPivot"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 
 export type { I_StackCarouselItem, I_ExitConfig, I_MainChildConfig, I_TailChildConfig, I_StackLayerConfig } from "./types"
@@ -163,19 +162,11 @@ const StackCarousel = (props: I_StackCarouselProps) => {
                 scale: item.exit.scale,
               }
               const {
-                initTranslate, initScale,
+                initTranslate, initScale, initRotate,
                 translateTimeline, scaleTimeline,
                 skewTimeline, skewType,
-                rotateTimeline,
-              } = buildSlotTimelines({ slotIndex, itemCount, showStackNum, items, posConfig, exitConfig: slotExitConfig })
-
-              const rotationPivot = isDefined(item.exit.rotation)
-                ? resolveRotationPivot({
-                    pivot: defaultTo(item.exit.rotation.childCanvasPivot, "Center"),
-                    cardWidth: cardW,
-                    cardHeight: cardH,
-                  })
-                : undefined
+                rotateTimeline, rotatePivotFrames,
+              } = buildSlotTimelines({ slotIndex, itemCount, showStackNum, items, posConfig, exitConfig: slotExitConfig, cardW, cardH })
 
               const buildSkewAnim = () => {
                 if (isNil(skewTimeline)) return null
@@ -200,13 +191,13 @@ const StackCarousel = (props: I_StackCarouselProps) => {
                     })
               }
 
+              // rotate：层间插值 + 退场维持/过渡统一走这一条轨道。
+              // pivot 逐帧由 rotatePivotFrames 提供（含退场段，已按 position 取好）。
               const buildRotateAnim = () => {
-                if (isNil(rotateTimeline)) return null
-                if (isNil(rotationPivot)) return null
                 return transformRotate({
-                  initValue: 0,
+                  initValue: initRotate,
                   timeline: rotateTimeline,
-                  pivot: rotationPivot,
+                  pivots: rotatePivotFrames,
                   begin: "0s",
                   loopCount: 0,
                   isFreeze: true,

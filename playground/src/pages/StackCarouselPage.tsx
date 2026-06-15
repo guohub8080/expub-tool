@@ -231,6 +231,44 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo
+        title="G · rotate 扇形展开（tail 侧转得狠，center 不转，pivot 默认中心）"
+        note={`rotate = [25, 15, 8, 3, 0]   ← tail→center，pivot 默认 "Center"（绕卡片中心自转）`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackConfig={[
+            { scale: 0.2,  rotate: 25 },
+            { scale: 0.35, rotate: 15 },
+            { scale: 0.55, rotate: 8 },
+            { scale: 0.8,  rotate: 3 },
+            { scale: 1,    rotate: 0 },
+          ]}
+          childItems={layerImages}
+        />
+      </CopyDemo>
+
+      <CopyDemo
+        title="H · rotate + 自定义 pivot（绕右下角扇形展开）"
+        note={`rotate = [30, 18, 9, 3, 0]  +  rotatePivot: "BottomRight"   ← 绕 card 右下角自转`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackConfig={[
+            { scale: 0.2,  rotate: 30, rotatePivot: "BottomRight" },
+            { scale: 0.35, rotate: 18, rotatePivot: "BottomRight" },
+            { scale: 0.55, rotate: 9,  rotatePivot: "BottomRight" },
+            { scale: 0.8,  rotate: 3,  rotatePivot: "BottomRight" },
+            { scale: 1,    rotate: 0,  rotatePivot: "BottomRight" },
+          ]}
+          childItems={layerImages}
+        />
+      </CopyDemo>
+
       <CopyDemo title="八方向退场 (L/R/T/B/TL/TR/BL/BR)">
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}

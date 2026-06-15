@@ -6,6 +6,7 @@ import type { I_TimelineKeyframe } from "@smil/timeline/types"
 import type { I_TranslateValue } from "@smil/animateTransform/translate"
 import type { I_SkewConfig, I_RotationConfig } from "@svg/types"
 import type { I_NormalizedStackItem } from "../types"
+import { resolveRotationPivot } from "../utils/rotationPivot"
 
 /**
  * 位置定义：0..showStackNum-1 为可见叠层（0=最远端 tail，showStackNum-1=焦点 center），showStackNum 为 exit
@@ -15,13 +16,17 @@ import type { I_NormalizedStackItem } from "../types"
 export type T_SlotPosition = number
 
 /**
- * 各位置对应的 translate / scale 值配置
+ * 各位置对应的 translate / scale / rotate 值配置
  */
 export interface I_PositionConfig {
   /** 各位置的 translate 值，索引 = T_SlotPosition */
   translateValues: Partial<I_TranslateValue>[]
   /** 各位置的 scale 值，索引 = T_SlotPosition（exit 位由 exitConfig.scale 覆盖） */
   scaleValues: number[]
+  /** 各位置的 rotate 角度（度），索引 = T_SlotPosition；全 0 时退场段旋转无变化 */
+  rotateValues: number[]
+  /** 各位置的 rotate pivot [x,y]（card 局部），索引 = T_SlotPosition */
+  rotatePivots: [number, number][]
 }
 
 /** 本 slot 的退场行为 */
@@ -67,6 +72,8 @@ export function buildSlotTimelines({
   items,
   posConfig,
   exitConfig,
+  cardW,
+  cardH,
 }: {
   /** slot 索引（0 ~ itemCount + showStackNum - 1） */
   slotIndex: number
@@ -80,21 +87,30 @@ export function buildSlotTimelines({
   posConfig: I_PositionConfig
   /** 本 slot 的退场配置 */
   exitConfig: I_SlotExitConfig
+  /** 卡牌基准宽（解析退场 rotate pivot） */
+  cardW: number
+  /** 卡牌基准高（解析退场 rotate pivot） */
+  cardH: number
 }) {
   const startPosition = max([0, slotIndex - itemCount])
   const segmentCount = itemCount * 2
 
   const initTranslate = posConfig.translateValues[startPosition]
   const initScale = posConfig.scaleValues[startPosition]
+  const initRotate = posConfig.rotateValues[startPosition]
 
   const hasSkew = isDefined(exitConfig.skew)
   const hasRotation = isDefined(exitConfig.rotation)
   const skewSplines = exitConfig.skew?.keySplines
+  const rotationSplines = exitConfig.rotation?.keySplines
 
   const translateTimeline: I_TimelineKeyframe<Partial<I_TranslateValue>>[] = []
   const scaleTimeline: I_TimelineKeyframe<number>[] = []
   const skewTimeline: I_TimelineKeyframe<number>[] = []
   const rotateTimeline: I_TimelineKeyframe<number>[] = []
+
+  // rotate 逐帧 pivot（transformRotate 的 pivots 长度 = timeline 段数 + 1，initValue 帧在前）
+  const rotatePivotFrames: [number, number][] = [posConfig.rotatePivots[startPosition]]
 
   for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++) {
     const itemIndex = Math.floor(segmentIndex / 2)
@@ -126,22 +142,31 @@ export function buildSlotTimelines({
       })
     }
 
-    if (hasRotation) {
-      rotateTimeline.push({
-        toAbs: isExit ? (defaultTo(exitConfig.rotation!.angle, 0)) : 0,
-        durationSeconds: segmentDuration,
-        keySplines: defaultTo(exitConfig.rotation!.keySplines, splines),
-      })
-    }
+    // rotate：层间按 posConfig.rotateValues 插值；退场时维持当前层角度（无 exit.rotation），
+    // 或过渡到 exit.rotation.angle（有 exit.rotation）。rotate 与 translate/scale 同段、同步
+    rotateTimeline.push({
+      toAbs: isExit
+        ? (hasRotation ? defaultTo(exitConfig.rotation!.angle, 0) : rotateTimeline.length > 0 ? (rotateTimeline[rotateTimeline.length - 1].toAbs as number) : initRotate)
+        : posConfig.rotateValues[nextPosition],
+      durationSeconds: segmentDuration,
+      keySplines: isExit && hasRotation ? defaultTo(rotationSplines, splines) : splines,
+    })
+    rotatePivotFrames.push(
+      isExit
+        ? resolveRotationPivot({ pivot: defaultTo(exitConfig.rotation?.childCanvasPivot, "Center"), cardWidth: cardW, cardHeight: cardH })
+        : posConfig.rotatePivots[nextPosition]
+    )
   }
 
   return {
     initTranslate,
     initScale,
+    initRotate,
     translateTimeline,
     scaleTimeline,
     skewTimeline: hasSkew ? skewTimeline : undefined,
     skewType: exitConfig.skew?.type,
-    rotateTimeline: hasRotation ? rotateTimeline : undefined,
+    rotateTimeline,
+    rotatePivotFrames,
   }
 }

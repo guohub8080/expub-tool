@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { T_Direction8, I_SkewConfig, I_RotationConfig } from "@svg/types"
+import type { T_Direction8, T_Pivot, I_SkewConfig, I_RotationConfig } from "@svg/types"
 
 /** 默认切换时长（秒） */
 export const DEFAULT_SWITCH_DURATION = 1
@@ -109,4 +109,8 @@ export interface I_StackLayerConfig {
   /** 该层中心沿方向轴的归一化进度：0 = mainChild（center 端），1 = tailChild（tail 端）。
    *  缺省走恒定 peek 分布（露边相等）；传值则直接按进度定位中心，露边不再恒定。 */
   progress?: number
+  /** 该层旋转角度（度），缺省 0。卡片循环推进时与 translate/scale 同步层间插值 */
+  rotate?: number
+  /** 该层旋转中心（child 局部，九宫格或 {x,y}）；缺省 "Center"（= child 几何中心） */
+  rotatePivot?: T_Pivot
 }
