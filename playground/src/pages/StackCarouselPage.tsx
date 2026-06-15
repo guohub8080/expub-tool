@@ -54,6 +54,20 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
+      <CopyDemo title="mainChildCenter 偏移（中心从 540,540 上移到 540,300）">
+        <StackCarouselX
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChildItemSize={{ w: 900, h: 900 }}
+          mainChildCenter={{ x: 540, y: 300 }}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+          ]}
+        />
+      </CopyDemo>
+
       <CopyDemo title="8 图 — 八方向退场 (L/R/T/B/TL/TR/BL/BR)">
         <StackCarouselX
           canvasSize={{ w: 1080, h: 1080 }}
