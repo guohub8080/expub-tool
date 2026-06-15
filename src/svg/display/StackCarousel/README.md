@@ -38,8 +38,9 @@ import { StackCarousel } from "expub-tool/svg"
 | `canvasSize` | `{ w, h }` | 必填 | SVG 画布尺寸（viewBox） |
 | `mainChild` | `I_MainChildConfig` | 必填 | 焦点卡牌：基准尺寸 + 中心位置，scale 恒为 1 |
 | `tailChild` | `I_TailChildConfig` | 向右延伸 | 最远端卡牌：缩放 + 中心位置；与 mainChild 两点连线决定方向与深度 |
-| `showStackNum` | `number` | `3` | 可见叠层数，范围 [2, 8] 闭区间，越界抛错。被 `showStackConfig` 优先覆盖 |
-| `showStackConfig` | `I_StackLayerConfig[]` | — | 逐层覆盖配置；传则数组长度即层数（覆盖 `showStackNum`）。首项=tail（最远端）、末项=center（焦点）；缺省字段走自动公式（scale 幂律、位置恒定 peek） |
+| `showStackNum` | `number` | `3` | 可见叠层数，范围 [2, 8] 闭区间，越界抛错。传 `showStackConfig` 时数组长度必须与此匹配 |
+| `showStackConfig` | `I_StackLayerConfig[]` | — | 逐层旋转覆盖；首项=tail（最远端）、末项=center（焦点）。每项 `{ rotate?: 度 }`，center 层 rotate 无效（用 stayRotate） |
+| `depthLaw` | `number` | `1` | 深度分布幂次：同时控制 scale 和位置沿 tail→center 的曲线。`1`=线性（露边相等），`>1` tail 侧压缩（透视感），`<1` tail 侧拉开 |
 | `stackRotatePivot` | `T_Pivot` | `"Center"` | 栈中所有层 rotate + center stayRotate 共用的旋转中心（child 局部，九宫格或 `{x,y}`）。统一一个 pivot，避免层/stayRotate pivot 不一致导致的位置跳变 |
 | `childItems` | `I_StackCarouselItem[]` | 必填 | 图片/内容配置数组，至少 1 项 |
 | `canvasBg` | `I_CanvasBg` | — | 画布背景 |
@@ -64,15 +65,13 @@ import { StackCarousel } from "expub-tool/svg"
 
 ### I_StackLayerConfig
 
-逐层覆盖配置（`showStackConfig` 数组元素）。首项=tail（最远端）、末项=center（焦点）。
+逐层旋转覆盖（`showStackConfig` 数组元素）。首项=tail（最远端）、末项=center（焦点）。
 
 | 字段 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `scale` | `number` | 幂律 `tailScale ^ depthRatio` | 该层缩放；覆盖自动等比缩放 |
-| `progress` | `number` | 恒定 peek 反推 | 该层中心沿方向轴归一化进度：0=mainChild（center 端）、1=tailChild（tail 端）；覆盖自动露边恒定分布 |
 | `rotate` | `number` | `0` | 该层旋转角度（度）。卡片循环推进时与 translate/scale 同步层间插值；与 `exit.rotation` 独立。**注意**：center 层（数组末项）的 rotate 对 center 位无效——center 位旋转走 per-item `stayRotate`。旋转中心统一用顶层 `stackRotatePivot` |
 
-两端锚点契约恒成立：center 层落 `mainChild.center`、tail 层落 `tailChild.center`。中间层不传则 scale 走幂律、位置走恒定 peek（露边相等）；想让 tail 近的贴更紧，给中间几层 `progress` 略大于自动值（使中心更靠近 tail）。
+scale 与位置由顶层 `depthLaw` 统一控制（深度幂次），不逐层配置。两端锚点恒命中：center 层落 `mainChild.center`、tail 层落 `tailChild.center`。
 
 ### I_StackCarouselItem
 
@@ -101,9 +100,12 @@ import { StackCarousel } from "expub-tool/svg"
 
 - **方向**：`direction = tailChild.center − mainChild.center`，局部空间内 mainChild 在原点。
 - **层数**：`showStackNum`（n），层 i（i=0 最远端 tail，i=n−1 焦点 center）。
-- **缩放**：等比，`scale(i) = tailChild.scale ^ t`（t = 1 − i/(n−1)，tail=tailChild.scale，center=1）。`showStackConfig[i].scale` 可逐层覆盖。
-- **位置**：默认恒定 peek 分布，每张露出等宽边。peek `P = [D − projHalf·(1−tailChild.scale)]/(n−1)`（D=|direction|，projHalf 为卡牌沿方向轴投影半宽 `(w·|ux|+h·|uy|)/2`），两端锚点精确命中。tail 太近时 P 可能为负，卡牌会糊一块。`showStackConfig[i].progress`（0=center、1=tail）可逐层覆盖中心落点，覆盖后露边不再恒定，但两端锚点仍精确命中。
-- **旋转**：默认每层 `rotate=0`（不转）。`showStackConfig[i].rotate`（度）逐层设值后，卡片循环推进时 rotate 与 translate/scale 同步层间插值（如 tail 层 30°、次层 15°、center 位 0°，从 tail 推到 center 角度渐变）。pivot 默认 `"Center"`（child 几何中心），可逐层用 `rotatePivot` 覆盖。**center 位旋转例外**：纯 per-item，走 `childItems[i].stayRotate`（默认 0），`showStackConfig` 末项的 rotate 对 center 位无效。退场时维持退场前所在角度飞出，仅当该 item 显式配了 `exit.rotation` 才过渡到退场角度。
+- **深度分布（depthLaw = k）**：scale 和位置沿 tail→center 由同一幂次驱动。`x = i/(n−1)`（0=tail, 1=center），`w = x^k`：
+  - `scale = tailChild.scale + (1 − tailChild.scale)·w`（tail=tailChild.scale，center=1）
+  - `progress = 1 − w`（translate 用，0=center，1=tail）
+  - `k=1`：线性，露边恰好相等（任意方向都成立，等价原「恒定 peek」）；`k>1` tail 侧压缩（透视感）；`k<1` tail 侧拉开。
+  - 两端锚点恒命中：center 落 mainChild.center、tail 落 tailChild.center。
+- **旋转**：默认每层 `rotate=0`（不转）。`showStackConfig[i].rotate`（度）逐层设值后，卡片循环推进时 rotate 与 translate/scale 同步层间插值（如 tail 层 30°、次层 15°、center 位 0°，从 tail 推到 center 角度渐变）。pivot 统一用顶层 `stackRotatePivot`。**center 位旋转例外**：纯 per-item，走 `childItems[i].stayRotate`（默认 0），`showStackConfig` 末项的 rotate 对 center 位无效。退场时维持退场前所在角度飞出，仅当该 item 显式配了 `exit.rotation` 才过渡到退场角度。
 - **退场**：卡片从 center 朝「远离 tail」方向飞出（即 mainChild − tailChild 方向，吸附到最近的八方向），可被单项 `exit.direction` 覆盖。退场距离默认按 `mainChild.center` 位置 + 退场方向精确计算「完全移出 viewBox 的最小距离」（补偿 mainChild 偏离画布中心时对角线估计不够的情形，不纳入 exit scale、恒按 scale=1），可被单项 `exit.distance` 覆盖。
 
 ## 注意

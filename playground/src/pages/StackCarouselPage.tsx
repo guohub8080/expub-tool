@@ -123,110 +123,60 @@ export default function StackCarouselPage() {
 
       {/* —— showStackConfig 教学：同一套几何（斜向 5 层），只变 config —— */}
 
+      {/* —— depthLaw 教学：一个数字控制 scale + 位置的深度曲线 —— */}
+
       <CopyDemo
-        title="showStackConfig · A 基准（不传 config = 恒定 peek，露边相等）"
-        note={`基准：showStackNum={5}，不传 showStackConfig（走默认幂律 scale + 恒定 peek）`}
+        title="depthLaw · A 基准（=1 线性，露边相等）"
+        note={`depthLaw={1}   ← 默认，scale 和位置都线性，每张卡露边相等`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
+          depthLaw={1}
           childItems={layerImages}
         />
       </CopyDemo>
 
       <CopyDemo
-        title="B · progress 让 tail 侧贴紧（越靠近 tail 间距越小）"
-        note={`progress = [1, 0.88, 0.7, 0.4, 0]   ← tail→center，tail 侧密集`}
+        title="B · depthLaw={2}（平方，tail 侧压缩 = 透视感）"
+        note={`depthLaw={2}   ← tail 侧 scale 小、间距密，远处叠在一起`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
-          showStackConfig={[
-            { progress: 1 },      // tail（最远端）
-            { progress: 0.88 },
-            { progress: 0.7 },
-            { progress: 0.4 },
-            { progress: 0 },      // center（焦点）
-          ]}
+          showStackNum={5}
+          depthLaw={2}
           childItems={layerImages}
         />
       </CopyDemo>
 
       <CopyDemo
-        title="C · progress 让 tail 侧拉开（反向，越靠 tail 间距越大）"
-        note={`progress = [1, 0.6, 0.4, 0.22, 0]   ← tail 侧稀疏（与 B 对比）`}
+        title="C · depthLaw={0.5}（根号，tail 侧拉开）"
+        note={`depthLaw={0.5}   ← tail 侧 scale 骤大、间距拉开（与 B 反向）`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
-          showStackConfig={[
-            { progress: 1 },
-            { progress: 0.6 },
-            { progress: 0.4 },
-            { progress: 0.22 },
-            { progress: 0 },
-          ]}
+          showStackNum={5}
+          depthLaw={0.5}
           childItems={layerImages}
         />
       </CopyDemo>
 
       <CopyDemo
-        title="D · scale 线性递减（替换默认幂律，中段更大）"
-        note={`scale = [0.2, 0.4, 0.6, 0.8, 1]   ← 均匀递减（默认幂律约 [0.2, 0.3, 0.45, 0.67, 1]）`}
+        title="D · depthLaw={3}（立方，tail 极致压缩）"
+        note={`depthLaw={3}   ← tail 几乎一样小且贴紧，靠近 center 才骤大`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
-          showStackConfig={[
-            { scale: 0.2 },
-            { scale: 0.4 },
-            { scale: 0.6 },
-            { scale: 0.8 },
-            { scale: 1 },
-          ]}
-          childItems={layerImages}
-        />
-      </CopyDemo>
-
-      <CopyDemo
-        title="E · scale 戏剧化（tail 一张极小，中段突变）"
-        note={`scale = [0.15, 0.22, 0.7, 0.88, 1]   ← tail 侧两张很小，然后突然变大`}
-      >
-        <StackCarousel
-          canvasSize={{ w: 1080, h: 1080 }}
-          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
-          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
-          showStackConfig={[
-            { scale: 0.15 },
-            { scale: 0.22 },
-            { scale: 0.7 },
-            { scale: 0.88 },
-            { scale: 1 },
-          ]}
-          childItems={layerImages}
-        />
-      </CopyDemo>
-
-      <CopyDemo
-        title="F · 组合透视感（progress + scale 协同，模拟真实远近）"
-        note={`scale = [0.2, 0.32, 0.5, 0.75, 1]   +   progress = [1, 0.85, 0.62, 0.33, 0]`}
-      >
-        <StackCarousel
-          canvasSize={{ w: 1080, h: 1080 }}
-          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
-          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
-          showStackConfig={[
-            { scale: 0.2,  progress: 1 },
-            { scale: 0.32, progress: 0.85 },
-            { scale: 0.5,  progress: 0.62 },
-            { scale: 0.75, progress: 0.33 },
-            { scale: 1,    progress: 0 },
-          ]}
+          showStackNum={5}
+          depthLaw={3}
           childItems={layerImages}
         />
       </CopyDemo>

@@ -22,6 +22,7 @@ import {
   DEFAULT_SHOW_STACK_NUM,
   DEFAULT_TAIL_OFFSET,
   DEFAULT_TAIL_SCALE,
+  DEFAULT_DEPTH_LAW,
 } from "./types"
 import { normalizeItems } from "./utils/normalizer"
 import { buildPosConfig } from "./utils/stackLayout"
@@ -63,9 +64,11 @@ export interface I_StackCarouselProps {
   tailChild?: I_TailChildConfig
   /** 可见叠层数，默认 3；范围 [2, 8] 闭区间，越界抛错。被 showStackConfig 优先覆盖 */
   showStackNum?: number
-  /** 逐层覆盖配置；传则按此逐层定制 scale/位置，长度即层数（覆盖 showStackNum）。
-   *  数组首项 = tail（最远端），末项 = center（焦点）。缺省字段走自动公式 */
+  /** 逐层旋转覆盖；数组首项=tail、末项=center，每项 { rotate?: 度 } */
   showStackConfig?: I_StackLayerConfig[]
+  /** 深度分布规律（幂次）：同时控制 scale 和位置沿 tail→center 的曲线。默认 1（线性，露边相等）。
+   *  >1 tail 侧压缩（透视感），<1 tail 侧拉开 */
+  depthLaw?: number
   /** 栈中所有层 rotate + center stayRotate 共用的旋转中心（child 局部，九宫格或 {x,y}），缺省 "Center"。
    *  统一一个 pivot，避免层/stayRotate pivot 不一致导致的位置跳变 */
   stackRotatePivot?: T_Pivot
@@ -88,16 +91,13 @@ const StackCarousel = (props: I_StackCarouselProps) => {
   const cardH = props.mainChild.h
   const isDev = ExPubGoConfig().mode === "development"
 
-  // 可见叠层数：showStackConfig 优先（数组长度即层数），否则取 showStackNum（默认 3）
+  // 可见叠层数：showStackNum 权威（默认 3）；若传 showStackConfig，长度必须匹配
   // 范围 [2, 8] 闭区间，越界抛错
-  const showStackNum = isDefined(props.showStackConfig)
-    ? props.showStackConfig.length
-    : defaultTo(props.showStackNum, DEFAULT_SHOW_STACK_NUM)
+  const showStackNum = defaultTo(props.showStackNum, DEFAULT_SHOW_STACK_NUM)
   if (showStackNum < MIN_SHOW_STACK_NUM || showStackNum > MAX_SHOW_STACK_NUM) {
     throw new Error(`[StackCarousel] showStackNum must be in [${MIN_SHOW_STACK_NUM}, ${MAX_SHOW_STACK_NUM}], got ${showStackNum}.`)
   }
   if (isDefined(props.showStackConfig) && props.showStackConfig.length !== showStackNum) {
-    // 上面刚取过 length，这里防御性校验
     throw new Error(`[StackCarousel] showStackConfig length (${props.showStackConfig.length}) must match showStackNum (${showStackNum}).`)
   }
 
@@ -119,10 +119,11 @@ const StackCarousel = (props: I_StackCarouselProps) => {
   const itemCount = items.length
   const totalSlots = itemCount + showStackNum
 
-  // 各层 translate / scale：showStackConfig 逐层覆盖；否则恒定 peek + 幂律 scale（自动）
+  // 各层 translate / scale / rotate：depthLaw 驱动 scale + 位置曲线；showStackConfig 覆盖层旋转
   // rotate pivot 统一用顶层 stackRotatePivot（缺省 Center）
   const stackRotatePivot = defaultTo(props.stackRotatePivot, "Center")
-  const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH, layers: props.showStackConfig, stackRotatePivot })
+  const depthLaw = defaultTo(props.depthLaw, DEFAULT_DEPTH_LAW)
+  const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH, layers: props.showStackConfig, stackRotatePivot, depthLaw })
 
   const contentOffsetX = -cardW / 2
   const contentOffsetY = -cardH / 2

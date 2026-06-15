@@ -17,6 +17,8 @@ export const DEFAULT_SHOW_STACK_NUM = 3
 export const DEFAULT_TAIL_OFFSET = 162
 /** tailChild 缺省时的最远端缩放，与历史 back 层一致 */
 export const DEFAULT_TAIL_SCALE = 0.78
+/** 默认深度规律（幂次）：1 = 线性（露边相等），>1 tail 压缩，<1 tail 拉开 */
+export const DEFAULT_DEPTH_LAW = 1
 
 /** 退场配置 */
 export interface I_ExitConfig {
@@ -104,18 +106,14 @@ export interface I_TailChildConfig {
 }
 
 /**
- * 单层叠层的覆盖配置（用于 showStackConfig 逐层定制）
+ * 单层叠层的覆盖配置（用于 showStackConfig 逐层定制旋转角度）
  *
- * 两端锚点契约：center 层（最后一项）落 mainChild.center、tail 层（第一项）落
- * tailChild.center。中间层缺省字段走自动公式，传值则逐层覆盖。
+ * scale 与位置由顶层 depthLaw 统一控制（深度幂次），不在此逐层配置。
+ * 数组首项 = tail（最远端），末项 = center（焦点）。
  */
 export interface I_StackLayerConfig {
-  /** 该层缩放；缺省走幂律 scale(i) = tailScale ^ depthRatio（tail=tailScale，center=1） */
-  scale?: number
-  /** 该层中心沿方向轴的归一化进度：0 = mainChild（center 端），1 = tailChild（tail 端）。
-   *  缺省走恒定 peek 分布（露边相等）；传值则直接按进度定位中心，露边不再恒定。 */
-  progress?: number
   /** 该层旋转角度（度），缺省 0。卡片循环推进时与 translate/scale 同步层间插值。
+   *  center 层（数组末项）rotate 无效——center 位旋转走 per-item stayRotate。
    *  旋转中心统一用顶层 stackRotatePivot */
   rotate?: number
 }
