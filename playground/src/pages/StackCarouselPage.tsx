@@ -67,11 +67,11 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="斜向叠层 — tailChild 在右下 (760,720)、scale 0.2，showStackNum=5">
+      <CopyDemo title="斜向叠层 — tailChild 在右下 (980,900)、scale 0.2，showStackNum=5">
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
-          mainChild={{ w: 900, h: 900, centerX: 540, centerY: 540 }}
-          tailChild={{ scale: 0.2, centerX: 760, centerY: 720 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
           childItems={[
             { url: getWechat300x300(1) },
@@ -83,11 +83,11 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="纵向叠层 — tailChild 在下方、scale 0.3，showStackNum=4">
+      <CopyDemo title="纵向叠层 — tailChild 在下方 (540,970)、scale 0.3，showStackNum=4">
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
-          mainChild={{ w: 900, h: 900, centerX: 540, centerY: 420 }}
-          tailChild={{ scale: 0.3, centerX: 540, centerY: 720 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.3, centerX: 540, centerY: 970 }}
           showStackNum={4}
           childItems={[
             { url: getWechat300x300(1) },
@@ -156,11 +156,11 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="反向水平叠层 — tailChild 在左侧，退场默认朝右">
+      <CopyDemo title="反向水平叠层 — tailChild 在左侧 (320,540)、scale 0.65，退场默认朝右">
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 900, h: 900, centerX: 540, centerY: 540 }}
-          tailChild={{ scale: 0.4, centerX: 360, centerY: 540 }}
+          tailChild={{ scale: 0.65, centerX: 320, centerY: 540 }}
           childItems={[
             { url: getWechat300x300(1), switchDuration: 0.5, stayDuration: 1.5, exit: { scale: 0.6 } },
             { url: getWechat300x300(2), switchDuration: 1,   stayDuration: 0.5, exit: { scale: 1.3 } },
