@@ -155,22 +155,32 @@ export function buildSlotTimelines({
       })
     }
 
-    // rotate：层间按 posConfig.rotateValues 插值；center 位用 per-item stayRotate；
-    // 退场时维持当前角度（无 exit.rotation）或过渡到 exit.rotation.angle（有 exit.rotation）。
+    // rotate：层间按 posConfig.rotateValues 插值；center 位用 per-item stayRotate
     const isCenterPosition = nextPosition === centerPosition
     const layerRotate = isCenterPosition ? centerRotate : posConfig.rotateValues[nextPosition]
+
+    // 退场 rotate：有 exit.rotation 过渡到其角度；否则维持当前角度（上一段 toAbs，循环首段用 initRotate）
+    const resolveExitRotate = (): number => {
+      if (hasRotation) return defaultTo(exitConfig.rotation!.angle, 0)
+      if (rotateTimeline.length > 0) return rotateTimeline[rotateTimeline.length - 1].toAbs as number
+      return initRotate
+    }
+    // 退场且有 exit.rotation 时用其 keySplines（缺省沿用段 splines），其余沿用段 splines
+    const rotateSplines = isExit && hasRotation ? defaultTo(rotationSplines, splines) : splines
+
     rotateTimeline.push({
-      toAbs: isExit
-        ? (hasRotation ? defaultTo(exitConfig.rotation!.angle, 0) : rotateTimeline.length > 0 ? (rotateTimeline[rotateTimeline.length - 1].toAbs as number) : initRotate)
-        : layerRotate,
+      toAbs: isExit ? resolveExitRotate() : layerRotate,
       durationSeconds: segmentDuration,
-      keySplines: isExit && hasRotation ? defaultTo(rotationSplines, splines) : splines,
+      keySplines: rotateSplines,
     })
-    rotatePivotFrames.push(
-      isExit
-        ? resolveRotationPivot({ pivot: defaultTo(exitConfig.rotation?.childCanvasPivot, "Center"), cardWidth: cardW, cardHeight: cardH })
-        : (isCenterPosition ? centerRotatePivot : posConfig.rotatePivots[nextPosition])
-    )
+    // rotate 逐帧 pivot：退场段用 exit.rotation 的 pivot；层间段用层 pivot（center 位用 per-item）
+    const layerPivot = isCenterPosition ? centerRotatePivot : posConfig.rotatePivots[nextPosition]
+    const exitPivot = resolveRotationPivot({
+      pivot: defaultTo(exitConfig.rotation?.childCanvasPivot, "Center"),
+      cardWidth: cardW,
+      cardHeight: cardH,
+    })
+    rotatePivotFrames.push(isExit ? exitPivot : layerPivot)
   }
 
   return {
