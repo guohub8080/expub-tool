@@ -180,15 +180,15 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
-        title="E · depthLaw={+100}（极端，gap 每步 +100%）"
-        note={`depthLaw={+100}   ← tail 三张挤紧，center 前大空隙，center 独大`}
+        title="E · depthLaw={+500}（极端，gap 比例 16:1）"
+        note={`depthLaw={+500}   ← tail 几乎全挤一块，center 前大空隙（正向无上限）`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
-          depthLaw={100}
+          depthLaw={500}
           childItems={layerImages}
         />
       </CopyDemo>
