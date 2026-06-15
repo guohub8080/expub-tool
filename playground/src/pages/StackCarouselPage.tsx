@@ -166,15 +166,15 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
-        title="D · depthLaw={+40}（gap 每步 +40%，强递增）"
-        note={`depthLaw={+40}   ← tail 侧明显密集，center 侧拉开`}
+        title="D · depthLaw={+60}（gap 每步 +60%，强递增）"
+        note={`depthLaw={+60}   ← tail 侧明显密集，center 侧拉开`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
-          depthLaw={40}
+          depthLaw={60}
           childItems={layerImages}
         />
       </CopyDemo>
