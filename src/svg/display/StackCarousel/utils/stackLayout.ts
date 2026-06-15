@@ -88,8 +88,9 @@ export const buildPosConfig = ({ showStackNum, tailScale, direction, cardW, card
     translateValues.push({ x: unitX * anchorDistance * progress, y: unitY * anchorDistance * progress })
     scaleValues.push(layerScale)
 
-    // rotate：缺省 0；pivot 缺省 child 几何中心（"Center"）
-    rotateValues.push(defaultTo(layerConfig?.rotate, 0))
+    // rotate：缺省 0；center 层（末项）恒 0——center 位旋转走 per-item stayRotate，不用层值
+    const isCenterLayer = layerIndex === showStackNum - 1
+    rotateValues.push(isCenterLayer ? 0 : defaultTo(layerConfig?.rotate, 0))
     const pivot: T_Pivot = defaultTo(layerConfig?.rotatePivot, "Center")
     rotatePivots.push(resolveLayerRotatePivot(pivot, cardW, cardH))
   }
