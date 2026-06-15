@@ -99,14 +99,9 @@ export function buildSlotTimelines({
   const segmentCount = itemCount * 2
   const centerPosition = showStackNum - 1
 
-  // center 位旋转纯 per-item：取本 slot 固定卡的 stayRotate / stayRotatePivot
+  // center 位旋转角度纯 per-item：取本 slot 固定卡的 stayRotate（pivot 统一用顶层 stackRotatePivot）
   const slotItem = items[slotItemIndex]
   const centerRotate = defaultTo(slotItem.stayRotate, 0)
-  const centerRotatePivot = resolveRotationPivot({
-    pivot: defaultTo(slotItem.stayRotatePivot, "Center"),
-    cardWidth: cardW,
-    cardHeight: cardH,
-  })
 
   const initTranslate = posConfig.translateValues[startPosition]
   const initScale = posConfig.scaleValues[startPosition]
@@ -123,10 +118,8 @@ export function buildSlotTimelines({
   const rotateTimeline: I_TimelineKeyframe<number>[] = []
 
   // rotate 逐帧 pivot（transformRotate 的 pivots 长度 = timeline 段数 + 1，initValue 帧在前）
-  // center 初始 slot 的 initValue 帧 pivot 必须用 per-item centerRotatePivot（与 seg0 一致），
-  // 否则 rotate 角度恒定下 pivot 跳变（Center→stayRotatePivot）会让卡牌位置在 seg0 内跳
-  const initRotatePivot = startPosition === centerPosition ? centerRotatePivot : posConfig.rotatePivots[startPosition]
-  const rotatePivotFrames: [number, number][] = [initRotatePivot]
+  // pivot 统一为顶层 stackRotatePivot（posConfig.rotatePivots 各项相同），无需 center 特判
+  const rotatePivotFrames: [number, number][] = [posConfig.rotatePivots[startPosition]]
 
   for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++) {
     const itemIndex = Math.floor(segmentIndex / 2)
@@ -176,8 +169,8 @@ export function buildSlotTimelines({
       durationSeconds: segmentDuration,
       keySplines: rotateSplines,
     })
-    // rotate 逐帧 pivot：退场段用 exit.rotation 的 pivot；层间段用层 pivot（center 位用 per-item）
-    const layerPivot = isCenterPosition ? centerRotatePivot : posConfig.rotatePivots[nextPosition]
+    // rotate 逐帧 pivot：退场段用 exit.rotation 的 pivot；层间段用统一 stackRotatePivot
+    const layerPivot = posConfig.rotatePivots[nextPosition]
     const exitPivot = resolveRotationPivot({
       pivot: defaultTo(exitConfig.rotation?.childCanvasPivot, "Center"),
       cardWidth: cardW,

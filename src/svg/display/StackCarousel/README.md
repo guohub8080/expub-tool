@@ -40,6 +40,7 @@ import { StackCarousel } from "expub-tool/svg"
 | `tailChild` | `I_TailChildConfig` | 向右延伸 | 最远端卡牌：缩放 + 中心位置；与 mainChild 两点连线决定方向与深度 |
 | `showStackNum` | `number` | `3` | 可见叠层数，范围 [2, 8] 闭区间，越界抛错。被 `showStackConfig` 优先覆盖 |
 | `showStackConfig` | `I_StackLayerConfig[]` | — | 逐层覆盖配置；传则数组长度即层数（覆盖 `showStackNum`）。首项=tail（最远端）、末项=center（焦点）；缺省字段走自动公式（scale 幂律、位置恒定 peek） |
+| `stackRotatePivot` | `T_Pivot` | `"Center"` | 栈中所有层 rotate + center stayRotate 共用的旋转中心（child 局部，九宫格或 `{x,y}`）。统一一个 pivot，避免层/stayRotate pivot 不一致导致的位置跳变 |
 | `childItems` | `I_StackCarouselItem[]` | 必填 | 图片/内容配置数组，至少 1 项 |
 | `canvasBg` | `I_CanvasBg` | — | 画布背景 |
 | `spacing` | `T_SpacingProps` | — | 外层 margin-top 间距 |
@@ -69,8 +70,7 @@ import { StackCarousel } from "expub-tool/svg"
 |---|---|---|---|
 | `scale` | `number` | 幂律 `tailScale ^ depthRatio` | 该层缩放；覆盖自动等比缩放 |
 | `progress` | `number` | 恒定 peek 反推 | 该层中心沿方向轴归一化进度：0=mainChild（center 端）、1=tailChild（tail 端）；覆盖自动露边恒定分布 |
-| `rotate` | `number` | `0` | 该层旋转角度（度）。卡片循环推进时与 translate/scale 同步层间插值；与 `exit.rotation` 独立。**注意**：center 层（数组末项）的 rotate 对 center 位无效——center 位旋转走 per-item `stayRotate` |
-| `rotatePivot` | `T_Pivot` | `"Center"` | 该层旋转中心（child 局部，九宫格或 `{x,y}`） |
+| `rotate` | `number` | `0` | 该层旋转角度（度）。卡片循环推进时与 translate/scale 同步层间插值；与 `exit.rotation` 独立。**注意**：center 层（数组末项）的 rotate 对 center 位无效——center 位旋转走 per-item `stayRotate`。旋转中心统一用顶层 `stackRotatePivot` |
 
 两端锚点契约恒成立：center 层落 `mainChild.center`、tail 层落 `tailChild.center`。中间层不传则 scale 走幂律、位置走恒定 peek（露边相等）；想让 tail 近的贴更紧，给中间几层 `progress` 略大于自动值（使中心更靠近 tail）。
 
@@ -85,8 +85,7 @@ import { StackCarousel } from "expub-tool/svg"
 | `switchDuration` | `number` | `1` | 切换动画时长（秒） |
 | `stayDuration` | `number` | `1` | 停留时长（秒） |
 | `keySplines` | `string` | ease-in-out | SMIL keySplines 缓动曲线 |
-| `stayRotate` | `number` | `0` | 该卡在 center（mainChild）位停留时的旋转角度（度）。center 位旋转纯 per-item，不走 showStackConfig 全局层 |
-| `stayRotatePivot` | `T_Pivot` | `"Center"` | 该卡 center 停留旋转中心（child 局部，九宫格或 `{x,y}`） |
+| `stayRotate` | `number` | `0` | 该卡在 center（mainChild）位停留时的旋转角度（度）。center 位旋转纯 per-item，不走 showStackConfig 全局层。旋转中心统一用顶层 `stackRotatePivot` |
 
 ### I_ExitConfig
 

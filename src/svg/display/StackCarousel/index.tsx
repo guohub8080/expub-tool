@@ -14,7 +14,7 @@ import { transformSkewX } from "@smil/animateTransform/skewX"
 import { transformSkewY } from "@smil/animateTransform/skewY"
 import { transformRotate } from "@smil/animateTransform/rotate"
 import { DIRECTION_8 } from "@svg/types"
-import type { I_CanvasBg, T_Direction8 } from "@svg/types"
+import type { I_CanvasBg, T_Direction8, T_Pivot } from "@svg/types"
 import type { I_StackCarouselItem, I_NormalizedStackItem, I_MainChildConfig, I_TailChildConfig, I_StackLayerConfig } from "./types"
 import {
   MIN_SHOW_STACK_NUM,
@@ -66,6 +66,9 @@ export interface I_StackCarouselProps {
   /** 逐层覆盖配置；传则按此逐层定制 scale/位置，长度即层数（覆盖 showStackNum）。
    *  数组首项 = tail（最远端），末项 = center（焦点）。缺省字段走自动公式 */
   showStackConfig?: I_StackLayerConfig[]
+  /** 栈中所有层 rotate + center stayRotate 共用的旋转中心（child 局部，九宫格或 {x,y}），缺省 "Center"。
+   *  统一一个 pivot，避免层/stayRotate pivot 不一致导致的位置跳变 */
+  stackRotatePivot?: T_Pivot
   /** 图片/内容配置数组，至少 1 项 */
   childItems?: I_StackCarouselItem[]
   /** 画布背景 */
@@ -117,7 +120,9 @@ const StackCarousel = (props: I_StackCarouselProps) => {
   const totalSlots = itemCount + showStackNum
 
   // 各层 translate / scale：showStackConfig 逐层覆盖；否则恒定 peek + 幂律 scale（自动）
-  const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH, layers: props.showStackConfig })
+  // rotate pivot 统一用顶层 stackRotatePivot（缺省 Center）
+  const stackRotatePivot = defaultTo(props.stackRotatePivot, "Center")
+  const posConfig = buildPosConfig({ showStackNum, tailScale, direction, cardW, cardH, layers: props.showStackConfig, stackRotatePivot })
 
   const contentOffsetX = -cardW / 2
   const contentOffsetY = -cardH / 2

@@ -51,10 +51,9 @@ export interface I_StackCarouselItem {
   /** 缓动曲线，默认 ease-in-out */
   keySplines?: string
   /** 该卡在 center（mainChild）位停留时的旋转角度（度），默认 0。
-   *  center 位旋转纯 per-item，不走 showStackConfig 全局层 */
+   *  center 位旋转纯 per-item，不走 showStackConfig 全局层。
+   *  旋转中心统一用顶层 stackRotatePivot */
   stayRotate?: number
-  /** 该卡 center 停留旋转的 pivot（child 局部，九宫格或 {x,y}），默认 "Center" */
-  stayRotatePivot?: T_Pivot
 }
 
 /** 标准化后的退场配置 */
@@ -80,7 +79,6 @@ export interface I_NormalizedStackItem {
   keySplines: string
   /** center 位停留旋转（度），undefined = 不旋转（沿用 0） */
   stayRotate?: number
-  stayRotatePivot?: T_Pivot
 }
 
 /** 中心（焦点）卡牌：基准尺寸 + 位置，scale 恒为 1 */
@@ -117,8 +115,7 @@ export interface I_StackLayerConfig {
   /** 该层中心沿方向轴的归一化进度：0 = mainChild（center 端），1 = tailChild（tail 端）。
    *  缺省走恒定 peek 分布（露边相等）；传值则直接按进度定位中心，露边不再恒定。 */
   progress?: number
-  /** 该层旋转角度（度），缺省 0。卡片循环推进时与 translate/scale 同步层间插值 */
+  /** 该层旋转角度（度），缺省 0。卡片循环推进时与 translate/scale 同步层间插值。
+   *  旋转中心统一用顶层 stackRotatePivot */
   rotate?: number
-  /** 该层旋转中心（child 局部，九宫格或 {x,y}）；缺省 "Center"（= child 几何中心） */
-  rotatePivot?: T_Pivot
 }

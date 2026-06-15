@@ -252,18 +252,19 @@ export default function StackCarouselPage() {
 
       <CopyDemo
         title="H · rotate + 自定义 pivot（绕右下角扇形展开）"
-        note={`rotate = [30, 18, 9, 3, 0]  +  rotatePivot: "BottomRight"   ← 绕 card 右下角自转`}
+        note={`rotate = [30, 18, 9, 3, 0]  +  stackRotatePivot: "BottomRight"   ← 绕 card 右下角自转`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          stackRotatePivot="BottomRight"
           showStackConfig={[
-            { scale: 0.2,  rotate: 30, rotatePivot: "BottomRight" },
-            { scale: 0.35, rotate: 18, rotatePivot: "BottomRight" },
-            { scale: 0.55, rotate: 9,  rotatePivot: "BottomRight" },
-            { scale: 0.8,  rotate: 3,  rotatePivot: "BottomRight" },
-            { scale: 1,    rotate: 0,  rotatePivot: "BottomRight" },
+            { scale: 0.2,  rotate: 30 },
+            { scale: 0.35, rotate: 18 },
+            { scale: 0.55, rotate: 9 },
+            { scale: 0.8,  rotate: 3 },
+            { scale: 1,    rotate: 0 },
           ]}
           childItems={layerImages}
         />
@@ -289,20 +290,21 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
-        title="J · stayRotate + rotatePivot 自定义（绕右下角倾斜）"
-        note={`stayRotate = [12, -10, 6, -8, 0]  +  stayRotatePivot: "BottomRight"   ← 绕右下角倾斜`}
+        title="J · stayRotate + stackRotatePivot（绕右下角倾斜）"
+        note={`stackRotatePivot: "BottomRight"  +  stayRotate = [12, -10, 6, -8, 0]   ← 绕右下角倾斜`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          stackRotatePivot="BottomRight"
           showStackNum={5}
           childItems={[
-            { url: getWechat300x300(1), stayRotate: 12,  stayRotatePivot: "BottomRight" },
-            { url: getWechat300x300(2), stayRotate: -10, stayRotatePivot: "BottomRight" },
-            { url: getWechat300x300(3), stayRotate: 6,   stayRotatePivot: "BottomRight" },
-            { url: getWechat300x300(4), stayRotate: -8,  stayRotatePivot: "BottomRight" },
-            { url: getWechat300x300(5), stayRotate: 0,   stayRotatePivot: "BottomRight" },
+            { url: getWechat300x300(1), stayRotate: 12 },
+            { url: getWechat300x300(2), stayRotate: -10 },
+            { url: getWechat300x300(3), stayRotate: 6 },
+            { url: getWechat300x300(4), stayRotate: -8 },
+            { url: getWechat300x300(5), stayRotate: 0 },
           ]}
         />
       </CopyDemo>

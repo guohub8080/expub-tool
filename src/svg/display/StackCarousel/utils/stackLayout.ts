@@ -19,6 +19,8 @@ interface I_BuildPosConfig {
   cardH: number
   /** 逐层覆盖配置（showStackConfig）；[0]=tail，[n−1]=center。不传则全程走自动公式 */
   layers?: I_StackLayerConfig[]
+  /** 栈中所有层 rotate 共用的旋转中心（child 局部） */
+  stackRotatePivot: T_Pivot
 }
 
 /**
@@ -50,13 +52,16 @@ interface I_BuildPosConfig {
  *
  * tail 太近时 peek 可能为负，卡牌会糊一块，属用户配置，不 clamp 以保锚点精确。
  */
-export const buildPosConfig = ({ showStackNum, tailScale, direction, cardW, cardH, layers }: I_BuildPosConfig): I_PositionConfig => {
+export const buildPosConfig = ({ showStackNum, tailScale, direction, cardW, cardH, layers, stackRotatePivot }: I_BuildPosConfig): I_PositionConfig => {
   const maxDepth = showStackNum - 1
   const anchorDistance = Math.hypot(direction.x, direction.y)
   const unitX = anchorDistance > 0 ? direction.x / anchorDistance : 0
   const unitY = anchorDistance > 0 ? direction.y / anchorDistance : 0
   const projectedHalfExtent = (cardW * Math.abs(unitX) + cardH * Math.abs(unitY)) / 2
   const peek = (anchorDistance - projectedHalfExtent * (1 - tailScale)) / maxDepth
+
+  // rotate pivot 统一用顶层 stackRotatePivot（所有层共用，避免 per-layer 不一致跳变）
+  const resolvedStackPivot = resolveLayerRotatePivot(stackRotatePivot, cardW, cardH)
 
   const translateValues: Partial<I_TranslateValue>[] = []
   const scaleValues: number[] = []
@@ -88,10 +93,9 @@ export const buildPosConfig = ({ showStackNum, tailScale, direction, cardW, card
     translateValues.push({ x: unitX * anchorDistance * progress, y: unitY * anchorDistance * progress })
     scaleValues.push(layerScale)
 
-    // rotate：缺省 0；pivot 缺省 child 几何中心（"Center"）
+    // rotate 角度缺省 0；pivot 统一用 resolvedStackPivot（顶层 stackRotatePivot）
     rotateValues.push(defaultTo(layerConfig?.rotate, 0))
-    const pivot: T_Pivot = defaultTo(layerConfig?.rotatePivot, "Center")
-    rotatePivots.push(resolveLayerRotatePivot(pivot, cardW, cardH))
+    rotatePivots.push(resolvedStackPivot)
   }
   return { translateValues, scaleValues, rotateValues, rotatePivots }
 }
