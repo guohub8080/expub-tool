@@ -35,8 +35,8 @@ export interface I_SlotExitConfig {
 /**
  * 计算 slot 在段边界处的位置
  *
- * 公式：enterBoundary(slotIndex, position) = (position === startPos) ? 0 : 2 × (itemCount + position − slotIndex)
- * position(slotIndex, boundary) = max { position ≥ startPos | boundary ≥ enterBoundary(slotIndex, position) }
+ * 公式：enterBoundary(slotIndex, position) = (position === startPosition) ? 0 : 2 × (itemCount + position − slotIndex)
+ * position(slotIndex, boundary) = max { position ≥ startPosition | boundary ≥ enterBoundary(slotIndex, position) }
  *
  * showStackNum 为可见叠层数，exit 位 = showStackNum
  */
@@ -47,12 +47,12 @@ function getPosition({ slotIndex, itemCount, showStackNum, boundary }: {
   showStackNum: number
   boundary: number
 }): number {
-  const startPos = max([0, slotIndex - itemCount])
-  for (let pos = showStackNum; pos >= startPos; pos--) {
-    const enterPos = (pos === startPos) ? 0 : 2 * (itemCount + pos - slotIndex)
-    if (boundary >= enterPos) return pos
+  const startPosition = max([0, slotIndex - itemCount])
+  for (let position = showStackNum; position >= startPosition; position--) {
+    const enterBoundary = (position === startPosition) ? 0 : 2 * (itemCount + position - slotIndex)
+    if (boundary >= enterBoundary) return position
   }
-  return startPos
+  return startPosition
 }
 
 /**
@@ -81,11 +81,11 @@ export function buildSlotTimelines({
   /** 本 slot 的退场配置 */
   exitConfig: I_SlotExitConfig
 }) {
-  const startPos = max([0, slotIndex - itemCount])
-  const totalSegs = itemCount * 2
+  const startPosition = max([0, slotIndex - itemCount])
+  const segmentCount = itemCount * 2
 
-  const initTranslate = posConfig.translateValues[startPos]
-  const initScale = posConfig.scaleValues[startPos]
+  const initTranslate = posConfig.translateValues[startPosition]
+  const initScale = posConfig.scaleValues[startPosition]
 
   const hasSkew = isDefined(exitConfig.skew)
   const hasRotation = isDefined(exitConfig.rotation)
@@ -96,32 +96,32 @@ export function buildSlotTimelines({
   const skewTimeline: I_TimelineKeyframe<number>[] = []
   const rotateTimeline: I_TimelineKeyframe<number>[] = []
 
-  for (let seg = 0; seg < totalSegs; seg++) {
-    const itemIdx = Math.floor(seg / 2)
-    const item = items[itemIdx % itemCount]
-    const isSwitch = seg % 2 === 0
-    const dur = isSwitch ? item.switchDuration : item.stayDuration
+  for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++) {
+    const itemIndex = Math.floor(segmentIndex / 2)
+    const item = items[itemIndex % itemCount]
+    const isSwitch = segmentIndex % 2 === 0
+    const segmentDuration = isSwitch ? item.switchDuration : item.stayDuration
     const splines = item.keySplines
 
-    const nextPos = getPosition({ slotIndex, itemCount, showStackNum, boundary: seg + 1 })
-    const isExit = nextPos === showStackNum
+    const nextPosition = getPosition({ slotIndex, itemCount, showStackNum, boundary: segmentIndex + 1 })
+    const isExit = nextPosition === showStackNum
 
     translateTimeline.push({
-      toAbs: isExit ? exitConfig.translate : posConfig.translateValues[nextPos],
-      durationSeconds: dur,
+      toAbs: isExit ? exitConfig.translate : posConfig.translateValues[nextPosition],
+      durationSeconds: segmentDuration,
       keySplines: splines,
     })
 
     scaleTimeline.push({
-      toAbs: isExit ? exitConfig.scale : posConfig.scaleValues[nextPos],
-      durationSeconds: dur,
+      toAbs: isExit ? exitConfig.scale : posConfig.scaleValues[nextPosition],
+      durationSeconds: segmentDuration,
       keySplines: splines,
     })
 
     if (hasSkew) {
       skewTimeline.push({
         toAbs: isExit ? exitConfig.skew!.angle : 0,
-        durationSeconds: dur,
+        durationSeconds: segmentDuration,
         keySplines: defaultTo(skewSplines, splines),
       })
     }
@@ -129,7 +129,7 @@ export function buildSlotTimelines({
     if (hasRotation) {
       rotateTimeline.push({
         toAbs: isExit ? (defaultTo(exitConfig.rotation!.angle, 0)) : 0,
-        durationSeconds: dur,
+        durationSeconds: segmentDuration,
         keySplines: defaultTo(exitConfig.rotation!.keySplines, splines),
       })
     }

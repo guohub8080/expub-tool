@@ -19,9 +19,9 @@ const ORDERED_DIRECTIONS: T_Direction8[] = [
  * 用于从「叠层方向」自动推默认退场方向：卡片从 center 朝「远离 tail」方向飞出。
  * SVG y 轴朝下，约定 0° = 向右，逆时针为正（与 atan2(-y, x) 一致）。
  */
-export const directionFromVector = (vx: number, vy: number): T_Direction8 => {
-  const angleDeg = Math.atan2(-vy, vx) * 180 / Math.PI
-  const normalized = (angleDeg + 360) % 360
-  const idx = Math.round(normalized / 45) % 8
-  return ORDERED_DIRECTIONS[idx]
+export const directionFromVector = (vectorX: number, vectorY: number): T_Direction8 => {
+  const angleDegrees = Math.atan2(-vectorY, vectorX) * 180 / Math.PI
+  const normalizedAngle = (angleDegrees + 360) % 360
+  const directionIndex = Math.round(normalizedAngle / 45) % 8
+  return ORDERED_DIRECTIONS[directionIndex]
 }

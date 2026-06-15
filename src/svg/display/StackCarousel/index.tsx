@@ -39,18 +39,17 @@ const getExitTranslate = (
   exitDistance: number,
   diagonalDistance?: number
 ): Partial<I_TranslateValue> => {
-  const d = exitDistance
   /** 对角线每轴位移，默认等于 exitDistance，确保完全移出画布 */
-  const dd = defaultTo(diagonalDistance, d)
+  const resolvedDiagonal = defaultTo(diagonalDistance, exitDistance)
   switch (direction) {
-    case DIRECTION_8.Left:  return { x: -d, y: 0 }
-    case DIRECTION_8.Right: return { x: d, y: 0 }
-    case DIRECTION_8.Top:   return { x: 0, y: -d }
-    case DIRECTION_8.Bottom: return { x: 0, y: d }
-    case DIRECTION_8.TopLeft:     return { x: -dd, y: -dd }
-    case DIRECTION_8.TopRight:    return { x: dd, y: -dd }
-    case DIRECTION_8.BottomLeft:  return { x: -dd, y: dd }
-    case DIRECTION_8.BottomRight: return { x: dd, y: dd }
+    case DIRECTION_8.Left:  return { x: -exitDistance, y: 0 }
+    case DIRECTION_8.Right: return { x: exitDistance, y: 0 }
+    case DIRECTION_8.Top:   return { x: 0, y: -exitDistance }
+    case DIRECTION_8.Bottom: return { x: 0, y: exitDistance }
+    case DIRECTION_8.TopLeft:     return { x: -resolvedDiagonal, y: -resolvedDiagonal }
+    case DIRECTION_8.TopRight:    return { x: resolvedDiagonal, y: -resolvedDiagonal }
+    case DIRECTION_8.BottomLeft:  return { x: -resolvedDiagonal, y: resolvedDiagonal }
+    case DIRECTION_8.BottomRight: return { x: resolvedDiagonal, y: resolvedDiagonal }
   }
 }
 
@@ -149,8 +148,8 @@ const StackCarousel = (props: I_StackCarouselProps) => {
           <g transform={`translate(${mainCenterX}, ${mainCenterY})`}>
             {Array.from({ length: totalSlots }, (_, slotIndex) => {
               // center slot (slotIndex=itemCount+showStackNum-1) 显示 items[0]，向前依次排列
-              const itemIdx = (itemCount + showStackNum - 1 - slotIndex + itemCount * 10) % itemCount
-              const item = items[itemIdx]
+              const itemIndex = (itemCount + showStackNum - 1 - slotIndex + itemCount * 10) % itemCount
+              const item = items[itemIndex]
               const exitTranslate = getExitTranslate(item.exit.direction, defaultTo(item.exit.distance, defaultExitDistance))
               const slotExitConfig: I_SlotExitConfig = {
                 translate: exitTranslate,

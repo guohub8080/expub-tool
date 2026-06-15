@@ -20,34 +20,39 @@ interface I_BuildPosConfig {
 /**
  * 生成各叠层的 translate / scale 配置
  *
- * 局部空间：mainChild 在原点，tailChild 在 direction。层 i（i=0 最远端 tail，
- * i=showStackNum−1 焦点 center），记 j = showStackNum−1−i 为距 center 的层数，
- * t = j/(showStackNum−1)：
- * - scale(i) = tailScale ^ t   —— 等比缩放（tail=tailScale，center=1）
+ * 局部空间：mainChild 在原点，tailChild 在 direction。layerIndex 从 0（最远端 tail）
+ * 到 showStackNum−1（焦点 center）；depthFromCenter = maxDepth − layerIndex 为距 center
+ * 的层数，depthRatio = depthFromCenter / maxDepth：
+ * - layerScale = tailScale ^ depthRatio   —— 等比缩放（tail=tailScale，center=1）
  *
- * 间距分布（沿方向轴的投影半宽 projHalf = (cardW·|ux| + cardH·|uy|)/2，D=|direction|）：
- * - linear：dist = D·t（等距中心）→ peek 不均，内层易被 center 盖住（甚至负 peek）
- * - even：恒定 peek P = [D − projHalf·(1−tailScale)]/(n−1)，
- *   dist = j·P + projHalf·(1−scale)，两端锚点严格命中、各层 peek 恒为 P
- *   （tail 太近时 P 可能为负，卡牌会糊一块，属用户配置，不 clamp 以保锚点精确）
+ * 间距分布（沿方向轴投影半宽 projectedHalfExtent = (cardW·|unitX| + cardH·|unitY|)/2，
+ * anchorDistance = |direction|）：
+ * - linear：offsetFromCenter = anchorDistance · depthRatio（等距中心）→ peek 不均，
+ *   内层易被 center 盖住（甚至负 peek）
+ * - even：恒定 peek = [anchorDistance − projectedHalfExtent·(1−tailScale)]/maxDepth，
+ *   offsetFromCenter = depthFromCenter·peek + projectedHalfExtent·(1−layerScale)，
+ *   两端锚点严格命中、各层 peek 恒定
+ *   （tail 太近时 peek 可能为负，卡牌会糊一块，属用户配置，不 clamp 以保锚点精确）
  */
 export const buildPosConfig = ({ showStackNum, tailScale, direction, cardW, cardH, spacing }: I_BuildPosConfig): I_PositionConfig => {
-  const lastIdx = showStackNum - 1
-  const D = Math.hypot(direction.x, direction.y)
-  const ux = D > 0 ? direction.x / D : 0
-  const uy = D > 0 ? direction.y / D : 0
-  const projHalf = (cardW * Math.abs(ux) + cardH * Math.abs(uy)) / 2
-  const peek = (D - projHalf * (1 - tailScale)) / lastIdx
+  const maxDepth = showStackNum - 1
+  const anchorDistance = Math.hypot(direction.x, direction.y)
+  const unitX = anchorDistance > 0 ? direction.x / anchorDistance : 0
+  const unitY = anchorDistance > 0 ? direction.y / anchorDistance : 0
+  const projectedHalfExtent = (cardW * Math.abs(unitX) + cardH * Math.abs(unitY)) / 2
+  const peek = (anchorDistance - projectedHalfExtent * (1 - tailScale)) / maxDepth
 
   const translateValues: Partial<I_TranslateValue>[] = []
   const scaleValues: number[] = []
-  for (let i = 0; i < showStackNum; i++) {
-    const j = lastIdx - i
-    const t = j / lastIdx
-    const scale = Math.pow(tailScale, t)
-    const dist = spacing === 'even' ? j * peek + projHalf * (1 - scale) : D * t
-    translateValues.push({ x: ux * dist, y: uy * dist })
-    scaleValues.push(scale)
+  for (let layerIndex = 0; layerIndex < showStackNum; layerIndex++) {
+    const depthFromCenter = maxDepth - layerIndex
+    const depthRatio = depthFromCenter / maxDepth
+    const layerScale = Math.pow(tailScale, depthRatio)
+    const offsetFromCenter = spacing === 'even'
+      ? depthFromCenter * peek + projectedHalfExtent * (1 - layerScale)
+      : anchorDistance * depthRatio
+    translateValues.push({ x: unitX * offsetFromCenter, y: unitY * offsetFromCenter })
+    scaleValues.push(layerScale)
   }
   return { translateValues, scaleValues }
 }
