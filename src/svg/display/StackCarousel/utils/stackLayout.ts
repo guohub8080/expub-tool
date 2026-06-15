@@ -20,7 +20,8 @@ interface I_BuildPosConfig {
   layers?: I_StackLayerConfig[]
   /** 栈中所有层 rotate 共用的旋转中心（child 局部） */
   stackRotatePivot: T_Pivot
-  /** 深度分布：0=完全线性；[-100,0] 堆积 tail（center 除外），[0,+100] 堆积 center（tail 除外） */
+  /** 深度分布（等差间距）：0=均等；正数 gap 从 tail→center 递增（tail 密集），负数递减（tail 拉开）。
+   *  数值 ≈「每步 gap 相对均等值的递增百分比」（10 ≈ 每步 +10%）。负向受 gap 非负限制 */
   depthLaw: number
 }
 
@@ -30,20 +31,16 @@ interface I_BuildPosConfig {
  * 局部空间：mainChild 在原点，tailChild 在 direction。layerIndex 从 0（最远端 tail）
  * 到 showStackNum−1（焦点 center）。
  *
- * —— depthLaw（线性混合控制，范围 [-100, +100]）——
- *   blend = |depthLaw| / 100            （0=线性，1=极端堆积）
- *   对每层 x = layerIndex / maxDepth（0=tail, 1=center）：
- *     linearProgress = 1 − x             （线性分布，0=center, 1=tail）
- *     extreme = depthLaw<0 ? (x<1?1:0) : (x>0?0:1)
- *               // 向 tail 堆积：center(x=1) 留 0，其余 1
- *               // 向 center 堆积：tail(x=0) 留 1，其余 0
- *     progress = (1−blend)·linearProgress + blend·extreme
- *     scale    = 1 − (1−tailScale)·progress    （scale 跟随位置：堆积 tail→小，center→大）
+ * —— depthLaw（等差间距控制）——
+ * 相邻层间距成等差数列：gap[i] = base·(1 + i·r)，r = depthLaw/100，i = 0..gapCount−1。
+ *   base = anchorDistance / Σ(1 + i·r)   （由 sum(gap)=anchorDistance 反推）
+ *   - 0：公差 0，各 gap 均等
+ *   - >0：gap 递增，tail 侧密集、center 侧拉开
+ *   - <0：gap 递减，tail 侧拉开、center 侧密集
+ *   r 钳制使所有 gap 非负（负向上限约 −100/(层数−2)）。
  *
- * - depthLaw=0：线性，各层均匀分布
- * - depthLaw=−100：除 center 外全堆 tail（一堆小卡 + 一个大 center）
- * - depthLaw=+100：除 tail 外全堆 center（一个小 tail + 一堆大卡）
- * - 中间值线性混合，调一点偏一点（无幂次敏感问题）
+ * 每层 progress 由 tail 端累加 gap 得到（0=center, 1=tail），scale 跟随位置：
+ *   scale = 1 − (1−tailScale)·progress
  *
  * 端点恒命中：center 落 mainChild.center（progress=0）、tail 落 tailChild.center（progress=1）。
  *
@@ -58,33 +55,34 @@ export const buildPosConfig = ({ showStackNum, tailScale, direction, cardW, card
 
   const resolvedStackPivot = resolveLayerRotatePivot(stackRotatePivot, cardW, cardH)
 
-  // depthLaw 钳制到 [-100, +100]；blend=0 线性，blend=1 极端堆积
-  const clampedDepth = Math.max(-100, Math.min(100, depthLaw))
-  const blend = Math.abs(clampedDepth) / 100
-  const clusterTowardTail = clampedDepth < 0
+  // 等差间距：gap[i] = base·(1 + i·r)，r 钳制使 gap 非负
+  const gapCount = maxDepth
+  const r = depthLaw / 100
+  const minR = gapCount > 1 ? -1 / (gapCount - 1) + 0.001 : -1
+  const clampedR = Math.max(minR, r)
+  const sumFactor = gapCount + clampedR * gapCount * (gapCount - 1) / 2
+  const base = anchorDistance / sumFactor
 
   const translateValues: Partial<I_TranslateValue>[] = []
   const scaleValues: number[] = []
   const rotateValues: number[] = []
   const rotatePivots: [number, number][] = []
+  let cumulativeGap = 0  // 从 tail 端累加的间距
   for (let layerIndex = 0; layerIndex < showStackNum; layerIndex++) {
     const layerConfig = layers?.[layerIndex]
-    const x = layerIndex / maxDepth                    // 0=tail, 1=center
-    const linearProgress = 1 - x                       // 线性分布（0=center, 1=tail）
-
-    // 极端分布：向 tail 堆积时 center(x=1) 留 0；向 center 堆积时 tail(x=0) 留 1
-    const extremeProgress = clusterTowardTail
-      ? (x < 1 ? 1 : 0)
-      : (x > 0 ? 0 : 1)
-
-    const progress = (1 - blend) * linearProgress + blend * extremeProgress
-    const layerScale = 1 - (1 - tailScale) * progress  // scale 跟随位置
+    const progress = (anchorDistance - cumulativeGap) / anchorDistance  // 0=center, 1=tail
+    const layerScale = 1 - (1 - tailScale) * progress
 
     translateValues.push({ x: unitX * anchorDistance * progress, y: unitY * anchorDistance * progress })
     scaleValues.push(layerScale)
 
     rotateValues.push(defaultTo(layerConfig?.rotate, 0))
     rotatePivots.push(resolvedStackPivot)
+
+    // 累加到下一层的 gap
+    if (layerIndex < gapCount) {
+      cumulativeGap += base * (1 + layerIndex * clampedR)
+    }
   }
   return { translateValues, scaleValues, rotateValues, rotatePivots }
 }

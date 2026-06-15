@@ -121,11 +121,11 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      {/* —— depthLaw 教学：0=线性，[-100,0] 堆 tail，[0,+100] 堆 center —— */}
+      {/* —— depthLaw 教学：0=均等，正数 tail 密集，负数 tail 拉开（等差间距）—— */}
 
       <CopyDemo
-        title="depthLaw · A 基准（=0 完全线性，均匀分布）"
-        note={`depthLaw={0}   ← 默认，各层均匀`}
+        title="depthLaw · A 基准（=0 均等，等差公差 0）"
+        note={`depthLaw={0}   ← 默认，相邻间距均等`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
@@ -138,8 +138,8 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
-        title="B · depthLaw={-10}（极轻微堆积 tail）"
-        note={`depthLaw={-10}   ← 中间层略向 tail 挤，很轻微`}
+        title="B · depthLaw={-10}（gap 每步 -10%，tail 侧拉开）"
+        note={`depthLaw={-10}   ← 相邻间距递减，tail 侧稀疏、center 密集`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
@@ -152,8 +152,8 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
-        title="C · depthLaw={+10}（极轻微堆积 center）"
-        note={`depthLaw={+10}   ← 中间层略向 center 挤（与 B 反向）`}
+        title="C · depthLaw={+10}（gap 每步 +10%，tail 侧密集）"
+        note={`depthLaw={+10}   ← 相邻间距递增，tail 密集、center 拉开（与 B 反向）`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
@@ -166,15 +166,15 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
-        title="D · depthLaw={-100}（极端堆积 tail）"
-        note={`depthLaw={-100}   ← 除 center 外全堆 tail，一堆小卡 + 一个大 center`}
+        title="D · depthLaw={+40}（gap 每步 +40%，强递增）"
+        note={`depthLaw={+40}   ← tail 侧明显密集，center 侧拉开`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
-          depthLaw={-100}
+          depthLaw={40}
           childItems={layerImages}
         />
       </CopyDemo>
