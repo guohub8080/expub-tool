@@ -65,3 +65,5 @@ export type { I_AnyCarouselItemConfig, I_ChildTransform } from "./display/AnyCar
 
 export { default as CubeCarouselX } from "./display/AnyCarousel/CubeCarouselX"
 export type { I_CubeCarouselXProps } from "./display/AnyCarousel/CubeCarouselX"
+export { default as CubeCarouselY } from "./display/AnyCarousel/CubeCarouselY"
+export type { I_CubeCarouselYProps } from "./display/AnyCarousel/CubeCarouselY"

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { AnyCarousel, CubeCarouselX } from 'expub-tool/svg'
+import { AnyCarousel, CubeCarouselX, CubeCarouselY } from 'expub-tool/svg'
 import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
@@ -198,6 +198,37 @@ export default function AnyCarouselPage() {
       <CopyDemo title="CubeCarouselX isReversed（反向转动）">
         <CubeCarouselX
           canvasSize={{ w: 240, h: 160 }}
+          childCanvasSize={{ w: 80, h: 80 }}
+          skewAngle={15}
+          isReversed
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="CubeCarouselY（纵向立方体，skewAngle=15）">
+        <CubeCarouselY
+          canvasSize={{ w: 160, h: 240 }}
+          childCanvasSize={{ w: 80, h: 80 }}
+          skewAngle={15}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="CubeCarouselY isReversed（反向转动）">
+        <CubeCarouselY
+          canvasSize={{ w: 160, h: 240 }}
           childCanvasSize={{ w: 80, h: 80 }}
           skewAngle={15}
           isReversed
