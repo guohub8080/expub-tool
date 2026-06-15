@@ -154,15 +154,15 @@ export default function StackCarouselPage() {
       </CopyDemo>
 
       <CopyDemo
-        title="C · depthLaw={0.5}（根号，tail 侧拉开）"
-        note={`depthLaw={0.5}   ← tail 侧 scale 骤大、间距拉开（与 B 反向）`}
+        title="C · depthLaw={0.8}（tail 侧温和拉开）"
+        note={`depthLaw={0.8}   ← tail 侧拉开，比 1 略松（与 B 压缩反向）`}
       >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackNum={5}
-          depthLaw={0.5}
+          depthLaw={0.8}
           childItems={layerImages}
         />
       </CopyDemo>
