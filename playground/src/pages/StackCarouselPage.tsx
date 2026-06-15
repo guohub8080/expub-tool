@@ -3,7 +3,7 @@ import { DIRECTION_8 } from 'expub-tool/svg'
 import { StackCarousel } from 'expub-tool/svg'
 import getWechat300x300 from '../api/placeHolderPic/getWechat300x300'
 
-const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
+const CopyDemo = ({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
 
@@ -19,7 +19,14 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
   return (
     <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <h3 style={{ margin: 0, fontSize: 15 }}>{title}</h3>
+        <div>
+          <h3 style={{ margin: 0, fontSize: 15 }}>{title}</h3>
+          {note && (
+            <div style={{ marginTop: 4, fontSize: 12, color: '#6b7280', fontFamily: 'ui-monospace, SFMono-Regular, monospace', whiteSpace: 'pre-wrap' }}>
+              {note}
+            </div>
+          )}
+        </div>
         <button
           onClick={handleCopy}
           style={{
@@ -37,6 +44,8 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
 }
 
 export default function StackCarouselPage() {
+  const layerImages = [1, 2, 3, 4, 5].map(i => ({ url: getWechat300x300(i) }))
+
   return (
     <div>
       <h2>StackCarousel — 两点定方向的叠层轮播</h2>
@@ -112,47 +121,113 @@ export default function StackCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="showStackConfig 逐层定制 — tail 近的贴更紧（progress 越靠近 1 越偏向 tail）">
+      {/* —— showStackConfig 教学：同一套几何（斜向 5 层），只变 config —— */}
+
+      <CopyDemo
+        title="showStackConfig · A 基准（不传 config = 恒定 peek，露边相等）"
+        note={`基准：showStackNum={5}，不传 showStackConfig（走默认幂律 scale + 恒定 peek）`}
+      >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
-          showStackConfig={[
-            { scale: 0.2, progress: 1 },                  // tail
-            { progress: 0.92 },                           // 紧贴 tail
-            { progress: 0.78 },                           // 次紧
-            { progress: 0.55 },                           // 拉开
-            { scale: 1, progress: 0 },                    // center
-          ]}
-          childItems={[
-            { url: getWechat300x300(1) },
-            { url: getWechat300x300(2) },
-            { url: getWechat300x300(3) },
-            { url: getWechat300x300(4) },
-            { url: getWechat300x300(5) },
-          ]}
+          showStackNum={5}
+          childItems={layerImages}
         />
       </CopyDemo>
 
-      <CopyDemo title="showStackConfig 逐层缩放 — tail 一侧突然变小（scale 覆盖幂律）">
+      <CopyDemo
+        title="B · progress 让 tail 侧贴紧（越靠近 tail 间距越小）"
+        note={`progress = [1, 0.88, 0.7, 0.4, 0]   ← tail→center，tail 侧密集`}
+      >
         <StackCarousel
           canvasSize={{ w: 1080, h: 1080 }}
           mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
           tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
           showStackConfig={[
-            { scale: 0.2 },                               // tail
-            { scale: 0.25 },                              // 突然很小
+            { progress: 1 },      // tail（最远端）
+            { progress: 0.88 },
+            { progress: 0.7 },
+            { progress: 0.4 },
+            { progress: 0 },      // center（焦点）
+          ]}
+          childItems={layerImages}
+        />
+      </CopyDemo>
+
+      <CopyDemo
+        title="C · progress 让 tail 侧拉开（反向，越靠 tail 间距越大）"
+        note={`progress = [1, 0.6, 0.4, 0.22, 0]   ← tail 侧稀疏（与 B 对比）`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackConfig={[
+            { progress: 1 },
+            { progress: 0.6 },
+            { progress: 0.4 },
+            { progress: 0.22 },
+            { progress: 0 },
+          ]}
+          childItems={layerImages}
+        />
+      </CopyDemo>
+
+      <CopyDemo
+        title="D · scale 线性递减（替换默认幂律，中段更大）"
+        note={`scale = [0.2, 0.4, 0.6, 0.8, 1]   ← 均匀递减（默认幂律约 [0.2, 0.3, 0.45, 0.67, 1]）`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackConfig={[
+            { scale: 0.2 },
             { scale: 0.4 },
-            { scale: 0.65 },
-            { scale: 1 },                                 // center
+            { scale: 0.6 },
+            { scale: 0.8 },
+            { scale: 1 },
           ]}
-          childItems={[
-            { url: getWechat300x300(1) },
-            { url: getWechat300x300(2) },
-            { url: getWechat300x300(3) },
-            { url: getWechat300x300(4) },
-            { url: getWechat300x300(5) },
+          childItems={layerImages}
+        />
+      </CopyDemo>
+
+      <CopyDemo
+        title="E · scale 戏剧化（tail 一张极小，中段突变）"
+        note={`scale = [0.15, 0.22, 0.7, 0.88, 1]   ← tail 侧两张很小，然后突然变大`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackConfig={[
+            { scale: 0.15 },
+            { scale: 0.22 },
+            { scale: 0.7 },
+            { scale: 0.88 },
+            { scale: 1 },
           ]}
+          childItems={layerImages}
+        />
+      </CopyDemo>
+
+      <CopyDemo
+        title="F · 组合透视感（progress + scale 协同，模拟真实远近）"
+        note={`scale = [0.2, 0.32, 0.5, 0.75, 1]   +   progress = [1, 0.85, 0.62, 0.33, 0]`}
+      >
+        <StackCarousel
+          canvasSize={{ w: 1080, h: 1080 }}
+          mainChild={{ w: 700, h: 700, centerX: 540, centerY: 540 }}
+          tailChild={{ scale: 0.2, centerX: 980, centerY: 900 }}
+          showStackConfig={[
+            { scale: 0.2,  progress: 1 },
+            { scale: 0.32, progress: 0.85 },
+            { scale: 0.5,  progress: 0.62 },
+            { scale: 0.75, progress: 0.33 },
+            { scale: 1,    progress: 0 },
+          ]}
+          childItems={layerImages}
         />
       </CopyDemo>
 
