@@ -1,12 +1,11 @@
 import React from "react"
 import isNil from "lodash/isNil"
-import defaultTo from "lodash/defaultTo"
 import { isDefined } from "@utils/fn/isDefined"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { resolveCanvasBg } from "@utils/svg/resolveCanvasBg"
 import svgURL from "@utils/svg/svgURL"
-import { SPACING_ZERO, spacing } from "@css-fn/spacing"
+import { spacing } from "@css-fn/spacing"
 import type { T_SpacingProps } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
 import type { I_CanvasBg } from "@svg/types"
@@ -82,7 +81,7 @@ const FlashSlideCarousel = (props: I_FlashSlideCarouselProps) => {
   const flashScale = props.flashScale ?? DEFAULT_FLASH_SCALE
   const transFrac = props.transFrac ?? DEFAULT_TRANS_FRAC
 
-  const spacingResult = spacing(defaultTo(spacingProp, SPACING_ZERO))
+  const spacingResult = spacing(spacingProp)
   const firstItem = childItems?.[0]
   if (isNil(firstItem?.url) && isNil(firstItem?.jsx)) return null
 
