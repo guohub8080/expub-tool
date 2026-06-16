@@ -77,14 +77,31 @@ export default function FlashSlideCarouselPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="带快门图（每次切换瞬间闪一张快门图）">
+      <CopyDemo title="jsx 快门 · 纯白闪光（相机闪光感）">
         <FlashSlideCarousel
           canvasSize={{ w: 300, h: 300 }}
-          shutter={{ url: getWechat300x300(9) }}
+          shutter={{ jsx: <rect x={0} y={0} width={300} height={300} fill="#ffffff" /> }}
           childItems={[
             { url: getWechat300x300(1) },
             { url: getWechat300x300(2) },
             { url: getWechat300x300(3) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="jsx 快门 · 半透明黑底 + 「咔嚓」文字">
+        <FlashSlideCarousel
+          canvasSize={{ w: 300, h: 300 }}
+          shutter={{ jsx: (
+            <>
+              <rect x={0} y={0} width={300} height={300} fill="#000" opacity={0.5} />
+              <text x={150} y={175} fontSize={56} fontWeight={900} fill="#fff" textAnchor="middle">咔嚓</text>
+            </>
+          ) }}
+          childItems={[
+            { url: getWechat300x300(4) },
+            { url: getWechat300x300(5) },
+            { url: getWechat300x300(6) },
           ]}
         />
       </CopyDemo>
