@@ -17,6 +17,7 @@ import ClickCascadePage from './pages/ClickCascadePage'
 import CamaraStagePage from './pages/CamaraStagePage'
 import CoverPage from './pages/CoverPage'
 import AnyCarouselPage from './pages/AnyCarouselPage'
+import FlashSlideCarouselPage from './pages/FlashSlideCarouselPage'
 
 const links = [
   { to: '/', label: 'SMIL' },
@@ -26,6 +27,7 @@ const links = [
   { to: '/cover-flow', label: 'CoverFlow' },
   { to: '/cover', label: 'Cover' },
   { to: '/any-carousel', label: 'Carousel' },
+  { to: '/flash-slide', label: 'FlashSlide' },
   { to: '/spin-zoom', label: 'SpinZoom' },
   { to: '/any-loop-display', label: 'AnyLoopDisplay' },
   { to: '/stack-carousel', label: 'StackCarousel' },
@@ -81,6 +83,7 @@ export default function App() {
           <Route path="/cover-flow" element={<CoverFlowPage />} />
           <Route path="/cover" element={<CoverPage />} />
           <Route path="/any-carousel" element={<AnyCarouselPage />} />
+          <Route path="/flash-slide" element={<FlashSlideCarouselPage />} />
           <Route path="/spin-zoom" element={<SpinZoomCarouselPage />} />
           <Route path="/any-loop-display" element={<AnyLoopDisplayPage />} />
           <Route path="/stack-carousel" element={<StackCarouselPage />} />
