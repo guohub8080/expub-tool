@@ -32,6 +32,8 @@ export interface I_FlashSlideCarouselProps {
   flashScale?: number
   /** 切换宽度占每张 slot 的比例（cross-fade + 抖动窗口），默认 0.4 */
   transFrac?: number
+  /** 快门图：每次切换瞬间闪现一次（opacity 0→1→0，覆盖在图片上）。不传则无快门 */
+  shutter?: FlashSlideItem
   /** 画布背景 */
   canvasBg?: I_CanvasBg
   /** 外层 margin-top 间距 */

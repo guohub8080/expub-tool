@@ -31,6 +31,7 @@ import { FlashSlideCarousel } from "expub-tool/svg"
 | `flashShrink` | `number` | `0.75` | 抖动收缩值（scale 低点） |
 | `flashScale` | `number` | `1.5` | 抖动放大值（scale 高点） |
 | `transFrac` | `number` | `0.4` | 切换宽度占每张 slot 的比例（cross-fade + 抖动窗口） |
+| `shutter` | `FlashSlideItem` | — | 快门图：每次切换瞬间闪现一次（opacity 0→1→0，覆盖在图片上）。不传则无快门 |
 | `canvasBg` | `I_CanvasBg` | — | 画布背景 |
 | `spacing` | `T_SpacingProps` | — | 外层 margin-top 间距 |
 

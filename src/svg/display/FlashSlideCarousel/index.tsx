@@ -70,12 +70,31 @@ const buildScale = (i: number, N: number, tw: number, shrink: number, high: numb
   return { keyTimes: keyTimes.join(";"), values, keyTimeCount: keyTimes.length }
 }
 
+/**
+ * 快门图 opacity 时间线：每个切换窗口中段闪现一次（0→1→0）
+ *
+ * 闪现窗口对齐抖动峰值：[slotEnd − 3tw/4, slotEnd − tw/4]，峰在 slotEnd − tw/2
+ */
+const buildShutterOpacity = (N: number, tw: number): Timeline => {
+  const keyTimes: number[] = [0]
+  const values: number[] = [0]
+  for (let i = 0; i < N; i++) {
+    const slotEnd = round4((i + 1) / N)
+    keyTimes.push(round4(slotEnd - (3 * tw) / 4), round4(slotEnd - tw / 2), round4(slotEnd - tw / 4))
+    values.push(0, 1, 0)
+  }
+  keyTimes.push(1)
+  values.push(0)
+  return { keyTimes: keyTimes.join(";"), values: values.join(";"), keyTimeCount: keyTimes.length }
+}
+
 const FlashSlideCarousel = (props: I_FlashSlideCarouselProps) => {
   const {
     canvasSize,
     childItems,
     canvasBg,
     spacing: spacingProp,
+    shutter,
   } = props
   const duration = defaultTo(props.duration, DEFAULT_DURATION)
   const flashShrink = defaultTo(props.flashShrink, DEFAULT_FLASH_SHRINK)
@@ -153,6 +172,26 @@ const FlashSlideCarousel = (props: I_FlashSlideCarouselProps) => {
               </g>
             )
           })}
+          {/* 快门层：每次切换瞬间闪现一次（覆盖在所有图上） */}
+          {isDefined(shutter) && (() => {
+            const sh = buildShutterOpacity(N, tw)
+            return (
+              <g>
+                <animate
+                  attributeName="opacity"
+                  values={sh.values}
+                  keyTimes={sh.keyTimes}
+                  keySplines={easeN(sh.keyTimeCount)}
+                  calcMode="spline"
+                  dur={`${duration}s`}
+                  begin="0s"
+                  fill="freeze"
+                  repeatCount="indefinite"
+                />
+                <ItemContent item={shutter} w={canvasSize.w} h={canvasSize.h} />
+              </g>
+            )
+          })()}
         </SvgEx>
       </section>
     </SectionEx>

@@ -76,6 +76,18 @@ export default function FlashSlideCarouselPage() {
           ]}
         />
       </CopyDemo>
+
+      <CopyDemo title="带快门图（每次切换瞬间闪一张快门图）">
+        <FlashSlideCarousel
+          canvasSize={{ w: 300, h: 300 }}
+          shutter={{ url: getWechat300x300(9) }}
+          childItems={[
+            { url: getWechat300x300(1) },
+            { url: getWechat300x300(2) },
+            { url: getWechat300x300(3) },
+          ]}
+        />
+      </CopyDemo>
     </div>
   )
 }
