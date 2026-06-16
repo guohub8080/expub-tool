@@ -1,5 +1,6 @@
 import React from "react"
 import isNil from "lodash/isNil"
+import defaultTo from "lodash/defaultTo"
 import { isDefined } from "@utils/fn/isDefined"
 import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
@@ -81,7 +82,7 @@ const FlashSlideCarousel = (props: I_FlashSlideCarouselProps) => {
   const flashScale = props.flashScale ?? DEFAULT_FLASH_SCALE
   const transFrac = props.transFrac ?? DEFAULT_TRANS_FRAC
 
-  const spacingResult = spacing(spacingProp ?? SPACING_ZERO)
+  const spacingResult = spacing(defaultTo(spacingProp, SPACING_ZERO))
   const firstItem = childItems?.[0]
   if (isNil(firstItem?.url) && isNil(firstItem?.jsx)) return null
 
