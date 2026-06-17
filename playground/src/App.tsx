@@ -19,6 +19,7 @@ import CoverPage from './pages/CoverPage'
 import AnyCarouselPage from './pages/AnyCarouselPage'
 import FlashSlideCarouselPage from './pages/FlashSlideCarouselPage'
 import ShutterBladePage from './pages/ShutterBladePage'
+import ClickZoomPage from './pages/ClickZoomPage'
 
 const links = [
   { to: '/', label: 'SMIL' },
@@ -30,6 +31,7 @@ const links = [
   { to: '/any-carousel', label: 'Carousel' },
   { to: '/flash-slide', label: 'FlashSlide' },
   { to: '/shutter-blade', label: 'Shutter' },
+  { to: '/click-zoom', label: 'ClickZoom' },
   { to: '/spin-zoom', label: 'SpinZoom' },
   { to: '/any-loop-display', label: 'AnyLoopDisplay' },
   { to: '/stack-carousel', label: 'StackCarousel' },
@@ -87,6 +89,7 @@ export default function App() {
           <Route path="/any-carousel" element={<AnyCarouselPage />} />
           <Route path="/flash-slide" element={<FlashSlideCarouselPage />} />
           <Route path="/shutter-blade" element={<ShutterBladePage />} />
+          <Route path="/click-zoom" element={<ClickZoomPage />} />
           <Route path="/spin-zoom" element={<SpinZoomCarouselPage />} />
           <Route path="/any-loop-display" element={<AnyLoopDisplayPage />} />
           <Route path="/stack-carousel" element={<StackCarouselPage />} />
