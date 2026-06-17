@@ -28,41 +28,21 @@ const Content = ({ url, jsx, w, h }: { url?: string; jsx?: ReactNode; w: number;
   if (isDefined(jsx)) return <>{jsx}</>
   if (isNil(url)) return null
   return (
-    <foreignObject x={0} y={0} width={w} height={h}>
-      <svg viewBox={`0 0 ${w} ${h}`} style={{ backgroundImage: svgURL(url), backgroundSize: "cover", backgroundPosition: "50% 50%", width: "100%" }} />
+    <foreignObject x={0} y={0} width={w} height={h} style={{ pointerEvents: "none" }}>
+      <svg viewBox={`0 0 ${w} ${h}`} style={{ backgroundImage: svgURL(url), backgroundSize: "cover", backgroundPosition: "50% 50%", width: "100%", pointerEvents: "none" }} />
     </foreignObject>
   )
 }
 
 /**
- * ClickZoom — 点击热区放大详情（完全还原 参考实现 参考）
+ * ClickZoom — 点击热区放大详情（精确还原 参考实现 参考）
  *
- * 每个热区是一个完整的 6 层嵌套 g 子树：
+ * 关键：所有动画 loopCount=1（播放一次 + freeze 保持，不循环）。
+ * 参考用 values="A;B;B" keyTimes="0;ε;1" dur="长" 三点格式：动画段 + 保持段。
+ * 用 2-segment timeline 匹配（seg1=动画, seg2=长保持）。
  *
- * g(translate 2000,0)                    ← off-screen wrapper（放大层初始在画布外）
- *   translate in: begin="mouseover"      ← 移回画布
- *   translate out: begin="mouseout+D"    ← 移回画布外（D=duration 延迟）
- *   g(translate x,y)                     ← 定位到热区中心
- *     g(opacity 0)                       ← 放大层（scale + 主 opacity）
- *       scale in: begin="mouseover"
- *       scale out: begin="mouseout"
- *       opacity in: begin="mouseover"
- *       opacity out: begin="mouseout+D"
- *       底图 image
- *       g(opacity 0)                     ← 详情层（独立 opacity）
- *         detail opacity in: begin="mouseover"
- *         detail opacity out: begin="mouseout"
- *         g(scale 1/zoomScale)           ← 详情图（反缩放恢复原始大小）
- *           详情 image
- *         g(translate -x,-y, opacity 0)  ← 点击区 wrapper（visibility 控制）
- *           set hidden: begin="mouseover+1s"（放大后隐藏，防误触）
- *           set visible: begin="mouseout+D"（淡出后恢复）
- *           g(translate -2000,0)         ← counter-translate（保持 rect 在画布内）
- *             counter in: begin="mouseover"
- *             counter out: begin="mouseout+D"
- *             rect（透明点击区，pointer-events:all）
- *
- * 事件全部用 mouseover/mouseout（不用 id.click），跟参考一致。
+ * 每个热区 6 层嵌套 g：
+ * off-screen(translate 2000,0) → 定位(x,y) → 放大层(scale+opacity) → 底图 + 详情层(opacity) → 详情图(scale) + 点击区(visibility) → counter-translate(-2000,0) → rect
  */
 const ClickZoom = (props: I_ClickZoomProps) => {
   const { canvasSize, background, items } = props
@@ -73,7 +53,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
   const isDev = ExPubGoConfig().mode === "development"
   const { w, h } = canvasSize
   const invScale = round4(1 / zoomScale)
-  const dStr = duration.toString()
+  const holdSplines = "0 0 1 1"
 
   return (
     <SectionEx
@@ -97,12 +77,11 @@ const ClickZoom = (props: I_ClickZoomProps) => {
             </foreignObject>
           </g>
 
-          {/* 底图（始终可见） */}
+          {/* 底图 */}
           {isDefined(background) && (
             <Content url={background.url} jsx={background.jsx} w={w} h={h} />
           )}
 
-          {/* 热区们：每个 g 子树完全独立 */}
           {items.map((item, i) => {
             const hsW = defaultTo(item.hotspotW, DEFAULT_HOTSPOT_W)
             const hsH = defaultTo(item.hotspotH, DEFAULT_HOTSPOT_H)
@@ -111,25 +90,33 @@ const ClickZoom = (props: I_ClickZoomProps) => {
 
             return (
               <g key={i}>
-                {/* ===== 1. off-screen wrapper（translate 2000,0）===== */}
+                {/* ===== 1. off-screen wrapper ===== */}
                 <g transform="translate(2000,0)">
+                  {/* in: mouseover → 2000,0 → 0,0（discrete 瞬间 + 保持 100s）*/}
                   {transformTranslate({
                     initValue: { x: 2000, y: 0 },
-                    timeline: [{ toAbs: { x: 0, y: 0 }, durationSeconds: 0.001 }],
+                    timeline: [
+                      { toAbs: { x: 0, y: 0 }, durationSeconds: 0.0001 },
+                      { toAbs: { x: 0, y: 0 }, durationSeconds: 99.9999 },
+                    ],
                     begin: "mouseover",
                     calcMode: "discrete",
                     isFreeze: true,
-                    loopCount: 0,
+                    loopCount: 1,
                     isAdditive: false,
                     restart: "always",
                   })}
+                  {/* out: mouseout+D → 0,0 → 2000,0 */}
                   {transformTranslate({
                     initValue: { x: 0, y: 0 },
-                    timeline: [{ toAbs: { x: 2000, y: 0 }, durationSeconds: 0.001 }],
-                    begin: `mouseout+${dStr}s`,
+                    timeline: [
+                      { toAbs: { x: 2000, y: 0 }, durationSeconds: 0.0001 },
+                      { toAbs: { x: 2000, y: 0 }, durationSeconds: 99.9999 },
+                    ],
+                    begin: `mouseout+${duration}s`,
                     calcMode: "discrete",
                     isFreeze: true,
-                    loopCount: 0,
+                    loopCount: 1,
                     isAdditive: false,
                     restart: "always",
                   })}
@@ -138,68 +125,92 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                   <g transform={`translate(${item.x} ${item.y})`}>
                     {/* ===== 3. 放大层（scale + 主 opacity）===== */}
                     <g opacity={0}>
+                      {/* scale in: 1→4, spline ease-out */}
                       {transformScaleRaw({
                         initValue: 1,
-                        timeline: [{ toAbs: zoomScale, durationSeconds: duration, keySplines }],
+                        timeline: [
+                          { toAbs: zoomScale, durationSeconds: duration, keySplines },
+                          { toAbs: zoomScale, durationSeconds: 200 - duration, keySplines: holdSplines },
+                        ],
                         begin: "mouseover",
                         isFreeze: true,
-                        loopCount: 0,
+                        loopCount: 1,
                         isAdditive: false,
                         restart: "always",
                       })}
+                      {/* scale out: 4→1 */}
                       {transformScaleRaw({
                         initValue: zoomScale,
-                        timeline: [{ toAbs: 1, durationSeconds: duration, keySplines }],
+                        timeline: [
+                          { toAbs: 1, durationSeconds: duration, keySplines },
+                          { toAbs: 1, durationSeconds: 200 - duration, keySplines: holdSplines },
+                        ],
                         begin: "mouseout",
                         isFreeze: true,
-                        loopCount: 0,
+                        loopCount: 1,
                         isAdditive: false,
                         restart: "always",
                       })}
+                      {/* opacity in: 0→1（瞬间 + 保持）*/}
                       {animateOpacity({
                         initValue: 0,
-                        timeline: [{ toAbs: 1, durationSeconds: 0.01 }],
+                        timeline: [
+                          { toAbs: 1, durationSeconds: 0.005 },
+                          { toAbs: 1, durationSeconds: 0.995 },
+                        ],
                         begin: "mouseover",
                         isFreeze: true,
-                        loopCount: 0,
+                        loopCount: 1,
                         restart: "always",
                       })}
+                      {/* opacity out: 1→0（mouse+延迟）*/}
                       {animateOpacity({
                         initValue: 1,
-                        timeline: [{ toAbs: 0, durationSeconds: 0.01 }],
-                        begin: `mouseout+${dStr}s`,
+                        timeline: [
+                          { toAbs: 0, durationSeconds: 0.005 },
+                          { toAbs: 0, durationSeconds: 0.995 },
+                        ],
+                        begin: `mouseout+${duration}s`,
                         isFreeze: true,
-                        loopCount: 0,
+                        loopCount: 1,
                         restart: "always",
                       })}
 
-                      {/* 底图（偏移使热区中心对齐 origin） */}
+                      {/* 底图 */}
                       {isDefined(background) && (
-                        <g transform={`translate(${-item.x} ${-item.y})`} style={{ pointerEvents: "none" }}>
+                        <g transform={`translate(${-item.x} ${-item.y})`}>
                           <Content url={background.url} jsx={background.jsx} w={w} h={h} />
                         </g>
                       )}
 
                       {/* ===== 4. 详情层（独立 opacity）===== */}
                       <g opacity={0}>
+                        {/* detail opacity in: mouseover */}
                         {animateOpacity({
                           initValue: 0,
-                          timeline: [{ toAbs: 1, durationSeconds: 0.5 }],
+                          timeline: [
+                            { toAbs: 1, durationSeconds: 0.5 },
+                            { toAbs: 1, durationSeconds: 99.5 },
+                          ],
                           begin: "mouseover",
                           isFreeze: true,
-                          loopCount: 0,
+                          loopCount: 1,
                           restart: "always",
                         })}
+                        {/* detail opacity out: mouseout */}
                         {animateOpacity({
                           initValue: 1,
-                          timeline: [{ toAbs: 0, durationSeconds: 0.5 }],
+                          timeline: [
+                            { toAbs: 0, durationSeconds: 0.5 },
+                            { toAbs: 0, durationSeconds: 99.5 },
+                          ],
                           begin: "mouseout",
                           isFreeze: true,
-                          loopCount: 0,
+                          loopCount: 1,
                           restart: "always",
                         })}
 
-                        {/* 详情图（反缩放，在放大层内恢复原始大小） */}
+                        {/* 详情图（反缩放） */}
                         <g transform={`scale(${invScale})`}>
                           <g transform={`translate(${-item.x * zoomScale} ${-item.y * zoomScale})`}>
                             <Content url={item.url} jsx={item.jsx} w={w} h={h} />
@@ -209,27 +220,35 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                         {/* ===== 5. 点击区 wrapper（visibility 控制）===== */}
                         <g transform={`translate(${-item.x} ${-item.y})`} opacity={0}>
                           {setVisibility({ to: "hidden", begin: "mouseover+1s", isFreeze: true, native: { restart: "always" as never } })}
-                          {setVisibility({ to: "visible", begin: `mouseout+${dStr}s`, isFreeze: true, native: { restart: "always" as never } })}
+                          {setVisibility({ to: "visible", begin: `mouseout+${duration}s`, isFreeze: true, native: { restart: "always" as never } })}
 
-                          {/* ===== 6. counter-translate（保持 rect 始终在画布内）===== */}
+                          {/* ===== 6. counter-translate ===== */}
                           <g transform="translate(-2000,0)">
+                            {/* counter in: mouseover → -2000→0 */}
                             {transformTranslate({
                               initValue: { x: -2000, y: 0 },
-                              timeline: [{ toAbs: { x: 0, y: 0 }, durationSeconds: 0.001 }],
+                              timeline: [
+                                { toAbs: { x: 0, y: 0 }, durationSeconds: 0.0001 },
+                                { toAbs: { x: 0, y: 0 }, durationSeconds: 99.9999 },
+                              ],
                               begin: "mouseover",
                               calcMode: "discrete",
                               isFreeze: true,
-                              loopCount: 0,
+                              loopCount: 1,
                               isAdditive: false,
                               restart: "always",
                             })}
+                            {/* counter out: mouseout+D → 0→-2000 */}
                             {transformTranslate({
                               initValue: { x: 0, y: 0 },
-                              timeline: [{ toAbs: { x: -2000, y: 0 }, durationSeconds: 0.001 }],
-                              begin: `mouseout+${dStr}s`,
+                              timeline: [
+                                { toAbs: { x: -2000, y: 0 }, durationSeconds: 0.0001 },
+                                { toAbs: { x: -2000, y: 0 }, durationSeconds: 99.9999 },
+                              ],
+                              begin: `mouseout+${duration}s`,
                               calcMode: "discrete",
                               isFreeze: true,
-                              loopCount: 0,
+                              loopCount: 1,
                               isAdditive: false,
                               restart: "always",
                             })}
@@ -251,7 +270,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                   </g>
                 </g>
 
-                {/* ===== 热区缩略图（可见标注，始终在画布内）===== */}
+                {/* ===== 热区缩略图（可见标注） ===== */}
                 <g transform={`translate(${hsX} ${hsY})`}>
                   <Content
                     url={item.thumbnail?.url ?? item.url ?? undefined}
