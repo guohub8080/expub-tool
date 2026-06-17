@@ -27,15 +27,18 @@ const polar = (cx: number, cy: number, r: number, angleDeg: number) => {
 const round4 = (n: number): number => Math.round(n * 10000) / 10000
 
 /**
- * ShutterBlade — 相机快门叶片
+ * ShutterBlade — 相机快门叶片（平移开合）
  *
- * 叶片形状：顶点在画布中心 C，底边两端在外缘圆上（跨一个扇区 360/N）。
- * 关闭态（rotate=0）：N 片在中心无缝拼接，铺满整圆，完全覆盖画布。
+ * 叶片形状：三角形（顶点在画布中心 C + 底边两端在外缘圆上，跨一个扇区 360/N）。
+ * 关闭态（translate=0）：N 片在中心无缝拼接、铺满整圆，完全覆盖画布（含四角）。
  *
- * 旋转枢轴：底边中点 M（外缘）。绕 M 旋转 openAngle → 叶片向边缘外翻（撤离），
- * 露出中心。openAngle 默认 = 扇区角，使撤离时叶片翻到画布外。
+ * 平移：每片沿自己的径向（底边中点方向）外移 outerDist（> 画布对角线）→ 整片到 viewBox 外，完全看不到。
  *
- * 动作（一个周期）：关闭停留（铺满）→ 打开（翻出撤离）→ 打开停留 → 关闭（翻回铺满）。
+ * 动作（一个周期，初始在 viewBox 外）：
+ * - 进来：从外平移到中心（translate 外移 → 0），N 片拼拢覆盖。
+ * - 闭合停留：铺满。
+ * - 撤离：从中心平移到外（translate 0 → 外移），露出底图。
+ * - 打开停留。
  */
 const ShutterBlade = (props: I_ShutterBladeProps) => {
   const { canvasSize, children } = props
@@ -43,7 +46,6 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
   const bladeFill = defaultTo(props.bladeFill, DEFAULT_BLADE_FILL)
   const bladeStroke = defaultTo(props.bladeStroke, DEFAULT_BLADE_STROKE)
   const bladeStrokeWidth = defaultTo(props.bladeStrokeWidth, DEFAULT_BLADE_STROKE_WIDTH)
-  const openAngle = defaultTo(props.openAngle, 0)
   const closeDuration = defaultTo(props.closeDuration, DEFAULT_CLOSE_DURATION)
   const closeStay = defaultTo(props.closeStay, DEFAULT_CLOSE_STAY)
   const openDuration = defaultTo(props.openDuration, DEFAULT_OPEN_DURATION)
@@ -53,20 +55,19 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
   const isDev = ExPubGoConfig().mode === "development"
   const cx = canvasSize.w / 2
   const cy = canvasSize.h / 2
-  // 外缘半径 = 对角线一半，确保关闭时盖住四角
+  // 外缘半径 = 对角线一半，叶片底边在外缘、顶点在中心，关闭时铺满覆盖四角
   const radius = Math.hypot(canvasSize.w, canvasSize.h) / 2
   const sector = 360 / blades
+  // 外移距离：超过画布对角线半径，确保整片移到 viewBox 外完全看不到
+  const outerDist = radius * 1.5
 
-  // 撤离角度：让叶片翻到画布外。默认扇区角。
-  const escapeAngle = openAngle > 0 ? openAngle : sector
-
-  // 时序：关闭停留 → 打开 → 打开停留 → 关闭 → 循环
-  const cycle = closeStay + openDuration + openStay + closeDuration
+  // 时序：进来(closeDuration) → 闭合停留(closeStay) → 撤离(openDuration) → 打开停留(openStay)
+  const cycle = closeDuration + closeStay + openDuration + openStay
   const keyTimes = [
     0,
-    closeStay / cycle,
-    (closeStay + openDuration) / cycle,
-    (closeStay + openDuration + openStay) / cycle,
+    closeDuration / cycle,
+    (closeDuration + closeStay) / cycle,
+    (closeDuration + closeStay + openDuration) / cycle,
     1,
   ].map(round4).join(";")
 
@@ -88,29 +89,24 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
           {/* 快门后面的内容（叶片撤离时露出） */}
           {children}
 
-          {/* 快门叶片：N 片，顶点在中心、底边在外缘，绕底边中点旋转 */}
+          {/* 快门叶片：N 片三角形，沿径向平移进出 */}
           {Array.from({ length: blades }, (_, i) => {
             const alpha = i * sector - 90
-            // 底边两端：外缘上，跨一个扇区
             const baseA = polar(cx, cy, radius, alpha)
             const baseB = polar(cx, cy, radius, alpha + sector)
-            // 底边中点（枢轴）
-            const pivotX = round4((baseA.x + baseB.x) / 2)
-            const pivotY = round4((baseA.y + baseB.y) / 2)
+            // 径向角度（底边中点方向），叶片沿此方向外移
+            const theta = alpha + sector / 2
+            const rad = (theta * Math.PI) / 180
+            const dx = round4(outerDist * Math.cos(rad))
+            const dy = round4(outerDist * Math.sin(rad))
             const points = `${cx},${cy} ${round4(baseA.x)},${round4(baseA.y)} ${round4(baseB.x)},${round4(baseB.y)}`
-            // rotate: 0 = 关闭（铺满）；escapeAngle = 打开（翻出撤离）
-            const values = [
-              `0 ${pivotX} ${pivotY}`,
-              `0 ${pivotX} ${pivotY}`,
-              `${escapeAngle} ${pivotX} ${pivotY}`,
-              `${escapeAngle} ${pivotX} ${pivotY}`,
-              `0 ${pivotX} ${pivotY}`,
-            ].join(";")
+            // translate: 初始外移(外) → 0(关闭铺满) → 0(停留) → 外移(撤离) → 外移(停留)
+            const values = `${dx} ${dy}; 0 0; 0 0; ${dx} ${dy}; ${dx} ${dy}`
             return (
               <g key={i}>
                 <animateTransform
                   attributeName="transform"
-                  type="rotate"
+                  type="translate"
                   values={values}
                   keyTimes={keyTimes}
                   calcMode="linear"

@@ -9,11 +9,11 @@ export const DEFAULT_BLADE_FILL = "#f3f4f6"
 export const DEFAULT_BLADE_STROKE = "#374151"
 /** 默认叶片描边宽度（viewBox 单位） */
 export const DEFAULT_BLADE_STROKE_WIDTH = 2
-/** 默认关闭过程时长（秒，叶片旋入包裹） */
+/** 默认进来时长（秒，叶片从外平移到中心拼满） */
 export const DEFAULT_CLOSE_DURATION = 0.5
-/** 默认闭合停留（秒，叶片铺满） */
+/** 默认闭合停留（秒，铺满覆盖） */
 export const DEFAULT_CLOSE_STAY = 0.4
-/** 默认打开过程时长（秒，叶片撤离） */
+/** 默认撤离时长（秒，叶片平移到 viewBox 外） */
 export const DEFAULT_OPEN_DURATION = 0.5
 /** 默认打开停留（秒，露出底图） */
 export const DEFAULT_OPEN_STAY = 1.2
@@ -29,18 +29,15 @@ export interface I_ShutterBladeProps {
   bladeStroke?: string
   /** 叶片描边宽度（viewBox 单位），默认 2 */
   bladeStrokeWidth?: number
-  /** 关闭旋转角度（度），默认 0 = 自动按扇区角 360/blades 算；
-   *  传正值则用该值（更大旋得更狠） */
-  openAngle?: number
-  /** 关闭过程时长（秒，叶片旋入包裹），默认 0.5 */
+  /** 进来时长（秒，叶片从 viewBox 外平移到中心拼满），默认 0.5 */
   closeDuration?: number
-  /** 闭合停留（秒，叶片铺满），默认 0.4 */
+  /** 闭合停留（秒，铺满覆盖），默认 0.4 */
   closeStay?: number
-  /** 打开过程时长（秒，叶片撤离），默认 0.5 */
+  /** 撤离时长（秒，叶片平移到 viewBox 外），默认 0.5 */
   openDuration?: number
   /** 打开停留（秒，露出底图），默认 1.2 */
   openStay?: number
-  /** 快门后面的内容（打开时露出） */
+  /** 快门后面的内容（叶片撤离时露出） */
   children?: ReactNode
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
