@@ -176,16 +176,13 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                         restart: "always",
                       })}
 
-                      {/* 底图（放大该区域 = 放大镜效果）。
-                          没 background 时用 item 自己的图当底图 */}
-                      <g transform={`translate(${-item.x} ${-item.y})`}>
-                        <Content
-                          url={isDefined(background) ? background.url : (item.thumbnail?.url ?? item.url)}
-                          jsx={isDefined(background) ? background.jsx : item.thumbnail?.jsx}
-                          w={w}
-                          h={h}
-                        />
-                      </g>
+                      {/* 底图（放大镜效果，仅当显式传了 background 时渲染。
+                          不传则 scale 层只有详情图，避免底图残留） */}
+                      {isDefined(background) && (
+                        <g transform={`translate(${-item.x} ${-item.y})`}>
+                          <Content url={background.url} jsx={background.jsx} w={w} h={h} />
+                        </g>
+                      )}
 
                       {/* ===== 4. 详情层（独立 opacity）===== */}
                       <g opacity={0}>
