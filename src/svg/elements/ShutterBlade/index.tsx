@@ -4,7 +4,7 @@ import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { spacing } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
-import { transformTranslate } from "@smil/index"
+import { transformRotate } from "@smil/animateTransform/rotate"
 import type { I_ShutterBladeProps } from "./types"
 import {
   DEFAULT_BLADES,
@@ -15,7 +15,7 @@ import {
   DEFAULT_CLOSE_STAY,
   DEFAULT_OPEN_DURATION,
   DEFAULT_OPEN_STAY,
-  DEFAULT_APERTURE,
+  DEFAULT_CLOSE_ANGLE,
 } from "./types"
 
 export type { I_ShutterBladeProps } from "./types"
@@ -23,17 +23,26 @@ export type { I_ShutterBladeProps } from "./types"
 const rad = (deg: number) => (deg * Math.PI) / 180
 const round4 = (n: number) => Math.round(n * 10000) / 10000
 
+/** 极坐标 → 直角坐标（相对中心 0,0） */
+const polar = (r: number, angleDeg: number) => ({
+  x: r * Math.cos(rad(angleDeg)),
+  y: r * Math.sin(rad(angleDeg)),
+})
+
 /**
- * ShutterBlade — 相机快门叶片（光圈式收缩）
+ * ShutterBlade — 相机快门叶片（光圈式旋转收缩）
  *
- * 叶片形状：三角形，**一个角（顶点）指向中心**，底边在外缘。
- * - 顶点 tip_i 在距中心 aperture 处（圆孔半径），角度 α_i = i·(360/N) − 90。
- * - 底边两端 baseA/baseB 在外缘圆上，跨 2 个扇区（a±sector），相邻叶片重叠不留缝。
+ * 机械光圈模型：N 片叶片，每片绕自己的**外缘枢轴**旋转（模拟连杆/凸轮驱动）。
  *
- * N 片顶点围成半径 = aperture 的圆孔。每片沿「顶点→中心」方向平移 → 顶点向中心靠近
- * → 圆孔越来越小 → 最终闭合（顶点到中心，孔=0）。
+ * 叶片形状（标准位，中心相对坐标，叶片在顶部 φ=−90°）：
+ * - V1（枢轴）：外缘，角度 −90−sector/2（扇区左边界）。叶片绕此点旋转。
+ * - V2（外缘远端）：外缘，角度 −90+sector（跨入下一扇区，相邻重叠）。
+ * - V3（内角）：距中心 R/2，角度 −90+sector/2（扇区中心方向）。
  *
- * 时序（初始打开/露出）：收缩 → 闭合停留 → 张开 → 打开停留 → 循环。
+ * N 片各旋转 i·sector 放置 → 围成中心圆孔（半径 ≈ R/2）。
+ * 每片绕 V1 旋转 closeAngle（默认 sector/2）→ V3 扫向中心 → 圆孔收缩 → 闭合。
+ *
+ * z 序：blade 0 在底、blade N−1 在顶（DOM 顺序），形成 pinwheel 层叠。
  */
 const ShutterBlade = (props: I_ShutterBladeProps) => {
   const { canvasSize, children } = props
@@ -52,9 +61,24 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
   const cy = canvasSize.h / 2
   const radius = Math.hypot(canvasSize.w, canvasSize.h) / 2
   const sector = 360 / blades
-  // 圆孔半径（打开态）：用户传正值用用户值，否则自动（对角线 * 0.6）
-  const apertureResolved = defaultTo(props.aperture, DEFAULT_APERTURE)
-  const aperture = apertureResolved > 0 ? apertureResolved : radius * 0.6
+
+  // 闭合旋转角度：默认 sector/2（内角扫向中心），用户可覆盖
+  const closeAngleResolved = defaultTo(props.closeAngle, DEFAULT_CLOSE_ANGLE)
+  const closeAngle = closeAngleResolved > 0 ? closeAngleResolved : sector / 2
+
+  // 叶片三角形顶点（中心相对坐标，标准位 φ=−90° 顶部）
+  const v1 = polar(radius, -90 - sector / 2)  // 枢轴：外缘左边界
+  const v2 = polar(radius, -90 + sector)       // 外缘远端：跨入下一扇区（重叠）
+  const v3 = polar(radius * 0.5, -90 + sector / 2)  // 内角：距中心 R/2
+
+  // viewBox 绝对坐标
+  const pivotX = round4(cx + v1.x)
+  const pivotY = round4(cy + v1.y)
+  const points = [
+    `${round4(cx + v1.x)},${round4(cy + v1.y)}`,
+    `${round4(cx + v2.x)},${round4(cy + v2.y)}`,
+    `${round4(cx + v3.x)},${round4(cy + v3.y)}`,
+  ].join(" ")
 
   return (
     <SectionEx
@@ -73,36 +97,18 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
         <SvgEx viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`} style={{ display: "block", width: "100%" }}>
           {children}
 
-          {Array.from({ length: blades }, (_, i) => {
-            const a = i * sector - 90
-            // 顶点（角）：指向中心方向，距中心 aperture（圆孔边缘）
-            const tip = {
-              x: cx + aperture * Math.cos(rad(a)),
-              y: cy + aperture * Math.sin(rad(a)),
-            }
-            // 底边两端：外缘，跨 2 扇区（a±sector），相邻重叠不留缝
-            const baseA = {
-              x: cx + radius * Math.cos(rad(a - sector)),
-              y: cy + radius * Math.sin(rad(a - sector)),
-            }
-            const baseB = {
-              x: cx + radius * Math.cos(rad(a + sector)),
-              y: cy + radius * Math.sin(rad(a + sector)),
-            }
-            const points = `${round4(tip.x)},${round4(tip.y)} ${round4(baseA.x)},${round4(baseA.y)} ${round4(baseB.x)},${round4(baseB.y)}`
-            // 收缩平移：顶点 → 中心（向量 = center − tip），平移量 = aperture（顶点到中心）
-            const dx = round4(cx - tip.x)
-            const dy = round4(cy - tip.y)
-            return (
-              <g key={i}>
-                {transformTranslate({
-                  initValue: { x: 0, y: 0 },
+          {Array.from({ length: blades }, (_, i) => (
+            <g key={i} transform={`rotate(${i * sector} ${cx} ${cy})`}>
+              <g>
+                {transformRotate({
+                  initValue: 0,
                   timeline: [
-                    { toAbs: { x: dx, y: dy }, durationSeconds: closeDuration },
-                    { toAbs: { x: dx, y: dy }, durationSeconds: closeStay },
-                    { toAbs: { x: 0, y: 0 }, durationSeconds: openDuration },
-                    { toAbs: { x: 0, y: 0 }, durationSeconds: openStay },
+                    { toAbs: 0, durationSeconds: openStay },
+                    { toAbs: closeAngle, durationSeconds: closeDuration },
+                    { toAbs: closeAngle, durationSeconds: closeStay },
+                    { toAbs: 0, durationSeconds: openDuration },
                   ],
+                  pivot: [pivotX, pivotY],
                   begin: "0s",
                   calcMode: "linear",
                   isFreeze: true,
@@ -110,10 +116,15 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
                   isAdditive: false,
                   restart: "whenNotActive",
                 })}
-                <polygon points={points} fill={bladeFill} stroke={bladeStroke} strokeWidth={bladeStrokeWidth} />
+                <polygon
+                  points={points}
+                  fill={bladeFill}
+                  stroke={bladeStroke}
+                  strokeWidth={bladeStrokeWidth}
+                />
               </g>
-            )
-          })}
+            </g>
+          ))}
         </SvgEx>
       </section>
     </SectionEx>
