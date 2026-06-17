@@ -4,7 +4,7 @@ import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { spacing } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
-import { transformRotate } from "@smil/animateTransform/rotate"
+import { transformTranslate } from "@smil/index"
 import type { I_ShutterBladeProps } from "./types"
 import {
   DEFAULT_BLADES,
@@ -15,7 +15,6 @@ import {
   DEFAULT_CLOSE_STAY,
   DEFAULT_OPEN_DURATION,
   DEFAULT_OPEN_STAY,
-  DEFAULT_CLOSE_ANGLE,
 } from "./types"
 
 export type { I_ShutterBladeProps } from "./types"
@@ -23,26 +22,20 @@ export type { I_ShutterBladeProps } from "./types"
 const rad = (deg: number) => (deg * Math.PI) / 180
 const round4 = (n: number) => Math.round(n * 10000) / 10000
 
-/** 极坐标 → 直角坐标（相对中心 0,0） */
-const polar = (r: number, angleDeg: number) => ({
-  x: r * Math.cos(rad(angleDeg)),
-  y: r * Math.sin(rad(angleDeg)),
-})
-
 /**
- * ShutterBlade — 相机快门叶片（光圈式旋转收缩）
+ * ShutterBlade — 相机快门叶片（直角三角形平移开合）
  *
- * 机械光圈模型：N 片叶片，每片绕自己的**外缘枢轴**旋转（模拟连杆/凸轮驱动）。
+ * 参考 Raycast 快门动画：N 片直角三角形，每片绕中心旋转 i·sector° 放置。
  *
- * 叶片形状（标准位，中心相对坐标，叶片在顶部 φ=−90°）：
- * - V1（枢轴）：外缘，角度 −90−sector/2（扇区左边界）。叶片绕此点旋转。
- * - V2（外缘远端）：外缘，角度 −90+sector（跨入下一扇区，相邻重叠）。
- * - V3（内角）：距中心 R/2，角度 −90+sector/2（扇区中心方向）。
+ * 叶片形状（viewBox 坐标，pivot 在中心 cx,cy）：
+ * - P1（pivot）：中心 (cx, cy) — 旋转放置的锚点。
+ * - P2（直角顶点）：(cx − side, cy) — 距中心 side，正左方。
+ * - P3（远端）：(cx − side, cy − side·tan(sector)) — 构成 sector° 扇角。
  *
- * N 片各旋转 i·sector 放置 → 围成中心圆孔（半径 ≈ R/2）。
- * 每片绕 V1 旋转 closeAngle（默认 sector/2）→ V3 扫向中心 → 圆孔收缩 → 闭合。
+ * 每片覆盖 sector° 的扇区，N 片拼合 = 360° 完全覆盖画布。
  *
- * z 序：blade 0 在底、blade N−1 在顶（DOM 顺序），形成 pinwheel 层叠。
+ * 开合：每片沿本地坐标平移 (tan(sector/2)·side, −side) → 三角形整体外移、
+ * 中心露出。由于每片旋转角度不同，平移方向各异 → 对称张开/合拢。
  */
 const ShutterBlade = (props: I_ShutterBladeProps) => {
   const { canvasSize, children } = props
@@ -59,26 +52,22 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
   const isDev = ExPubGoConfig().mode === "development"
   const cx = canvasSize.w / 2
   const cy = canvasSize.h / 2
-  const radius = Math.hypot(canvasSize.w, canvasSize.h) / 2
+  // side = 外缘半径（对角线一半），确保叶片足够大覆盖画布
+  const side = Math.hypot(canvasSize.w, canvasSize.h) / 2
   const sector = 360 / blades
 
-  // 闭合旋转角度：默认 sector/2（内角扫向中心），用户可覆盖
-  const closeAngleResolved = defaultTo(props.closeAngle, DEFAULT_CLOSE_ANGLE)
-  const closeAngle = closeAngleResolved > 0 ? closeAngleResolved : sector / 2
+  // 叶片三角形顶点（viewBox 坐标）
+  const p1x = round4(cx)                    // pivot（中心）
+  const p1y = round4(cy)
+  const p2x = round4(cx - side)             // 直角顶点（左方）
+  const p2y = round4(cy)
+  const p3x = round4(cx - side)             // 远端（上方，tan(sector) 决定高度）
+  const p3y = round4(cy - side * Math.tan(rad(sector)))
+  const points = `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y}`
 
-  // 叶片三角形顶点（中心相对坐标，标准位 φ=−90° 顶部）
-  const v1 = polar(radius, -90 - sector / 2)  // 枢轴：外缘左边界
-  const v2 = polar(radius, -90 + sector * 1.5)   // 外缘远端：跨更多扇区（叶片更宽、重叠更多）
-  const v3 = polar(radius * 0.5, -90 + sector / 2)  // 内角：距中心 R/2
-
-  // viewBox 绝对坐标
-  const pivotX = round4(cx + v1.x)
-  const pivotY = round4(cy + v1.y)
-  const points = [
-    `${round4(cx + v1.x)},${round4(cy + v1.y)}`,
-    `${round4(cx + v2.x)},${round4(cy + v2.y)}`,
-    `${round4(cx + v3.x)},${round4(cy + v3.y)}`,
-  ].join(" ")
+  // 打开时的平移量（本地坐标，每片相同；因旋转角度不同，全局方向各异）
+  const openTx = round4(Math.tan(rad(sector / 2)) * side)
+  const openTy = round4(-side)
 
   return (
     <SectionEx
@@ -100,15 +89,14 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
           {Array.from({ length: blades }, (_, i) => (
             <g key={i} transform={`rotate(${i * sector} ${cx} ${cy})`}>
               <g>
-                {transformRotate({
-                  initValue: 0,
+                {transformTranslate({
+                  initValue: { x: 0, y: 0 },
                   timeline: [
-                    { toAbs: 0, durationSeconds: openStay },
-                    { toAbs: closeAngle, durationSeconds: closeDuration },
-                    { toAbs: closeAngle, durationSeconds: closeStay },
-                    { toAbs: 0, durationSeconds: openDuration },
+                    { toAbs: { x: 0, y: 0 }, durationSeconds: closeStay },
+                    { toAbs: { x: openTx, y: openTy }, durationSeconds: openDuration },
+                    { toAbs: { x: openTx, y: openTy }, durationSeconds: openStay },
+                    { toAbs: { x: 0, y: 0 }, durationSeconds: closeDuration },
                   ],
-                  pivot: [pivotX, pivotY],
                   begin: "0s",
                   calcMode: "linear",
                   isFreeze: true,
