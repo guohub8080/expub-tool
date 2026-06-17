@@ -176,12 +176,16 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                         restart: "always",
                       })}
 
-                      {/* 底图 */}
-                      {isDefined(background) && (
-                        <g transform={`translate(${-item.x} ${-item.y})`}>
-                          <Content url={background.url} jsx={background.jsx} w={w} h={h} />
-                        </g>
-                      )}
+                      {/* 底图（放大该区域 = 放大镜效果）。
+                          没 background 时用 item 自己的图当底图 */}
+                      <g transform={`translate(${-item.x} ${-item.y})`}>
+                        <Content
+                          url={isDefined(background) ? background.url : (item.thumbnail?.url ?? item.url)}
+                          jsx={isDefined(background) ? background.jsx : item.thumbnail?.jsx}
+                          w={w}
+                          h={h}
+                        />
+                      </g>
 
                       {/* ===== 4. 详情层（独立 opacity）===== */}
                       <g opacity={0}>
@@ -210,9 +214,9 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                           restart: "always",
                         })}
 
-                        {/* 详情图（反缩放） */}
+                        {/* 详情图（反缩放 scale(1/zoomScale)），偏移和底图一致（不乘 zoomScale） */}
                         <g transform={`scale(${invScale})`}>
-                          <g transform={`translate(${-item.x * zoomScale} ${-item.y * zoomScale})`}>
+                          <g transform={`translate(${-item.x} ${-item.y})`}>
                             <Content url={item.url} jsx={item.jsx} w={w} h={h} />
                           </g>
                         </g>
