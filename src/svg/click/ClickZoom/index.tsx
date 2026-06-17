@@ -175,6 +175,16 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                   </g>
                 </g>
 
+                {/* 热区缩略图（可见标注：让用户看到哪里可以点） */}
+                <g transform={`translate(${round4(item.x - hsW / 2)} ${round4(item.y - hsH / 2)})`}>
+                  <Content
+                    url={item.thumbnail?.url ?? item.url ?? undefined}
+                    jsx={item.thumbnail?.jsx}
+                    w={hsW}
+                    h={hsH}
+                  />
+                </g>
+
                 {/* 热区点击区域（viewBox 坐标，始终可点击） */}
                 <rect
                   id={hotId}

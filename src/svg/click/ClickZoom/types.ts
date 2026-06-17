@@ -23,7 +23,9 @@ export interface ClickZoomItem {
   hotspotW?: number
   /** 热区点击区域高，默认 242 */
   hotspotH?: number
-  /** 详情内容图片地址（与 jsx 二选一） */
+  /** 热区缩略图（可见标注，放在热区位置，让用户看到哪里可以点）。不传则用 url/jsx 作缩略图 */
+  thumbnail?: { url?: string; jsx?: ReactNode }
+  /** 详情内容图片地址（放大后显示，与 jsx 二选一） */
   url?: string
   /** 详情自定义内容（与 url 二选一，优先级高） */
   jsx?: ReactNode

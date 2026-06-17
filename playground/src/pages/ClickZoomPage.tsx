@@ -14,60 +14,50 @@ export default function ClickZoomPage() {
     <div>
       <h2>ClickZoom — 点击热区放大详情（toggle）</h2>
 
-      <CopyDemo title="2 热区 + url 详情图（点击放大、再点关闭）">
+      <CopyDemo title="2 热区 + url（缩略图点击放大看详情图）">
         <ClickZoom
           canvasSize={{ w: 300, h: 400 }}
-          background={{ url: getWechat300x300(1) }}
-          items={[
-            { x: 75, y: 100, url: getWechat300x300(2), hotspotW: 130, hotspotH: 130 },
-            { x: 225, y: 100, url: getWechat300x300(3), hotspotW: 130, hotspotH: 130 },
-          ]}
-        />
-      </CopyDemo>
-
-      <CopyDemo title="2 热区 + jsx 详情（自定义内容）">
-        <ClickZoom
-          canvasSize={{ w: 300, h: 400 }}
-          background={{ url: getWechat300x500(1) }}
           items={[
             {
-              x: 80, y: 150, hotspotW: 140, hotspotH: 140,
-              jsx: (
-                <foreignObject x={0} y={0} width={300} height={400}>
-                  <svg viewBox="0 0 300 400" style={{ width: '100%' }}>
-                    <rect width={300} height={400} fill="#1e293b" />
-                    <text x={150} y={180} fontSize={28} fill="#fff" textAnchor="middle" fontWeight={900}>详情 A</text>
-                    <text x={150} y={230} fontSize={14} fill="#94a3b8" textAnchor="middle">这是 jsx 自定义内容</text>
-                    <text x={150} y={280} fontSize={14} fill="#94a3b8" textAnchor="middle">点击任意处关闭</text>
-                  </svg>
-                </foreignObject>
-              ),
+              x: 80, y: 110, hotspotW: 130, hotspotH: 130,
+              thumbnail: { url: getWechat300x300(1) },
+              url: getWechat300x500(1),
             },
             {
-              x: 220, y: 150, hotspotW: 140, hotspotH: 140,
-              jsx: (
-                <foreignObject x={0} y={0} width={300} height={400}>
-                  <svg viewBox="0 0 300 400" style={{ width: '100%' }}>
-                    <rect width={300} height={400} fill="#7c2d12" />
-                    <text x={150} y={180} fontSize={28} fill="#fff" textAnchor="middle" fontWeight={900}>详情 B</text>
-                    <text x={150} y={230} fontSize={14} fill="#fed7aa" textAnchor="middle">另一张 jsx 卡片</text>
-                  </svg>
-                </foreignObject>
-              ),
+              x: 220, y: 110, hotspotW: 130, hotspotH: 130,
+              thumbnail: { url: getWechat300x300(2) },
+              url: getWechat300x500(2),
             },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="放大 2× + 慢速 1.5s">
+      <CopyDemo title="缩略图 = 详情图（同一张，点击放大）">
         <ClickZoom
           canvasSize={{ w: 300, h: 400 }}
-          background={{ url: getWechat300x300(4) }}
-          zoomScale={2}
-          duration={1.5}
           items={[
-            { x: 100, y: 130, url: getWechat300x300(5), hotspotW: 160, hotspotH: 160 },
-            { x: 200, y: 280, url: getWechat300x300(6), hotspotW: 160, hotspotH: 160 },
+            { x: 75, y: 110, url: getWechat300x300(3), hotspotW: 130, hotspotH: 130 },
+            { x: 225, y: 110, url: getWechat300x300(4), hotspotW: 130, hotspotH: 130 },
+            { x: 150, y: 280, url: getWechat300x300(5), hotspotW: 130, hotspotH: 130 },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="底图 + 热区缩略图 + 放大镜效果">
+        <ClickZoom
+          canvasSize={{ w: 300, h: 400 }}
+          background={{ url: getWechat300x500(3) }}
+          items={[
+            {
+              x: 80, y: 150, hotspotW: 120, hotspotH: 120,
+              thumbnail: { url: getWechat300x300(6) },
+              url: getWechat300x300(7),
+            },
+            {
+              x: 220, y: 150, hotspotW: 120, hotspotH: 120,
+              thumbnail: { url: getWechat300x300(8) },
+              url: getWechat300x300(9),
+            },
           ]}
         />
       </CopyDemo>
