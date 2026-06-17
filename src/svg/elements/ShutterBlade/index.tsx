@@ -4,6 +4,7 @@ import SectionEx from "@html/basicEx/SectionEx"
 import SvgEx from "@html/basicEx/SvgEx"
 import { spacing } from "@css-fn/spacing"
 import { ExPubGoConfig } from "@utils/provider/ExPubGoProvider"
+import { transformTranslate } from "@smil/index"
 import type { I_ShutterBladeProps } from "./types"
 import {
   DEFAULT_BLADES,
@@ -14,31 +15,30 @@ import {
   DEFAULT_CLOSE_STAY,
   DEFAULT_OPEN_DURATION,
   DEFAULT_OPEN_STAY,
+  DEFAULT_TRAVEL,
 } from "./types"
 
 export type { I_ShutterBladeProps } from "./types"
 
-/** 极坐标 → 直角坐标 */
-const polar = (cx: number, cy: number, r: number, angleDeg: number) => {
-  const rad = (angleDeg * Math.PI) / 180
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }
-}
-
-const round4 = (n: number): number => Math.round(n * 10000) / 10000
+const rad = (deg: number) => (deg * Math.PI) / 180
+const round4 = (n: number) => Math.round(n * 10000) / 10000
 
 /**
- * ShutterBlade — 相机快门叶片（平移开合）
+ * ShutterBlade — 相机快门叶片（光圈式收缩）
  *
- * 叶片形状：三角形（顶点在画布中心 C + 底边两端在外缘圆上，跨一个扇区 360/N）。
- * 关闭态（translate=0）：N 片在中心无缝拼接、铺满整圆，完全覆盖画布（含四角）。
+ * N 片大三角形叶片，互相重叠。每片顶点在画布外缘、底边跨过中心到对侧外缘——
+ * 形成一个「比扇区大得多」的三角形，相邻叶片大面积重叠。
  *
- * 平移：每片沿自己的径向（底边中点方向）外移 outerDist（> 画布对角线）→ 整片到 viewBox 外，完全看不到。
+ * 关闭态：叶片在自己「home」位置（rotate=0, translate=0），中心露出一个圆形孔洞
+ * （孔的大小由 travel 决定：叶片从 home 向中心平移 travel，孔变小）。
  *
- * 动作（一个周期，初始在 viewBox 外）：
- * - 进来：从外平移到中心（translate 外移 → 0），N 片拼拢覆盖。
- * - 闭合停留：铺满。
- * - 撤离：从中心平移到外（translate 0 → 外移），露出底图。
- * - 打开停留。
+ * 收缩：每片沿自己的径向（顶点→中心方向）向中心平移 travel → 叶片往中心挤、
+ * 圆孔越来越小 → 最终闭合。
+ *
+ * 打开：反向平移，孔变大、露出底图。
+ *
+ * 时序（初始打开/露出）：
+ * 收缩(closeDuration) → 闭合停留(closeStay) → 张开(openDuration) → 打开停留(openStay) → 循环。
  */
 const ShutterBlade = (props: I_ShutterBladeProps) => {
   const { canvasSize, children } = props
@@ -55,21 +55,11 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
   const isDev = ExPubGoConfig().mode === "development"
   const cx = canvasSize.w / 2
   const cy = canvasSize.h / 2
-  // 外缘半径 = 对角线一半，叶片底边在外缘、顶点在中心，关闭时铺满覆盖四角
   const radius = Math.hypot(canvasSize.w, canvasSize.h) / 2
   const sector = 360 / blades
-  // 外移距离：超过画布对角线半径，确保整片移到 viewBox 外完全看不到
-  const outerDist = radius * 1.5
-
-  // 时序：进来(closeDuration) → 闭合停留(closeStay) → 撤离(openDuration) → 打开停留(openStay)
-  const cycle = closeDuration + closeStay + openDuration + openStay
-  const keyTimes = [
-    0,
-    closeDuration / cycle,
-    (closeDuration + closeStay) / cycle,
-    (closeDuration + closeStay + openDuration) / cycle,
-    1,
-  ].map(round4).join(";")
+  // 收缩行程：用户传正值用用户值，否则自动（对角线 * 2/3）
+  const travelResolved = defaultTo(props.travel, DEFAULT_TRAVEL)
+  const travel = travelResolved > 0 ? travelResolved : (radius * 2) / 3
 
   return (
     <SectionEx
@@ -86,41 +76,37 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`} style={{ display: "block", width: "100%" }}>
-          {/* 快门后面的内容（叶片撤离时露出） */}
           {children}
 
-          {/* 快门叶片：N 片三角形，沿径向平移进出 */}
           {Array.from({ length: blades }, (_, i) => {
-            const alpha = i * sector - 90
-            const baseA = polar(cx, cy, radius, alpha)
-            const baseB = polar(cx, cy, radius, alpha + sector)
-            // 径向角度（底边中点方向），叶片沿此方向外移
-            const theta = alpha + sector / 2
-            const rad = (theta * Math.PI) / 180
-            const dx = round4(outerDist * Math.cos(rad))
-            const dy = round4(outerDist * Math.sin(rad))
-            const points = `${cx},${cy} ${round4(baseA.x)},${round4(baseA.y)} ${round4(baseB.x)},${round4(baseB.y)}`
-            // translate: 初始外移(外) → 0(关闭铺满) → 0(停留) → 外移(撤离) → 外移(停留)
-            const values = `${dx} ${dy}; 0 0; 0 0; ${dx} ${dy}; ${dx} ${dy}`
+            const a = i * sector - 90
+            // 顶点：外缘
+            const tip = { x: cx + radius * Math.cos(rad(a)), y: cy + radius * Math.sin(rad(a)) }
+            // 底边两端：外缘、跨 2 个扇区（比 1 个扇区大，确保相邻重叠）
+            const baseA = { x: cx + radius * Math.cos(rad(a + sector)), y: cy + radius * Math.sin(rad(a + sector)) }
+            const baseB = { x: cx + radius * Math.cos(rad(a - sector)), y: cy + radius * Math.sin(rad(a - sector)) }
+            const points = `${round4(tip.x)},${round4(tip.y)} ${round4(baseA.x)},${round4(baseA.y)} ${round4(baseB.x)},${round4(baseB.y)}`
+            // 平移方向：顶点 → 中心（叶片沿此方向向中心收缩）
+            const dx = round4((cx - tip.x) / radius * travel)
+            const dy = round4((cy - tip.y) / radius * travel)
             return (
               <g key={i}>
-                <animateTransform
-                  attributeName="transform"
-                  type="translate"
-                  values={values}
-                  keyTimes={keyTimes}
-                  calcMode="linear"
-                  dur={`${cycle}s`}
-                  begin="0s"
-                  fill="freeze"
-                  repeatCount="indefinite"
-                />
-                <polygon
-                  points={points}
-                  fill={bladeFill}
-                  stroke={bladeStroke}
-                  strokeWidth={bladeStrokeWidth}
-                />
+                {transformTranslate({
+                  initValue: { x: 0, y: 0 },
+                  timeline: [
+                    { toAbs: { x: dx, y: dy }, durationSeconds: closeDuration },
+                    { toAbs: { x: dx, y: dy }, durationSeconds: closeStay },
+                    { toAbs: { x: 0, y: 0 }, durationSeconds: openDuration },
+                    { toAbs: { x: 0, y: 0 }, durationSeconds: openStay },
+                  ],
+                  begin: "0s",
+                  calcMode: "linear",
+                  isFreeze: true,
+                  loopCount: 0,
+                  isAdditive: false,
+                  restart: "whenNotActive",
+                })}
+                <polygon points={points} fill={bladeFill} stroke={bladeStroke} strokeWidth={bladeStrokeWidth} />
               </g>
             )
           })}

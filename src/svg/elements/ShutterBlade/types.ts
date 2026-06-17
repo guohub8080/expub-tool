@@ -17,6 +17,8 @@ export const DEFAULT_CLOSE_STAY = 0.4
 export const DEFAULT_OPEN_DURATION = 0.5
 /** 默认打开停留（秒，露出底图） */
 export const DEFAULT_OPEN_STAY = 1.2
+/** 默认收缩行程（viewBox 单位，叶片向中心平移多远），默认为画布对角线的 1/3 */
+export const DEFAULT_TRAVEL = -1
 
 export interface I_ShutterBladeProps {
   /** SVG 画布尺寸（viewBox） */
@@ -29,7 +31,10 @@ export interface I_ShutterBladeProps {
   bladeStroke?: string
   /** 叶片描边宽度（viewBox 单位），默认 2 */
   bladeStrokeWidth?: number
-  /** 进来时长（秒，叶片从 viewBox 外平移到中心拼满），默认 0.5 */
+  /** 收缩行程（viewBox 单位）：叶片向中心平移多远，孔缩多小。
+   *  默认 -1 = 自动（画布对角线 / 3）；传正值手动控制 */
+  travel?: number
+  /** 收缩时长（秒，叶片向中心平移、孔变小），默认 0.5 */
   closeDuration?: number
   /** 闭合停留（秒，铺满覆盖），默认 0.4 */
   closeStay?: number
