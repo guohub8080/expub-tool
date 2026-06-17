@@ -18,10 +18,10 @@ export { default as BottomAlignedContainer } from "./containers/BottomAlignedCon
 
 export { default as CollapsibleBox } from "./containers/CollapsibleBox"
 
-export { default as PlaceHolder } from "./standard/PlaceHolder"
+export { default as PlaceHolder } from "./elements/PlaceHolder"
 
-export { default as SeamlessImg } from "./standard/SeamlessImg"
-export type { T_SeamlessImgMode } from "./standard/SeamlessImg"
+export { default as SeamlessImg } from "./elements/SeamlessImg"
+export type { T_SeamlessImgMode } from "./elements/SeamlessImg"
 
 export { default as AnyPush } from "./display/AnyPush"
 export type { I_PicConfig } from "./display/AnyPush/types"
