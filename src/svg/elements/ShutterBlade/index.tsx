@@ -15,6 +15,7 @@ import {
   DEFAULT_CLOSE_STAY,
   DEFAULT_OPEN_DURATION,
   DEFAULT_OPEN_STAY,
+  DEFAULT_KEY_SPLINES,
 } from "./types"
 
 export type { I_ShutterBladeProps } from "./types"
@@ -47,6 +48,7 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
   const closeStay = defaultTo(props.closeStay, DEFAULT_CLOSE_STAY)
   const openDuration = defaultTo(props.openDuration, DEFAULT_OPEN_DURATION)
   const openStay = defaultTo(props.openStay, DEFAULT_OPEN_STAY)
+  const keySplines = defaultTo(props.keySplines, DEFAULT_KEY_SPLINES)
 
   const spacingResult = spacing(props.spacing)
   const isDev = ExPubGoConfig().mode === "development"
@@ -93,12 +95,12 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
                   initValue: { x: 0, y: 0 },
                   timeline: [
                     { toAbs: { x: 0, y: 0 }, durationSeconds: closeStay },
-                    { toAbs: { x: openTx, y: openTy }, durationSeconds: openDuration },
+                    { toAbs: { x: openTx, y: openTy }, durationSeconds: openDuration, keySplines },
                     { toAbs: { x: openTx, y: openTy }, durationSeconds: openStay },
-                    { toAbs: { x: 0, y: 0 }, durationSeconds: closeDuration },
+                    { toAbs: { x: 0, y: 0 }, durationSeconds: closeDuration, keySplines },
                   ],
                   begin: "0s",
-                  calcMode: "linear",
+                  calcMode: "spline",
                   isFreeze: true,
                   loopCount: 0,
                   isAdditive: false,

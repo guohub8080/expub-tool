@@ -9,6 +9,8 @@ export const DEFAULT_CLOSE_DURATION = 0.5
 export const DEFAULT_CLOSE_STAY = 0.4
 export const DEFAULT_OPEN_DURATION = 0.5
 export const DEFAULT_OPEN_STAY = 1.2
+/** 默认缓动曲线（ease-in-out） */
+export const DEFAULT_KEY_SPLINES = "0.42 0 0.58 1"
 
 export interface I_ShutterBladeProps {
   canvasSize: { w: number; h: number }
@@ -28,6 +30,9 @@ export interface I_ShutterBladeProps {
   openDuration?: number
   /** 打开停留（秒，露出底图），默认 1.2 */
   openStay?: number
+  /** 缓动曲线（SMIL keySplines），默认 "0.42 0 0.58 1"（ease-in-out，缓慢停住）。
+   *  传 "0 0 1 1" = 线性（匀速） */
+  keySplines?: string
   children?: ReactNode
   spacing?: T_SpacingProps
 }
