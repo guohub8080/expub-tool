@@ -37,13 +37,12 @@ const Content = ({ url, jsx, w, h }: { url?: string; jsx?: ReactNode; w: number;
 /**
  * ClickZoom — 点击热区放大详情（toggle 式）
  *
- * 点击热区 → 从热区中心放大 zoomScale 倍 + 淡入详情 → 再点击 → 缩回 + 淡出。
- * 底图也跟着放大（放大镜效果），详情内容叠加在上层。
+ * 参考 参考实现 仿 iOS 桌面的 translate-off-screen 机制：
+ * 放大层初始 translate(2000,0) 在画布外（不遮挡热区点击）。
+ * 点击热区 → 放大层 translate 回 0,0 + scale 放大 + opacity 淡入。
+ * 点击关闭区 → scale 缩回 + opacity 淡出 → translate 回 2000,0。
  *
- * SMIL toggle 机制：
- * - 热区 rect（id=cz-hot-N）：click → 触发放大动画 + visibility=visible
- * - 关闭 rect（id=cz-close-N）：click → 触发缩小动画 + 延迟 visibility=hidden
- * - restart="always" 允许无限次 toggle
+ * 用 translate-off-screen 而非 visibility:hidden（后者会阻止 pointer-events）。
  */
 const ClickZoom = (props: I_ClickZoomProps) => {
   const { canvasSize, background, items } = props
@@ -53,6 +52,8 @@ const ClickZoom = (props: I_ClickZoomProps) => {
   const spacingResult = spacing(props.spacing)
   const isDev = ExPubGoConfig().mode === "development"
   const { w, h } = canvasSize
+  const invScale = round4(1 / zoomScale)
+  const closeDelay = duration // 关闭后延迟（等缩回再移走）
 
   return (
     <SectionEx
@@ -76,7 +77,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
             </foreignObject>
           </g>
 
-          {/* 底图（始终可见） */}
+          {/* 底图 */}
           {isDefined(background) && (
             <Content url={background.url} jsx={background.jsx} w={w} h={h} />
           )}
@@ -87,96 +88,117 @@ const ClickZoom = (props: I_ClickZoomProps) => {
             const hsH = defaultTo(item.hotspotH, DEFAULT_HOTSPOT_H)
             const hotId = `cz-hot-${i}`
             const closeId = `cz-close-${i}`
-            const invScale = round4(1 / zoomScale)
-            // 关闭动画 begin（延迟 duration 秒，等缩回再淡出+隐藏）
-            const closeBegin = `${closeId}.click`
-            const closeDelay = `${closeId}.click+${duration}s`
+            const hsX = round4(item.x - hsW / 2)
+            const hsY = round4(item.y - hsH / 2)
 
             return (
               <g key={i}>
-                {/* 放大层：translate 到热区中心 → scale 围绕中心放大 */}
-                <g transform={`translate(${item.x} ${item.y})`}>
-                  <g style={{ visibility: "hidden", opacity: 0 }}>
-                    {/* toggle visibility */}
-                    <set attributeName="visibility" to="visible" begin={hotId + ".click"} dur="0.01s" fill="freeze" restart="always" />
-                    <set attributeName="visibility" to="hidden" begin={closeDelay} dur="0.01s" fill="freeze" restart="always" />
+                {/* ===== 放大层：初始 translate(2000,0) 在画布外 ===== */}
+                <g transform="translate(2000,0)">
+                  {/* 进场：hotspot 点击 → translate 回 0,0（瞬间 discrete）*/}
+                  <animateTransform
+                    attributeName="transform"
+                    type="translate"
+                    begin={`${hotId}.click`}
+                    values="2000 0;0 0;0 0"
+                    keyTimes="0;0.0000001;1"
+                    dur="100s"
+                    fill="freeze"
+                    calcMode="discrete"
+                    restart="always"
+                  />
+                  {/* 退场：close 点击+延迟 → translate 回 2000,0 */}
+                  <animateTransform
+                    attributeName="transform"
+                    type="translate"
+                    begin={`${closeId}.click+${closeDelay}s`}
+                    values="0 0;2000 0;2000 0"
+                    keyTimes="0;0.0000001;1"
+                    dur="100s"
+                    fill="freeze"
+                    calcMode="discrete"
+                    restart="always"
+                  />
 
-                    {/* scale 放大（点击热区时） */}
-                    <animateTransform
-                      attributeName="transform"
-                      type="scale"
-                      begin={hotId + ".click"}
-                      values={`1;${zoomScale}`}
-                      dur={`${duration}s`}
-                      fill="freeze"
-                      calcMode="spline"
-                      keySplines={keySplines}
-                      restart="always"
-                    />
-                    {/* scale 缩回（点击关闭时） */}
-                    <animateTransform
-                      attributeName="transform"
-                      type="scale"
-                      begin={closeBegin}
-                      values={`${zoomScale};1`}
-                      dur={`${duration}s`}
-                      fill="freeze"
-                      calcMode="spline"
-                      keySplines={keySplines}
-                      restart="always"
-                    />
-
-                    {/* opacity 淡入（点击热区时，瞬间） */}
-                    <animate
-                      attributeName="opacity"
-                      begin={hotId + ".click"}
-                      values="0;1"
-                      dur="0.01s"
-                      fill="freeze"
-                      restart="always"
-                    />
-                    {/* opacity 淡出（缩回后，延迟 duration 秒） */}
-                    <animate
-                      attributeName="opacity"
-                      begin={closeDelay}
-                      values="1;0"
-                      dur="0.01s"
-                      fill="freeze"
-                      restart="always"
-                    />
-
-                    {/* 底图（偏移使热区中心对齐 origin → 放大该区域） */}
-                    {isDefined(background) && (
-                      <g transform={`translate(${-item.x} ${-item.y})`}>
-                        <Content url={background.url} jsx={background.jsx} w={w} h={h} />
-                      </g>
-                    )}
-
-                    {/* 详情内容（反向缩放，在放大层内恢复原始大小） */}
-                    <g transform={`scale(${invScale})`}>
-                      <g transform={`translate(${-item.x * zoomScale} ${-item.y * zoomScale})`}>
-                        <Content url={item.url} jsx={item.jsx} w={w} h={h} />
-                      </g>
-                    </g>
-
-                    {/* 关闭点击区（覆盖整个画布，偏移回 viewBox 坐标） */}
-                    <g transform={`translate(${-item.x} ${-item.y})`}>
-                      <rect
-                        id={closeId}
-                        x={0}
-                        y={0}
-                        width={w}
-                        height={h}
-                        fill="transparent"
-                        opacity={0.001}
-                        style={{ pointerEvents: "all" }}
+                  {/* 内容：translate 到热区中心 → scale 围绕中心 */}
+                  <g transform={`translate(${item.x} ${item.y})`}>
+                    <g opacity={0}>
+                      {/* scale 放大 */}
+                      <animateTransform
+                        attributeName="transform"
+                        type="scale"
+                        begin={`${hotId}.click`}
+                        values={`1;${zoomScale}`}
+                        dur={`${duration}s`}
+                        fill="freeze"
+                        calcMode="spline"
+                        keySplines={keySplines}
+                        restart="always"
                       />
+                      {/* scale 缩回 */}
+                      <animateTransform
+                        attributeName="transform"
+                        type="scale"
+                        begin={`${closeId}.click`}
+                        values={`${zoomScale};1`}
+                        dur={`${duration}s`}
+                        fill="freeze"
+                        calcMode="spline"
+                        keySplines={keySplines}
+                        restart="always"
+                      />
+                      {/* opacity 淡入 */}
+                      <animate
+                        attributeName="opacity"
+                        begin={`${hotId}.click`}
+                        values="0;1"
+                        dur="0.01s"
+                        fill="freeze"
+                        restart="always"
+                      />
+                      {/* opacity 淡出 */}
+                      <animate
+                        attributeName="opacity"
+                        begin={`${closeId}.click`}
+                        values="1;0"
+                        dur="0.01s"
+                        fill="freeze"
+                        restart="always"
+                      />
+
+                      {/* 底图（偏移使热区中心对齐 origin → 放大该区域） */}
+                      {isDefined(background) && (
+                        <g transform={`translate(${-item.x} ${-item.y})`}>
+                          <Content url={background.url} jsx={background.jsx} w={w} h={h} />
+                        </g>
+                      )}
+
+                      {/* 详情（反向缩放，在放大层内恢复原始大小） */}
+                      <g transform={`scale(${invScale})`}>
+                        <g transform={`translate(${-item.x * zoomScale} ${-item.y * zoomScale})`}>
+                          <Content url={item.url} jsx={item.jsx} w={w} h={h} />
+                        </g>
+                      </g>
+
+                      {/* 关闭点击区（覆盖全画布） */}
+                      <g transform={`translate(${-item.x} ${-item.y})`}>
+                        <rect
+                          id={closeId}
+                          x={0}
+                          y={0}
+                          width={w}
+                          height={h}
+                          fill="transparent"
+                          opacity={0.001}
+                          style={{ pointerEvents: "all" }}
+                        />
+                      </g>
                     </g>
                   </g>
                 </g>
 
-                {/* 热区缩略图（可见标注：让用户看到哪里可以点） */}
-                <g transform={`translate(${round4(item.x - hsW / 2)} ${round4(item.y - hsH / 2)})`}>
+                {/* ===== 热区缩略图（可见标注） ===== */}
+                <g transform={`translate(${hsX} ${hsY})`}>
                   <Content
                     url={item.thumbnail?.url ?? item.url ?? undefined}
                     jsx={item.thumbnail?.jsx}
@@ -185,11 +207,11 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                   />
                 </g>
 
-                {/* 热区点击区域（viewBox 坐标，始终可点击） */}
+                {/* ===== 热区点击区 ===== */}
                 <rect
                   id={hotId}
-                  x={round4(item.x - hsW / 2)}
-                  y={round4(item.y - hsH / 2)}
+                  x={hsX}
+                  y={hsY}
                   width={hsW}
                   height={hsH}
                   fill="transparent"
