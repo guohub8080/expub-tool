@@ -15,7 +15,7 @@ import {
   DEFAULT_CLOSE_STAY,
   DEFAULT_OPEN_DURATION,
   DEFAULT_OPEN_STAY,
-  DEFAULT_TRAVEL,
+  DEFAULT_APERTURE,
 } from "./types"
 
 export type { I_ShutterBladeProps } from "./types"
@@ -26,19 +26,14 @@ const round4 = (n: number) => Math.round(n * 10000) / 10000
 /**
  * ShutterBlade — 相机快门叶片（光圈式收缩）
  *
- * N 片大三角形叶片，互相重叠。每片顶点在画布外缘、底边跨过中心到对侧外缘——
- * 形成一个「比扇区大得多」的三角形，相邻叶片大面积重叠。
+ * 叶片形状：三角形，**一个角（顶点）指向中心**，底边在外缘。
+ * - 顶点 tip_i 在距中心 aperture 处（圆孔半径），角度 α_i = i·(360/N) − 90。
+ * - 底边两端 baseA/baseB 在外缘圆上，跨 2 个扇区（a±sector），相邻叶片重叠不留缝。
  *
- * 关闭态：叶片在自己「home」位置（rotate=0, translate=0），中心露出一个圆形孔洞
- * （孔的大小由 travel 决定：叶片从 home 向中心平移 travel，孔变小）。
+ * N 片顶点围成半径 = aperture 的圆孔。每片沿「顶点→中心」方向平移 → 顶点向中心靠近
+ * → 圆孔越来越小 → 最终闭合（顶点到中心，孔=0）。
  *
- * 收缩：每片沿自己的径向（顶点→中心方向）向中心平移 travel → 叶片往中心挤、
- * 圆孔越来越小 → 最终闭合。
- *
- * 打开：反向平移，孔变大、露出底图。
- *
- * 时序（初始打开/露出）：
- * 收缩(closeDuration) → 闭合停留(closeStay) → 张开(openDuration) → 打开停留(openStay) → 循环。
+ * 时序（初始打开/露出）：收缩 → 闭合停留 → 张开 → 打开停留 → 循环。
  */
 const ShutterBlade = (props: I_ShutterBladeProps) => {
   const { canvasSize, children } = props
@@ -57,9 +52,9 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
   const cy = canvasSize.h / 2
   const radius = Math.hypot(canvasSize.w, canvasSize.h) / 2
   const sector = 360 / blades
-  // 收缩行程：用户传正值用用户值，否则自动（对角线 * 2/3）
-  const travelResolved = defaultTo(props.travel, DEFAULT_TRAVEL)
-  const travel = travelResolved > 0 ? travelResolved : (radius * 2) / 3
+  // 圆孔半径（打开态）：用户传正值用用户值，否则自动（对角线 * 0.6）
+  const apertureResolved = defaultTo(props.aperture, DEFAULT_APERTURE)
+  const aperture = apertureResolved > 0 ? apertureResolved : radius * 0.6
 
   return (
     <SectionEx
@@ -80,15 +75,24 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
 
           {Array.from({ length: blades }, (_, i) => {
             const a = i * sector - 90
-            // 顶点：外缘
-            const tip = { x: cx + radius * Math.cos(rad(a)), y: cy + radius * Math.sin(rad(a)) }
-            // 底边两端：外缘、跨 2 个扇区（比 1 个扇区大，确保相邻重叠）
-            const baseA = { x: cx + radius * Math.cos(rad(a + sector)), y: cy + radius * Math.sin(rad(a + sector)) }
-            const baseB = { x: cx + radius * Math.cos(rad(a - sector)), y: cy + radius * Math.sin(rad(a - sector)) }
+            // 顶点（角）：指向中心方向，距中心 aperture（圆孔边缘）
+            const tip = {
+              x: cx + aperture * Math.cos(rad(a)),
+              y: cy + aperture * Math.sin(rad(a)),
+            }
+            // 底边两端：外缘，跨 2 扇区（a±sector），相邻重叠不留缝
+            const baseA = {
+              x: cx + radius * Math.cos(rad(a - sector)),
+              y: cy + radius * Math.sin(rad(a - sector)),
+            }
+            const baseB = {
+              x: cx + radius * Math.cos(rad(a + sector)),
+              y: cy + radius * Math.sin(rad(a + sector)),
+            }
             const points = `${round4(tip.x)},${round4(tip.y)} ${round4(baseA.x)},${round4(baseA.y)} ${round4(baseB.x)},${round4(baseB.y)}`
-            // 平移方向：顶点 → 中心（叶片沿此方向向中心收缩）
-            const dx = round4((cx - tip.x) / radius * travel)
-            const dy = round4((cy - tip.y) / radius * travel)
+            // 收缩平移：顶点 → 中心（向量 = center − tip），平移量 = aperture（顶点到中心）
+            const dx = round4(cx - tip.x)
+            const dy = round4(cy - tip.y)
             return (
               <g key={i}>
                 {transformTranslate({
