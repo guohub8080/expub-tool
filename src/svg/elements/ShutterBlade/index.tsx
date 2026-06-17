@@ -68,7 +68,7 @@ const ShutterBlade = (props: I_ShutterBladeProps) => {
 
   // 叶片三角形顶点（中心相对坐标，标准位 φ=−90° 顶部）
   const v1 = polar(radius, -90 - sector / 2)  // 枢轴：外缘左边界
-  const v2 = polar(radius, -90 + sector)       // 外缘远端：跨入下一扇区（重叠）
+  const v2 = polar(radius, -90 + sector * 1.5)   // 外缘远端：跨更多扇区（叶片更宽、重叠更多）
   const v3 = polar(radius * 0.5, -90 + sector / 2)  // 内角：距中心 R/2
 
   // viewBox 绝对坐标

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import type { T_SpacingProps } from "@css-fn/spacing"
 
-export const DEFAULT_BLADES = 6
+export const DEFAULT_BLADES = 8
 export const DEFAULT_BLADE_FILL = "#f3f4f6"
 export const DEFAULT_BLADE_STROKE = "#374151"
 export const DEFAULT_BLADE_STROKE_WIDTH = 2
