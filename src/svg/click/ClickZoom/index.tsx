@@ -219,8 +219,8 @@ const ClickZoom = (props: I_ClickZoomProps) => {
 
                         {/* ===== 5. 点击区 wrapper（visibility 控制）===== */}
                         <g transform={`translate(${-item.x} ${-item.y})`} opacity={0}>
-                          {setVisibility({ to: "hidden", begin: "mouseover+1s", isFreeze: true, native: { restart: "always" as never } })}
-                          {setVisibility({ to: "visible", begin: `mouseout+${duration}s`, isFreeze: true, native: { restart: "always" as never } })}
+                          {setVisibility({ to: "hidden", begin: "mouseover+1s", isFreeze: true, native: { from: "visible", dur: "0.01s", restart: "always" as never } })}
+                          {setVisibility({ to: "visible", begin: `mouseout+${duration}s`, isFreeze: true, native: { from: "hidden", dur: "0.01s", restart: "always" as never } })}
 
                           {/* ===== 6. counter-translate ===== */}
                           <g transform="translate(-2000,0)">
