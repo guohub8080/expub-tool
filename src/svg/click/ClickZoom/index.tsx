@@ -45,7 +45,7 @@ const Content = ({ url, jsx, w, h }: { url?: string; jsx?: ReactNode; w: number;
  * off-screen(translate 2000,0) → 定位(x,y) → 放大层(scale+opacity) → 底图 + 详情层(opacity) → 详情图(scale) + 点击区(visibility) → counter-translate(-2000,0) → rect
  */
 const ClickZoom = (props: I_ClickZoomProps) => {
-  const { canvasSize, background, items } = props
+  const { canvasSize, items } = props
   const zoomScale = defaultTo(props.zoomScale, DEFAULT_ZOOM_SCALE)
   const duration = defaultTo(props.duration, DEFAULT_DURATION)
   const keySplines = defaultTo(props.keySplines, DEFAULT_KEY_SPLINES)
@@ -70,17 +70,12 @@ const ClickZoom = (props: I_ClickZoomProps) => {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`} style={{ display: "block", width: "100%" }}>
-          {/* 画布背景 */}
+          {/* 画布背景（canvasBg.url 同时作为放大底图） */}
           <g>
             <foreignObject x={0} y={0} width={w} height={h}>
               <svg viewBox={`0 0 ${w} ${h}`} style={{ ...resolveCanvasBg(props.canvasBg), width: "100%" }} />
             </foreignObject>
           </g>
-
-          {/* 底图 */}
-          {isDefined(background) && (
-            <Content url={background.url} jsx={background.jsx} w={w} h={h} />
-          )}
 
           {items.map((item, i) => {
             const hsW = defaultTo(item.hotspotW, DEFAULT_HOTSPOT_W)
@@ -176,11 +171,10 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                         restart: "always",
                       })}
 
-                      {/* 底图（放大镜效果，仅当显式传了 background 时渲染。
-                          不传则 scale 层只有详情图，避免底图残留） */}
-                      {isDefined(background) && (
+                      {/* 放大底图（canvasBg.url，放大该区域 = 放大镜效果） */}
+                      {isDefined(props.canvasBg?.url) && (
                         <g transform={`translate(${-item.x} ${-item.y})`}>
-                          <Content url={background.url} jsx={background.jsx} w={w} h={h} />
+                          <Content url={props.canvasBg!.url} w={w} h={h} />
                         </g>
                       )}
 

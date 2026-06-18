@@ -41,10 +41,10 @@ export default function ClickZoomPage() {
     <div>
       <h2>ClickZoom — 点击热区放大详情</h2>
 
-      <CopyDemo title="300×500 底图 + 2 热区（点击放大看详情）">
+      <CopyDemo title="canvasBg 底图 300×500 + 2 热区（放大镜效果）">
         <ClickZoom
           canvasSize={{ w: 300, h: 500 }}
-          background={{ url: getWechat300x500(1) }}
+          canvasBg={{ url: getWechat300x500(1), fit: 'cover' }}
           items={[
             { x: 75, y: 125, url: getWechat300x500(2), hotspotW: 130, hotspotH: 130 },
             { x: 225, y: 125, url: getWechat300x500(3), hotspotW: 130, hotspotH: 130 },
@@ -52,10 +52,10 @@ export default function ClickZoomPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="300×500 底图 + 3 热区 + 放大 2×">
+      <CopyDemo title="canvasBg 底图 300×500 + 3 热区 + 放大 2×">
         <ClickZoom
           canvasSize={{ w: 300, h: 500 }}
-          background={{ url: getWechat300x500(4) }}
+          canvasBg={{ url: getWechat300x500(4), fit: 'cover' }}
           zoomScale={2}
           items={[
             { x: 75, y: 120, url: getWechat300x500(5), hotspotW: 120, hotspotH: 120 },
@@ -65,14 +65,33 @@ export default function ClickZoomPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="300×300 底图 + 2 热区 + 慢速 1.5s">
+      <CopyDemo title="canvasBg 纯色背景 + 2 热区（无放大镜，只有详情弹出）">
         <ClickZoom
-          canvasSize={{ w: 300, h: 300 }}
-          background={{ url: getWechat300x300(1) }}
-          duration={1.5}
+          canvasSize={{ w: 300, h: 400 }}
+          canvasBg={{ color: '#1e293b' }}
           items={[
-            { x: 80, y: 80, url: getWechat300x300(2), hotspotW: 130, hotspotH: 130 },
-            { x: 220, y: 80, url: getWechat300x300(3), hotspotW: 130, hotspotH: 130 },
+            {
+              x: 75, y: 100, hotspotW: 100, hotspotH: 100,
+              jsx: (
+                <foreignObject x={0} y={0} width={300} height={400}>
+                  <svg viewBox="0 0 300 400" style={{ width: '100%' }}>
+                    <rect width={300} height={400} fill='#3b82f6' />
+                    <text x={150} y={200} fontSize={24} fill='#fff' textAnchor='middle' fontWeight={900}>详情 A</text>
+                  </svg>
+                </foreignObject>
+              ),
+            },
+            {
+              x: 225, y: 100, hotspotW: 100, hotspotH: 100,
+              jsx: (
+                <foreignObject x={0} y={0} width={300} height={400}>
+                  <svg viewBox="0 0 300 400" style={{ width: '100%' }}>
+                    <rect width={300} height={400} fill='#ef4444' />
+                    <text x={150} y={200} fontSize={24} fill='#fff' textAnchor='middle' fontWeight={900}>详情 B</text>
+                  </svg>
+                </foreignObject>
+              ),
+            },
           ]}
         />
       </CopyDemo>
