@@ -39,52 +39,40 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
 export default function ClickZoomPage() {
   return (
     <div>
-      <h2>ClickZoom — 点击热区放大详情（toggle）</h2>
+      <h2>ClickZoom — 点击热区放大详情</h2>
 
-      <CopyDemo title="2 热区 + url（缩略图点击放大看详情图）">
+      <CopyDemo title="300×500 底图 + 2 热区（点击放大看详情）">
         <ClickZoom
-          canvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 300, h: 500 }}
+          background={{ url: getWechat300x500(1) }}
           items={[
-            {
-              x: 80, y: 110, hotspotW: 130, hotspotH: 130,
-              thumbnail: { url: getWechat300x300(1) },
-              url: getWechat300x500(1),
-            },
-            {
-              x: 220, y: 110, hotspotW: 130, hotspotH: 130,
-              thumbnail: { url: getWechat300x300(2) },
-              url: getWechat300x500(2),
-            },
+            { x: 75, y: 125, url: getWechat300x500(2), hotspotW: 130, hotspotH: 130 },
+            { x: 225, y: 125, url: getWechat300x500(3), hotspotW: 130, hotspotH: 130 },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="缩略图 = 详情图（同一张，点击放大）">
+      <CopyDemo title="300×500 底图 + 3 热区 + 放大 2×">
         <ClickZoom
-          canvasSize={{ w: 300, h: 400 }}
+          canvasSize={{ w: 300, h: 500 }}
+          background={{ url: getWechat300x500(4) }}
+          zoomScale={2}
           items={[
-            { x: 75, y: 110, url: getWechat300x300(3), hotspotW: 130, hotspotH: 130 },
-            { x: 225, y: 110, url: getWechat300x300(4), hotspotW: 130, hotspotH: 130 },
-            { x: 150, y: 280, url: getWechat300x300(5), hotspotW: 130, hotspotH: 130 },
+            { x: 75, y: 120, url: getWechat300x500(5), hotspotW: 120, hotspotH: 120 },
+            { x: 225, y: 120, url: getWechat300x500(6), hotspotW: 120, hotspotH: 120 },
+            { x: 150, y: 300, url: getWechat300x500(7), hotspotW: 120, hotspotH: 120 },
           ]}
         />
       </CopyDemo>
 
-      <CopyDemo title="底图 + 热区缩略图 + 放大镜效果">
+      <CopyDemo title="300×300 底图 + 2 热区 + 慢速 1.5s">
         <ClickZoom
-          canvasSize={{ w: 300, h: 400 }}
-          background={{ url: getWechat300x500(3) }}
+          canvasSize={{ w: 300, h: 300 }}
+          background={{ url: getWechat300x300(1) }}
+          duration={1.5}
           items={[
-            {
-              x: 80, y: 150, hotspotW: 120, hotspotH: 120,
-              thumbnail: { url: getWechat300x300(6) },
-              url: getWechat300x300(7),
-            },
-            {
-              x: 220, y: 150, hotspotW: 120, hotspotH: 120,
-              thumbnail: { url: getWechat300x300(8) },
-              url: getWechat300x300(9),
-            },
+            { x: 80, y: 80, url: getWechat300x300(2), hotspotW: 130, hotspotH: 130 },
+            { x: 220, y: 80, url: getWechat300x300(3), hotspotW: 130, hotspotH: 130 },
           ]}
         />
       </CopyDemo>

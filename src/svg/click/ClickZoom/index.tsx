@@ -270,16 +270,6 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                     </g>
                   </g>
                 </g>
-
-                {/* ===== 热区缩略图（可见标注） ===== */}
-                <g transform={`translate(${hsX} ${hsY})`}>
-                  <Content
-                    url={item.thumbnail?.url ?? item.url ?? undefined}
-                    jsx={item.thumbnail?.jsx}
-                    w={hsW}
-                    h={hsH}
-                  />
-                </g>
               </g>
             )
           })}
