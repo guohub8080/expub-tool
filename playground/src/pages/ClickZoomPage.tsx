@@ -79,7 +79,7 @@ export default function ClickZoomPage() {
         <ClickZoom
           canvasSize={{ w: 300, h: 400 }}
           canvasBg={{ color: '#0f172a' }}
-          duration={20}
+          duration={5}
           items={[
             { x: 75, y: 100, url: getWechat300x300(1), hotspotW: 100, hotspotH: 100 },
             { x: 225, y: 100, url: getWechat300x300(2), hotspotW: 100, hotspotH: 100 },
