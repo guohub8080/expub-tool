@@ -40,10 +40,11 @@ export interface I_ClickZoomProps {
   duration?: number
   /** 缓动曲线，默认 "0.24 0 0.24 1"（ease-out） */
   keySplines?: string
-  /** 画布背景。url 同时作为放大底图（放大镜效果）：scale 层内放大该图对应热区的区域 */
+  /** 画布背景（简单 url/color，跟其他组件一致，仅静态层） */
   canvasBg?: I_CanvasBg
-  /** 画布前景内容（渲染在 canvasBg 之上、热区之下），可自由放 SVG/HTML 标注图标、文字、装饰等 */
-  children?: ReactNode
+  /** 主背景（复杂 jsx，含动画的 SVG）。同时在静态层和放大层渲染，
+   *  SMIL 自动同步。覆盖在 canvasBg 之上 */
+  homeBg?: ReactNode
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
 }

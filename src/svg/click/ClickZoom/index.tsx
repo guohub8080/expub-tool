@@ -78,7 +78,7 @@ const renderZoomBackground = (
  * 单个热区的完整渲染（放大层 + 详情层 + 点击区）
  */
 const HotspotSlot = ({
-  item, geo, zoomScale, invScale, duration, keySplines, canvasBg, w, h,
+  item, geo, zoomScale, invScale, duration, keySplines, canvasBg, homeBg, w, h,
 }: {
   item: ClickZoomItem
   geo: ReturnType<typeof computeGeometry>
@@ -87,6 +87,7 @@ const HotspotSlot = ({
   duration: number
   keySplines: string
   canvasBg: I_CanvasBg | undefined
+  homeBg: ReactNode
   w: number
   h: number
 }) => (
@@ -98,8 +99,13 @@ const HotspotSlot = ({
       <g opacity={0}>
         {buildZoomScaleOpacity(zoomScale, duration, keySplines)}
 
-        {/* 放大背景（覆盖画布，放大镜效果） */}
+        {/* 放大背景（覆盖画布） */}
         {renderZoomBackground(canvasBg, geo, w, h)}
+
+        {/* homeBg 副本（跟着 scale 放大，跟静态层同一个 jsx → SMIL 自动同步） */}
+        <g transform={`translate(${-geo.centerX} ${-geo.centerY})`} style={{ pointerEvents: "none" }}>
+          {homeBg}
+        </g>
 
         {/* ===== ④ 详情层（独立 opacity）===== */}
         <g opacity={0}>
@@ -138,9 +144,9 @@ const HotspotSlot = ({
  * ClickZoom — 点击热区放大详情（严格还原 参考实现 参考）
  *
  * 5 个角色分离（按 COMPONENT_SPLIT_GUIDE.md 规范）：
- * ① 画布层（canvasBg + children）→ 始终可见
+ * ① 画布层（canvasBg + homeBg 静态）→ 始终可见
  * ② 共享 off-screen g → 所有热区放大内容进出开关
- * ③ 放大层（scale+opacity）→ 放大底图（放大镜效果）
+ * ③ 放大层（scale+opacity）→ canvasBg 底图 + homeBg 副本（跟着放大）
  * ④ 详情层（独立 opacity）→ 详情内容叠加
  * ⑤ 点击区（visibility+counter）→ 透明 rect，触发 mouseover/mouseout
  *
@@ -150,7 +156,8 @@ const HotspotSlot = ({
  * - index.tsx → 读 props → 调用计算 → 组装 JSX
  */
 const ClickZoom = (props: I_ClickZoomProps) => {
-  const { canvasSize, items, children } = props
+  const { canvasSize, items } = props
+  const homeBg = defaultTo(props.homeBg, null as ReactNode)
   const zoomScale = defaultTo(props.zoomScale, DEFAULT_ZOOM_SCALE)
   const duration = defaultTo(props.duration, DEFAULT_DURATION)
   const keySplines = defaultTo(props.keySplines, DEFAULT_KEY_SPLINES)
@@ -175,13 +182,15 @@ const ClickZoom = (props: I_ClickZoomProps) => {
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`} style={{ display: "block", width: "100%" }}>
 
-          {/* ===== ① 画布层：背景 + 前景内容（始终可见）===== */}
+          {/* ===== ① 画布层：canvasBg（简单背景）+ homeBg（复杂背景，始终可见）===== */}
           <g>
             <foreignObject x={0} y={0} width={w} height={h}>
               <svg viewBox={`0 0 ${w} ${h}`} style={{ ...resolveCanvasBg(props.canvasBg), width: "100%" }} />
             </foreignObject>
           </g>
-          {children}
+          <g style={{ pointerEvents: "none" }}>
+            {homeBg}
+          </g>
 
           {/* ===== ② 共享 off-screen g（所有热区共用）===== */}
           <g transform="translate(2000,0)">
@@ -202,6 +211,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                   duration={duration}
                   keySplines={keySplines}
                   canvasBg={props.canvasBg}
+                  homeBg={homeBg}
                   w={w}
                   h={h}
                 />
