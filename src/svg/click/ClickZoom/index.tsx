@@ -70,63 +70,15 @@ const ClickZoom = (props: I_ClickZoomProps) => {
     >
       <section style={{ overflow: "hidden", lineHeight: 0, margin: 0 }}>
         <SvgEx viewBox={`0 0 ${w} ${h}`} style={{ display: "block", width: "100%" }}>
-          {/* 画布背景（canvasBg.url 同时作为放大底图，mouseover 时隐藏避免重影） */}
+          {/* 画布背景（canvasBg.url 同时作为放大底图） */}
           <g>
-            {animateOpacity({
-              initValue: 1,
-              timeline: [
-                { toAbs: 0, durationSeconds: 0.005 },
-                { toAbs: 0, durationSeconds: 99.995 },
-              ],
-              begin: "mouseover",
-              isFreeze: true,
-              loopCount: 1,
-              restart: "always",
-            })}
-            {animateOpacity({
-              initValue: 0,
-              timeline: [
-                { toAbs: 1, durationSeconds: 0.005 },
-                { toAbs: 1, durationSeconds: 99.995 },
-              ],
-              begin: `mouseout+${duration}s`,
-              isFreeze: true,
-              loopCount: 1,
-              restart: "always",
-            })}
             <foreignObject x={0} y={0} width={w} height={h}>
               <svg viewBox={`0 0 ${w} ${h}`} style={{ ...resolveCanvasBg(props.canvasBg), width: "100%" }} />
             </foreignObject>
           </g>
 
-          {/* 画布前景（children，mouseover 时隐藏避免重影，mouseout+延迟 后恢复） */}
-          {isDefined(children) && (
-            <g>
-              {animateOpacity({
-                initValue: 1,
-                timeline: [
-                  { toAbs: 0, durationSeconds: 0.005 },
-                  { toAbs: 0, durationSeconds: 99.995 },
-                ],
-                begin: "mouseover",
-                isFreeze: true,
-                loopCount: 1,
-                restart: "always",
-              })}
-              {animateOpacity({
-                initValue: 0,
-                timeline: [
-                  { toAbs: 1, durationSeconds: 0.005 },
-                  { toAbs: 1, durationSeconds: 99.995 },
-                ],
-                begin: `mouseout+${duration}s`,
-                isFreeze: true,
-                loopCount: 1,
-                restart: "always",
-              })}
-              {children}
-            </g>
-          )}
+          {/* 画布前景（children，渲染在 canvasBg 之上、热区之下） */}
+          {children}
 
           {items.map((item, i) => {
             const hsW = defaultTo(item.hotspotW, DEFAULT_HOTSPOT_W)
