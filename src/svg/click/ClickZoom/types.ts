@@ -42,6 +42,8 @@ export interface I_ClickZoomProps {
   keySplines?: string
   /** 画布背景。url 同时作为放大底图（放大镜效果）：scale 层内放大该图对应热区的区域 */
   canvasBg?: I_CanvasBg
+  /** 画布前景内容（渲染在 canvasBg 之上、热区之下），可自由放 SVG/HTML 标注图标、文字、装饰等 */
+  children?: ReactNode
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
 }

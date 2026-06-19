@@ -45,7 +45,7 @@ const Content = ({ url, jsx, w, h }: { url?: string; jsx?: ReactNode; w: number;
  * off-screen(translate 2000,0) → 定位(x,y) → 放大层(scale+opacity) → 底图 + 详情层(opacity) → 详情图(scale) + 点击区(visibility) → counter-translate(-2000,0) → rect
  */
 const ClickZoom = (props: I_ClickZoomProps) => {
-  const { canvasSize, items } = props
+  const { canvasSize, items, children } = props
   const zoomScale = defaultTo(props.zoomScale, DEFAULT_ZOOM_SCALE)
   const duration = defaultTo(props.duration, DEFAULT_DURATION)
   const keySplines = defaultTo(props.keySplines, DEFAULT_KEY_SPLINES)
@@ -76,6 +76,9 @@ const ClickZoom = (props: I_ClickZoomProps) => {
               <svg viewBox={`0 0 ${w} ${h}`} style={{ ...resolveCanvasBg(props.canvasBg), width: "100%" }} />
             </foreignObject>
           </g>
+
+          {/* 画布前景（children，渲染在 canvasBg 之上、热区之下） */}
+          {children}
 
           {items.map((item, i) => {
             const hsW = defaultTo(item.hotspotW, DEFAULT_HOTSPOT_W)
