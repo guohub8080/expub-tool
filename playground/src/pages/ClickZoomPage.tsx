@@ -75,10 +75,11 @@ export default function ClickZoomPage() {
         </ClickZoom>
       </CopyDemo>
 
-      <CopyDemo title="纯色背景 + children 自由排版（仿桌面布局）">
+      <CopyDemo title="纯色背景 + children 自由排版（仿桌面布局，慢速 20s）">
         <ClickZoom
           canvasSize={{ w: 300, h: 400 }}
           canvasBg={{ color: '#0f172a' }}
+          duration={20}
           items={[
             { x: 75, y: 100, url: getWechat300x300(1), hotspotW: 100, hotspotH: 100 },
             { x: 225, y: 100, url: getWechat300x300(2), hotspotW: 100, hotspotH: 100 },
