@@ -37,7 +37,7 @@ export const buildOffScreenTranslate = (duration: number): ReactNode => (
         { toAbs: { x: 2000, y: 0 }, durationSeconds: 0.0001 },
         { toAbs: { x: 2000, y: 0 }, durationSeconds: 99.9999 },
       ],
-      begin: `mouseout+${duration}s`,
+      begin: "mouseout+1s",
       calcMode: "discrete",
       isFreeze: true,
       loopCount: 1,
@@ -99,7 +99,7 @@ export const buildZoomScaleOpacity = (
         { toAbs: 0, durationSeconds: 0.005 },
         { toAbs: 0, durationSeconds: 0.995 },
       ],
-      begin: `mouseout+${duration}s`,
+      begin: "mouseout+1s",
       isFreeze: true,
       loopCount: 1,
       restart: "always",
@@ -144,8 +144,8 @@ export const buildDetailOpacity = (duration: number): ReactNode => (
  */
 export const buildClickVisibility = (duration: number): ReactNode => (
   <>
-    {setVisibility({ to: "hidden", begin: `mouseover+${duration}s`, isFreeze: true, native: { from: "visible", dur: "0.01s", restart: "always" as never } })}
-    {setVisibility({ to: "visible", begin: `mouseout+${duration}s`, isFreeze: true, native: { from: "hidden", dur: "0.01s", restart: "always" as never } })}
+    {setVisibility({ to: "hidden", begin: "mouseover+1s", isFreeze: true, native: { from: "visible", dur: "0.01s", restart: "always" as never } })}
+    {setVisibility({ to: "visible", begin: "mouseout+1s", isFreeze: true, native: { from: "hidden", dur: "0.01s", restart: "always" as never } })}
   </>
 )
 
@@ -174,7 +174,7 @@ export const buildCounterTranslate = (duration: number): ReactNode => (
         { toAbs: { x: -2000, y: 0 }, durationSeconds: 0.0001 },
         { toAbs: { x: -2000, y: 0 }, durationSeconds: 99.9999 },
       ],
-      begin: `mouseout+${duration}s`,
+      begin: "mouseout+1s",
       calcMode: "discrete",
       isFreeze: true,
       loopCount: 1,
