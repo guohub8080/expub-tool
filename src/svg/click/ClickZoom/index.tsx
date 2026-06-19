@@ -116,7 +116,7 @@ const HotspotSlot = ({
 
         {/* ===== ④ 详情层（独立 opacity）===== */}
         <g opacity={0}>
-          {buildDetailOpacity(duration)}
+          {buildDetailOpacity()}
 
           {/* 详情图（反缩放，放大层内恢复原始大小） */}
           <g transform={`scale(${invScale})`}>

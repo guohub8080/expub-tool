@@ -114,13 +114,13 @@ export const buildZoomScaleOpacity = (
  * 详情层独立 opacity 动画
  * mouseover 0→1 / mouseout 1→0（无延迟，跟参考一致）
  */
-export const buildDetailOpacity = (duration: number): ReactNode => (
+export const buildDetailOpacity = (): ReactNode => (
   <>
     {animateOpacity({
       initValue: 0,
       timeline: [
-        { toAbs: 1, durationSeconds: 0.005 },
-        { toAbs: 1, durationSeconds: 99.995 },
+        { toAbs: 1, durationSeconds: 0.5 },
+        { toAbs: 1, durationSeconds: 99.5 },
       ],
       begin: "mouseover",
       isFreeze: true,
@@ -130,8 +130,8 @@ export const buildDetailOpacity = (duration: number): ReactNode => (
     {animateOpacity({
       initValue: 1,
       timeline: [
-        { toAbs: 0, durationSeconds: 0.005 },
-        { toAbs: 0, durationSeconds: 99.995 },
+        { toAbs: 0, durationSeconds: 0.5 },
+        { toAbs: 0, durationSeconds: 99.5 },
       ],
       begin: "mouseout",
       isFreeze: true,
