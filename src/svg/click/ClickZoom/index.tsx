@@ -174,19 +174,29 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                         restart: "always",
                       })}
 
-                      {/* 底图（canvasBg.url，放大该区域 = 放大镜效果）。
-                          用 <image> 不用 foreignObject：CSS background-image 在 SVG scale 下不缩放，
-                          <image> 是 SVG 原生元素，scale 下正确放大 */}
-                      {isDefined(props.canvasBg?.url) && (
+                      {/* scale 层背景（完全覆盖画布，盖住原位的 canvasBg/children） */}
+                      {isDefined(props.canvasBg?.url) ? (
+                        /* url：放大底图（放大镜效果），preserveAspectRatio=none 拉伸覆盖 */
                         <image
                           href={props.canvasBg!.url}
                           x={-item.x}
                           y={-item.y}
                           width={w}
                           height={h}
+                          preserveAspectRatio="none"
                           style={{ pointerEvents: "none" }}
                         />
-                      )}
+                      ) : isDefined(props.canvasBg?.color) ? (
+                        /* color：纯色 rect 覆满（scale 4× 后完全覆盖画布） */
+                        <rect
+                          x={-item.x}
+                          y={-item.y}
+                          width={w}
+                          height={h}
+                          fill={props.canvasBg!.color}
+                          style={{ pointerEvents: "none" }}
+                        />
+                      ) : null}
 
                       {/* children 副本（跟着 scale 放大，pointer-events:none 防干扰） */}
                       {isDefined(children) && (
