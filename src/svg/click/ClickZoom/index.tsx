@@ -174,10 +174,17 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                         restart: "always",
                       })}
 
-                      {/* 放大底图（canvasBg.url，放大该区域 = 放大镜效果） */}
+                      {/* 底图（canvasBg.url，放大该区域 = 放大镜效果） */}
                       {isDefined(props.canvasBg?.url) && (
-                        <g transform={`translate(${-item.x} ${-item.y})`}>
+                        <g transform={`translate(${-item.x} ${-item.y})`} style={{ pointerEvents: "none" }}>
                           <Content url={props.canvasBg!.url} w={w} h={h} />
+                        </g>
+                      )}
+
+                      {/* children 副本（跟着 scale 放大，pointer-events:none 防干扰） */}
+                      {isDefined(children) && (
+                        <g transform={`translate(${-item.x} ${-item.y})`} style={{ pointerEvents: "none" }}>
+                          {children}
                         </g>
                       )}
 
