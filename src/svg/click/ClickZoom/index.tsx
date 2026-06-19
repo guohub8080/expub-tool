@@ -22,7 +22,8 @@ import {
   buildOffScreenTranslate,
   buildZoomScaleOpacity,
   buildDetailOpacity,
-  buildClickAreaAnimations,
+  buildClickVisibility,
+  buildCounterTranslate,
 } from "./timeline/animations"
 
 export type { ClickZoomItem, I_ClickZoomProps } from "./types"
@@ -111,11 +112,14 @@ const HotspotSlot = ({
             </g>
           </g>
 
-          {/* ===== ⑤ 点击区（visibility + counter-translate）===== */}
+          {/* ===== ⑤ 点击区（visibility + counter + rect）===== */}
           <g transform={`translate(${-geo.centerX} ${-geo.centerY})`} opacity={0}>
-            {buildClickAreaAnimations(duration)}
+            {/* visibility 控制在 click-wrapper g 内 */}
+            {buildClickVisibility(duration)}
 
+            {/* counter-translate 动画必须在 counter g 内（不是 click-wrapper g） */}
             <g transform="translate(-2000,0)">
+              {buildCounterTranslate(duration)}
               <rect
                 x={geo.rectX} y={geo.rectY}
                 width={geo.rectW} height={geo.rectH}

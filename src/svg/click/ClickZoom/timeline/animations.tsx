@@ -139,14 +139,22 @@ export const buildDetailOpacity = (duration: number): ReactNode => (
 )
 
 /**
- * 点击区 visibility 控制 + counter-translate 动画
+ * 点击区 visibility 控制（放在 click-wrapper g 内）
  * visibility: mouseover+D hidden（放大完成后，触发 mouseout）/ mouseout+D visible（缩小完成后恢复）
- * counter: mouseover -2000→0 / mouseout+D 0→-2000
  */
-export const buildClickAreaAnimations = (duration: number): ReactNode => (
+export const buildClickVisibility = (duration: number): ReactNode => (
   <>
     {setVisibility({ to: "hidden", begin: `mouseover+${duration}s`, isFreeze: true, native: { from: "visible", dur: "0.01s", restart: "always" as never } })}
     {setVisibility({ to: "visible", begin: `mouseout+${duration}s`, isFreeze: true, native: { from: "hidden", dur: "0.01s", restart: "always" as never } })}
+  </>
+)
+
+/**
+ * counter-translate 动画（必须放在 counter g 内，不是 click-wrapper g！）
+ * counter: mouseover -2000→0 / mouseout+D 0→-2000
+ */
+export const buildCounterTranslate = (duration: number): ReactNode => (
+  <>
     {transformTranslate({
       initValue: { x: -2000, y: 0 },
       timeline: [
