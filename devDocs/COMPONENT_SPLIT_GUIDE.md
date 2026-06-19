@@ -290,6 +290,46 @@ src/svg/<category>/<ComponentName>/
 
 ---
 
+## 附录：微信手机事件映射
+
+手机上没有鼠标，微信 SVG 渲染器把桌面鼠标事件映射成触摸交互：
+
+| 桌面鼠标事件 | 微信手机映射 | 实际含义 |
+|---|---|---|
+| `mouseover` | 手指**点在这个元素上** | tap ON |
+| `mouseout` | 手指**点在别的元素上**（或别处） | tap OFF |
+| `click` | 手指**点击**这个元素 | tap |
+| `mousedown` | 手指**按下**这个元素 | touchstart |
+| `mouseup` | 手指**抬起**（从这个元素上） | touchend |
+| `touchmove` | 手指**滑动** | swipe |
+
+### 关键认知
+
+- **`mouseover`/`mouseout` 是最常用的触摸交互模拟**——不是真正的"鼠标移入/移出"，而是"点击这个元素 / 点击别处"。
+- 用户**可以主动控制关闭时机**：点热区 A 放大（tap ON）→ 点屏幕任意别处关闭（tap OFF → mouseout）。
+- `visibility=hidden` 延迟触发是**兜底自动关闭**——用户不操作时，超时自动触发 `mouseout` 关闭。
+- 两种关闭方式并存：手动（tap elsewhere）+ 自动（visibility=hidden timeout）。
+
+### 典型模式：tap ON / tap OFF（`ClickZoom`、`ClickPopup`）
+
+```
+点热区 A → mouseover → 放大/弹出
+点别处   → mouseout  → 缩回/关闭
+（超时   → visibility=hidden → 自动 mouseout → 关闭）
+```
+
+```xml
+<g opacity="0">
+  <animateTransform type="scale" begin="mouseover" values="1;4;4" fill="freeze" restart="always" />
+  <animateTransform type="scale" begin="mouseout" values="4;1;1" fill="freeze" restart="always" />
+  <!-- 兜底：1s 后隐藏点击区 → 自动触发 mouseout -->
+  <set attributeName="visibility" to="hidden" begin="mouseover+1s" fill="freeze" restart="always" />
+  <set attributeName="visibility" to="visible" begin="mouseout+1s" fill="freeze" restart="always" />
+</g>
+```
+
+---
+
 ## 附录：热区模式
 
 微信 SVG 不支持 JS，只能靠 SMIL 动画 + 极端坐标模拟"点击开关"。
