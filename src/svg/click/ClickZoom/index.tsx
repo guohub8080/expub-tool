@@ -111,7 +111,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                       { toAbs: { x: 2000, y: 0 }, durationSeconds: 0.0001 },
                       { toAbs: { x: 2000, y: 0 }, durationSeconds: 99.9999 },
                     ],
-                    begin: `mouseout+${duration}s`,
+                    begin: "mouseout+1s",
                     calcMode: "discrete",
                     isFreeze: true,
                     loopCount: 1,
@@ -168,7 +168,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                           { toAbs: 0, durationSeconds: 0.005 },
                           { toAbs: 0, durationSeconds: 0.995 },
                         ],
-                        begin: `mouseout+${duration}s`,
+                        begin: "mouseout+1s",
                         isFreeze: true,
                         loopCount: 1,
                         restart: "always",
@@ -241,6 +241,9 @@ const ClickZoom = (props: I_ClickZoomProps) => {
 
                         {/* ===== 5. 点击区 wrapper ===== */}
                         <g transform={`translate(${-item.x} ${-item.y})`} opacity={0}>
+                          {/* mouseover+1s → visibility=hidden → 浏览器自动 fire mouseout → 触发缩小 */}
+                          {setVisibility({ to: "hidden", begin: "mouseover+1s", isFreeze: true, native: { from: "visible", dur: "0.01s", restart: "always" as never } })}
+                          {setVisibility({ to: "visible", begin: `mouseout+1s`, isFreeze: true, native: { from: "hidden", dur: "0.01s", restart: "always" as never } })}
 
                           {/* ===== 6. counter-translate ===== */}
                           <g transform="translate(-2000,0)">
@@ -265,7 +268,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                                 { toAbs: { x: -2000, y: 0 }, durationSeconds: 0.0001 },
                                 { toAbs: { x: -2000, y: 0 }, durationSeconds: 99.9999 },
                               ],
-                              begin: `mouseout+${duration}s`,
+                              begin: "mouseout+1s",
                               calcMode: "discrete",
                               isFreeze: true,
                               loopCount: 1,
