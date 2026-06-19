@@ -104,7 +104,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                 { toAbs: { x: 2000, y: 0 }, durationSeconds: 0.0001 },
                 { toAbs: { x: 2000, y: 0 }, durationSeconds: 99.9999 },
               ],
-              begin: "mouseout+1s",
+              begin: `mouseout+${duration}s`,
               calcMode: "discrete",
               isFreeze: true,
               loopCount: 1,
@@ -164,7 +164,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                           { toAbs: 0, durationSeconds: 0.005 },
                           { toAbs: 0, durationSeconds: 0.995 },
                         ],
-                        begin: "mouseout+1s",
+                        begin: `mouseout+${duration}s`,
                         isFreeze: true,
                         loopCount: 1,
                         restart: "always",
@@ -217,8 +217,8 @@ const ClickZoom = (props: I_ClickZoomProps) => {
 
                         {/* ===== 点击区 wrapper ===== */}
                         <g transform={`translate(${-item.x} ${-item.y})`} opacity={0}>
-                          {setVisibility({ to: "hidden", begin: "mouseover+1s", isFreeze: true, native: { from: "visible", dur: "0.01s", restart: "always" as never } })}
-                          {setVisibility({ to: "visible", begin: "mouseout+1s", isFreeze: true, native: { from: "hidden", dur: "0.01s", restart: "always" as never } })}
+                          {setVisibility({ to: "hidden", begin: `mouseover+${duration}s`, isFreeze: true, native: { from: "visible", dur: "0.01s", restart: "always" as never } })}
+                          {setVisibility({ to: "visible", begin: `mouseout+${duration}s`, isFreeze: true, native: { from: "hidden", dur: "0.01s", restart: "always" as never } })}
 
                           {/* ===== counter-translate ===== */}
                           <g transform="translate(-2000,0)">
@@ -241,7 +241,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                                 { toAbs: { x: -2000, y: 0 }, durationSeconds: 0.0001 },
                                 { toAbs: { x: -2000, y: 0 }, durationSeconds: 99.9999 },
                               ],
-                              begin: "mouseout+1s",
+                              begin: `mouseout+${duration}s`,
                               calcMode: "discrete",
                               isFreeze: true,
                               loopCount: 1,
