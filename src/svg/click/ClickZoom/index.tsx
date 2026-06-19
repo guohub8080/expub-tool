@@ -22,7 +22,7 @@ import {
   buildOffScreenTranslate,
   buildZoomScaleOpacity,
   buildDetailOpacity,
-  buildClickVisibility,
+  buildRectFlyOut,
   buildCounterTranslate,
 } from "./timeline/animations"
 
@@ -125,22 +125,24 @@ const HotspotSlot = ({
             </g>
           </g>
 
-          {/* ===== ⑤ 点击区（visibility + counter + rect）===== */}
+          {/* ===== ⑤ 点击区（counter + rect 飞出/飞回）===== */}
           <g transform={`translate(${-geo.centerX} ${-geo.centerY})`} opacity={0}>
-            {/* visibility 控制在 click-wrapper g 内 */}
-            {buildClickVisibility(duration)}
 
-            {/* counter-translate 动画必须在 counter g 内（不是 click-wrapper g）。
-                style visibility:visible 覆盖父级（click-wrapper）的 visibility=hidden，
-                确保 rect 在 mouseover+1s 后仍然可点击（跟参考一致） */}
-            <g transform="translate(-2000,0)" style={{ visibility: "visible" as never }}>
+            {/* counter g：抵消 off-screen g 的 translate */}
+            <g transform="translate(-2000,0)">
               {buildCounterTranslate(duration)}
-              <rect
-                x={geo.rectX} y={geo.rectY}
-                width={geo.rectW} height={geo.rectH}
-                fill="transparent" opacity={0.001}
-                style={{ pointerEvents: "all" }}
-              />
+
+              {/* rect 飞出/飞回：mouseover+1s 推到画外，mouseout+1s 飞回原位。
+                  替代 visibility=hidden——rect 物理移走后，点画布任意处都是「rect 外」→ mouseout → 关闭 */}
+              <g>
+                {buildRectFlyOut()}
+                <rect
+                  x={geo.rectX} y={geo.rectY}
+                  width={geo.rectW} height={geo.rectH}
+                  fill="transparent" opacity={0.001}
+                  style={{ pointerEvents: "all" }}
+                />
+              </g>
             </g>
           </g>
         </g>

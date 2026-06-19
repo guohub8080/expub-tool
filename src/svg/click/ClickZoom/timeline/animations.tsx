@@ -142,13 +142,39 @@ export const buildDetailOpacity = (): ReactNode => (
 )
 
 /**
- * 点击区 visibility 控制（放在 click-wrapper g 内）
- * visibility: mouseover+D hidden（放大完成后，触发 mouseout）/ mouseout+D visible（缩小完成后恢复）
+ * rect 飞出/飞回动画（替代 visibility=hidden）
+ *
+ * mouseover+1s → rect 推到画外（+2000）→ 用户点画布任意处都是「rect 外」→ mouseout → 关闭
+ * mouseout+1s → rect 飞回原位（0）→ 恢复可点
  */
-export const buildClickVisibility = (duration: number): ReactNode => (
+export const buildRectFlyOut = (): ReactNode => (
   <>
-    {setVisibility({ to: "hidden", begin: "mouseover+1s", isFreeze: true, native: { from: "visible", dur: "0.01s", restart: "always" as never } })}
-    {setVisibility({ to: "visible", begin: "mouseout+1s", isFreeze: true, native: { from: "hidden", dur: "0.01s", restart: "always" as never } })}
+    {transformTranslate({
+      initValue: { x: 0, y: 0 },
+      timeline: [
+        { toAbs: { x: 2000, y: 0 }, durationSeconds: 0.0001 },
+        { toAbs: { x: 2000, y: 0 }, durationSeconds: 99.9999 },
+      ],
+      begin: "mouseover+1s",
+      calcMode: "discrete",
+      isFreeze: true,
+      loopCount: 1,
+      isAdditive: false,
+      restart: "always",
+    })}
+    {transformTranslate({
+      initValue: { x: 2000, y: 0 },
+      timeline: [
+        { toAbs: { x: 0, y: 0 }, durationSeconds: 0.0001 },
+        { toAbs: { x: 0, y: 0 }, durationSeconds: 99.9999 },
+      ],
+      begin: "mouseout+1s",
+      calcMode: "discrete",
+      isFreeze: true,
+      loopCount: 1,
+      isAdditive: false,
+      restart: "always",
+    })}
   </>
 )
 
