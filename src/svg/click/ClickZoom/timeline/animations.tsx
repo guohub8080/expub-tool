@@ -49,20 +49,23 @@ export const buildOffScreenTranslate = (duration: number): ReactNode => (
 
 /**
  * 放大层 scale 动画 + 主 opacity 动画
- * scale: mouseover 1→zoomScale / mouseout zoomScale→1
- * opacity: mouseover 0→1 / mouseout+D 1→0
+ * scale in: mouseover 1→zoomScale（inDuration + inKeySplines）
+ * scale out: mouseout zoomScale→1（outDuration + outKeySplines）
+ * opacity: mouseover 0→1 / mouseout+1s 1→0
  */
 export const buildZoomScaleOpacity = (
   zoomScale: number,
-  duration: number,
-  keySplines: string,
+  inDuration: number,
+  outDuration: number,
+  inKeySplines: string,
+  outKeySplines: string,
 ): ReactNode => (
   <>
     {transformScaleRaw({
       initValue: 1,
       timeline: [
-        { toAbs: zoomScale, durationSeconds: duration, keySplines },
-        { toAbs: zoomScale, durationSeconds: 200 - duration, keySplines: HOLD_SPLINES },
+        { toAbs: zoomScale, durationSeconds: inDuration, keySplines: inKeySplines },
+        { toAbs: zoomScale, durationSeconds: 200 - inDuration, keySplines: HOLD_SPLINES },
       ],
       begin: "mouseover",
       isFreeze: true,
@@ -73,8 +76,8 @@ export const buildZoomScaleOpacity = (
     {transformScaleRaw({
       initValue: zoomScale,
       timeline: [
-        { toAbs: 1, durationSeconds: duration, keySplines },
-        { toAbs: 1, durationSeconds: 200 - duration, keySplines: HOLD_SPLINES },
+        { toAbs: 1, durationSeconds: outDuration, keySplines: outKeySplines },
+        { toAbs: 1, durationSeconds: 200 - outDuration, keySplines: HOLD_SPLINES },
       ],
       begin: "mouseout",
       isFreeze: true,

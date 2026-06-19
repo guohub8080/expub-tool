@@ -90,14 +90,21 @@ const HotspotSlot = ({
   homeBg: ReactNode
   w: number
   h: number
-}) => (
+}) => {
+  // per-item scale 配置，缺省用组件级
+  const scaleInDuration = defaultTo(item.scale?.inDuration, duration)
+  const scaleOutDuration = defaultTo(item.scale?.outDuration, duration)
+  const scaleInSplines = defaultTo(item.scale?.inKeySplines, keySplines)
+  const scaleOutSplines = defaultTo(item.scale?.outKeySplines, keySplines)
+
+  return (
   <g>
     {/* 定位到热区中心 */}
     <g transform={`translate(${geo.centerX} ${geo.centerY})`}>
 
       {/* ===== ③ 放大层（scale + 主 opacity）===== */}
       <g opacity={0}>
-        {buildZoomScaleOpacity(zoomScale, duration, keySplines)}
+        {buildZoomScaleOpacity(zoomScale, scaleInDuration, scaleOutDuration, scaleInSplines, scaleOutSplines)}
 
         {/* 放大背景（覆盖画布） */}
         {renderZoomBackground(canvasBg, geo, w, h)}
@@ -138,7 +145,8 @@ const HotspotSlot = ({
       </g>
     </g>
   </g>
-)
+  )
+}
 
 /**
  * ClickZoom — 点击热区放大详情（严格还原 参考实现 参考）

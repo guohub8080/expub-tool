@@ -13,6 +13,18 @@ export const DEFAULT_HOTSPOT_W = 237
 /** 默认热区高 */
 export const DEFAULT_HOTSPOT_H = 242
 
+/** 单个热区的 scale 配置（per-item 自定义放大/缩小速度与缓动） */
+export interface ClickZoomScale {
+  /** 放大时长（秒），缺省用组件级 duration */
+  inDuration?: number
+  /** 缩小时长（秒），缺省用组件级 duration */
+  outDuration?: number
+  /** 放大缓动曲线，缺省用组件级 keySplines */
+  inKeySplines?: string
+  /** 缩小缓动曲线，缺省用组件级 keySplines */
+  outKeySplines?: string
+}
+
 /** 单个热区配置 */
 export interface ClickZoomItem {
   /** 热区中心 X（viewBox 坐标） */
@@ -27,6 +39,8 @@ export interface ClickZoomItem {
   url?: string
   /** 详情自定义内容（与 url 二选一，优先级高） */
   jsx?: ReactNode
+  /** scale 配置（per-item 放大/缩小速度与缓动），缺省用组件级 */
+  scale?: ClickZoomScale
 }
 
 export interface I_ClickZoomProps {
