@@ -77,8 +77,34 @@ const ClickZoom = (props: I_ClickZoomProps) => {
             </foreignObject>
           </g>
 
-          {/* 画布前景（children，渲染在 canvasBg 之上、热区之下） */}
-          {children}
+          {/* 画布前景（children，mouseover 时隐藏避免重影，mouseout+延迟 后恢复） */}
+          {isDefined(children) && (
+            <g>
+              {animateOpacity({
+                initValue: 1,
+                timeline: [
+                  { toAbs: 0, durationSeconds: 0.005 },
+                  { toAbs: 0, durationSeconds: 99.995 },
+                ],
+                begin: "mouseover",
+                isFreeze: true,
+                loopCount: 1,
+                restart: "always",
+              })}
+              {animateOpacity({
+                initValue: 0,
+                timeline: [
+                  { toAbs: 1, durationSeconds: 0.005 },
+                  { toAbs: 1, durationSeconds: 99.995 },
+                ],
+                begin: `mouseout+${duration}s`,
+                isFreeze: true,
+                loopCount: 1,
+                restart: "always",
+              })}
+              {children}
+            </g>
+          )}
 
           {items.map((item, i) => {
             const hsW = defaultTo(item.hotspotW, DEFAULT_HOTSPOT_W)
