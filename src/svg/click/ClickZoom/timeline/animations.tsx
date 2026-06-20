@@ -52,7 +52,6 @@ export const buildOffScreenTranslate = (duration: number): ReactNode => (
  * scale in: mouseover 1→zoomScale（inDuration + inKeySplines）
  * scale out: mouseout zoomScale→1（outDuration + outKeySplines）
  * opacity: mouseover 0→1 / mouseout+1s 1→0
- * zoomScale = 1 时跳过 scale 动画，只保留 opacity（原地淡入淡出）
  */
 export const buildZoomScaleOpacity = (
   zoomScale: number,
@@ -62,34 +61,30 @@ export const buildZoomScaleOpacity = (
   outKeySplines: string,
 ): ReactNode => (
   <>
-    {zoomScale === 1 ? null : (
-      <>
-        {transformScaleRaw({
-          initValue: 1,
-          timeline: [
-            { toAbs: zoomScale, durationSeconds: inDuration, keySplines: inKeySplines },
-            { toAbs: zoomScale, durationSeconds: 200 - inDuration, keySplines: HOLD_SPLINES },
-          ],
-          begin: "mouseover",
-          isFreeze: true,
-          loopCount: 1,
-          isAdditive: false,
-          restart: "always",
-        })}
-        {transformScaleRaw({
-          initValue: zoomScale,
-          timeline: [
-            { toAbs: 1, durationSeconds: outDuration, keySplines: outKeySplines },
-            { toAbs: 1, durationSeconds: 200 - outDuration, keySplines: HOLD_SPLINES },
-          ],
-          begin: "mouseout",
-          isFreeze: true,
-          loopCount: 1,
-          isAdditive: false,
-          restart: "always",
-        })}
-      </>
-    )}
+    {transformScaleRaw({
+      initValue: 1,
+      timeline: [
+        { toAbs: zoomScale, durationSeconds: inDuration, keySplines: inKeySplines },
+        { toAbs: zoomScale, durationSeconds: 200 - inDuration, keySplines: HOLD_SPLINES },
+      ],
+      begin: "mouseover",
+      isFreeze: true,
+      loopCount: 1,
+      isAdditive: false,
+      restart: "always",
+    })}
+    {transformScaleRaw({
+      initValue: zoomScale,
+      timeline: [
+        { toAbs: 1, durationSeconds: outDuration, keySplines: outKeySplines },
+        { toAbs: 1, durationSeconds: 200 - outDuration, keySplines: HOLD_SPLINES },
+      ],
+      begin: "mouseout",
+      isFreeze: true,
+      loopCount: 1,
+      isAdditive: false,
+      restart: "always",
+    })}
     {animateOpacity({
       initValue: 0,
       timeline: [

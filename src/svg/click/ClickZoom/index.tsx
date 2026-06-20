@@ -56,11 +56,6 @@ const HotspotSlot = ({
   const scaleInSplines = defaultTo(item.scale?.inKeySplines, keySplines)
   const scaleOutSplines = defaultTo(item.scale?.outKeySplines, keySplines)
   const isScaleOne = zoomScale === 1
-  const detailInner = (
-    <g transform={`translate(${-geo.centerX} ${-geo.centerY})`}>
-      {renderContent(item.modalContent, w, h)}
-    </g>
-  )
 
   return (
     <g>
@@ -81,8 +76,12 @@ const HotspotSlot = ({
           <g opacity={0}>
             {buildDetailOpacity()}
 
-            {/* 详情图（反缩放）。scale=1 时 invScale=1，跳过外层 scale g */}
-            {isScaleOne ? detailInner : <g transform={`scale(${invScale})`}>{detailInner}</g>}
+            {/* 详情图（反缩放） */}
+            <g transform={`scale(${invScale})`}>
+              <g transform={`translate(${-geo.centerX} ${-geo.centerY})`}>
+                {renderContent(item.modalContent, w, h)}
+              </g>
+            </g>
 
             {/* 点击区（counter + rect 飞出/飞回） */}
             <g transform={`translate(${-geo.centerX} ${-geo.centerY})`} opacity={0}>
