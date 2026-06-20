@@ -8,12 +8,20 @@ export const DEFAULT_ZOOM_SCALE = 4
 export const DEFAULT_DURATION = 1
 /** 默认缓动曲线 */
 export const DEFAULT_KEY_SPLINES = "0.24 0 0.24 1"
-/** 默认热区宽 */
-export const DEFAULT_HOTSPOT_W = 237
-/** 默认热区高 */
-export const DEFAULT_HOTSPOT_H = 242
 
-/** 单个热区的 scale 配置（per-item 自定义放大/缩小速度与缓动） */
+/** 热区缩略图位置（左上角 + 尺寸，viewBox 坐标） */
+export interface ClickZoomThumbnail {
+  /** 缩略图左上角 X（viewBox 坐标，不是中心） */
+  x: number
+  /** 缩略图左上角 Y（viewBox 坐标，不是中心） */
+  y: number
+  /** 缩略图宽 */
+  w: number
+  /** 缩略图高 */
+  h: number
+}
+
+/** per-item scale 配置（放大/缩小速度与缓动） */
 export interface ClickZoomScale {
   /** 放大时长（秒），缺省用组件级 duration */
   inDuration?: number
@@ -27,18 +35,10 @@ export interface ClickZoomScale {
 
 /** 单个热区配置 */
 export interface ClickZoomItem {
-  /** 热区中心 X（viewBox 坐标） */
-  x: number
-  /** 热区中心 Y（viewBox 坐标） */
-  y: number
-  /** 热区点击区域宽，默认 237 */
-  hotspotW?: number
-  /** 热区点击区域高，默认 242 */
-  hotspotH?: number
-  /** 详情内容图片地址（放大后显示，与 jsx 二选一） */
-  url?: string
-  /** 详情自定义内容（与 url 二选一，优先级高） */
-  jsx?: ReactNode
+  /** 缩略图位置（左上角 + 尺寸） */
+  thumbnail: ClickZoomThumbnail
+  /** 放大后的详情内容。string = 图片 url；ReactNode = 自定义 jsx */
+  modalContent: string | ReactNode
   /** scale 配置（per-item 放大/缩小速度与缓动），缺省用组件级 */
   scale?: ClickZoomScale
 }
@@ -56,8 +56,7 @@ export interface I_ClickZoomProps {
   keySplines?: string
   /** 画布背景（简单 url/color，跟其他组件一致，仅静态层） */
   canvasBg?: I_CanvasBg
-  /** 主背景（复杂 jsx，含动画的 SVG）。同时在静态层和放大层渲染，
-   *  SMIL 自动同步。覆盖在 canvasBg 之上 */
+  /** 主背景（复杂 jsx，含动画的 SVG）。同时在静态层和放大层渲染，SMIL 自动同步 */
   homeBg?: ReactNode
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps

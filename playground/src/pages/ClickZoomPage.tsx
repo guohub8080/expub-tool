@@ -60,9 +60,9 @@ export default function ClickZoomPage() {
             </>
           }
           items={[
-            { x: 75, y: 125, url: getWechat300x500(2), hotspotW: 120, hotspotH: 120 },
-            { x: 225, y: 125, url: getWechat300x500(3), hotspotW: 120, hotspotH: 120 },
-            { x: 150, y: 320, url: getWechat300x500(4), hotspotW: 120, hotspotH: 120 },
+            { thumbnail: { x: 15, y: 65, w: 120, h: 120 }, modalContent: getWechat300x500(2) },
+            { thumbnail: { x: 165, y: 65, w: 120, h: 120 }, modalContent: getWechat300x500(3) },
+            { thumbnail: { x: 90, y: 260, w: 120, h: 120 }, modalContent: getWechat300x500(4) },
           ]}
         />
       </CopyDemo>
@@ -88,10 +88,10 @@ export default function ClickZoomPage() {
             </>
           }
           items={[
-            { x: 75, y: 100, url: getWechat300x300(1), hotspotW: 100, hotspotH: 100 },
-            { x: 225, y: 100, url: getWechat300x300(2), hotspotW: 100, hotspotH: 100 },
-            { x: 75, y: 250, url: getWechat300x300(3), hotspotW: 100, hotspotH: 100 },
-            { x: 225, y: 250, url: getWechat300x300(4), hotspotW: 100, hotspotH: 100 },
+            { thumbnail: { x: 25, y: 50, w: 100, h: 100 }, modalContent: getWechat300x300(1) },
+            { thumbnail: { x: 175, y: 50, w: 100, h: 100 }, modalContent: getWechat300x300(2) },
+            { thumbnail: { x: 25, y: 200, w: 100, h: 100 }, modalContent: getWechat300x300(3) },
+            { thumbnail: { x: 175, y: 200, w: 100, h: 100 }, modalContent: getWechat300x300(4) },
           ]}
         />
       </CopyDemo>
@@ -109,8 +109,8 @@ export default function ClickZoomPage() {
             </>
           }
           items={[
-            { x: 80, y: 80, url: getWechat300x300(6), hotspotW: 110, hotspotH: 110 },
-            { x: 220, y: 220, url: getWechat300x300(7), hotspotW: 110, hotspotH: 110 },
+            { thumbnail: { x: 25, y: 25, w: 110, h: 110 }, modalContent: getWechat300x300(6) },
+            { thumbnail: { x: 165, y: 165, w: 110, h: 110 }, modalContent: getWechat300x300(7) },
           ]}
         />
       </CopyDemo>

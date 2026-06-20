@@ -1,11 +1,11 @@
 /**
- * 几何计算：热区位置、点击区坐标、放大偏移
+ * 几何计算：从缩略图左上角 + 尺寸推导热区中心 + rect 坐标
  */
 
 export interface HotspotGeometry {
-  /** 热区中心 X（viewBox 坐标） */
+  /** 热区中心 X（放大原点） */
   centerX: number
-  /** 热区中心 Y（viewBox 坐标） */
+  /** 热区中心 Y（放大原点） */
   centerY: number
   /** 点击 rect 左上角 X */
   rectX: number
@@ -20,25 +20,25 @@ export interface HotspotGeometry {
 const round4 = (n: number) => Math.round(n * 10000) / 10000
 
 /**
- * 从 item 的 x/y + hotspotW/H 计算所有几何值
+ * 从缩略图 { x, y, w, h }（左上角 + 尺寸）推导所有几何值
  */
 export const computeGeometry = ({
   x,
   y,
-  hotspotW,
-  hotspotH,
+  w,
+  h,
 }: {
   x: number
   y: number
-  hotspotW: number
-  hotspotH: number
+  w: number
+  h: number
 }): HotspotGeometry => {
   return {
-    centerX: round4(x),
-    centerY: round4(y),
-    rectX: round4(x - hotspotW / 2),
-    rectY: round4(y - hotspotH / 2),
-    rectW: hotspotW,
-    rectH: hotspotH,
+    centerX: round4(x + w / 2),
+    centerY: round4(y + h / 2),
+    rectX: round4(x),
+    rectY: round4(y),
+    rectW: w,
+    rectH: h,
   }
 }
