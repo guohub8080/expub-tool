@@ -47,7 +47,8 @@ export interface I_ClickZoomProps {
   canvasSize: { w: number; h: number }
   /** 热区数组 */
   childItems: ClickZoomItem[]
-  /** 放大倍数，默认 4 */
+  /** 放大倍数，默认 4。范围 [1, +∞)，1 = 原地弹窗（不放大，只淡入淡出）
+   *  zoomScale < 1 抛错；= 1 时跳过 scale 动画 + 放大底图 + 反缩放层，节省 DOM */
   zoomScale?: number
   /** 主背景（必填）。string = 图片 url（自动包 <image>）；ReactNode = 任意 SVG（含动画）。同时渲染在静态层和放大层，SMIL 自动同步 */
   homeBg: string | ReactNode

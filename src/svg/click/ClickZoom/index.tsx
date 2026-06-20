@@ -55,6 +55,12 @@ const HotspotSlot = ({
   const scaleOutDuration = defaultTo(item.scale?.outDuration, duration)
   const scaleInSplines = defaultTo(item.scale?.inKeySplines, keySplines)
   const scaleOutSplines = defaultTo(item.scale?.outKeySplines, keySplines)
+  const isScaleOne = zoomScale === 1
+  const detailInner = (
+    <g transform={`translate(${-geo.centerX} ${-geo.centerY})`}>
+      {renderContent(item.modalContent, w, h)}
+    </g>
+  )
 
   return (
     <g>
@@ -64,21 +70,19 @@ const HotspotSlot = ({
         <g opacity={0}>
           {buildZoomScaleOpacity(zoomScale, scaleInDuration, scaleOutDuration, scaleInSplines, scaleOutSplines)}
 
-          {/* homeBg 副本（跟着 scale 放大，跟静态层同步） */}
-          <g transform={`translate(${-geo.centerX} ${-geo.centerY})`} style={{ pointerEvents: "none" }}>
-            {homeBg}
-          </g>
+          {/* homeBg 副本（跟着 scale 放大，跟静态层同步）。scale=1 时与静态层重合，跳过节省 DOM */}
+          {isScaleOne ? null : (
+            <g transform={`translate(${-geo.centerX} ${-geo.centerY})`} style={{ pointerEvents: "none" }}>
+              {homeBg}
+            </g>
+          )}
 
           {/* 详情层（独立 opacity） */}
           <g opacity={0}>
             {buildDetailOpacity()}
 
-            {/* 详情图（反缩放） */}
-            <g transform={`scale(${invScale})`}>
-              <g transform={`translate(${-geo.centerX} ${-geo.centerY})`}>
-                {renderContent(item.modalContent, w, h)}
-              </g>
-            </g>
+            {/* 详情图（反缩放）。scale=1 时 invScale=1，跳过外层 scale g */}
+            {isScaleOne ? detailInner : <g transform={`scale(${invScale})`}>{detailInner}</g>}
 
             {/* 点击区（counter + rect 飞出/飞回） */}
             <g transform={`translate(${-geo.centerX} ${-geo.centerY})`} opacity={0}>
@@ -110,6 +114,9 @@ const HotspotSlot = ({
 const ClickZoom = (props: I_ClickZoomProps) => {
   const { canvasSize, childItems, homeBg } = props
   const zoomScale = defaultTo(props.zoomScale, DEFAULT_ZOOM_SCALE)
+  if (zoomScale < 1) {
+    throw new Error(`[ClickZoom] zoomScale 必须 >= 1（当前 ${zoomScale}）`)
+  }
   const duration = DEFAULT_DURATION
   const keySplines = DEFAULT_KEY_SPLINES
   const spacingResult = spacing(props.spacing)
