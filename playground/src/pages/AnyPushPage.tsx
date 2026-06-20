@@ -38,9 +38,9 @@ const CopyDemo = ({ title, children }: { title: string; children: React.ReactNod
 }
 
 /** 色块 item */
-const ColorBlockItem = ({ color, label }: { color: string; label: string }) => (
-  <svg viewBox="0 0 300 300" style={{ width: '100%', display: 'block', backgroundColor: color }}>
-    <text x="150" y="160" textAnchor="middle" fill="white" fontSize="32" fontFamily="system-ui">
+const ColorBlockItem = ({ color, label, width = 300, height = 300 }: { color: string; label: string; width?: number; height?: number }) => (
+  <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', display: 'block', backgroundColor: color }}>
+    <text x={width / 2} y={height / 2 + 12} textAnchor="middle" fill="white" fontSize="32" fontFamily="system-ui">
       {label}
     </text>
   </svg>
@@ -192,6 +192,19 @@ export default function AnyPushPage() {
           canvasBg={{ color: "#18181b" }}
           childItems={[
             { url: getWechat300x300(9) },
+          ]}
+        />
+      </CopyDemo>
+
+      <CopyDemo title="非正方形画布（480×300）— 对角线方向沿画布对角线滑入（斜率 H/W = 0.625）">
+        <AnyPush
+          canvasSize={{ w: 480, h: 300 }}
+          canvasBg={{ color: "#0f3460" }}
+          childItems={[
+            { item: <ColorBlockItem color="#ef4444" label="TL 左上" width={480} height={300} />, direction: DIRECTION_8.TopLeft },
+            { item: <ColorBlockItem color="#22c55e" label="TR 右上" width={480} height={300} />, direction: DIRECTION_8.TopRight },
+            { item: <ColorBlockItem color="#3b82f6" label="BR 右下" width={480} height={300} />, direction: DIRECTION_8.BottomRight },
+            { item: <ColorBlockItem color="#eab308" label="BL 左下" width={480} height={300} />, direction: DIRECTION_8.BottomLeft },
           ]}
         />
       </CopyDemo>
