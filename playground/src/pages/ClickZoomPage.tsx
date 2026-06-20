@@ -190,7 +190,6 @@ export default function ClickZoomPage() {
                   <text x={150} y={158} fontSize={24} fill="#fff" textAnchor="middle" fontWeight={900}>脉冲</text>
                 </>
               ),
-              scale: { inKeySplines: "0 0 0.2 1", outKeySplines: "0.8 0 1 1" },
             },
             {
               thumbnail: { x: 170, y: 170, w: 110, h: 110 },
@@ -216,7 +215,7 @@ export default function ClickZoomPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="zoomScale=1（原地弹窗，不放大，只淡入淡出）">
+      <CopyDemo title="zoomScale=1（背景不放大，modal 仍从热区放大到全屏）">
         <ClickZoom
           canvasSize={{ w: 300, h: 300 }}
           homeBg={
