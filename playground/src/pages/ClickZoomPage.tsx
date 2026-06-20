@@ -6,30 +6,17 @@ import getWechat300x500 from '../api/placeHolderPic/getWechat300x500'
 const CopyDemo = ({ title, children }: { title: string; children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
-
   const handleCopy = () => {
     const html = ref.current?.innerHTML
-    if (html) {
-      navigator.clipboard.writeText(html)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
+    if (html) { navigator.clipboard.writeText(html); setCopied(true); setTimeout(() => setCopied(false), 2000) }
   }
-
   return (
     <div style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, marginBottom: 16, maxWidth: 400 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <h3 style={{ margin: 0, fontSize: 15 }}>{title}</h3>
-        <button
-          onClick={handleCopy}
-          style={{
-            padding: '4px 12px', fontSize: 12, borderRadius: 4,
-            border: '1px solid #d1d5db', background: copied ? '#10b981' : '#fff',
-            color: copied ? '#fff' : '#374151', cursor: 'pointer',
-          }}
-        >
-          {copied ? 'Copied!' : 'Copy HTML'}
-        </button>
+        <button onClick={handleCopy} style={{
+          padding: '4px 12px', fontSize: 12, borderRadius: 4, border: '1px solid #d1d5db', background: copied ? '#10b981' : '#fff', color: copied ? '#fff' : '#374151', cursor: 'pointer',
+        }}>{copied ? 'Copied!' : 'Copy HTML'}</button>
       </div>
       <div ref={ref}>{children}</div>
     </div>
@@ -41,15 +28,13 @@ export default function ClickZoomPage() {
     <div>
       <h2>ClickZoom — 点击热区放大详情</h2>
 
-      <CopyDemo title="canvasBg 底图 + homeBg 标注（homeBg 跟着放大）">
+      <CopyDemo title="homeBg = url（自动包 <image>）+ 标注">
         <ClickZoom
           canvasSize={{ w: 300, h: 500 }}
-          canvasBg={{ url: getWechat300x500(1), fit: 'cover' }}
           homeBg={
             <>
-              <text x={150} y={40} fontSize={20} fill="#fff" fontWeight={900} textAnchor="middle">
-                点击图标查看详情
-              </text>
+              <image href={getWechat300x500(1)} x={0} y={0} width={300} height={500} preserveAspectRatio="xMidYMid slice" />
+              <text x={150} y={40} fontSize={20} fill="#fff" fontWeight={900} textAnchor="middle">点击图标查看详情</text>
               <circle cx={75} cy={125} r={52} fill="none" stroke="#fbbf24" strokeWidth={3} />
               <text x={75} y={195} fontSize={11} fill="#fbbf24" textAnchor="middle" fontWeight={700}>A</text>
               <circle cx={225} cy={125} r={52} fill="none" stroke="#34d399" strokeWidth={3} />
@@ -67,12 +52,12 @@ export default function ClickZoomPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="纯色背景 + homeBg 自由排版（仿桌面布局）">
+      <CopyDemo title="homeBg = 纯色 + 自由排版（仿桌面布局）">
         <ClickZoom
           canvasSize={{ w: 300, h: 400 }}
-          canvasBg={{ color: '#0f172a' }}
           homeBg={
             <>
+              <rect x={0} y={0} width={300} height={400} fill="#0f172a" />
               <rect x={0} y={0} width={300} height={30} fill="#1e293b" />
               <text x={20} y={20} fontSize={11} fill="#94a3b8">9:41</text>
               <text x={280} y={20} fontSize={11} fill="#94a3b8" textAnchor="end">100%</text>
@@ -96,12 +81,12 @@ export default function ClickZoomPage() {
         />
       </CopyDemo>
 
-      <CopyDemo title="canvasBg 底图 + homeBg 装饰边框">
+      <CopyDemo title="homeBg = 底图 + 装饰边框 + per-item scale">
         <ClickZoom
           canvasSize={{ w: 300, h: 300 }}
-          canvasBg={{ url: getWechat300x300(5), fit: 'cover' }}
           homeBg={
             <>
+              <image href={getWechat300x300(5)} x={0} y={0} width={300} height={300} preserveAspectRatio="xMidYMid slice" />
               <rect x={0} y={0} width={300} height={300} fill="#000" opacity={0.2} />
               <rect x={10} y={10} width={280} height={280} fill="none" stroke="#fff" strokeWidth={1} opacity={0.4} rx={8} />
               <text x={20} y={25} fontSize={9} fill="#fff" opacity={0.7}>GALLERY</text>
@@ -109,8 +94,8 @@ export default function ClickZoomPage() {
             </>
           }
           childItems={[
-            { thumbnail: { x: 25, y: 25, w: 110, h: 110 }, modalContent: getWechat300x300(6) },
-            { thumbnail: { x: 165, y: 165, w: 110, h: 110 }, modalContent: getWechat300x300(7) },
+            { thumbnail: { x: 25, y: 25, w: 110, h: 110 }, modalContent: getWechat300x300(6), scale: { inDuration: 0.5, outDuration: 1.5 } },
+            { thumbnail: { x: 165, y: 165, w: 110, h: 110 }, modalContent: getWechat300x300(7), scale: { inKeySplines: "0 0 0.2 1", outKeySplines: "0.8 0 1 1" } },
           ]}
         />
       </CopyDemo>

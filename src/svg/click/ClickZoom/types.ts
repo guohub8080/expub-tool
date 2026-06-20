@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import type { I_CanvasBg } from "@svg/types"
 import type { T_SpacingProps } from "@css-fn/spacing"
 
 /** 默认放大倍数 */
@@ -23,13 +22,13 @@ export interface ClickZoomThumbnail {
 
 /** per-item scale 配置（放大/缩小速度与缓动） */
 export interface ClickZoomScale {
-  /** 放大时长（秒），缺省用组件级 duration */
+  /** 放大时长（秒），缺省用内部默认 1 */
   inDuration?: number
-  /** 缩小时长（秒），缺省用组件级 duration */
+  /** 缩小时长（秒），缺省用内部默认 1 */
   outDuration?: number
-  /** 放大缓动曲线，缺省用组件级 keySplines */
+  /** 放大缓动曲线，缺省用内部默认 "0.24 0 0.24 1" */
   inKeySplines?: string
-  /** 缩小缓动曲线，缺省用组件级 keySplines */
+  /** 缩小缓动曲线，缺省用内部默认 "0.24 0 0.24 1 */
   outKeySplines?: string
 }
 
@@ -39,7 +38,7 @@ export interface ClickZoomItem {
   thumbnail: ClickZoomThumbnail
   /** 放大后的详情内容。string = 图片 url；ReactNode = 自定义 jsx */
   modalContent: string | ReactNode
-  /** scale 配置（per-item 放大/缩小速度与缓动），缺省用组件级 */
+  /** scale 配置（per-item 放大/缩小速度与缓动），缺省用内部默认 */
   scale?: ClickZoomScale
 }
 
@@ -50,10 +49,8 @@ export interface I_ClickZoomProps {
   childItems: ClickZoomItem[]
   /** 放大倍数，默认 4 */
   zoomScale?: number
-  /** 画布背景（简单 url/color，跟其他组件一致，仅静态层） */
-  canvasBg?: I_CanvasBg
-  /** 主背景（复杂 jsx，含动画的 SVG）。同时在静态层和放大层渲染，SMIL 自动同步 */
-  homeBg?: ReactNode
+  /** 主背景（必填）。string = 图片 url（自动包 <image>）；ReactNode = 任意 SVG（含动画）。同时渲染在静态层和放大层，SMIL 自动同步 */
+  homeBg: string | ReactNode
   /** 外层 margin-top 间距 */
   spacing?: T_SpacingProps
 }
