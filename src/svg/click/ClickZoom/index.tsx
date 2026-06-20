@@ -39,12 +39,11 @@ const renderContent = (content: string | ReactNode, w: number, h: number): React
 
 /** 单个热区完整渲染 */
 const HotspotSlot = ({
-  item, geo, zoomScale, invScale, duration, keySplines, homeBg, w, h,
+  item, geo, zoomScale, duration, keySplines, homeBg, w, h,
 }: {
   item: ClickZoomItem
   geo: ReturnType<typeof computeGeometry>
   zoomScale: number
-  invScale: number
   duration: number
   keySplines: string
   homeBg: ReactNode
@@ -56,16 +55,19 @@ const HotspotSlot = ({
   const scaleInSplines = defaultTo(item.scale?.inKeySplines, keySplines)
   const scaleOutSplines = defaultTo(item.scale?.outKeySplines, keySplines)
   const isScaleOne = zoomScale === 1
+  // modal 放大倍数：热区→全屏（固定，独立于 zoomScale，始终放大到全屏）
+  const modalScale = round4(w / geo.rectW)
+  const modalInvScale = round4(1 / modalScale)
 
   return (
     <g>
       <g transform={`translate(${geo.centerX} ${geo.centerY})`}>
 
-        {/* 放大层（scale + 主 opacity） */}
+        {/* 放大层（scale=modalScale 热区→全屏 + 主 opacity）。modal 靠此层放大；homeBg 副本也跟此层，zoomScale=1 时跳过副本 */}
         <g opacity={0}>
-          {buildZoomScaleOpacity(zoomScale, scaleInDuration, scaleOutDuration, scaleInSplines, scaleOutSplines)}
+          {buildZoomScaleOpacity(modalScale, scaleInDuration, scaleOutDuration, scaleInSplines, scaleOutSplines)}
 
-          {/* homeBg 副本（跟着 scale 放大，跟静态层同步）。scale=1 时与静态层重合，跳过节省 DOM */}
+          {/* homeBg 副本（跟着放大层 modalScale）。zoomScale=1 时跳过——背景不放大，但 modal 仍放大 */}
           {isScaleOne ? null : (
             <g transform={`translate(${-geo.centerX} ${-geo.centerY})`} style={{ pointerEvents: "none" }}>
               {homeBg}
@@ -76,8 +78,8 @@ const HotspotSlot = ({
           <g opacity={0}>
             {buildDetailOpacity()}
 
-            {/* 详情图（反缩放） */}
-            <g transform={`scale(${invScale})`}>
+            {/* 详情图（反缩放 modalInvScale，起始大小=热区） */}
+            <g transform={`scale(${modalInvScale})`}>
               <g transform={`translate(${-geo.centerX} ${-geo.centerY})`}>
                 {renderContent(item.modalContent, w, h)}
               </g>
@@ -121,7 +123,6 @@ const ClickZoom = (props: I_ClickZoomProps) => {
   const spacingResult = spacing(props.spacing)
   const isDev = ExPubGoConfig().mode === "development"
   const { w, h } = canvasSize
-  const invScale = round4(1 / zoomScale)
 
   return (
     <SectionEx
@@ -157,7 +158,6 @@ const ClickZoom = (props: I_ClickZoomProps) => {
                   item={item}
                   geo={geo}
                   zoomScale={zoomScale}
-                  invScale={invScale}
                   duration={duration}
                   keySplines={keySplines}
                   homeBg={homeBg}
