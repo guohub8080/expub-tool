@@ -59,7 +59,7 @@ export default function ClickZoomPage() {
               <text x={150} y={470} fontSize={11} fill="#fff" opacity={0.6} textAnchor="middle">👆 点击圆圈区域</text>
             </>
           }
-          items={[
+          childItems={[
             { thumbnail: { x: 15, y: 65, w: 120, h: 120 }, modalContent: getWechat300x500(2) },
             { thumbnail: { x: 165, y: 65, w: 120, h: 120 }, modalContent: getWechat300x500(3) },
             { thumbnail: { x: 90, y: 260, w: 120, h: 120 }, modalContent: getWechat300x500(4) },
@@ -87,7 +87,7 @@ export default function ClickZoomPage() {
               <rect x={0} y={360} width={300} height={40} fill="#1e293b" />
             </>
           }
-          items={[
+          childItems={[
             { thumbnail: { x: 25, y: 50, w: 100, h: 100 }, modalContent: getWechat300x300(1) },
             { thumbnail: { x: 175, y: 50, w: 100, h: 100 }, modalContent: getWechat300x300(2) },
             { thumbnail: { x: 25, y: 200, w: 100, h: 100 }, modalContent: getWechat300x300(3) },
@@ -108,7 +108,7 @@ export default function ClickZoomPage() {
               <text x={280} y={290} fontSize={9} fill="#fff" opacity={0.7} textAnchor="end">2024</text>
             </>
           }
-          items={[
+          childItems={[
             { thumbnail: { x: 25, y: 25, w: 110, h: 110 }, modalContent: getWechat300x300(6) },
             { thumbnail: { x: 165, y: 165, w: 110, h: 110 }, modalContent: getWechat300x300(7) },
           ]}

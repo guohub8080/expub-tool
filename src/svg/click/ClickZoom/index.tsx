@@ -140,7 +140,7 @@ const HotspotSlot = ({
  * 5 个角色：画布层 / 共享 off-screen g / 放大层 / 详情层 / 点击区
  */
 const ClickZoom = (props: I_ClickZoomProps) => {
-  const { canvasSize, items } = props
+  const { canvasSize, childItems } = props
   const homeBg = defaultTo(props.homeBg, null as ReactNode)
   const zoomScale = defaultTo(props.zoomScale, DEFAULT_ZOOM_SCALE)
   const duration = defaultTo(props.duration, DEFAULT_DURATION)
@@ -180,7 +180,7 @@ const ClickZoom = (props: I_ClickZoomProps) => {
           <g transform="translate(2000,0)">
             {buildOffScreenTranslate(duration)}
 
-            {items.map((item, i) => {
+            {childItems.map((item, i) => {
               const geo = computeGeometry(item.thumbnail)
 
               return (

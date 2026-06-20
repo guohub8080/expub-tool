@@ -47,7 +47,7 @@ export interface I_ClickZoomProps {
   /** SVG 画布尺寸（viewBox） */
   canvasSize: { w: number; h: number }
   /** 热区数组 */
-  items: ClickZoomItem[]
+  childItems: ClickZoomItem[]
   /** 放大倍数，默认 4 */
   zoomScale?: number
   /** 缩放时长（秒），默认 1 */
