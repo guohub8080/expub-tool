@@ -215,6 +215,50 @@ export default function ClickZoomPage() {
           ]}
         />
       </CopyDemo>
+
+      <CopyDemo title="zoomScale=1（原地弹窗，不放大，只淡入淡出）">
+        <ClickZoom
+          canvasSize={{ w: 300, h: 300 }}
+          homeBg={
+            <>
+              <rect x={0} y={0} width={300} height={300} fill="#0f172a" />
+              <rect x={60} y={60} width={80} height={80} rx={16} fill="#3b82f6" opacity={0.3} />
+              <rect x={60} y={60} width={80} height={80} rx={16} fill="none" stroke="#3b82f6" strokeWidth={2} />
+              <text x={100} y={108} fontSize={28} fill="#60a5fa" textAnchor="middle" fontWeight={900}>1</text>
+              <rect x={160} y={160} width={80} height={80} rx={16} fill="#ef4444" opacity={0.3} />
+              <rect x={160} y={160} width={80} height={80} rx={16} fill="none" stroke="#ef4444" strokeWidth={2} />
+              <text x={200} y={208} fontSize={28} fill="#f87171" textAnchor="middle" fontWeight={900}>2</text>
+            </>
+          }
+          zoomScale={1}
+          childItems={[
+            {
+              thumbnail: { x: 60, y: 60, w: 80, h: 80 },
+              modalContent: (
+                <>
+                  <rect x={0} y={0} width={300} height={300} fill="#1e293b" />
+                  <rect x={40} y={40} width={220} height={220} rx={20} fill="#3b82f6" opacity={0.2} />
+                  <rect x={40} y={40} width={220} height={220} rx={20} fill="none" stroke="#60a5fa" strokeWidth={2} />
+                  <text x={150} y={160} fontSize={36} fill="#60a5fa" textAnchor="middle" fontWeight={900}>弹窗 1</text>
+                  <text x={150} y={240} fontSize={13} fill="#93c5fd" textAnchor="middle">点击别处关闭</text>
+                </>
+              ),
+            },
+            {
+              thumbnail: { x: 160, y: 160, w: 80, h: 80 },
+              modalContent: (
+                <>
+                  <rect x={0} y={0} width={300} height={300} fill="#450a0a" />
+                  <rect x={40} y={40} width={220} height={220} rx={20} fill="#ef4444" opacity={0.2} />
+                  <rect x={40} y={40} width={220} height={220} rx={20} fill="none" stroke="#f87171" strokeWidth={2} />
+                  <text x={150} y={160} fontSize={36} fill="#f87171" textAnchor="middle" fontWeight={900}>弹窗 2</text>
+                  <text x={150} y={240} fontSize={13} fill="#fca5a5" textAnchor="middle">点击别处关闭</text>
+                </>
+              ),
+            },
+          ]}
+        />
+      </CopyDemo>
     </div>
   )
 }
