@@ -15,7 +15,6 @@ import {
   DEFAULT_DURATION,
   DEFAULT_KEY_SPLINES,
 } from "./types"
-import { computeGeometry } from "./utils/geometry"
 import {
   buildOffScreenTranslate,
   buildZoomScaleOpacity,
@@ -23,6 +22,7 @@ import {
   buildRectFlyOut,
   buildCounterTranslate,
 } from "./timeline/animations"
+import { computeGeometry } from "./utils/geometry"
 
 export type { ClickZoomItem, ClickZoomScale, I_ClickZoomProps } from "./types"
 
@@ -143,8 +143,8 @@ const ClickZoom = (props: I_ClickZoomProps) => {
   const { canvasSize, childItems } = props
   const homeBg = defaultTo(props.homeBg, null as ReactNode)
   const zoomScale = defaultTo(props.zoomScale, DEFAULT_ZOOM_SCALE)
-  const duration = defaultTo(props.duration, DEFAULT_DURATION)
-  const keySplines = defaultTo(props.keySplines, DEFAULT_KEY_SPLINES)
+  const duration = DEFAULT_DURATION
+  const keySplines = DEFAULT_KEY_SPLINES
   const spacingResult = spacing(props.spacing)
   const isDev = ExPubGoConfig().mode === "development"
   const { w, h } = canvasSize

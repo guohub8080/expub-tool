@@ -50,10 +50,6 @@ export interface I_ClickZoomProps {
   childItems: ClickZoomItem[]
   /** 放大倍数，默认 4 */
   zoomScale?: number
-  /** 缩放时长（秒），默认 1 */
-  duration?: number
-  /** 缓动曲线，默认 "0.24 0 0.24 1"（ease-out） */
-  keySplines?: string
   /** 画布背景（简单 url/color，跟其他组件一致，仅静态层） */
   canvasBg?: I_CanvasBg
   /** 主背景（复杂 jsx，含动画的 SVG）。同时在静态层和放大层渲染，SMIL 自动同步 */
