@@ -35,7 +35,6 @@ export function MultiPageSwipeSection({ childItem, canvasWidth, canvasHeight }: 
 
   const slideStyle: CSSProperties = {
     width: `${slideWidthPercent}%`,
-    flex: `0 0 ${slideWidthPercent}%`,
     verticalAlign: 'top',
     lineHeight: 0,
     overflow: 'hidden',
