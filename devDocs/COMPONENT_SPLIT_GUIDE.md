@@ -203,12 +203,12 @@ const { itemGap = DEFAULT_ITEM_GAP } = props
 
 ### `<svg background-image>` → `{ url | jsx }` 替换原则
 
-参考代码里大量出现 `<svg style="background-image: url(png)">` —— 用 CSS background-image 把一张 PNG 铺在 `<svg>` 上。**这类位置全部抽象为 `{ url?, jsx? }` 内容槽位**：
+参考代码里大量出现 `<svg style="background-image: url(...)">` —— 用 CSS background-image 把一张静态图铺在 `<svg>` 上。**这类位置全部抽象为 `{ url?, jsx? }` 内容槽位**：
 
-- **url**：直接用参考的 PNG（设计师做好的图，含 alpha 透明等）
-- **jsx**：替换为任意 SVG 内容（`<rect>` / `<text>` / `<image>` / 动画等，完全由代码控制）
+- **url**：静态图（PNG / JPG / WEBP 等，设计师做好的素材）
+- **jsx**：动态内容（任意 SVG 元素，可编程、可动画、可参数化）
 
-原因：SVG 的 `background-image` 只是视觉效果的一个载体，换成 jsx 后可以写任意 SVG 元素——**位置不变、语义不变，只是内容从"一张静态图"变成"可编程的任意 SVG"**。这让组件既兼容原始 PNG 素材，又能用代码动态生成内容。
+本质是**静态 → 动态**的替换：同一个位置，从"一张写死的图"变成"代码生成的任意 SVG"。让组件既兼容原始静态素材，又能用代码动态生成内容。
 
 统一渲染路径：url 和 jsx 不走不同分支，统一用 `renderContent()` / 内容组件渲染。
 
