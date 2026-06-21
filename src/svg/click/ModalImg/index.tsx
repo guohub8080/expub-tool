@@ -111,9 +111,7 @@ function HotAreaSection({ item, canvasWidth }: {
         <SvgEx viewBox={`0 0 ${canvasWidth} ${hotArea.y}`} style={{ display: 'inline' }} />
       )}
 
-      {/* slide 层（参考：overflow-x:auto 允许横向滚动） */}
-      <section style={slideLayerStyle}>
-        {/* flex 内行 */}
+      {/* flex 内行 */}
         <SectionEx
           important={[['max-width', '100%']]}
           style={flexRowStyle}
@@ -135,7 +133,6 @@ function HotAreaSection({ item, canvasWidth }: {
             />
           </section>
         </SectionEx>
-      </section>
     </section>
   )
 }
@@ -152,21 +149,13 @@ const hotAreaLayerStyle: CSSProperties = {
   pointerEvents: 'none',
 }
 
-const slideLayerStyle: CSSProperties = {
-  width: '100%',
-  display: 'flex',
-  verticalAlign: 'top',
-  overflowX: 'auto',
-  boxSizing: 'border-box',
-  pointerEvents: 'none',
-  lineHeight: 0,
-}
-
 const flexRowStyle: CSSProperties = {
   flex: '0 0 100%',
   display: 'flex',
   overflow: 'hidden',
   boxSizing: 'border-box',
+  pointerEvents: 'none',
+  lineHeight: 0,
 }
 
 const spacerStyle: CSSProperties = {
