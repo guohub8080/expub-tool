@@ -66,6 +66,9 @@ export type { I_ClickPopupProps } from "./click"
 export { ClickCascade } from "./click"
 export type { I_ClickCascadeProps, I_CascadeChildItem } from "./click"
 
+export { ModalImg } from "./click"
+export type { I_ModalImgProps, I_ModalImgChildItem, I_ModalImgHotArea } from "./click"
+
 export { default as ClickZoom } from "./click/ClickZoom"
 export type { ClickZoomItem, I_ClickZoomProps } from "./click/ClickZoom"
 
