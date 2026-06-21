@@ -39,7 +39,6 @@ export function MultiPageSwipeSection({ childItem, canvasWidth, canvasHeight }: 
     verticalAlign: 'top',
     lineHeight: 0,
     overflow: 'hidden',
-    pointerEvents: 'none',
   }
 
   return (
@@ -106,14 +105,12 @@ const scrollLayerStyle: CSSProperties = {
   overflow: 'scroll hidden',
   marginTop: 0,
   lineHeight: 0,
-  pointerEvents: 'none',
 }
 
 const trackStyle: CSSProperties = {
   whiteSpace: 'nowrap',
   lineHeight: 0,
   display: 'flex',
-  pointerEvents: 'none',
 }
 
 const overlayStyle: CSSProperties = {
