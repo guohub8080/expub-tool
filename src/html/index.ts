@@ -8,4 +8,4 @@ export { default as NoWrapText } from "./common/NoWrapText"
 export { default as TextSpace } from "./common/TextSpace"
 
 export { default as Timeline } from "./display/Timeline"
-export type { TimelineItem, TimelineProps } from "./display/Timeline"
+export type { TimelineItem, TimelineProps, TimelineDot, TimelineLine, TimelineDash } from "./display/Timeline"

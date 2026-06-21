@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
-import { CascadeContent } from './CascadeContent'
-import type { I_CascadeSwipeChildItem, I_CascadeContent } from '../types'
+import { MultiPageSwipeContent } from './MultiPageSwipeContent'
+import type { I_MultiPageSwipeChildItem, I_MultiPageSwipeContent } from '../types'
 
 /**
  * 单个抽拉卡（复刻参考「零高容器 + 等分容器滑动 + 置顶框架_穿透 + 占位 + 二分栏」）：
@@ -10,25 +10,26 @@ import type { I_CascadeSwipeChildItem, I_CascadeContent } from '../types'
  * - 滚动层 + 轨道：content[] 为面板，轨道宽 = N×100%，向左抽拉
  * - slide-1：背景图层（零高穿透）+ overlay（置顶框架）
  *   - overlay 内：占位 placeholder（高 = tagHandle.y，把把手推到 y）+ 二分栏
- *   - 二分栏 左 (canvasW - w) 空 / 右 w = 把手列（靠右）；列内把手槽为全段唯一 pe:visible
+ *   - 二分栏 左 (canvasW - w) 空 / 右 w = 把手列（靠右）；列内把手槽为全段唯一 pointer-events:visible
  * - slide-2..N：纯背景图
  *
  * 把手 x 自动靠右（二分栏右列在最右），y 由 placeholder 顶到位，w/h 由把手画布决定。
  */
-export function CascadeSection({ childItem, canvasWidth, canvasHeight }: {
-  childItem: I_CascadeSwipeChildItem
+export function MultiPageSwipeSection({ childItem, canvasWidth, canvasHeight }: {
+  childItem: I_MultiPageSwipeChildItem
   canvasWidth: number
   canvasHeight: number
 }) {
   const { tagHandle, content } = childItem
   if (content.length === 0) return null
 
-  const groupCount = content.length
-  const trackWidthPercent = groupCount * 100
-  const slideWidthPercent = 100 / groupCount
+  // slide-1（透明，只露把手）+ N 个内容面板；抽拉把手 → 内容从右侧滑入
+  const totalSlides = content.length + 1
+  const trackWidthPercent = totalSlides * 100
+  const slideWidthPercent = 100 / totalSlides
 
   // 把手几何（viewBox）→ 二分栏左右列比例（右列 = w，靠右）
-  const handleContent: I_CascadeContent = { url: tagHandle.url, jsx: tagHandle.jsx }
+  const handleContent: I_MultiPageSwipeContent = { url: tagHandle.url, jsx: tagHandle.jsx }
   const leftColumnPercent = ((canvasWidth - tagHandle.w) / canvasWidth) * 100
   const rightColumnPercent = (tagHandle.w / canvasWidth) * 100
 
@@ -38,6 +39,7 @@ export function CascadeSection({ childItem, canvasWidth, canvasHeight }: {
     verticalAlign: 'top',
     lineHeight: 0,
     overflow: 'hidden',
+    pointerEvents: 'none',
   }
 
   return (
@@ -50,12 +52,8 @@ export function CascadeSection({ childItem, canvasWidth, canvasHeight }: {
           ]}
           style={trackStyle}
         >
-          {/* slide-1：背景图 + 把手 overlay */}
+          {/* slide-1：透明（只露把手），内容在 slide-2..N，抽拉滑入 */}
           <section style={slideStyle}>
-            <section style={bgLayerStyle}>
-              <CascadeContent content={content[0]} width={canvasWidth} height={canvasHeight} />
-            </section>
-
             <section style={overlayStyle}>
               {/* placeholder：高 = tagHandle.y，把下方把手推到 y */}
               {tagHandle.y > 0 && (
@@ -76,17 +74,17 @@ export function CascadeSection({ childItem, canvasWidth, canvasHeight }: {
                 >
                   {/* 把手槽：全段唯一 pointer-events: visible */}
                   <section style={handleSlotStyle}>
-                    <CascadeContent content={handleContent} width={tagHandle.w} height={tagHandle.h} />
+                    <MultiPageSwipeContent content={handleContent} width={tagHandle.w} height={tagHandle.h} />
                   </section>
                 </SectionEx>
               </section>
             </section>
           </section>
 
-          {/* slide-2..N：纯背景图 */}
-          {content.slice(1).map((slide, idx) => (
+          {/* slide-2..N：内容面板（抽拉滑入） */}
+          {content.map((slide, idx) => (
             <section key={idx} style={slideStyle}>
-              <CascadeContent content={slide} width={canvasWidth} height={canvasHeight} />
+              <MultiPageSwipeContent content={slide} width={canvasWidth} height={canvasHeight} />
             </section>
           ))}
         </SectionEx>
@@ -108,20 +106,13 @@ const scrollLayerStyle: CSSProperties = {
   overflow: 'scroll hidden',
   marginTop: 0,
   lineHeight: 0,
+  pointerEvents: 'none',
 }
 
 const trackStyle: CSSProperties = {
   whiteSpace: 'nowrap',
   lineHeight: 0,
   display: 'flex',
-}
-
-const bgLayerStyle: CSSProperties = {
-  textAlign: 'center',
-  height: 0,
-  lineHeight: 0,
-  width: '100%',
-  margin: '-1px auto 0px',
   pointerEvents: 'none',
 }
 

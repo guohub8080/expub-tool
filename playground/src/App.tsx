@@ -20,7 +20,7 @@ import AnyCarouselPage from './pages/AnyCarouselPage'
 import FlashSlideCarouselPage from './pages/FlashSlideCarouselPage'
 import ShutterBladePage from './pages/ShutterBladePage'
 import ClickZoomPage from './pages/ClickZoomPage'
-import CascadeSwipePagerPage from './pages/CascadeSwipePagerPage'
+import MultiPageSwipePage from './pages/MultiPageSwipePage'
 import TimelinePage from './pages/TimelinePage'
 
 const links = [
@@ -34,7 +34,7 @@ const links = [
   { to: '/flash-slide', label: 'FlashSlide' },
   { to: '/shutter-blade', label: 'Shutter' },
   { to: '/click-zoom', label: 'ClickZoom' },
-  { to: '/cascade-swipe', label: 'CascadeSwipe' },
+  { to: '/multi-page-swipe', label: 'MultiPageSwipe' },
   { to: '/spin-zoom', label: 'SpinZoom' },
   { to: '/any-loop-display', label: 'AnyLoopDisplay' },
   { to: '/stack-carousel', label: 'StackCarousel' },
@@ -94,7 +94,7 @@ export default function App() {
           <Route path="/flash-slide" element={<FlashSlideCarouselPage />} />
           <Route path="/shutter-blade" element={<ShutterBladePage />} />
           <Route path="/click-zoom" element={<ClickZoomPage />} />
-          <Route path="/cascade-swipe" element={<CascadeSwipePagerPage />} />
+          <Route path="/multi-page-swipe" element={<MultiPageSwipePage />} />
           <Route path="/spin-zoom" element={<SpinZoomCarouselPage />} />
           <Route path="/any-loop-display" element={<AnyLoopDisplayPage />} />
           <Route path="/stack-carousel" element={<StackCarouselPage />} />

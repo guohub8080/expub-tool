@@ -51,8 +51,8 @@ export type { I_StackCarouselItem, I_MainChildConfig, I_TailChildConfig } from "
 export { default as SwipePager } from "./display/SwipePager"
 export type { I_SwipePagerProps, I_SwipePagerContent } from "./display/SwipePager"
 
-export { default as CascadeSwipePager } from "./display/CascadeSwipePager"
-export type { I_CascadeSwipePagerProps, I_CascadeSwipeChildItem, I_TagHandle, I_CascadeContent } from "./display/CascadeSwipePager"
+export { default as MultiPageSwipe } from "./display/MultiPageSwipe"
+export type { I_MultiPageSwipeProps, I_MultiPageSwipeChildItem, I_TagHandle, I_MultiPageSwipeContent } from "./display/MultiPageSwipe"
 
 export { ClickFlipInfinity } from "./click"
 export type { I_ClickFlipInfinityProps, I_FaceContent } from "./click"

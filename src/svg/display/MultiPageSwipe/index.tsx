@@ -5,14 +5,14 @@ import defaultTo from 'lodash/defaultTo'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import { isDefined } from '@utils/fn/isDefined'
-import { CascadeContent } from './components/CascadeContent'
-import { CascadeSection } from './components/CascadeSection'
-import type { I_CascadeSwipePagerProps } from './types'
+import { MultiPageSwipeContent } from './components/MultiPageSwipeContent'
+import { MultiPageSwipeSection } from './components/MultiPageSwipeSection'
+import type { I_MultiPageSwipeProps } from './types'
 
-export type { I_CascadeSwipePagerProps, I_CascadeSwipeChildItem, I_TagHandle, I_CascadeContent } from './types'
+export type { I_MultiPageSwipeProps, I_MultiPageSwipeChildItem, I_TagHandle, I_MultiPageSwipeContent } from './types'
 
 /**
- * CascadeSwipePager — 多卡抽拉分页器
+ * MultiPageSwipe — 多卡抽拉分页器
  *
  * N 个抽拉卡以零高视差叠在同一画布上（复刻参考层化）；每卡含一个右侧把手
  * （手动 w/h/y，x 自动靠右）+ 一组横向面板 content（向左抽拉）。
@@ -20,7 +20,7 @@ export type { I_CascadeSwipePagerProps, I_CascadeSwipeChildItem, I_TagHandle, I_
  *
  * 注意：各卡零高叠加，只有 DOM 最后一张完全可见，其余靠面板图透明处透出。
  */
-const CascadeSwipePager = (props: I_CascadeSwipePagerProps) => {
+const MultiPageSwipe = (props: I_MultiPageSwipeProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
   const isDev = ExPubGoConfig().mode === 'development'
 
@@ -29,7 +29,7 @@ const CascadeSwipePager = (props: I_CascadeSwipePagerProps) => {
 
   return (
     <SectionEx
-      {...(isDev ? { 'expubgo-label': 'cascade-swipe-pager' } : {})}
+      {...(isDev ? { 'expubgo-label': 'multi-page-swipe' } : {})}
       style={{
         WebkitTouchCallout: 'none',
         userSelect: 'none',
@@ -42,13 +42,13 @@ const CascadeSwipePager = (props: I_CascadeSwipePagerProps) => {
       {/* 整体背景层：零高视差，渲染在所有卡背后 */}
       {isDefined(props.canvasBg) && (
         <section style={canvasBgLayerStyle}>
-          <CascadeContent content={props.canvasBg} width={canvasWidth} height={canvasHeight} />
+          <MultiPageSwipeContent content={props.canvasBg} width={canvasWidth} height={canvasHeight} />
         </section>
       )}
 
       {/* N 个抽拉卡，零高视差叠加；把手按各自 w/h/y 摆放 */}
       {props.childItems.map((childItem, idx) => (
-        <CascadeSection
+        <MultiPageSwipeSection
           key={idx}
           childItem={childItem}
           canvasWidth={canvasWidth}
@@ -62,7 +62,7 @@ const CascadeSwipePager = (props: I_CascadeSwipePagerProps) => {
   )
 }
 
-export default CascadeSwipePager
+export default MultiPageSwipe
 
 const canvasBgLayerStyle: CSSProperties = {
   height: 0,

@@ -1,13 +1,13 @@
-# CascadeSwipePager
+# MultiPageSwipe
 
 多卡抽拉分页器。N 个抽拉卡以零高视差叠在同一画布上，每卡含一个**右侧把手**（手动 `w/h/y`，`x` 自动靠右）+ 一组横向面板 `content`（向左抽拉）。复刻 e2.cool「零高容器 + 等分容器滑动 + 置顶框架 + 占位 + 二分栏」结构。
 
 ## 最小用法
 
 ```tsx
-import { CascadeSwipePager } from 'expub-tool'
+import { MultiPageSwipe } from 'expub-tool'
 
-<CascadeSwipePager
+<MultiPageSwipe
   canvasSize={{ w: 1080, h: 1680 }}
   canvasBg={{ url: 'https://...bg.png' }}
   childItems={[
@@ -31,10 +31,10 @@ import { CascadeSwipePager } from 'expub-tool'
 |---|---|---|---|
 | `canvasSize` | `{ w: number; h: number }` | — | SVG viewBox 尺寸（必填） |
 | `canvasBg` | `{ url?: string; jsx?: ReactNode }` | — | 整体背景层（渲染在所有卡背后） |
-| `childItems` | `I_CascadeSwipeChildItem[]` | — | N 个抽拉卡（必填） |
+| `childItems` | `I_MultiPageSwipeChildItem[]` | — | N 个抽拉卡（必填） |
 | `spacing` | `T_SpacingProps` | 全 0 | 外间距 |
 
-### I_CascadeSwipeChildItem
+### I_MultiPageSwipeChildItem
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
