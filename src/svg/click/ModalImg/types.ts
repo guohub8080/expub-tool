@@ -1,5 +1,5 @@
+import type { ReactNode } from 'react'
 import type { T_SpacingProps } from '@css-fn/spacing'
-import type { I_CanvasBg } from '@svg/types'
 
 /** 热区位置和尺寸（viewBox 单位，同 canvasSize 坐标系） */
 export interface I_ModalImgHotArea {
@@ -17,11 +17,17 @@ export interface I_ModalImgChildItem {
   imgUrl: string
 }
 
+/** 背景内容：url 或 jsx 二选一 */
+export interface I_ModalImgContent {
+  url?: string
+  jsx?: ReactNode
+}
+
 export interface I_ModalImgProps {
   /** SVG viewBox 尺寸（必填） */
   canvasSize: { w: number; h: number }
-  /** 画布背景 */
-  canvasBg?: I_CanvasBg
+  /** 画布背景：url 或 jsx，不传则无背景 */
+  canvasBg?: I_ModalImgContent
   /** 热区 + 图片列表（必填） */
   childItems: I_ModalImgChildItem[]
   /** 外间距 */
