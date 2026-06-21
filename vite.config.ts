@@ -27,12 +27,11 @@ export default defineConfig({
         'utils/index': resolve(__dirname, 'src/utils/index.ts'),
         'html/index': resolve(__dirname, 'src/html/index.ts'),
         'svg/index': resolve(__dirname, 'src/svg/index.ts'),
-        'bakeSvg/index': resolve(__dirname, 'src/bakeSvg/index.ts'),
       },
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime', 'lodash', /^lodash\//, 'opentype.js'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', 'lodash', /^lodash\//],
       output: [
         {
           format: 'es',

@@ -13,7 +13,6 @@ export default defineConfig({
       'expub-tool/html': resolve(__dirname, 'dist/esm/html/index.mjs'),
       'expub-tool/css': resolve(__dirname, 'dist/esm/css/index.mjs'),
       'expub-tool/utils': resolve(__dirname, 'dist/esm/utils/index.mjs'),
-      'expub-tool/bakeSvg': resolve(__dirname, 'dist/esm/bakeSvg/index.mjs'),
     },
   },
   build: {
