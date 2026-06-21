@@ -13,14 +13,9 @@ export type { I_ModalImgProps, I_ModalImgChildItem, I_ModalImgHotArea, I_ModalIm
 /**
  * ModalImg — 热区点击弹出图片（微信原生预览）
  *
- * 在背景（url 或 jsx）上放 N 个热区 `<img pointer-events: painted>`，
- * 点击热区 → 微信原生图片预览。不处理弹出/关闭/动画。
- *
- * 定位方式（无 absolute，微信兼容）：
- * - 背景：url → SvgEx 的 background-image；jsx → SvgEx 的 children（SVG 内容）
- * - 热区 Y 偏移：零高视差层 + 占位 SVG（viewBox 高 = hotArea.y，把 img 顶下去）
- * - 热区 X 偏移：marginLeft 百分比
- * - 热区宽：width 百分比
+ * - canvasBg 为 url：组件自动渲染 `<svg background-image>`（和原代码一致）
+ * - canvasBg 为 jsx：整个 `<svg>` 由用户提供，组件直接渲染、不包裹
+ * - 热区 `<img>`：零高视差层定位（占位 SVG 做 Y 偏移、marginLeft 做 X 偏移），无 absolute
  */
 const ModalImg = (props: I_ModalImgProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -42,19 +37,26 @@ const ModalImg = (props: I_ModalImgProps) => {
         ...spacingResult,
       }}
     >
-      {/* 背景层：viewBox 撑高 + url 铺图 或 jsx 作为 <svg> children */}
-      <SvgEx
-        viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
-        style={{
-          display: 'block',
-          width: '100%',
-          ...(isDefined(bgUrl) ? resolveCanvasBg({ url: bgUrl }) : {}),
-        }}
-      >
-        {isDefined(bgJsx) ? bgJsx : undefined}
-      </SvgEx>
+      {/* 背景层（零高视差）：url → 自动 svg+background-image；jsx → 用户自己的整个 svg */}
+      <section style={{
+        textAlign: 'center',
+        height: 0,
+        lineHeight: 0,
+        width: '100%',
+        margin: '0 auto',
+        overflow: 'visible',
+      }}>
+        {isDefined(bgUrl) ? (
+          <SvgEx
+            viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+            style={{ display: 'block', width: '100%', ...resolveCanvasBg({ url: bgUrl }) }}
+          />
+        ) : isDefined(bgJsx) ? (
+          bgJsx
+        ) : null}
+      </section>
 
-      {/* 热区：每个 childItem 一个零高视差层，无 absolute */}
+      {/* 热区：零高视差层，无 absolute */}
       {props.childItems.map((item, idx) => {
         const { hotArea, imgUrl } = item
         const leftPercent = (hotArea.x / canvasWidth) * 100
@@ -69,7 +71,7 @@ const ModalImg = (props: I_ModalImgProps) => {
             margin: '0 auto',
             overflow: 'visible',
           }}>
-            {/* Y 偏移：占位 SVG（viewBox 高 = hotArea.y，把 img 顶到正确高度） */}
+            {/* Y 偏移：占位 SVG（viewBox 高 = hotArea.y） */}
             {hotArea.y > 0 && (
               <SvgEx
                 viewBox={`0 0 ${canvasWidth} ${hotArea.y}`}
@@ -77,7 +79,7 @@ const ModalImg = (props: I_ModalImgProps) => {
               />
             )}
 
-            {/* 热区 <img>：marginLeft 做 X 偏移，width 控宽，pointer-events: painted → 点击触发微信原生预览 */}
+            {/* 热区 <img>：marginLeft 做 X 偏移，width 控宽，pointer-events: painted */}
             <img
               src={imgUrl}
               style={{
@@ -92,7 +94,7 @@ const ModalImg = (props: I_ModalImgProps) => {
         )
       })}
 
-      {/* 底部占位（维持 viewBox 高度） */}
+      {/* 底部占位：维持 viewBox 高度 */}
       <SvgEx
         viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
         style={{ display: 'block', width: '100%', pointerEvents: 'none' }}
