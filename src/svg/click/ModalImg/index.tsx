@@ -13,9 +13,14 @@ export type { I_ModalImgProps, I_ModalImgChildItem, I_ModalImgHotArea, I_ModalIm
 /**
  * ModalImg — 热区点击弹出图片（微信原生预览）
  *
- * - canvasBg 为 url：组件自动渲染 `<svg background-image>`（和原代码一致）
- * - canvasBg 为 jsx：整个 `<svg>` 由用户提供，组件直接渲染、不包裹
- * - 热区 `<img>`：零高视差层定位（占位 SVG 做 Y 偏移、marginLeft 做 X 偏移），无 absolute
+ * canvasBg（url 自动铺 background-image，或 jsx 用户自己写整个 svg）
+ * + N 个热区（每个按参考结构放置 `<img pointer-events: painted>`）。
+ *
+ * 热区放置结构（完全复刻参考「零高容器 + 占位 SVG + flex 内行 + 左留白 + 图片容器」）：
+ * - Y 偏移：占位 SVG（viewBox 高 = hotArea.y）
+ * - X 偏移：flex 左留白（flex: 0 0 x%）
+ * - 宽度：图片容器（width: w%）
+ * - `<img>`：pointer-events: painted，点击触发微信原生预览
  */
 const ModalImg = (props: I_ModalImgProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -38,14 +43,7 @@ const ModalImg = (props: I_ModalImgProps) => {
       }}
     >
       {/* 背景层（零高视差）：url → 自动 svg+background-image；jsx → 用户自己的整个 svg */}
-      <section style={{
-        textAlign: 'center',
-        height: 0,
-        lineHeight: 0,
-        width: '100%',
-        margin: '0 auto',
-        overflow: 'visible',
-      }}>
+      <section style={bgLayerStyle}>
         {isDefined(bgUrl) ? (
           <SvgEx
             viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
@@ -56,45 +54,45 @@ const ModalImg = (props: I_ModalImgProps) => {
         ) : null}
       </section>
 
-      {/* 热区：零高视差层，无 absolute */}
+      {/* 热区：按参考结构放置每个 <img> */}
       {props.childItems.map((item, idx) => {
         const { hotArea, imgUrl } = item
-        const leftPercent = (hotArea.x / canvasWidth) * 100
-        const widthPercent = (hotArea.w / canvasWidth) * 100
+        const spacerPercent = (hotArea.x / canvasWidth) * 100
+        const containerPercent = (hotArea.w / canvasWidth) * 100
 
         return (
-          <section key={idx} style={{
-            textAlign: 'center',
-            height: 0,
-            lineHeight: 0,
-            width: '100%',
-            margin: '0 auto',
-            overflow: 'visible',
-          }}>
+          <section key={idx} style={hotAreaLayerStyle}>
             {/* Y 偏移：占位 SVG（viewBox 高 = hotArea.y） */}
             {hotArea.y > 0 && (
-              <SvgEx
-                viewBox={`0 0 ${canvasWidth} ${hotArea.y}`}
-                style={{ display: 'block', width: '100%' }}
-              />
+              <SvgEx viewBox={`0 0 ${canvasWidth} ${hotArea.y}`} style={{ display: 'inline' }} />
             )}
 
-            {/* 热区 <img>：marginLeft 做 X 偏移，width 控宽，pointer-events: painted */}
-            <img
-              src={imgUrl}
-              style={{
-                marginLeft: `${leftPercent}%`,
-                width: `${widthPercent}%`,
-                height: 'auto',
-                pointerEvents: 'painted',
-                verticalAlign: 'top',
-              }}
-            />
+            {/* flex 内行 */}
+            <section style={flexRowStyle}>
+              <SectionEx
+                important={[['max-width', `${spacerPercent}%`]]}
+                style={{ ...spacerStyle, flex: `0 0 ${spacerPercent}%` }}
+              >
+                <SvgEx viewBox="0 0 404 404" style={{ verticalAlign: 'top' }} />
+              </SectionEx>
+
+              {/* 图片容器 */}
+              <section style={{ verticalAlign: 'top', width: `${containerPercent}%` }}>
+                <img
+                  src={imgUrl}
+                  style={{
+                    width: '100%',
+                    pointerEvents: 'painted',
+                    height: 'auto',
+                  }}
+                />
+              </section>
+            </section>
           </section>
         )
       })}
 
-      {/* 底部占位：维持 viewBox 高度 */}
+      {/* 底部占位：维持画布高度 */}
       <SvgEx
         viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
         style={{ display: 'block', width: '100%', pointerEvents: 'none' }}
@@ -104,3 +102,38 @@ const ModalImg = (props: I_ModalImgProps) => {
 }
 
 export default ModalImg
+
+const bgLayerStyle: CSSProperties = {
+  textAlign: 'center',
+  height: 0,
+  lineHeight: 0,
+  width: '100%',
+  margin: '0 auto',
+  overflow: 'visible',
+}
+
+const hotAreaLayerStyle: CSSProperties = {
+  textAlign: 'center',
+  height: 0,
+  lineHeight: 0,
+  width: '100%',
+  margin: '-1px auto 0px',
+  overflow: 'visible',
+  pointerEvents: 'none',
+}
+
+const flexRowStyle: CSSProperties = {
+  width: '100%',
+  display: 'flex',
+  verticalAlign: 'top',
+  overflow: 'hidden',
+  boxSizing: 'border-box',
+  pointerEvents: 'none',
+  lineHeight: 0,
+}
+
+const spacerStyle: CSSProperties = {
+  display: 'inline-block',
+  verticalAlign: 'bottom',
+  boxSizing: 'border-box',
+}
