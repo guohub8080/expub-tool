@@ -13,14 +13,12 @@ export type { I_ModalImgProps, I_ModalImgChildItem, I_ModalImgHotArea, I_ModalIm
 /**
  * ModalImg — 热区点击弹出图片（微信原生预览）
  *
- * canvasBg（url 自动铺 background-image，或 jsx 用户自己写整个 svg）
- * + N 个热区（每个按参考结构放置 `<img pointer-events: painted>`）。
+ * 原理（完全复刻普拉达参考）：
+ * 1. <img> 热区在 DOM **前面**（底层，被背景盖住，pe:painted 可点）
+ * 2. canvasBg 在 DOM **后面**（盖在 img 上面，pe:none 点击穿透 → 打到 img → 微信预览）
  *
- * 热区放置结构（完全复刻参考「零高容器 + 占位 SVG + flex 内行 + 左留白 + 图片容器」）：
- * - Y 偏移：占位 SVG（viewBox 高 = hotArea.y）
- * - X 偏移：flex 左留白（flex: 0 0 x%）
- * - 宽度：图片容器（width: w%）
- * - `<img>`：pointer-events: painted，点击触发微信原生预览
+ * 用户看到的是 canvasBg（报纸图案/动画暗示），看不到 img。
+ * 点击 canvasBg → pe:none 穿透 → 打到 img → 微信弹出全图。
  */
 const ModalImg = (props: I_ModalImgProps) => {
   const spacingResult = spacing(defaultTo(props.spacing, SPACING_ZERO))
@@ -42,19 +40,7 @@ const ModalImg = (props: I_ModalImgProps) => {
         ...spacingResult,
       }}
     >
-      {/* 背景层（零高视差）：url → 自动 svg+background-image；jsx → 用户自己的整个 svg */}
-      <section style={bgLayerStyle}>
-        {isDefined(bgUrl) ? (
-          <SvgEx
-            viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
-            style={{ display: 'block', width: '100%', ...resolveCanvasBg({ url: bgUrl }) }}
-          />
-        ) : isDefined(bgJsx) ? (
-          bgJsx
-        ) : null}
-      </section>
-
-      {/* 热区：按参考结构放置每个 <img> */}
+      {/* 1. img 热区层（DOM 先 = 底层，被背景盖住） */}
       {props.childItems.map((item, idx) => {
         const { hotArea, imgUrl } = item
         const spacerPercent = (hotArea.x / canvasWidth) * 100
@@ -76,7 +62,7 @@ const ModalImg = (props: I_ModalImgProps) => {
                 <SvgEx viewBox="0 0 404 404" style={{ verticalAlign: 'top' }} />
               </SectionEx>
 
-              {/* 图片容器：height 99999px（参考用 40404px，本质是给 img 足够高的渲染空间） */}
+              {/* 图片容器：height 99999px 给 img 足够渲染空间 */}
               <section style={{ verticalAlign: 'top', width: `${containerPercent}%`, height: '99999px' }}>
                 <img
                   src={imgUrl}
@@ -92,25 +78,34 @@ const ModalImg = (props: I_ModalImgProps) => {
         )
       })}
 
-      {/* 底部占位：维持画布高度 */}
-      <SvgEx
-        viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
-        style={{ display: 'block', width: '100%', pointerEvents: 'none' }}
-      />
+      {/* 2. 背景层（DOM 后 = 盖在 img 上面，pe:none 让点击穿透到 img） */}
+      {/* url → <svg background-image pe:none>；jsx → 用户自己的 svg，包一层 pe:none */}
+      {isDefined(bgUrl) ? (
+        <SvgEx
+          viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+          style={{
+            display: 'block',
+            width: '100%',
+            pointerEvents: 'none',
+            ...resolveCanvasBg({ url: bgUrl }),
+          }}
+        />
+      ) : isDefined(bgJsx) ? (
+        <section style={bgCoverLayerStyle}>
+          {bgJsx}
+        </section>
+      ) : (
+        /* 无背景时用透明占位 svg 撑出画布高度 */
+        <SvgEx
+          viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+          style={{ display: 'block', width: '100%', pointerEvents: 'none' }}
+        />
+      )}
     </SectionEx>
   )
 }
 
 export default ModalImg
-
-const bgLayerStyle: CSSProperties = {
-  textAlign: 'center',
-  height: 0,
-  lineHeight: 0,
-  width: '100%',
-  margin: '0 auto',
-  overflow: 'visible',
-}
 
 const hotAreaLayerStyle: CSSProperties = {
   textAlign: 'center',
@@ -136,4 +131,10 @@ const spacerStyle: CSSProperties = {
   display: 'inline-block',
   verticalAlign: 'bottom',
   boxSizing: 'border-box',
+}
+
+/** jsx 背景的包裹层：pe:none 确保点击穿透到下面的 img */
+const bgCoverLayerStyle: CSSProperties = {
+  pointerEvents: 'none',
+  lineHeight: 0,
 }
