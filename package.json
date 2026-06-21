@@ -46,6 +46,11 @@
       "import": "./dist/esm/svg/index.mjs",
       "require": "./dist/cjs/svg/index.cjs",
       "types": "./dist/types/svg/index.d.ts"
+    },
+    "./bakeSvg": {
+      "import": "./dist/esm/bakeSvg/index.mjs",
+      "require": "./dist/cjs/bakeSvg/index.cjs",
+      "types": "./dist/types/bakeSvg/index.d.ts"
     }
   },
   "files": [
@@ -69,6 +74,7 @@
     "@types/chroma-js": "^3.1.2",
     "@types/jsdom": "^28.0.3",
     "@types/lodash": "^4.17.24",
+    "@types/opentype.js": "^1.3.10",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
@@ -95,6 +101,7 @@
   },
   "dependencies": {
     "chroma-js": "^3.2.0",
-    "lodash": "^4.18.1"
+    "lodash": "^4.18.1",
+    "opentype.js": "^2.0.0"
   }
 }
