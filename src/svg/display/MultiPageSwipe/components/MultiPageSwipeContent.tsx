@@ -9,17 +9,16 @@ import type { I_MultiPageSwipeContent } from '../types'
  * - jsx 优先：有 jsx 直接渲染
  * - url：渲染成带 background-image 的 SVG（拉伸铺满，viewBox = width×height）
  * - 都为空：返回 null
+ *
+ * 不设 pointer-events（默认 auto）——和参考对齐：
+ * content 捕获触摸 → scrollLayer 的 overflow:scroll 接管 → 手指在 content 上也能持续滚动。
  */
 export function MultiPageSwipeContent({ content, width, height }: {
   content: I_MultiPageSwipeContent
   width: number
   height: number
 }) {
-  if (isDefined(content.jsx)) {
-    // 包一层 pointer-events:none：让 jsx 内部元素（rect/text 等）继承 pointer-events:none，
-    // 不捕获触摸 → 触摸穿透到把手槽（pointer-events:visible），保证多卡独立交互
-    return <section style={{ pointerEvents: 'none' }}>{content.jsx}</section>
-  }
+  if (isDefined(content.jsx)) return <>{content.jsx}</>
   if (isNil(content.url)) return null
 
   return (
@@ -33,8 +32,6 @@ export function MultiPageSwipeContent({ content, width, height }: {
         backgroundSize: '100%',
         backgroundPosition: '0 0',
         backgroundRepeat: 'no-repeat',
-        pointerEvents: 'none',
-        userSelect: 'none',
       }}
     />
   )
