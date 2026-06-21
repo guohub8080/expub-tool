@@ -76,8 +76,8 @@ const ModalImg = (props: I_ModalImgProps) => {
                 <SvgEx viewBox="0 0 404 404" style={{ verticalAlign: 'top' }} />
               </SectionEx>
 
-              {/* 图片容器 */}
-              <section style={{ verticalAlign: 'top', width: `${containerPercent}%` }}>
+              {/* 图片容器：height 99999px（参考用 40404px，本质是给 img 足够高的渲染空间） */}
+              <section style={{ verticalAlign: 'top', width: `${containerPercent}%`, height: '99999px' }}>
                 <img
                   src={imgUrl}
                   style={{
