@@ -201,6 +201,26 @@ const { itemGap = DEFAULT_ITEM_GAP } = props
 2. **生成结果必须与参考代码完全一致**，除 spacing 和水印外
 3. **开发模式标注组件身份** — `ExPubGoConfig().mode === 'development'` 时输出 `expubgo-label` 属性
 
+### `<svg background-image>` → `{ url | jsx }` 替换原则
+
+参考代码里大量出现 `<svg style="background-image: url(png)">` —— 用 CSS background-image 把一张 PNG 铺在 `<svg>` 上。**这类位置全部抽象为 `{ url?, jsx? }` 内容槽位**：
+
+- **url**：直接用参考的 PNG（设计师做好的图，含 alpha 透明等）
+- **jsx**：替换为任意 SVG 内容（`<rect>` / `<text>` / `<image>` / 动画等，完全由代码控制）
+
+原因：SVG 的 `background-image` 只是视觉效果的一个载体，换成 jsx 后可以写任意 SVG 元素——**位置不变、语义不变，只是内容从"一张静态图"变成"可编程的任意 SVG"**。这让组件既兼容原始 PNG 素材，又能用代码动态生成内容。
+
+统一渲染路径：url 和 jsx 不走不同分支，统一用 `renderContent()` / 内容组件渲染。
+
+类型约定：
+```ts
+interface I_Content {
+  url?: string
+  jsx?: ReactNode
+}
+```
+url 与 jsx 二选一；都为空则该单元不渲染。
+
 ### Object 参数风格
 
 所有函数一律使用 Object 参数（不接受位置参数）：
