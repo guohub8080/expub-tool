@@ -15,6 +15,8 @@ export interface I_ModalImgChildItem {
   hotArea: I_ModalImgHotArea
   /** 点击热区后弹出的图片 URL（微信原生预览） */
   imgUrl: string
+  /** 图片自然高/宽比（data-ratio）。如 5.66 表示高是宽的 5.66 倍。用于计算 scale 压缩长图 */
+  ratio?: number
 }
 
 /** 背景内容：url 或 jsx 二选一 */
