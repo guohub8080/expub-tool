@@ -29,11 +29,13 @@ export interface TimelineDot {
 
 /** 单项下方连线配置（不传则走 defaultLine） */
 export interface TimelineLine {
-    /** 连线宽度 px。覆盖 defaultLine.width */
+    /** 自定义连线：传入后替换内置实线/虚线（整段 JSX，优先级最高）。需自带 flex:1 填满竖向缝隙 */
+    jsx?: ReactNode
+    /** 连线宽度 px。覆盖 defaultLine.width。jsx 存在时忽略 */
     width?: number
-    /** 连线颜色。覆盖 defaultLine.color */
+    /** 连线颜色。覆盖 defaultLine.color。jsx 存在时忽略 */
     color?: string
-    /** 虚线配置；有 dash 就走虚线（覆盖实线） */
+    /** 虚线配置；有 dash 就走虚线（覆盖实线）。jsx 存在时忽略 */
     dash?: TimelineDash
 }
 
@@ -52,8 +54,8 @@ export interface TimelineProps {
 
     /** 默认圆点配置（部分覆盖）：{ size?, color? }。size 默认 9，color 默认 #1A237E；单项 dot 覆盖 */
     defaultDot?: { size?: number; color?: string }
-    /** 默认连线配置（部分覆盖）：{ width?, color?, dash? }。width 默认 2，color 默认 #e5e5e5；单项 line 覆盖 */
-    defaultLine?: { width?: number; color?: string; dash?: TimelineDash }
+    /** 默认连线配置（部分覆盖）：{ jsx?, width?, color?, dash? }。width 默认 2，color 默认 #e5e5e5；单项 line 覆盖 */
+    defaultLine?: { jsx?: ReactNode; width?: number; color?: string; dash?: TimelineDash }
 
     /** 连线两端的纵向缝：上端（本圆点底部→连线）和下端（连线→下一个圆点顶部）各留 dotGap。默认 0 */
     dotGap?: number
@@ -70,10 +72,10 @@ export interface TimelineProps {
 /**
  * 竖向时间轴 —— 纯脚手架：圆点 + 连线 + 一个你自己塞 JSX 的槽（body）。
  *
- * 连线两种渲染（由 defaultLine.dash / 单项 line.dash 决定）：
- * 1. 无 dash → HTML 实线（<section> + background-color，最精确锐利）。
+ * 连线三种渲染（优先级：line.jsx > dash > 实线）：
+ * 1. line.jsx → 自定义连线 JSX（逃生舱，自带 flex:1 + 外观，内置不干涉）。
  * 2. 有 dash → CSS 静态虚线（repeating-linear-gradient，可调实心段/缺口）。
- * （曾尝试 SVG 流动虚线，但 SVG 在 flex 布局里无法可靠填满动态高度，已移除。）
+ * 3. 无 dash → HTML 实线（<section> + background-color，最精确锐利）。
  *
  * 对齐：正文首行中心自动压到圆心，圆点纵向对齐，无需手调；偏差用 defaultBodyMarginTop 微调。
  * 微信兼容：圆点 / 连线走 SectionEx + !important 锁尺寸防吞。
@@ -112,6 +114,10 @@ const Timeline = (props: TimelineProps) => {
                 const solidLength = defaultTo(effectiveDash?.solidLength, 4)
                 const gapLength = defaultTo(effectiveDash?.gapLength, 4)
 
+                // 自定义连线：单项 line.jsx 覆盖全局 defaultLine.jsx（优先级最高，传了就用你的 JSX）
+                const effectiveLineJsx = item.line?.jsx ?? defaultLine?.jsx
+                const hasCustomLine = !isNil(effectiveLineJsx)
+
                 // 正文首行中心压到圆心：marginTop = 圆心(resolvedDotSize/2) − 首行半高(CONTENT_LINE_HALF)
                 const contentMarginTop = resolvedDotSize / 2 - CONTENT_LINE_HALF + defaultBodyMarginTop
 
@@ -129,46 +135,51 @@ const Timeline = (props: TimelineProps) => {
                     alignItems: "stretch",
                 }
 
-                // 连线：实线 / 静态虚线（仅非末项渲染）
+                // 连线：自定义 jsx > 实线 / 静态虚线（仅非末项渲染）
                 let lineElement: ReactNode = null
                 if (!isLast) {
-                    const lineBaseStyle: CSSProperties = {
-                        display: "block",
-                        flex: 1,
-                        width: resolvedLineWidth,
-                        minWidth: resolvedLineWidth,
-                        marginTop: dotGap, // 上端：本圆点底部 → 连线
-                        marginBottom: dotGap, // 下端：连线 → 下一个圆点顶部
-                    }
-                    if (!hasDash) {
-                        // ① HTML 实线
-                        lineElement = (
-                            <SectionEx
-                                style={{ ...lineBaseStyle, backgroundColor: resolvedLineColor }}
-                                important={[
-                                    ["width", `${resolvedLineWidth}px`],
-                                    ["min-width", `${resolvedLineWidth}px`],
-                                    ["flex", "1"],
-                                    ["background-color", resolvedLineColor],
-                                ]}
-                            />
-                        )
+                    if (hasCustomLine) {
+                        // ③ 自定义连线 JSX（逃生舱：你自带 flex:1 + 外观，内置不干涉）
+                        lineElement = effectiveLineJsx
                     } else {
-                        // ② CSS 静态虚线（repeating-linear-gradient：实心段 solidLength + 缺口 gapLength）
-                        const period = solidLength + gapLength
-                        lineElement = (
-                            <SectionEx
-                                style={{
-                                    ...lineBaseStyle,
-                                    backgroundImage: `repeating-linear-gradient(to bottom, ${resolvedLineColor} 0, ${resolvedLineColor} ${solidLength}px, transparent ${solidLength}px, transparent ${period}px)`,
-                                }}
-                                important={[
-                                    ["width", `${resolvedLineWidth}px`],
-                                    ["min-width", `${resolvedLineWidth}px`],
-                                    ["flex", "1"],
-                                ]}
-                            />
-                        )
+                        const lineBaseStyle: CSSProperties = {
+                            display: "block",
+                            flex: 1,
+                            width: resolvedLineWidth,
+                            minWidth: resolvedLineWidth,
+                            marginTop: dotGap, // 上端：本圆点底部 → 连线
+                            marginBottom: dotGap, // 下端：连线 → 下一个圆点顶部
+                        }
+                        if (!hasDash) {
+                            // ① HTML 实线
+                            lineElement = (
+                                <SectionEx
+                                    style={{ ...lineBaseStyle, backgroundColor: resolvedLineColor }}
+                                    important={[
+                                        ["width", `${resolvedLineWidth}px`],
+                                        ["min-width", `${resolvedLineWidth}px`],
+                                        ["flex", "1"],
+                                        ["background-color", resolvedLineColor],
+                                    ]}
+                                />
+                            )
+                        } else {
+                            // ② CSS 静态虚线（repeating-linear-gradient：实心段 solidLength + 缺口 gapLength）
+                            const period = solidLength + gapLength
+                            lineElement = (
+                                <SectionEx
+                                    style={{
+                                        ...lineBaseStyle,
+                                        backgroundImage: `repeating-linear-gradient(to bottom, ${resolvedLineColor} 0, ${resolvedLineColor} ${solidLength}px, transparent ${solidLength}px, transparent ${period}px)`,
+                                    }}
+                                    important={[
+                                        ["width", `${resolvedLineWidth}px`],
+                                        ["min-width", `${resolvedLineWidth}px`],
+                                        ["flex", "1"],
+                                    ]}
+                                />
+                            )
+                        }
                     }
                 }
 

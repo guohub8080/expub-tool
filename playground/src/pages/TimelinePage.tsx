@@ -158,6 +158,17 @@ function PulseDot() {
   )
 }
 
+/** 示范 line.jsx：SVG 流动虚线（自定义 JSX，直接给个匹配行高的固定高度，不做 flex 填充那套） */
+function AnimatedDashedLine() {
+  return (
+    <svg width="2" height="40" style={{ display: 'block' }}>
+      <line x1="1" y1="0" x2="1" y2="40" stroke="#1A237E" strokeWidth="2" strokeDasharray="6 4">
+        <animate attributeName="stroke-dashoffset" from="0" to="-10" dur="0.5s" repeatCount="indefinite" />
+      </line>
+    </svg>
+  )
+}
+
 const customDotItems: TimelineItem[] = [
   { body: <Node date="2023.04.15" text="实际开工" /> },
   { body: <Node date="进行中" text="施工中（实时进度）" />, dot: { jsx: <PulseDot />, size: 22 } },
@@ -214,6 +225,10 @@ export default function TimelinePage() {
 
       <Section title="⑪ 疏密虚线" hint="defaultLine.dash={solidLength:2,gapLength:6} —— 调 solidLength/gapLength 控制疏密">
         <Timeline childItems={baseItems} defaultLine={{ dash: { solidLength: 2, gapLength: 6 } }} />
+      </Section>
+
+      <Section title="⑫ line.jsx：SVG 流动虚线" hint="defaultLine.jsx=<AnimatedDashedLine/> —— 自定义 SVG 虚线动画，高度按行高给个固定值(demo 40)">
+        <Timeline childItems={baseItems} defaultLine={{ jsx: <AnimatedDashedLine /> }} />
       </Section>
     </section>
   )
