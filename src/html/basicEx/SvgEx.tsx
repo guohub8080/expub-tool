@@ -1,6 +1,6 @@
 import React from "react";
-import { useImportant } from "./useImportant";
-import { resolveWatermark } from "./resolveWatermark";
+import { useImportant } from "@utils/hooks/useImportant";
+import { resolveWatermark } from "@utils/html/resolveWatermark";
 
 interface SvgExProps extends React.SVGProps<SVGSVGElement> {
   important?: [string, string | null | undefined][];

@@ -2,8 +2,8 @@ import React from "react";
 import defaultTo from "lodash/defaultTo";
 import isEmpty from "lodash/isEmpty";;
 // import GetPlaceHolderPic1 from "@api/placeHolderPic/getPlaceHolderPic1";
-import { useImportant } from "./useImportant";
-import { resolveWatermark } from "./resolveWatermark";
+import { useImportant } from "@utils/hooks/useImportant";
+import { resolveWatermark } from "@utils/html/resolveWatermark";
 
 interface ImgExProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   url?: string;

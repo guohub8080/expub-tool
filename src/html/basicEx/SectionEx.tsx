@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode, HTMLAttributes } from "react";
-import { useImportant } from "./useImportant";
-import { resolveWatermark } from "./resolveWatermark";
+import { useImportant } from "@utils/hooks/useImportant";
+import { resolveWatermark } from "@utils/html/resolveWatermark";
 
 const SectionEx = (props: {
   style?: CSSProperties;

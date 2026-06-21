@@ -48,6 +48,12 @@ export type { FlashSlideItem, I_FlashSlideCarouselProps } from "./display/FlashS
 export { default as StackCarousel } from "./display/StackCarousel"
 export type { I_StackCarouselItem, I_MainChildConfig, I_TailChildConfig } from "./display/StackCarousel"
 
+export { default as SwipePager } from "./display/SwipePager"
+export type { I_SwipePagerProps, I_SwipePagerContent } from "./display/SwipePager"
+
+export { default as CascadeSwipePager } from "./display/CascadeSwipePager"
+export type { I_CascadeSwipePagerProps, I_CascadeSwipeChildItem, I_TagHandle, I_CascadeContent } from "./display/CascadeSwipePager"
+
 export { ClickFlipInfinity } from "./click"
 export type { I_ClickFlipInfinityProps, I_FaceContent } from "./click"
 

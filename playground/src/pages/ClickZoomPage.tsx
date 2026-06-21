@@ -32,10 +32,8 @@ export default function ClickZoomPage() {
           canvasSize={{ w: 300, h: 400 }}
           homeBg={
             <>
-              {/* 底色（opacity 呼吸） */}
-              <rect x={0} y={0} width={300} height={400} fill="#1a1a2e">
-                <animate attributeName="opacity" values="1;0.7;1" dur="4s" repeatCount="indefinite" />
-              </rect>
+              {/* 底色（静态——去掉 opacity 呼吸，避免与放大层 opacity 叠加产生渐变） */}
+              <rect x={0} y={0} width={300} height={400} fill="#1a1a2e" />
 
               {/* 呼吸光圈 1 */}
               <circle cx={150} cy={200} r={90} fill="none" stroke="#6366f1" strokeWidth={2} opacity={0.3}>
