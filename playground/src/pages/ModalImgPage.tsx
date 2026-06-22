@@ -222,7 +222,7 @@ export default function ModalImgPage() {
 
       <CopyDemo
         title="url 背景 + 2 个热区（最简）"
-        note="canvasBg={url} → 自动 svg + background-image\n无动画暗示，适合图片本身就有指引的场景"
+        note="canvasBg={url} → 渲染为 <svg background-image:cover pe:none>\n和参考的报纸背景一致"
       >
         <ModalImg
           canvasSize={{ w: 400, h: 400 }}
