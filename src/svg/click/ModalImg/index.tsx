@@ -59,7 +59,7 @@ const ModalImg = (props: I_ModalImgProps) => {
             display: 'block',
             width: '100%',
             pointerEvents: 'none',
-            ...resolveCanvasBg({ url: bgUrl }),
+            ...resolveCanvasBg({ url: bgUrl, fit: 'cover' }),
           }}
         />
       ) : isDefined(bgJsx) ? (
