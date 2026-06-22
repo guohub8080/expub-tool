@@ -46,7 +46,7 @@ const ModalImg = (props: I_ModalImgProps) => {
       ))}
 
       {/* 2. 背景层（DOM 后 = 盖在 img 上面，pe:none 点击穿透） */}
-      {renderCanvasBg(props.canvasBg, canvasWidth, canvasHeight)}
+      {renderCanvasBg({ canvasBg: props.canvasBg, canvasWidth, canvasHeight })}
     </SectionEx>
   )
 }
@@ -57,16 +57,16 @@ const ModalImg = (props: I_ModalImgProps) => {
  * - jsx → 用户的整个 svg，包一层 pe:none
  * - 都不传 → 透明占位 svg 撑出画布高度
  */
-function renderCanvasBg(
-  canvasBg: I_ModalImgProps['canvasBg'],
-  canvasWidth: number,
-  canvasHeight: number,
-): ReactNode {
+function renderCanvasBg({ canvasBg, canvasWidth, canvasHeight }: {
+  canvasBg: I_ModalImgProps['canvasBg']
+  canvasWidth: number
+  canvasHeight: number
+}): ReactNode {
   if (isDefined(canvasBg?.url)) {
     return (
       <SvgEx
         viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
-        style={canvasBgUrlStyle(svgURL(canvasBg.url))}
+        style={canvasBgUrlStyle({ backgroundImageUrl: svgURL(canvasBg.url) })}
       />
     )
   }
@@ -84,7 +84,7 @@ function renderCanvasBg(
 }
 
 /** url 背景的 <svg> 样式（和参考的报纸背景逐字一致） */
-function canvasBgUrlStyle(backgroundImageUrl: string): CSSProperties {
+function canvasBgUrlStyle({ backgroundImageUrl }: { backgroundImageUrl: string }): CSSProperties {
   return {
     display: 'block',
     width: '100%',
@@ -131,7 +131,7 @@ function HotAreaSection({ item, canvasWidth }: {
           <img
             src={imgUrl}
             data-ratio={isDefined(ratio) ? String(ratio) : undefined}
-            style={buildImgStyle(hotArea, ratio)}
+            style={buildImgStyle({ hotArea, ratio })}
           />
         </section>
       </SectionEx>
@@ -140,7 +140,7 @@ function HotAreaSection({ item, canvasWidth }: {
 }
 
 /** 构建 <img> 的 style：有 ratio 加 scale 压缩，无 ratio 按自然高渲染 */
-function buildImgStyle(hotArea: { w: number; h: number }, ratio?: number): CSSProperties {
+function buildImgStyle({ hotArea, ratio }: { hotArea: { w: number; h: number }; ratio?: number }): CSSProperties {
   const style: CSSProperties = {
     width: '100%',
     pointerEvents: 'painted',
