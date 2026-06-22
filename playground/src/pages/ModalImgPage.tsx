@@ -226,7 +226,7 @@ export default function ModalImgPage() {
       >
         <ModalImg
           canvasSize={{ w: 400, h: 400 }}
-          canvasBg={{ url: getPlaceHolderPic1(400, 400, '1e293b', '64748b') }}
+          canvasBg={{ url: getWechat300x300(7) }}
           childItems={[
             { hotArea: { x: 40, y: 80, w: 140, h: 140 }, imgUrl: getWechat300x300(5) },
             { hotArea: { x: 220, y: 80, w: 140, h: 140 }, imgUrl: getWechat300x300(6) },

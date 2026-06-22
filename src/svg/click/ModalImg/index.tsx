@@ -4,7 +4,7 @@ import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
 import isNil from 'lodash/isNil'
 import { SPACING_ZERO, spacing } from '@css-fn/spacing'
-import { resolveCanvasBg } from '@utils/svg/resolveCanvasBg'
+import svgURL from '@utils/svg/svgURL'
 import { ExPubGoConfig } from '@utils/provider/ExPubGoProvider'
 import { isDefined } from '@utils/fn/isDefined'
 import type { I_ModalImgProps, I_ModalImgChildItem } from './types'
@@ -52,14 +52,19 @@ const ModalImg = (props: I_ModalImgProps) => {
       ))}
 
       {/* 2. 背景层（DOM 后 = 盖在 img 上面，pe:none 点击穿透） */}
+      {/* url → <svg background-image cover no-repeat pe:none>（和参考一致）；jsx → 用户的整个 svg */}
       {isDefined(bgUrl) ? (
         <SvgEx
           viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
           style={{
             display: 'block',
             width: '100%',
+            lineHeight: 0,
+            transform: 'scale(1)',
             pointerEvents: 'none',
-            ...resolveCanvasBg({ url: bgUrl, fit: 'cover' }),
+            backgroundImage: svgURL(bgUrl),
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
           }}
         />
       ) : isDefined(bgJsx) ? (
