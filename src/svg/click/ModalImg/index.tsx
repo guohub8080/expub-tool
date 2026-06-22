@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import SectionEx from '@html/basicEx/SectionEx'
 import SvgEx from '@html/basicEx/SvgEx'
 import defaultTo from 'lodash/defaultTo'
@@ -27,8 +27,6 @@ const ModalImg = (props: I_ModalImgProps) => {
   const isDev = ExPubGoConfig().mode === 'development'
   const canvasWidth = props.canvasSize.w
   const canvasHeight = props.canvasSize.h
-  const bgUrl = props.canvasBg?.url
-  const bgJsx = props.canvasBg?.jsx
 
   return (
     <SectionEx
@@ -44,46 +42,64 @@ const ModalImg = (props: I_ModalImgProps) => {
     >
       {/* 1. img 热区层（DOM 先 = 底层，被背景盖住） */}
       {props.childItems.map((item, idx) => (
-        <HotAreaSection
-          key={idx}
-          item={item}
-          canvasWidth={canvasWidth}
-        />
+        <HotAreaSection key={idx} item={item} canvasWidth={canvasWidth} />
       ))}
 
       {/* 2. 背景层（DOM 后 = 盖在 img 上面，pe:none 点击穿透） */}
-      {/* url → <svg background-image cover no-repeat pe:none>（和参考一致）；jsx → 用户的整个 svg */}
-      {isDefined(bgUrl) ? (
-        <SvgEx
-          viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
-          style={{
-            display: 'block',
-            width: '100%',
-            lineHeight: 0,
-            transform: 'scale(1)',
-            pointerEvents: 'none',
-            backgroundImage: svgURL(bgUrl),
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-      ) : isDefined(bgJsx) ? (
-        <section style={bgCoverLayerStyle}>
-          {bgJsx}
-        </section>
-      ) : (
-        <SvgEx
-          viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
-          style={{ display: 'block', width: '100%', pointerEvents: 'none' }}
-        />
-      )}
+      {renderCanvasBg(props.canvasBg, canvasWidth, canvasHeight)}
     </SectionEx>
   )
 }
 
 /**
+ * 渲染背景层。
+ * - url → <svg background-image cover no-repeat pe:none>（和参考一致）
+ * - jsx → 用户的整个 svg，包一层 pe:none
+ * - 都不传 → 透明占位 svg 撑出画布高度
+ */
+function renderCanvasBg(
+  canvasBg: I_ModalImgProps['canvasBg'],
+  canvasWidth: number,
+  canvasHeight: number,
+): ReactNode {
+  if (isDefined(canvasBg?.url)) {
+    return (
+      <SvgEx
+        viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+        style={canvasBgUrlStyle(svgURL(canvasBg.url))}
+      />
+    )
+  }
+
+  if (isDefined(canvasBg?.jsx)) {
+    return <section style={bgCoverLayerStyle}>{canvasBg.jsx}</section>
+  }
+
+  return (
+    <SvgEx
+      viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+      style={{ display: 'block', width: '100%', pointerEvents: 'none' }}
+    />
+  )
+}
+
+/** url 背景的 <svg> 样式（和参考的报纸背景逐字一致） */
+function canvasBgUrlStyle(backgroundImageUrl: string): CSSProperties {
+  return {
+    display: 'block',
+    width: '100%',
+    lineHeight: 0,
+    transform: 'scale(1)',
+    pointerEvents: 'none',
+    backgroundImage: backgroundImageUrl,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+  }
+}
+
+/**
  * 单个热区：完全复刻参考结构
- * 零高视差层 → 占位 SVG(Y) → slide 层(overflow-x:auto) → flex 内行 → 左留白(X) + 图片容器 → <img scale>
+ * 零高视差层 → 占位 SVG(Y) → flex 内行 → 左留白(X) + 图片容器 → <img scale>
  */
 function HotAreaSection({ item, canvasWidth }: {
   item: I_ModalImgChildItem
@@ -93,22 +109,6 @@ function HotAreaSection({ item, canvasWidth }: {
   const spacerPercent = (hotArea.x / canvasWidth) * 100
   const containerPercent = (hotArea.w / canvasWidth) * 100
 
-  // scaleY = (期望可见高 / 容器宽) / ratio = (hotArea.h / hotArea.w) / ratio
-  // 没有 ratio 则不压缩（img 按自然高渲染）
-  const scaleY = isDefined(ratio) && ratio > 0
-    ? (hotArea.h / hotArea.w) / ratio
-    : null
-
-  const imgStyle: CSSProperties = {
-    width: '100%',
-    pointerEvents: 'painted',
-    height: 'auto',
-    transformOrigin: 'center top',
-  }
-  if (isDefined(scaleY)) {
-    imgStyle.transform = `scale(1, ${scaleY})`
-  }
-
   return (
     <section style={hotAreaLayerStyle}>
       {/* Y 偏移：占位 SVG */}
@@ -117,29 +117,43 @@ function HotAreaSection({ item, canvasWidth }: {
       )}
 
       {/* flex 内行 */}
+      <SectionEx important={[['max-width', '100%']]} style={flexRowStyle}>
+        {/* 左留白 */}
         <SectionEx
-          important={[['max-width', '100%']]}
-          style={flexRowStyle}
+          important={[['max-width', `${spacerPercent}%`]]}
+          style={{ ...spacerStyle, flex: `0 0 ${spacerPercent}%` }}
         >
-          {/* 左留白 */}
-          <SectionEx
-            important={[['max-width', `${spacerPercent}%`]]}
-            style={{ ...spacerStyle, flex: `0 0 ${spacerPercent}%` }}
-          >
-            <SvgEx viewBox="0 0 404 404" style={{ verticalAlign: 'top' }} />
-          </SectionEx>
-
-          {/* 图片容器 */}
-          <section style={{ verticalAlign: 'top', width: `${containerPercent}%`, height: '99999px' }}>
-            <img
-              src={imgUrl}
-              data-ratio={isDefined(ratio) ? String(ratio) : undefined}
-              style={imgStyle}
-            />
-          </section>
+          <SvgEx viewBox="0 0 404 404" style={{ verticalAlign: 'top' }} />
         </SectionEx>
+
+        {/* 图片容器 */}
+        <section style={{ verticalAlign: 'top', width: `${containerPercent}%`, height: '99999px' }}>
+          <img
+            src={imgUrl}
+            data-ratio={isDefined(ratio) ? String(ratio) : undefined}
+            style={buildImgStyle(hotArea, ratio)}
+          />
+        </section>
+      </SectionEx>
     </section>
   )
+}
+
+/** 构建 <img> 的 style：有 ratio 加 scale 压缩，无 ratio 按自然高渲染 */
+function buildImgStyle(hotArea: { w: number; h: number }, ratio?: number): CSSProperties {
+  const style: CSSProperties = {
+    width: '100%',
+    pointerEvents: 'painted',
+    height: 'auto',
+    transformOrigin: 'center top',
+  }
+
+  if (isDefined(ratio) && ratio > 0) {
+    const scaleY = (hotArea.h / hotArea.w) / ratio
+    style.transform = `scale(1, ${scaleY})`
+  }
+
+  return style
 }
 
 export default ModalImg
