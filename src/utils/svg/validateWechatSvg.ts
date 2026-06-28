@@ -368,6 +368,37 @@ export function validateWechatSvg(svgCode: string): ValidationResult {
         });
       }
     }
+
+    // 规则8: url(#id) 引用检测
+    // 微信会删除所有 id 属性，导致 url(#id) 引用断链，渐变/图案/裁剪/蒙版/滤镜/use/textPath 全部失效
+    const URL_REF_PATTERN = /url\(\s*#?["']?[^)]+["']?\s*\)/i;
+    for (const attr of el.attributes) {
+      if (!URL_REF_PATTERN.test(attr.value)) continue;
+      // 保留 xlink:href / href 这类「链接目标」引用（它们本身依赖 id，会作为缺口的补充提示）
+      // 但 fill / stroke / clip-path / mask / filter / href 等都是 url(#id) 的受害者
+      const attrName = attr.name.toLowerCase().replace(/^xlink:/, '');
+      // 这几个属性是「引用定义」型，列出来便于给出针对性建议
+      const refAttrHint: Record<string, string> = {
+        'fill': '渐变/图案填充',
+        'stroke': '渐变/图案描边',
+        'clip-path': '裁剪路径',
+        'mask': '蒙版',
+        'filter': '滤镜（模糊/阴影等）',
+        'href': '<use>/<textPath> 引用',
+        'xlink:href': '<use>/<textPath> 引用',
+      };
+      const hint = refAttrHint[attrName] ?? '元素引用';
+      issues.push({
+        severity: 'error',
+        rule: 'url引用断链',
+        message: `发现 ${attr.name}="${attr.value}"，微信删除 id 后该引用必然失效`,
+        detail: `微信会删除所有 id 属性，导致 url(#...) 悬空。受影响：渐变、图案、clipPath、mask、filter、<use>/<textPath> 等`,
+        tagName,
+        attributeName: attr.name,
+        codeSnippet: `<${tagName} ${attr.name}="${attr.value}">`,
+        suggestion: `${hint}在微信中无法生效。建议改用纯色填充（fill="#xxx"），或把渐变/特效做成图片素材替代`,
+      });
+    }
   }
 
   // 先检查根SVG元素自身的属性（id、事件处理器、style等）
