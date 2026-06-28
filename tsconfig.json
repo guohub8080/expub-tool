@@ -1,7 +1,6 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "include": ["src/**/*"],
-  "exclude": ["src/svg-comps/**/*"],
   "compilerOptions": {
     // File Layout
     "rootDir": "src",
@@ -55,7 +54,6 @@
       "@svg-utils/*": ["./src/svg-utils/*"],
       "@css-fn/*": ["./src/css/cssFunctions/*"],
       "@css-presets/*": ["./src/css/cssPresets/*"],
-      // "@svg-comps/*": ["./src/svg-comps/*"],  // 旧目录，待删除
       "@behaviors/*": ["./src/behaviors/*"],
       "@svg/*": ["./src/svg/*"]
     }

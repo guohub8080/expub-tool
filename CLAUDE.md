@@ -58,7 +58,6 @@ import { svgURL, getEaseBezier, validateWechatSvg } from "expub-tool/svg-utils" 
 | `@html/*` | `src/html/*` |
 | `@common/*` | `src/common/*` |
 | `@css/*` | `src/css/*` |
-| `@svg-comps/*` | `src/svg-comps/*` |
 | `@smil/*` | `src/smil/*` |
 | `@behaviors/*` | `src/behaviors/*` |
 | `@svg/*` | `src/svg/*` |

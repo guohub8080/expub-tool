@@ -12,7 +12,6 @@ export default defineConfig({
       '@css': resolve(__dirname, 'src/css'),
       '@css-fn': resolve(__dirname, 'src/css/cssFunctions'),
       '@css-presets': resolve(__dirname, 'src/css/cssPresets'),
-      // '@svg-comps': resolve(__dirname, 'src/svg-comps'),  // 旧目录，待删除
       '@behaviors': resolve(__dirname, 'src/behaviors'),
       '@svg': resolve(__dirname, 'src/svg'),
     },
