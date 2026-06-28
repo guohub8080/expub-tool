@@ -1,9 +1,9 @@
 /**
  * 动画时间线构建：放大/缩小/淡入/淡出/进出画布
  *
- * 参考 参考实现 的时序（duration=D）：
+ * 时序(duration=D):
  * - mouseover → 放大(Ds) → visibility=hidden → mouseout 自动触发 → 缩小(Ds) → mouseout+D → 淡出+移走
- * - 所有延迟 = duration（跟参考的固定 1s 一致，因为参考 D=1）
+ * - 所有延迟 = duration
  */
 
 import { transformTranslate, transformScaleRaw, animateOpacity, setVisibility } from "@smil/index"
