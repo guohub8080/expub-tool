@@ -29,12 +29,15 @@ export interface HarfbuzzPath {
  * 并应用 (x, y) 偏移。返回的 toPathData() 给出像素坐标的 SVG d 字符串。
  */
 export interface HarfbuzzFont {
+  /** 是否可变字体(含 fvar 表)。preload 时自动探测,无需用户声明 */
+  readonly variable: boolean
   /** 设可变字体轴(如 wght=700)。静态字体调用无效。 */
   setVariation(axis: string, value: number): void
   /** 字体是否含某字符的字形 */
   glyphExists(char: string): boolean
-  /** 取字符轮廓路径(已按 fontSize 缩放 + 偏移),y 是 baseline */
-  getPath(char: string, x: number, y: number, fontSize: number): HarfbuzzPath
+  /** 取字符轮廓路径(已按 fontSize 缩放 + 偏移),y 是 baseline。
+   *  inkOffset:浏览器实测的 ink 左边缘相对 advance 原点偏移(Canvas actualBoundingBoxLeft) */
+  getPath(char: string, x: number, y: number, fontSize: number, inkOffset?: number): HarfbuzzPath
   /** 取字符推进宽度(像素) */
   getAdvanceWidth(char: string, fontSize: number): number
   /** 字体度量(设计单位) */
@@ -49,6 +52,14 @@ export function createHarfbuzzFont(buffer: ArrayBuffer): HarfbuzzFont {
   const blob = new hb.Blob(buffer)
   const face = new hb.Face(blob, 0)
   const font = new hb.Font(face)
+
+  // ⚠️ 自动探测可变字体:读 fvar 表,有轴就是可变字体。
+  // 这样用户传字体配置时不需要手动声明 variable,bake-svg 自己判断。
+  let isVariable = false
+  try {
+    const axes = face.getAxisInfos?.()
+    isVariable = !!(axes && Object.keys(axes).length > 0)
+  } catch { /* getAxisInfos 不存在 = 静态字体 */ }
 
   const unitsPerEm = face.upem
   // 字体 metrics(ascender/descender):用测量值,不硬编码。
@@ -117,21 +128,19 @@ export function createHarfbuzzFont(buffer: ArrayBuffer): HarfbuzzFont {
     return { glyphId: info.codepoint ?? 0, xAdvance: info.xAdvance ?? 0 }
   }
 
-  /** 取字形的 ink 左边缘相对 advance 原点的偏移(设计单位)。
-   *  用于把 Range 量的 ink bbox x 转成 advance 原点:
-   *  advance原点 = ink左边缘 - leftBearing * scale。
-   *  例:「」等 CJK 标点笔画在 advance 原点右侧很远(留白在左),leftBearing 很大。 */
+  /** 取字形的 ink 左边缘相对 advance 原点的偏移(设计单位,harfbuzz glyphExtents) */
   function leftBearing(glyphId: number): number {
     try {
-      const ext = font.glyphExtents(glyphId) as { xBearing?: number; x_bearing?: number } | undefined
-      // harfbuzzjs 的字段名可能是 xBearing 或 x_bearing
-      return ext?.xBearing ?? ext?.x_bearing ?? 0
+      const ext = font.glyphExtents(glyphId) as { xBearing?: number } | undefined
+      return ext?.xBearing ?? 0
     } catch {
       return 0
     }
   }
 
   return {
+    variable: isVariable,
+
     setVariation(axis: string, value: number) {
       font.setVariations([new hb.Variation(axis, value)])
     },
@@ -141,18 +150,21 @@ export function createHarfbuzzFont(buffer: ArrayBuffer): HarfbuzzFont {
       return shapeOne(char).glyphId !== 0
     },
 
-    getPath(char: string, x: number, y: number, fontSize: number): HarfbuzzPath {
+    getPath(char: string, x: number, y: number, fontSize: number, inkOffset?: number): HarfbuzzPath {
       const { glyphId } = shapeOne(char)
       const designPath = font.glyphToPath(glyphId) as string
-      // ⚠️ x 是该字符 ink 左边缘(Range bbox 量的),不是 advance 原点。
-      // 字形 path 的 ink 在 advance 原点 + leftBearing 处,
-      // 所以 advance 原点 = x - leftBearing * scale。
-      // 这样 path 的 ink 左边缘正好落在 x(浏览器测量的 ink 位置)。
       const scale = fontSize / unitsPerEm
-      const advanceOrigin = x - leftBearing(glyphId) * scale
+      // x 是 advance 原点(Range.getBoundingClientRect 量的占位框左边缘)。
+      // inkOffset 是浏览器 Canvas actualBoundingBoxLeft 量的 ink 左边缘相对 advance 原点的偏移。
+      // 字形 path 的 ink 在 advance 原点 + xBearing 处(harfbuzz 设计坐标),
+      // 要让 path 的 ink 对齐浏览器的 ink,需把 path 整体平移:
+      //   path 画在 advance原点 + (inkOffset - xBearing*scale)
+      // 这样 path 的 ink(在 path原点 + xBearing*scale)正好落在 advance原点 + inkOffset。
+      const lb = leftBearing(glyphId)
+      const offset = (inkOffset ?? 0) - lb * scale
       return {
         toPathData(precision = 3) {
-          return scalePath(designPath, advanceOrigin, y, fontSize, precision)
+          return scalePath(designPath, x + offset, y, fontSize, precision)
         }
       }
     },

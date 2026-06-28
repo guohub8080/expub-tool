@@ -117,13 +117,13 @@ export default function BakeSvgPage() {
         setError('')
 
         const rendererFonts = [
-          // 可变字体(Inter[wght]):variable 标记,一个文件覆盖所有字重
-          { family: 'Inter', url: '/fonts/Inter-Variable.ttf', weight: '400', variable: true as const },
+          // 可变字体:variable 自动探测(读 fvar 表),无需手动声明
+          { family: 'Inter', url: '/fonts/Inter-Variable.ttf', weight: '400' },
           { family: 'Consolas', url: '/fonts/Consolas.ttf', weight: '400' },
           { family: 'Arial', url: '/fonts/Arial.ttf', weight: '400' },
           { family: 'Arial', url: '/fonts/Arial-Bold.ttf', weight: '700' },
-          { family: 'Noto Sans SC', url: '/fonts/NotoSansSC-Regular.ttf', weight: '400' },
-          { family: 'Noto Sans SC', url: '/fonts/NotoSansSC-Bold.ttf', weight: '700' },
+          // 思源黑体可变字体:一个文件覆盖所有字重,中文 wght 轴连续可调
+          { family: 'Noto Sans SC', url: '/fonts/NotoSansSC-VF.ttf', weight: '400' },
         ]
         const renderer = htmlToSvg({ fonts: rendererFonts })
 

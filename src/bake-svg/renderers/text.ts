@@ -11,8 +11,9 @@ import type { TextRenderer, FontConfig } from '../types'
 interface GlyphEngine {
   /** 字体是否含某字符的字形 */
   glyphExists(c: string): boolean
-  /** 取字符轮廓(已缩放 + 偏移),y 是 baseline。返回带 toPathData 的对象 */
-  getPath(c: string, x: number, y: number, fontSize: number): { toPathData(precision?: number): string }
+  /** 取字符轮廓(已缩放 + 偏移),y 是 baseline。
+   *  inkOffset 是浏览器实测的 ink 左边缘相对 advance 原点的偏移。 */
+  getPath(c: string, x: number, y: number, fontSize: number, inkOffset?: number): { toPathData(precision?: number): string }
   /** 取字符推进宽度(像素) */
   getAdvanceWidth(c: string, fontSize: number): number
   /** 字体度量(用于算 leading) */
@@ -25,7 +26,7 @@ function toGlyphEngine(font: FontConfig): GlyphEngine | null {
     const hb = font.harfbuzz
     return {
       glyphExists: (c) => hb.glyphExists(c),
-      getPath: (c, x, y, fs) => hb.getPath(c, x, y, fs),
+      getPath: (c, x, y, fs, io) => hb.getPath(c, x, y, fs, io),
       getAdvanceWidth: (c, fs) => hb.getAdvanceWidth(c, fs),
       metrics: hb.metrics
     }
@@ -145,12 +146,16 @@ const createTextRenderer: TextRenderer = ({ debug, fonts }) =>
       line('leading', height - fbDescent, { orientation: 'horizontal', stroke: '#4b96ff' })
     }
 
-    // ⚠️ 逐字独立:string 是单个字符,x/width 是它自己的 bbox。
-    // 直接用 bbox 的 x 放字形,不做累加、不依赖 advanceWidth。
+    // ⚠️ 逐字独立:string 是单个字符,x 是它的 advance 原点(Range 量的占位框左边缘)。
+    // 字形 path 的 ink 不在 advance 原点上(有 leftBearing 偏移),
+    // 用浏览器 Canvas 的 actualBoundingBoxLeft 量出 ink 偏移,让 path 的 ink 对齐浏览器。
     for (const c of string) {
       const engine = engineForChar(c)
+      // 量该字符的 ink 左边缘相对 advance 原点的偏移(浏览器实测,最可靠)
+      const cm = ctx.measureText(c) as TextMetrics & { actualBoundingBoxLeft?: number }
+      const inkOffset = cm.actualBoundingBoxLeft ?? 0
       $('path', {
-        d: engine.getPath(c, x, baselineY, fontSize).toPathData(3),
+        d: engine.getPath(c, x, baselineY, fontSize, inkOffset).toPathData(3),
         fill: color
       }, g)
     }

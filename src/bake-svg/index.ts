@@ -100,22 +100,29 @@ export default function htmlToSvg({
         }
         const buffer = await response.arrayBuffer()
 
-        // ⚠️ 关键:把字体注册到浏览器的 document.fonts(FontFace API)。
+        // 先用 harfbuzzjs 解析(所有字体统一走这个)
+        const hbFont = createHarfbuzzFont(buffer)
+        font.harfbuzz = hbFont
+
+        // ⚠️ 自动探测可变字体:用 harfbuzz 读 fvar 表的结果覆盖用户声明。
+        // 用户无需手动写 variable:true —— bake-svg 自己判断(有 wght 轴 = 可变)。
+        font.variable = hbFont.variable
+
+        // 可变字体:按 FontConfig.weight 设默认轴值(运行时会被 text.ts 按 CSS weight 覆盖)
+        if (font.variable) {
+          const defaultWeight = parseInt(font.weight ?? '400')
+          if (!isNaN(defaultWeight)) hbFont.setVariation('wght', defaultWeight)
+        }
+
+        // ⚠️ 把字体注册到浏览器的 document.fonts(FontFace API)。
         // 这样源 HTML 的 CSS font-family 也能找到这个字体,
         // 让「浏览器渲染源 HTML」和「bake-svg 读取测量值」用同一个字体,
         // 避免标点/字形不一致(如逗号形状不同)。
-        // 不注册的话:源 HTML fallback 到系统字体,bake-svg 用自己的字体文件 → 不一致。
         //
-        // ⚠️ 必须传 descriptors(weight/style):否则所有字体都注册成 weight 400(normal),
-        // 导致 weight 700 的文字(strong)找不到正确字重,字体匹配混乱。
-        //
-        // ⚠️ 可变字体(variable:true)要用 weight 范围注册(如 '100 900'),
-        // 这样浏览器知道该文件覆盖所有字重,weight 700(strong)也能匹配到它。
-        // 静态字体用固定值(如 '400'/'700')。
+        // 可变字体用 weight 范围('100 900'),静态字体用固定值(如 '400'/'700')。
         if (typeof document !== 'undefined') {
           try {
             const descriptors: FontFaceDescriptors = {
-              // 可变字体用范围('100 900'),静态字体用固定值
               weight: font.variable ? '100 900' : (font.weight ?? '400'),
               style: font.style ?? 'normal',
             }
@@ -123,19 +130,9 @@ export default function htmlToSvg({
             await face.load()
             document.fonts.add(face)
           } catch (e) {
-            // 注册失败不阻塞(可能字体格式不支持 FontFace,如 woff 在某些环境)
             console.warn(`[bake-svg] FontFace 注册失败(${font.family}/${font.weight}),源 HTML 可能用 fallback 字体`, e)
           }
         }
-
-        // 所有字体统一用 harfbuzzjs 解析
-        const hbFont = createHarfbuzzFont(buffer)
-        // 可变字体:按 FontConfig.weight 设默认轴值(运行时会被 text.ts 按 CSS weight 覆盖)
-        if (font.variable) {
-          const defaultWeight = parseInt(font.weight ?? '400')
-          if (!isNaN(defaultWeight)) hbFont.setVariation('wght', defaultWeight)
-        }
-        font.harfbuzz = hbFont
       }
     },
 
