@@ -31,8 +31,7 @@ export default defineConfig({
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime', 'lodash', /^lodash\//,
-        'gradient-parser', 'transformation-matrix', 'uid'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', 'lodash', /^lodash\//],
       output: [
         {
           format: 'es',

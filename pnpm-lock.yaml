@@ -11,9 +11,6 @@ importers:
       chroma-js:
         specifier: ^3.2.0
         version: 3.2.0
-      gradient-parser:
-        specifier: ^1.2.0
-        version: 1.2.0
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -406,10 +403,6 @@ packages:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
-
-  gradient-parser@1.2.0:
-    resolution: {integrity: sha512-6ABGa9CR7WR/0pAJicBy5SJkiikbFM6kf/JjykwX7x+t+s8ORWVnlbi6FkHeFFb36yWsjUpHqSYrygd7ofEUqA==}
-    engines: {node: '>=0.10.0'}
 
   html-encoding-sniffer@6.0.0:
     resolution: {integrity: sha512-CV9TW3Y3f8/wT0BRFc1/KAVQ3TUHiXmaAb6VW9vtiMFf7SLoMd1PdAc4W3KFOFETBJUb90KatHqlsZMWV+R9Gg==}
@@ -1056,8 +1049,6 @@ snapshots:
 
   fsevents@2.3.3:
     optional: true
-
-  gradient-parser@1.2.0: {}
 
   html-encoding-sniffer@6.0.0:
     dependencies:
