@@ -46,6 +46,11 @@
       "import": "./dist/esm/svg/index.mjs",
       "require": "./dist/cjs/svg/index.cjs",
       "types": "./dist/types/svg/index.d.ts"
+    },
+    "./bake-svg": {
+      "import": "./dist/esm/bake-svg/index.mjs",
+      "require": "./dist/cjs/bake-svg/index.cjs",
+      "types": "./dist/types/bake-svg/index.d.ts"
     }
   },
   "files": [
@@ -66,6 +71,7 @@
   "license": "MIT",
   "packageManager": "pnpm@10.23.0",
   "devDependencies": {
+    "@fontsource/noto-sans-sc": "^5.2.9",
     "@types/chroma-js": "^3.1.2",
     "@types/jsdom": "^28.0.3",
     "@types/lodash": "^4.17.24",
@@ -95,6 +101,11 @@
   },
   "dependencies": {
     "chroma-js": "^3.2.0",
-    "lodash": "^4.18.1"
+    "gradient-parser": "^1.2.0",
+    "harfbuzzjs": "^1.4.0",
+    "lodash": "^4.18.1",
+    "satori": "^0.26.0",
+    "transformation-matrix": "^3.1.0",
+    "uid": "^2.0.2"
   }
 }
