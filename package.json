@@ -46,11 +46,6 @@
       "import": "./dist/esm/svg/index.mjs",
       "require": "./dist/cjs/svg/index.cjs",
       "types": "./dist/types/svg/index.d.ts"
-    },
-    "./bake-svg": {
-      "import": "./dist/esm/bake-svg/index.mjs",
-      "require": "./dist/cjs/bake-svg/index.cjs",
-      "types": "./dist/types/bake-svg/index.d.ts"
     }
   },
   "files": [
@@ -102,10 +97,6 @@
   "dependencies": {
     "chroma-js": "^3.2.0",
     "gradient-parser": "^1.2.0",
-    "harfbuzzjs": "^1.4.0",
-    "lodash": "^4.18.1",
-    "satori": "^0.26.0",
-    "transformation-matrix": "^3.1.0",
-    "uid": "^2.0.2"
+    "lodash": "^4.18.1"
   }
 }

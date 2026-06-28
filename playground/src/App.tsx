@@ -23,8 +23,6 @@ import ClickZoomPage from './pages/ClickZoomPage'
 import MultiPageSwipePage from './pages/MultiPageSwipePage'
 import ModalImgPage from './pages/ModalImgPage'
 import TimelinePage from './pages/TimelinePage'
-import BakeSvgPage from './pages/BakeSvgPage'
-import SatoriPage from './pages/SatoriPage'
 
 const links = [
   { to: '/', label: 'SMIL' },
@@ -51,8 +49,6 @@ const links = [
   { to: '/css', label: 'CSS' },
   { to: '/utils', label: 'Utils' },
   { to: '/timeline', label: 'Timeline' },
-  { to: '/bake-svg', label: 'BakeSvg' },
-  { to: '/satori', label: 'Satori' },
 ]
 
 export default function App() {
@@ -114,8 +110,6 @@ export default function App() {
           <Route path="/css" element={<CssPage />} />
           <Route path="/utils" element={<UtilsPage />} />
           <Route path="/timeline" element={<TimelinePage />} />
-          <Route path="/bake-svg" element={<BakeSvgPage />} />
-          <Route path="/satori" element={<SatoriPage />} />
         </Routes>
       </main>
     </div>

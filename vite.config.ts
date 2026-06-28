@@ -27,14 +27,12 @@ export default defineConfig({
         'utils/index': resolve(__dirname, 'src/utils/index.ts'),
         'html/index': resolve(__dirname, 'src/html/index.ts'),
         'svg/index': resolve(__dirname, 'src/svg/index.ts'),
-        'bake-svg/index': resolve(__dirname, 'src/bake-svg/index.ts'),
       },
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime', 'lodash', /^lodash\//,
-        // bake-svg 的依赖:external(不打包,运行时从 node_modules 解析)
-        'harfbuzzjs', 'gradient-parser', 'transformation-matrix', 'uid'],
+        'gradient-parser', 'transformation-matrix', 'uid'],
       output: [
         {
           format: 'es',
